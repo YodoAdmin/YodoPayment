@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Yodo mobile location based services application</string>
+    <string name="desc">desc</string>
+    <string name="delete">Borrar</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancelar</string>
+    
+    <!-- header data text -->
+    <string name="account">Cuenta:</string>
+    <string name="date">Fecha:</string>
+    <string name="balance">Balance:</string>
+    <string name="version">Versión:</string>
+    
+    <!-- Settings -->
+    <string name="action_settings">Ajustes</string>
+    <string name="exit">Salir</string>
+
+    <!-- Progress Dialog Messages -->
+    <string name="sks_message">Generando código SKS</string>
+    <string name="balance_message">Obteniendo el balance</string>
+    <string name="auth_message">Autenticando al usuario</string>
+    <string name="change_pip_message">Cambiando el PIP</string>
+    <string name="receipt_message">Obteniendo recibo</string>
+    <string name="biometric_message">Obteniendo el token biométrico</string>
+    <string name="loading">Cargando &#x2026;</string>
+
+    <!-- Messages Text -->
+    <string name="no_wifi">Debe encender su wifi primero</string>
+    <string name="start_biometric">Presione en la pantalla cuando este listo</string>
+    <string name="error">Esto es embarazoso! Ocurrió un error en el proceso</string>
+    <string name="no_internet">Lo sentimos, parece que no dispone de una conexion a Internet, o está es muy lenta</string>
+    <string name="show_pass">Mostrar Contraseña</string>
+    <string name="input_pip">Frase de Identificación Personal (PIP)</string>
+    <string name="pip_length_short">Error: El PIP tiene que tener más de 3 dígitos</string>
+    <string name="pip_confirm_diff">El PIP no coincide</string>
+    <string name="wrong_pip">PIP incorrecto</string>
+    <string name="balance_succesfull">Balance obtenido correctamente</string>
+    <string name="change_pip_succesfull">PIP cambiado exitosamente</string>
+    <string name="not_available">Lo sentimos, está función aún no está disponible</string>
+    <string name="connected">Conectado</string>
+    <string name="null_response">Respuesta Nula</string>
+    <string name="no_camera">No hay cámaras disponibles</string>
+    <string name="no_biometric">Por favor, seleccione un biometric token primero</string>
+    <string name="not_support_bt">Este dispositivo no es compatible con Bluetooth y no puede utilizar los servicios de Yodo</string>
+    <string name="merch_found">Un mensaje de</string>
+    <string name="save_image">Salvar la imagen?</string>
+    <string name="image_saved_ok">Imagen guardada satisfactoriamente</string>
+    <string name="image_saved_failed">Error al guardar la imagen</string>
+    <string name="token_defined">Token ya definido</string>
+
+    <!-- configurations -->
+    <string name="configuration_title">Configuración</string>
+    <string name="options">Opciones</string>
+    <string name="tools">Herramientas</string>
+    <string name="get_balance">Obtener Balance</string>
+    <string name="reset_pip">Cambiar PIP</string>
+    <string name="set_biometric">Definir Biometría</string>
+    <string name="saved_receipts">Recibos Salvados</string>
+    <string name="link">Enlaces</string>
+    <string name="pair">Emparejar</string>
+    <string name="get_advertising">Obtener Publicidad</string>
+    <string name="close_account">Cerrar Cuenta</string>
+    <string name="change_language">Lenguajes</string>
+    <string name="language">Lenguaje:</string>
+
+    <!-- Receipts -->
+    <string name="recipts_title">Recibos</string>
+    <string name="paid">Total:</string>
+    <string name="receipt_auth">AU#</string>
+    <string name="cash_tender">Pago:</string>
+    <string name="cash_back">Vuelto:</string>
+    <string name="yodo_balance">Balance Yodo:</string>
+    <string name="saved_receipt">Recibo Salvado</string>
+    <string name="no_transaction">No hay transacciones realizadas</string>
+    
+    <!-- Coupons -->
+    <string name="coupons_title">Cupones</string>
+    <string name="coupons_refresh">Refrescar</string>
+
+    <!-- Advertising -->
+    <string name="no_bluetooth">Este dispositivo no soporta Bluetooth y no puede usar este servicio Yodo</string>
+    <string name="no_devices">No hay merchants en el rango</string>
+
+    <!-- Button Messages -->
+    <string name="update_pip">Actualizar PIP</string>
+
+    <!-- Change PIP -->
+    <string name="current_pip">PIP Actual:</string>
+    <string name="new_pip">Nuevo PIP:</string>
+    <string name="confirm_pip">Confirmar Nuevo PIP:</string>
+    <string name="current_pip_hint">PIP</string>
+    <string name="new_pip_hint">Nuevo PIP (4–8 caracteres)</string>
+    <string name="confirm_pip_hint">Confirmar</string>
+
+    <!-- Eula -->
+    <string name="eula_title">Acuerdo de Usuario Yodo</string>
+    <string name="eula_accept">Aceptar</string>
+    <string name="eula_refuse">Rechazar</string>
+
+    <!-- Registration Messages -->
+    <string name="registration">Registro</string>
+    <string name="register_pip">Ingrese su PIP secreto en ambos espacios (4–8 caracteres)</string>
+    <string name="pip_hint">PIP</string>
+    <string name="next">Siguiente</string>
+    <string name="registering_user_pip">Registrando el PIP</string>
+
+    <!-- Biometric Messages -->
+    <string name="finish_register">Registrar</string>
+    <string name="biometric">Elige tu clave biométrica</string>
+    <string name="registering_user_biometric">Registrando Token Biometric</string>
+    <string name="voice_recognition">Reconocimiento de voz</string>
+    <string name="face_recognition">Reconocimiento de rostro</string>
+    <string name="saved_face">Rostro salvado exitosamente</string>
+
+    <!-- Tutorial Instructions -->
+    <string name="instructions_title">Tutorial</string>
+    <string name="instructions_message">Haga click en el ícono de Yodo para o mostrar u ocultar los ajustes</string>
+    
+    <!-- Close Message -->
+    <string name="close_message">ADVERTENCIA: Si su cuenta tiene un saldo positivo, se perderá en caso de que cierre su cuenta ahora. Sólo ingrese su PIP para continuar si usted está dispuesto a perder ese dinero.</string>
+    <string name="closing_message">Cerrando la cuenta</string>
+    <string name="farewell_message_tittle">Gracias por usar Yodo!</string>
+    <string name="farewell_message">Esperamos que use Yodo de nuevo en el futuro. Bye</string>
+
+</resources>

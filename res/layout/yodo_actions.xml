@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+		    android:layout_width="match_parent"
+		    android:layout_height="wrap_content"
+		    android:padding="20dp"
+		    android:orientation="vertical" >
+		
+		    <Button
+		        style="@style/ButtonText"
+		        android:background="@drawable/red_button"
+		        android:id="@+id/balanceButton"
+		        android:onClick="balanceClick"
+		        android:text="@string/get_balance" />
+		    
+		    <Button
+		        style="@style/ButtonText"
+		        android:background="@drawable/red_button"
+		        android:id="@+id/resetPipButton"
+		        android:onClick="resetPipClick"
+		        android:text="@string/reset_pip" />
+		    
+		    <Button
+		        style="@style/ButtonText"
+		        android:background="@drawable/red_button"
+		        android:id="@+id/setBiometricButton"
+		        android:onClick="setBiometricClick"
+		        android:text="@string/set_biometric" />
+		    
+		    <Button
+		        style="@style/ButtonText"
+		        android:background="@drawable/red_button"
+		        android:id="@+id/savedReceiptsButton"
+		        android:onClick="savedReceiptsClick"
+		        android:text="@string/saved_receipts" />		    
+		
+		    <!--
+		    <Button
+		        style="@style/ButtonText"
+		        android:background="@drawable/red_button"
+		        android:id="@+id/linksButton"
+		        android:onClick="linksClick"
+		        android:text="@string/link" />
+		
+		    <Button
+		        style="@style/ButtonText"
+		        android:background="@drawable/red_button"
+		        android:id="@+id/pairButton"
+		        android:onClick="pairClick"
+		        android:text="@string/pair" />
+			 -->
+			 
+		    <Button
+		        style="@style/ButtonText"
+		        android:background="@drawable/red_button"
+		        android:id="@+id/closeAccButton"
+		        android:onClick="closeAccClick"
+		        android:text="@string/close_account" />
+		</LinearLayout>

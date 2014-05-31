@@ -1,0 +1,127 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Yodo mobile location based services application</string>
+    <string name="desc">desc</string>
+    <string name="delete">Delete</string>
+    <string name="ok">OK</string>
+    <string name="cancel">Cancel</string>
+    
+     <!-- header data text -->
+    <string name="account">Account:</string>
+    <string name="date">Date:</string>
+    <string name="balance">Balance:</string>
+    <string name="version">Version:</string>
+    <string name="actual_version">1.1.7</string>
+    
+    <!-- Settings -->
+    <string name="action_settings">Settings</string>
+    <string name="exit">Exit</string>
+
+    <!-- Progress Dialog Messages -->
+    <string name="sks_message">Generating SKS code</string>
+    <string name="balance_message">Getting balance</string>
+    <string name="auth_message">Authenticating the user</string>
+    <string name="change_pip_message">Changing the PIP</string>
+    <string name="receipt_message">Getting receipt</string>
+    <string name="biometric_message">Getting biometric token</string>
+    <string name="loading">Loading &#x2026;</string>
+
+    <!-- Messages Text -->
+    <string name="no_wifi">You must turn on your wifi first</string>
+    <string name="start_biometric">Press the screen when you are ready</string>
+    <string name="error">This is embarrassing! An error occurred in the process</string>
+    <string name="no_internet">Internet access required</string>
+    <string name="show_pass">Show PIP</string>
+    <string name="input_pip">Personal Identification Phrase (PIP)</string>
+    <string name="pip_length_short">PIP must be more than 3 digits</string>
+    <string name="pip_confirm_diff">The PIP does not match</string>
+    <string name="wrong_pip">Incorrect PIP</string>
+    <string name="balance_succesfull">Balance obtained correctly</string>
+    <string name="change_pip_succesfull">PIP successfully changed</string>
+    <string name="not_available">This feature is not available yet</string>
+    <string name="connected">Connected</string>
+    <string name="null_response">Null Response</string>
+    <string name="no_camera">No camera available</string>
+    <string name="no_biometric">Please, select a biometric token first</string>
+    <string name="not_support_bt">No Bluetooth support. Device cannot use all Yodo services</string>
+    <string name="merch_found">A message from</string>
+    <string name="save_image">Save Coupon?</string>
+    <string name="image_saved_ok">Coupon saved successfully</string>
+    <string name="image_saved_failed">Error saving Coupon</string>
+    <string name="token_defined">Token Already Defined</string>
+
+    <!-- configurations -->
+    <string name="configuration_title">Configuration</string>
+    <string name="options">Options</string>
+    <string name="tools">Tools</string>
+    <string name="get_balance">Get Balance</string>
+    <string name="reset_pip">Change PIP</string>
+    <string name="set_biometric">Set Biometric</string>
+    <string name="saved_receipts">Receipts</string>
+    <string name="link">Links</string>
+    <string name="pair">Pair</string>
+    <string name="get_advertising">Get Advertising</string>
+    <string name="close_account">Close Account</string>
+    <string name="change_language">Languages</string>
+    <string name="language">Language:</string>
+
+    <!-- Receipts -->
+    <string name="recipts_title">Receipts</string>
+    <string name="paid">Total:</string>
+    <string name="receipt_auth">AU#</string>
+    <string name="cash_tender">Cash Tender:</string>
+    <string name="cash_back">Cash Back:</string>
+    <string name="yodo_balance">Yodo Balance:</string>
+    <string name="saved_receipt">Receipt Saved</string>
+    <string name="no_transaction">No receipt available</string>
+    
+    <!-- Coupons -->
+    <string name="coupons_title">Coupons</string>
+    <string name="coupons_refresh">Refresh</string>
+
+    <!-- Advertising -->
+    <string name="no_bluetooth">No Bluetooth support. Device can not use all Yodo services</string>
+    <string name="no_devices">No merchants within range</string>
+
+    <!-- Button Messages -->
+    <string name="update_pip">Update PIP</string>
+
+    <!-- Change PIP -->
+    <string name="current_pip">Current PIP:</string>
+    <string name="new_pip">New PIP:</string>
+    <string name="confirm_pip">Confirm New PIP:</string>
+    <string name="current_pip_hint">PIP</string>
+    <string name="new_pip_hint">New PIP (4–8 characters)</string>
+    <string name="confirm_pip_hint">Confirm</string>
+
+    <!-- Eula -->
+    <string name="eula_title">Yodo User Agreement</string>
+    <string name="eula_accept">Accept</string>
+    <string name="eula_refuse">Refuse</string>
+
+    <!-- Registration Messages -->
+    <string name="registration">Registration</string>
+    <string name="register_pip">Enter your secret PIP in both spaces (4–8 characters)</string>
+    <string name="pip_hint">PIP</string>
+    <string name="next">Next</string>
+    <string name="registering_user_pip">Registering PIP</string>
+
+    <!-- Biometric Messages -->
+    <string name="finish_register">Register</string>
+    <string name="biometric">Choose your biometric token</string>
+    <string name="registering_user_biometric">Registering Biometric Token</string>
+    <string name="voice_recognition">Speech Recognition</string>
+    <string name="face_recognition">Face Recognition</string>
+    <string name="saved_face">Face successfully saved</string>
+
+    <!-- Tutorial Instructions -->
+    <string name="instructions_title">Tutorial</string>
+    <string name="instructions_message">Press the Yodo icon to show or hide the menu</string>
+    
+    <!-- Close Message -->
+    <string name="close_message">WARNING: If your account has a positive balance it will be forfeited if you close your account now. Only enter your PIP to proceed if you are prepared to forfeit this funds</string>
+    <string name="closing_message">Closing the account</string>
+    <string name="farewell_message_tittle">Thank you for using Yodo!</string>
+    <string name="farewell_message">We hope you use Yodo again in the future. Bye</string>
+
+</resources>
