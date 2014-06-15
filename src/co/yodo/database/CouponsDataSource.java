@@ -35,7 +35,8 @@ public class CouponsDataSource {
 	}
 
 	public void close() {
-	    dbHelper.close();
+		if(dbHelper != null) 
+			dbHelper.close();
 	}
 
 	public Coupon createCoupon(String url, String description) {

@@ -52,9 +52,8 @@ import visidon.Lib.FaceInfo;
 import visidon.Lib.VerificationAPI;
 import visidon.Lib.VerificationAPI.*;
 import co.yodo.R;
-import co.yodo.helper.Language;
+import co.yodo.helper.Utils;
 import co.yodo.helper.YodoGlobals;
-import co.yodo.helper.YodoUtils;
 import co.yodo.main.CameraFrameAnalyzer;
 import co.yodo.main.InputStruct;
 import co.yodo.main.SynchronizedQueue;
@@ -76,7 +75,7 @@ public class YodoCamera extends Activity {
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		Language.changeLanguage(this);
+		Utils.changeLanguage(this);
 
 		// Hide the window title.
 		requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -494,7 +493,7 @@ class CameraFrameAnalyzer implements Runnable {
 					input.mNbrOfItems = VerificationAPI.getNbrOfDBItems();	
 					byte [] faceTemplate = VerificationAPI.getEnrolledFaceTemplate();
 					// save template somewhere
-					String image_str = YodoUtils.bytesToHex(faceTemplate);
+					String image_str = Utils.bytesToHex(faceTemplate);
 					
 					if(DEBUG)
 						Log.e("Data", image_str);

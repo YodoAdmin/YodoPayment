@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+    <!-- header -->
+    <LinearLayout
+            android:id="@+id/yodo_header"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@id/yodo_buttons"
+            android:layout_alignParentTop="true" >
+
+        <!-- data -->
+        <LinearLayout
+                android:id="@+id/topDataTextLabel"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/account"
+                    android:id="@+id/accountNumberTextLabel" />
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/date"
+                    android:id="@+id/dateTextLabel" />
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/balance"
+                    android:id="@+id/balanceTextLabel" />
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/version"
+                    android:id="@+id/versionTextLabel" />
+        </LinearLayout>
+
+        <LinearLayout
+                android:id="@+id/top_data_text"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="5dp"
+                android:layout_gravity="center_vertical"
+                android:orientation="vertical">
+
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/accountNumberText" />
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/dateText" />
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/balanceText" />
+            <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/versionText"
+                    android:text="@string/actual_version" />
+        </LinearLayout>
+    </LinearLayout>
+    <!-- end header -->
+
+    <!-- main payments button -->
+    <!-- end main payments button -->
+
+    <!-- start ads view -->
+	<RelativeLayout
+	    android:id="@+id/ads_view"
+	    android:layout_width="match_parent"
+	    android:layout_height="match_parent"
+	    android:layout_gravity="center"
+	    android:layout_below="@id/yodo_header"
+	    android:layout_toLeftOf="@id/yodo_buttons"
+	    android:orientation="vertical" >
+        
+	    <ImageView
+	        	android:id="@+id/advertisingImage"
+	            android:layout_width="match_parent"
+	            android:layout_height="match_parent"
+	            android:layout_margin="10dp"
+	            android:contentDescription="@string/desc" />
+	   
+	</RelativeLayout>
+	<!-- end ads view -->
+
+	<LinearLayout
+	    android:id="@+id/yodo_buttons"
+	    android:layout_width="wrap_content"
+	    android:layout_height="fill_parent"
+	    android:layout_alignParentRight="true"
+	    android:layout_margin="5dp"
+	    android:orientation="vertical"
+	    android:weightSum="3" >
+
+	    <ImageView
+	        android:id="@+id/paymentButton"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:contentDescription="@string/desc"
+	        android:onClick="paymentClick"
+	        android:src="@drawable/golden_coins" />
+
+	    <ImageView
+	        android:id="@+id/couponButton"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:contentDescription="@string/desc"
+	        android:onClick="couponClick"
+	        android:src="@drawable/coupon_icon" />
+
+	    <ImageView
+	        android:id="@+id/networkButton"
+	        android:layout_width="match_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_weight="1"
+	        android:contentDescription="@string/desc"
+	        android:onClick="networkClick"
+	        android:src="@drawable/sns_icon" />
+	</LinearLayout>
+
+</RelativeLayout>

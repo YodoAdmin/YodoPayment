@@ -2,23 +2,25 @@ package co.yodo.main;
 
 import java.text.DateFormat;
 import java.text.DecimalFormat;
-import java.text.SimpleDateFormat;
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Timer;
 import java.util.TimerTask;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
+import co.yodo.R;
+import co.yodo.database.ReceiptsSQLiteHelper;
+import co.yodo.helper.Utils;
+import co.yodo.helper.YodoGlobals;
 import android.app.Dialog;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnDismissListener;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
-import android.os.Build;
 import android.os.Bundle;
+import android.support.v7.app.ActionBarActivity;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.LayoutInflater;
@@ -35,15 +37,8 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
-import co.yodo.R;
-import co.yodo.database.ReceiptsSQLiteHelper;
-import co.yodo.helper.Language;
-import co.yodo.helper.YodoGlobals;
 
-/**
- * Created by luis on 24/07/13.
- */
-public class YodoReceipts extends Activity {
+public class YodoReceipts extends ActionBarActivity {
 	/*!< milliseconds */
 	private static final int TIME_TO_DISMISS_DIALOG = 60000; 	
 	
@@ -74,25 +69,21 @@ public class YodoReceipts extends Activity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Language.changeLanguage(this);
+        Utils.changeLanguage(this);
         setContentView(R.layout.activity_yodo_receipts);
 
         setupGUI();
         updateData();
     }
     
-    @SuppressLint("NewApi")
-	private void setupGUI() {
-		receiptsdb = new ReceiptsSQLiteHelper(this, YodoGlobals.DB_NAME, null, 1);
+    private void setupGUI() {
+    	receiptsdb = new ReceiptsSQLiteHelper(this, YodoGlobals.DB_NAME, null, 1);
         db = receiptsdb.getWritableDatabase();
         
         receipts    = (ListView)findViewById(R.id.receiptsList);
         progressBar = (ProgressBar)findViewById(R.id.progressBarTransactions);
         receipts.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
-        
-        if(android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB) {
-        	getActionBar().setDisplayHomeAsUpEnabled(true);
-        }
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         
         SQLiteStatement statement = db.compileStatement("SELECT COUNT(*) FROM " + ReceiptsSQLiteHelper.TABLE_RECEIPTS);
         setTitle(getString(R.string.recipts_title) + " (" + statement.simpleQueryForLong() + ")");
@@ -107,10 +98,10 @@ public class YodoReceipts extends Activity {
                 showReceiptDialog(dataHash);
             }
         });
-	}
+    }
     
     private void updateData() {
-		list_data = new ArrayList<HashMap<String, String>>();
+    	list_data = new ArrayList<HashMap<String, String>>();
 		DateFormat dateOriginal = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", java.util.Locale.getDefault());
 		DateFormat dateFormated = new SimpleDateFormat("dd-MMM-yyyy", java.util.Locale.getDefault());
 		
@@ -126,7 +117,7 @@ public class YodoReceipts extends Activity {
             
 			try {
 				datum.put(KEY_CREATED, dateFormated.format(dateOriginal.parse(cursor.getString(2))));
-			} catch (ParseException e) {
+			} catch(ParseException e) {
 				e.printStackTrace();
 			} 
 			
@@ -144,7 +135,7 @@ public class YodoReceipts extends Activity {
         registerForContextMenu(receipts);
         cursor.close();
         progressBar.setVisibility(View.GONE);
-	}
+    }
     
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -169,7 +160,7 @@ public class YodoReceipts extends Activity {
           }
     }
     
-	@SuppressWarnings("unchecked")
+    @SuppressWarnings("unchecked")
 	@Override
     public boolean onContextItemSelected(MenuItem item) {
           AdapterContextMenuInfo info = (AdapterContextMenuInfo) item.getMenuInfo();
@@ -188,8 +179,8 @@ public class YodoReceipts extends Activity {
                     return super.onContextItemSelected(item);
           }
     }
-	
-	/**
+    
+    /**
 	 * Method to show the dialog containing the SKS code
 	 * @param qrBitmap
 	 */

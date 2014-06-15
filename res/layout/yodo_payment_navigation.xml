@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    		  android:id="@+id/navigationScroll"
+              android:orientation="vertical"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent"
+              android:background="@drawable/background">
+
+    <LinearLayout
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:padding="10dp">
+
+        <TextView
+                android:id="@+id/optionsView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:textColor="@android:color/white"
+                android:text="@string/options" />
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="@android:color/darker_gray"/>
+
+        <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:padding="5dp"
+                android:drawablePadding="10dp"
+                android:drawableLeft="@drawable/configure_pip"
+                android:background="@drawable/highlight_button"
+                android:text="@string/reset_pip"
+                android:id="@+id/buttonResetPip"
+                android:singleLine="true"
+                android:gravity="left|center_vertical"
+                android:onClick="resetPipClick" />
+
+        <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:padding="5dp"
+                android:drawablePadding="10dp"
+                android:drawableLeft="@drawable/saved_receipts"
+                android:background="@drawable/highlight_button"
+                android:text="@string/saved_receipts"
+                android:id="@+id/buttonSavedReceipts"
+                android:singleLine="true"
+                android:gravity="left|center_vertical"
+                android:onClick="savedReceiptsClick" />
+
+        <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:padding="5dp"
+                android:drawablePadding="10dp"
+                android:drawableLeft="@drawable/link"
+                android:background="@drawable/highlight_button"
+                android:text="@string/link"
+                android:id="@+id/buttonLink"
+                android:singleLine="true"
+                android:gravity="left|center_vertical"
+                android:onClick="linksClick"/>
+
+        <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:padding="5dp"
+                android:drawablePadding="10dp"
+                android:drawableLeft="@drawable/pair"
+                android:background="@drawable/highlight_button"
+                android:text="@string/pair"
+                android:id="@+id/buttonPair"
+                android:singleLine="true"
+                android:gravity="left|center_vertical"
+                android:onClick="pairClick"/>
+
+        <TextView
+                android:id="@+id/toolsView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_marginTop="5dp"
+                android:textColor="@android:color/white"
+                android:text="@string/tools" />
+
+        <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:background="@android:color/darker_gray"/>
+
+        <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:padding="5dp"
+                android:drawablePadding="10dp"
+                android:drawableLeft="@drawable/get_balance"
+                android:background="@drawable/highlight_button"
+                android:text="@string/get_balance"
+                android:id="@+id/button1"
+                android:singleLine="true"
+                android:gravity="left|center_vertical"
+                android:onClick="balanceClick" />
+
+        <Button
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:textColor="@android:color/white"
+                android:padding="5dp"
+                android:drawablePadding="10dp"
+                android:drawableLeft="@drawable/close_account"
+                android:background="@drawable/highlight_button"
+                android:text="@string/close_account"
+                android:id="@+id/buttonCloseAccount"
+                android:singleLine="true"
+                android:gravity="left|center_vertical"
+                android:onClick="closeAccClick"/>
+    </LinearLayout>
+</ScrollView>

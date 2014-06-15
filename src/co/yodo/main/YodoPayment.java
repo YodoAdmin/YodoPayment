@@ -1,5 +1,45 @@
 package co.yodo.main;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.InetAddress;
+import java.net.MalformedURLException;
+import java.net.URL;
+import java.text.DecimalFormat;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+
+import org.apache.commons.net.ntp.NTPUDPClient;
+import org.apache.commons.net.ntp.TimeInfo;
+
+import co.yodo.R;
+import co.yodo.database.CouponsDataSource;
+import co.yodo.database.ReceiptsSQLiteHelper;
+import co.yodo.helper.AdvertisingService;
+import co.yodo.helper.CreateAlertDialog;
+import co.yodo.helper.ToastMaster;
+import co.yodo.helper.Utils;
+import co.yodo.helper.YodoGlobals;
+import co.yodo.helper.YodoHandler;
+import co.yodo.helper.YodoQueries;
+import co.yodo.photoview.PhotoViewAttacher;
+import co.yodo.serverconnection.ServerResponse;
+import co.yodo.serverconnection.TaskFragment;
+import co.yodo.serverconnection.TaskFragment.SwitchServer;
+import co.yodo.sks.SKSCreater;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.widget.SlidingPaneLayout;
+import android.support.v4.widget.SlidingPaneLayout.LayoutParams;
+import android.support.v7.app.ActionBarActivity;
+import android.text.Html;
+import android.text.InputType;
+import android.util.DisplayMetrics;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -11,6 +51,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -18,11 +59,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.os.Message;
-import android.text.Html;
-import android.text.InputType;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -36,55 +72,22 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.lang.ref.WeakReference;
-import java.net.InetAddress;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.text.DecimalFormat;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-
-import co.yodo.R;
-import co.yodo.database.CouponsDataSource;
-import co.yodo.database.ReceiptsSQLiteHelper;
-import co.yodo.helper.AdvertisingService;
-import co.yodo.helper.CreateAlertDialog;
-import co.yodo.helper.FormatHelper;
-import co.yodo.helper.HardwareToken;
-import co.yodo.helper.Language;
-import co.yodo.helper.ToastMaster;
-import co.yodo.helper.YodoBase;
-import co.yodo.helper.YodoGlobals;
-import co.yodo.photoview.PhotoViewAttacher;
-import co.yodo.serverconnection.ServerResponse;
-import co.yodo.serverconnection.SwitchServer;
-import co.yodo.sks.Encrypter;
-import co.yodo.sks.SKSCreater;
-
-import org.apache.commons.net.ntp.NTPUDPClient;
-import org.apache.commons.net.ntp.TimeInfo;
-
-/**
- * Created by luis on 22/07/13.
- */
-public class YodoPayment extends Activity implements YodoBase {
+public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoCallback {
 	/*!< DEBUG */
-	private final static boolean DEBUG = false;
+	private final static String TAG = "YodoPayment";
+	private final static boolean DEBUG = true;
 	
+	/*!< SKS time to dismiss milliseconds */
+    private static final int TIME_TO_DISMISS_SKS = 60000;
+    
+    /*!< SKS data separator */
+    private static final String SKS_SEP = "**";
+    
     /*!< Database */
     private ReceiptsSQLiteHelper receiptsdb;
     private SQLiteDatabase db;
@@ -96,116 +99,93 @@ public class YodoPayment extends Activity implements YodoBase {
     private boolean receiptFlag = false;
     private String receiptData;
     private String balanceData;
-
+    
     /*!< Bluetooth */
     private BluetoothAdapter mBluetoothAdapter;
     private boolean advertising;
     private String actualMerch = "";
-
-    /*!< Variable used as an authentication number */
-    private static String HARDWARE_TOKEN;
+	
+	/*!< Variable used as an authentication number */
+    private static final String KEY_TEMP_PIP = "key_temp_pip";
+    private static String hrdwToken;
     private String temp_pip = "";
-
-    /*!< Object used to encrypt user's information */
-    private Encrypter oEncrypter;
-
-    /*!< GUI Controllers */
-    private TextView accountNumberText;
-    private TextView dateText;
-    private TextView balanceText;
+	
+	/*!< GUI Controllers */
+    private TextView accNumberText;
+    private TextView accDateText;
+    private TextView accBalanceText;
     private EditText inputBox;
-    private ScrollView navigationView;
-	private RelativeLayout adsView;
 	private ImageView advertisingImage;
 	private Bitmap bmAdvertising;
+	private SlidingPaneLayout mSlidingLayout;
 	private PhotoViewAttacher mAttacher;
-
-    /*!< User's data separator */
-    private static final String	USR_SEP = "**";
-    private static final String SKS_SEP = "**";
-    private static final String	REQ_SEP = ",";
-
-    /*!< ID for queries */
+	private ScrollView mNavigation;
+	
+	/*!< Different Biometric */
+    //private boolean isDefine = false;
+	
+	/*!< Receiver */
+	private DevicesReceiver myReceiver;
+	private boolean started = false;
+	
+	/*!< Activity Result */
+    private static final int REQUEST_ENABLE_BLUETOOTH = 0;
+    private static final int REQUEST_FACE_ACTIVITY    = 1;
+	
+	/*!< ID for queries */
     private final static int AUTH_REQ = 0;
     private final static int BAL_REQ  = 1;
     private final static int REC_REQ  = 2;
     private final static int CLS_REQ  = 3;
     private final static int ADS_REQ  = 4;
     private final static int BIO_REQ  = 5;
-    
-    /*!< Different Biometric */
-    private boolean isDefine = false;
-
-    /*!< SKS time to dismiss milliseconds */
-    private static final int TIME_TO_DISMISS_SKS = 60000;
-
-    /*!< Activity Result */
-    private static final int REQUEST_ENABLE_BLUETOOTH = 0;
-    private static final int REQUEST_FACE_ACTIVITY    = 1;    
-    
+	
     /*!< Alert Messages */
 	private AlertDialog alertDialog;
-	
-	/*!< Navigation Bar */
-	private boolean stateLayout = false;
 	
 	/*!< Preferences */
 	private SharedPreferences settings;
 	
-	/*!< Receiver */
-	private DevicesReceiver myReceiver;
-	private boolean started = false;
+	/*!< Messages Handler */
+    private static YodoHandler handlerMessages;
     
-    /*!< Message Handler */
-    private static MainHandler handlerMessages;
+    /*!< Fragment Information */
+    private TaskFragment mTaskFragment;
+    private ProgressDialog progDialog;
+    private String message;
 
-    /**
-     * Handles the message if there isn't internet connection
-     */
-    private static class MainHandler extends Handler {
-        private final WeakReference<YodoPayment> wMain;
-
-        public MainHandler(YodoPayment main) {
-            super();
-            this.wMain = new WeakReference<YodoPayment>(main);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            YodoPayment main = wMain.get();
-
-            // message arrived after activity death
-            if(main == null)
-                return;
-
-            if(msg.what == YodoGlobals.NO_INTERNET) {
-                ToastMaster.makeText(main, R.string.no_internet, Toast.LENGTH_LONG).show();
-            }
-            else if(msg.what == YodoGlobals.GENERAL_ERROR) {
-                ToastMaster.makeText(main, R.string.error, Toast.LENGTH_LONG).show();
-            }
-        }
-    }
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        Language.changeLanguage(this);
-        requestWindowFeature(Window.FEATURE_NO_TITLE);
-    	setContentView(R.layout.activity_yodo_main);
-    	
-    	setupGUI();
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		Utils.changeLanguage(this);
+		setContentView(R.layout.activity_yodo_payment);
+		
+		setupGUI();
         updateData();
-    }
-    
-    @Override
+	    
+	    // Restore saved state.
+	    if(savedInstanceState != null && savedInstanceState.getBoolean(YodoGlobals.KEY_IS_SHOWING)) {
+	    	temp_pip = savedInstanceState.getString(KEY_TEMP_PIP);
+	    	message =  savedInstanceState.getString(YodoGlobals.KEY_MESSAGE);
+	    	Utils.showProgressDialog(progDialog, message);
+	    }
+	}
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+	    outState.putBoolean(YodoGlobals.KEY_IS_SHOWING, progDialog.isShowing());
+	    outState.putString(YodoGlobals.KEY_MESSAGE, message);
+	    
+	    if(temp_pip != null)
+	    	outState.putString(KEY_TEMP_PIP, temp_pip);
+	}
+	
+	@Override
     protected void onResume() {
-    	if(DEBUG)
-    		Log.e("Yodo", "onResume");
-    	
     	super.onResume();
-    	
+    	Utils.Logger(DEBUG, TAG, "onResume");
+
     	IntentFilter intentFilter = new IntentFilter();
 	    intentFilter.addAction(YodoGlobals.DEVICES_BT);
 	    registerReceiver(myReceiver, intentFilter);
@@ -214,13 +194,11 @@ public class YodoPayment extends Activity implements YodoBase {
     		setupBluetooth(); 
     	}
     }
-
-    @Override
+	
+	@Override
     protected void onPause() {
-    	if(DEBUG)
-    		Log.e("Yodo", "onPause");
-    	
         super.onPause();
+        Utils.Logger(DEBUG, TAG, "onPause");
         
         if(myReceiver != null)
         	unregisterReceiver(myReceiver);
@@ -234,43 +212,143 @@ public class YodoPayment extends Activity implements YodoBase {
         
         System.gc();
     }
-    
-    @Override
+	
+	@Override
     protected void onDestroy() {
         super.onDestroy();
-        
         System.gc();
     }
-    
-    @Override
+	
+	@Override
     public void onBackPressed() {
-    	if(stateLayout) {
-    		navigationClick(null);
+    	if(mSlidingLayout.isOpen()) {
+    		mSlidingLayout.closePane();
     	}
     	else {
     		super.onBackPressed();
     	}
     }
-    
-    private void setupGUI() {
-    	Language.changeLanguage(this);
-        handlerMessages = new MainHandler(this);
-        mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        
-        myReceiver = new DevicesReceiver();
 
-        receiptsdb = new ReceiptsSQLiteHelper(this, YodoGlobals.DB_NAME, null, 1);
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.yodo_payment, menu);
+		return true;
+	}
+
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch(item.getItemId()) {
+			case android.R.id.home:
+				if(mSlidingLayout.isOpen()) {
+					mSlidingLayout.closePane();
+				} else {
+					mSlidingLayout.openPane();
+				}
+			break;
+			
+			case R.id.action_settings:
+				int languagePosition = settings.getInt(YodoGlobals.ID_LANGUAGE, YodoGlobals.DEFAULT_LANGUAGE);
+        		String code = getResources().getConfiguration().locale.getLanguage();
+        		
+        		AlertDialog.Builder builder = new AlertDialog.Builder(YodoPayment.this);
+        		builder.setInverseBackgroundForced(true);
+        		View v = getLayoutInflater().inflate(R.layout.dialog_settings, null);
+        		
+        		if(languagePosition == -1 && (Arrays.asList(YodoGlobals.lang_code).contains(code))) {
+        			languagePosition = Arrays.asList(YodoGlobals.lang_code).indexOf(code);
+        		} else if(languagePosition == -1)
+        			languagePosition = 0;
+        		
+        		final Spinner languagesSpinner = (Spinner) v.findViewById(R.id.languagesSpinner);
+        		final CheckBox adsCheckBox     = (CheckBox) v.findViewById(R.id.advertisingCheckBox);
+        		
+        		ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_list_item_1, YodoGlobals.languages);
+        		languagesSpinner.setAdapter(adapter);
+        		languagesSpinner.setSelection(languagePosition);
+        		
+        		adsCheckBox.setChecked(advertising);
+        		if(mBluetoothAdapter == null) {
+        			adsCheckBox.setEnabled(false);
+        		}
+        		
+        		builder.setTitle(getString(R.string.action_settings));
+        		builder.setView(v);
+        		builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                    	SharedPreferences.Editor editor = settings.edit();
+        				
+                    	editor.putInt(YodoGlobals.ID_LANGUAGE, languagesSpinner.getSelectedItemPosition());
+                    	editor.putBoolean(YodoGlobals.ID_ADVERTISING, adsCheckBox.isChecked());
+        				
+        				editor.commit();
+                        dialog.dismiss();
+                        
+                        finish();
+        				startActivity(getIntent());
+                    }
+                });
+        		builder.setNegativeButton(getString(R.string.cancel), null);
+        		
+        		final AlertDialog alertDialog = builder.create();
+                alertDialog.show();
+			break;
+			
+			case R.id.menu_exit:
+    			finish();
+        	break;
+
+			default:
+            break;
+		}
+		return super.onOptionsItemSelected(item);
+	}
+	
+	private void setupGUI() {
+    	handlerMessages   = new YodoHandler(this);
+    	mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+    	getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    	
+    	// Load Fragment Manager
+    	FragmentManager fm = getSupportFragmentManager();
+	    mTaskFragment = (TaskFragment) fm.findFragmentByTag(YodoGlobals.TAG_TASK_FRAGMENT);
+	    
+	    if(mTaskFragment == null) {
+	    	mTaskFragment = new TaskFragment();
+	    	fm.beginTransaction().add(mTaskFragment, YodoGlobals.TAG_TASK_FRAGMENT).commit();
+	    }
+    	
+	    progDialog = new ProgressDialog(this);
+	    
+    	// Load Databases
+    	receiptsdb = new ReceiptsSQLiteHelper(this, YodoGlobals.DB_NAME, null, 1);
         db = receiptsdb.getWritableDatabase();
         
         couponsdb = new CouponsDataSource(this);
         couponsdb.open();
+        
+        // Bluetooth Devices Broadcast
+        myReceiver = new DevicesReceiver();
+    	
+        // GUI initialize
+    	accNumberText    = (TextView) findViewById(R.id.accountNumberText);
+        accDateText 	 = (TextView) findViewById(R.id.dateText);
+        accBalanceText 	 = (TextView) findViewById(R.id.balanceText);
+		advertisingImage = (ImageView) findViewById(R.id.advertisingImage);
+		mSlidingLayout   = (SlidingPaneLayout) findViewById(R.id.sliding_pane_layout);
+		mNavigation      = (ScrollView) findViewById(R.id.navigationScroll);
+		
+		// Handle The Size of the Sidebar
+		int orientation = getResources().getConfiguration().orientation; 
+    	
+    	if(Configuration.ORIENTATION_LANDSCAPE == orientation) { 
+    		DisplayMetrics dm = new DisplayMetrics();
+    		this.getWindow().getWindowManager().getDefaultDisplay().getMetrics(dm);
+    		int width = dm.widthPixels;
 
-        accountNumberText = (TextView)this.findViewById(R.id.accountNumberText);
-        dateText 		  = (TextView)this.findViewById(R.id.dateText);
-        balanceText 	  = (TextView)this.findViewById(R.id.balanceText);
-        adsView           = (RelativeLayout) findViewById(R.id.ads_view);  
-		navigationView    = (ScrollView) findViewById(R.id.navigation_view);
-		advertisingImage  = (ImageView) findViewById(R.id.advertisingImage);
+    		LayoutParams params = new LayoutParams((int) (width * 0.75), LayoutParams.MATCH_PARENT);
+    		mNavigation.setLayoutParams(params);
+    	} 
 		
 		mAttacher = new PhotoViewAttacher(advertisingImage);
 		mAttacher.setOnLongClickListener(new OnLongClickListener() {
@@ -338,17 +416,23 @@ public class YodoPayment extends Activity implements YodoBase {
 		    }
 		});
     }
-
+    
     private void updateData() {
-        HardwareToken token = new HardwareToken(getApplicationContext());
-        HARDWARE_TOKEN = token.getToken();
-
-        settings = getSharedPreferences(YodoGlobals.PREFERENCES, Context.MODE_PRIVATE);
+    	hrdwToken = Utils.getHardwareToken(this);
+    	
+    	settings = getSharedPreferences(YodoGlobals.PREFERENCES, Context.MODE_PRIVATE);
         advertising  = settings.getBoolean(YodoGlobals.ID_ADVERTISING, YodoGlobals.DEFAULT_ADS);
+        
+        if(advertising && mBluetoothAdapter == null) {
+        	advertising = false;
+        	SharedPreferences.Editor editor = settings.edit();
+        	editor.putBoolean(YodoGlobals.ID_ADVERTISING, advertising);
+			editor.commit();
+        }
         
         boolean use = settings.getBoolean(YodoGlobals.ID_FIRST_USE, YodoGlobals.DEFAULT_USE);
     	if(use) {
-    		navigationClick(null);
+    		mSlidingLayout.openPane();
     		
     		AlertDialog.Builder builder = new AlertDialog.Builder(YodoPayment.this);
 			builder.setTitle(getString(R.string.instructions_title));
@@ -362,91 +446,8 @@ public class YodoPayment extends Activity implements YodoBase {
 			editor.commit();
     	}
 
-        accountNumberText.setText(HARDWARE_TOKEN);
-        dateText.setText(getDate());
-    }
-    
-    /** 
-	 * Menu 
-	 */
-	@Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        super.onCreateOptionsMenu(menu);
-        getMenuInflater().inflate(R.menu.yodo_main, menu);
-        return super.onCreateOptionsMenu(menu);
-    }
-	
-	/**
-	 * Ejecute the function of the menu item selected
-	 * @return	boolean
-	 */
-	@Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch(item.getItemId()) {    
-        	case R.id.menu_exit:
-    			finish();
-        		return true;
-        		
-        	case R.id.action_settings:
-        		int languagePosition = settings.getInt(YodoGlobals.ID_LANGUAGE, YodoGlobals.DEFAULT_LANGUAGE);
-        		String code = getResources().getConfiguration().locale.getLanguage();
-        		
-        		AlertDialog.Builder builder = new AlertDialog.Builder(YodoPayment.this);
-        		builder.setInverseBackgroundForced(true);
-        		View v = getLayoutInflater().inflate(R.layout.dialog_settings, null);
-        		
-        		if(languagePosition == -1 && (Arrays.asList(YodoGlobals.lang_code).contains(code))) {
-        			languagePosition = Arrays.asList(YodoGlobals.lang_code).indexOf(code);
-        		} else if(languagePosition == -1)
-        			languagePosition = 0;
-        		
-        		final Spinner languagesSpinner = (Spinner) v.findViewById(R.id.languagesSpinner);
-        		final CheckBox adsCheckBox     = (CheckBox) v.findViewById(R.id.advertisingCheckBox);
-        		
-        		ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_item, YodoGlobals.languages);
-        		languagesSpinner.setAdapter(adapter);
-        		languagesSpinner.setSelection(languagePosition);
-        		
-        		adsCheckBox.setChecked(advertising);
-        		if(mBluetoothAdapter == null) {
-        			adsCheckBox.setEnabled(false);
-        		}
-        		
-        		builder.setTitle(getString(R.string.action_settings));
-        		builder.setView(v);
-        		builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                    	SharedPreferences.Editor editor = settings.edit();
-        				
-                    	editor.putInt(YodoGlobals.ID_LANGUAGE, languagesSpinner.getSelectedItemPosition());
-                    	editor.putBoolean(YodoGlobals.ID_ADVERTISING, adsCheckBox.isChecked());
-        				
-        				editor.commit();
-                        dialog.dismiss();
-                        
-                        finish();
-        				startActivity(getIntent());
-                    }
-                });
-        		builder.setNegativeButton(getString(R.string.cancel), null);
-        		
-        		final AlertDialog alertDialog = builder.create();
-                alertDialog.show();
-   
-        		return true;
-        }
-        return super.onOptionsItemSelected(item);
-	}
-    
-    /**
-     * Gets object used to encrypt user's information
-     * @return	Encrypter
-     */
-    public Encrypter getEncrypter(){
-        if(oEncrypter == null)
-            oEncrypter = new Encrypter();
-        return oEncrypter;
+    	accNumberText.setText(hrdwToken);
+        accDateText.setText(getDate());
     }
     
     private void processStartService(final String tag) {
@@ -464,8 +465,8 @@ public class YodoPayment extends Activity implements YodoBase {
 	    stopService(intent);
 	    started = false;
 	}
-    
-    private void setupBluetooth() {    	
+	
+	private void setupBluetooth() {    	
 		if(mBluetoothAdapter != null) {
 			if(mBluetoothAdapter.isEnabled()) {
 				processStartService(AdvertisingService.TAG);
@@ -527,7 +528,7 @@ public class YodoPayment extends Activity implements YodoBase {
                 requestBalance(temp_pip);
             }
         });
-
+        
         ImageView image = (ImageView) dialog.findViewById(R.id.sks);
         image.setImageBitmap(qrBitmap);
         dialog.show();
@@ -535,7 +536,7 @@ public class YodoPayment extends Activity implements YodoBase {
         final Timer t = new Timer();
         t.schedule(new TimerTask() {
             public void run() {
-                dialog.dismiss(); /// When the task active then close the dialog
+            	dialog.dismiss(); /// When the task active then close the dialog
                 t.cancel(); /// Also just top the timer thread, otherwise, you may receive a crash report
             }
         }, TIME_TO_DISMISS_SKS);
@@ -637,128 +638,43 @@ public class YodoPayment extends Activity implements YodoBase {
         receipt.show();
     }
     
-    /*!< Button Actions */
-    public void navigationClick(View v) {
-    	if(!stateLayout) {
-			adsView.setVisibility(View.GONE);
-			navigationView.setVisibility(View.VISIBLE);
-		}
-		else {
-			adsView.setVisibility(View.VISIBLE);
-			navigationView.setVisibility(View.GONE);
-		}
-    	stateLayout = !stateLayout;
-    }
-    
-    public void couponClick(View v) {
-    	//ToastMaster.makeText(YodoPayment.this, R.string.not_available, Toast.LENGTH_SHORT).show();
-    	Intent intent = new Intent(YodoPayment.this, YodoCoupons.class);
-        startActivity(intent);
-    }
-    
-    public void networkClick(View v) {
-    	ToastMaster.makeText(YodoPayment.this, R.string.not_available, Toast.LENGTH_SHORT).show();
-    }
-
     /**
      * Navigation Button Actions
      */
     public void resetPipClick(View v) {
+    	if(mSlidingLayout.isOpen())
+    		mSlidingLayout.closePane();
+    		
         Intent intent = new Intent(YodoPayment.this, YodoResetPip.class);
         startActivity(intent);
     }
     
-    public void setBiometricClick(View v) {
-    	// Input PIP dialog
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View layout = inflater.inflate(R.layout.dialog_password, null);
-        inputBox = (EditText) layout.findViewById(R.id.dialogInputBox);
-
-        // Listener to click event on the dialog in order to view the sks code
-        DialogInterface.OnClickListener pipDialogOkButtonClickListener = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                temp_pip = inputBox.getText().toString();
-
-                // Check PIP
-                if(temp_pip == null || temp_pip.length() < YodoGlobals.MIN_PIP_LENGTH) {
-                    ToastMaster.makeText(YodoPayment.this, R.string.pip_length_short, Toast.LENGTH_SHORT).show();
-                }
-                else {
-                	isDefine = true;
-                	requestBiometricToken(temp_pip);
-                }
-            }
-        };
-
-        CreateAlertDialog.showAlertDialog(YodoPayment.this, layout, inputBox,
-                getString(R.string.input_pip),
-                null,
-                pipDialogOkButtonClickListener,
-                null);
-    }
-
-    public void savedReceiptsClick(View v) {
-        Intent intent = new Intent(YodoPayment.this, YodoReceipts.class);
-        startActivity(intent);
-    }
-    
-    public void settingsClick(View v) {
-    	int languagePosition = settings.getInt(YodoGlobals.ID_LANGUAGE, YodoGlobals.DEFAULT_LANGUAGE);
-		String code = getResources().getConfiguration().locale.getLanguage();
-		
-		AlertDialog.Builder builder = new AlertDialog.Builder(YodoPayment.this);
-		builder.setInverseBackgroundForced(true);
-		View view = getLayoutInflater().inflate(R.layout.dialog_settings, null);
-		
-		if(languagePosition == -1 && (Arrays.asList(YodoGlobals.lang_code).contains(code))) {
-			languagePosition = Arrays.asList(YodoGlobals.lang_code).indexOf(code);
-		} else if(languagePosition == -1)
-			languagePosition = 0;
-		
-		final Spinner languagesSpinner = (Spinner) view.findViewById(R.id.languagesSpinner);
-		final CheckBox adsCheckBox     = (CheckBox) view.findViewById(R.id.advertisingCheckBox);
-		
-		ArrayAdapter<CharSequence> adapter = new ArrayAdapter<CharSequence>(this, android.R.layout.simple_spinner_item, YodoGlobals.languages);
-		languagesSpinner.setAdapter(adapter);
-		languagesSpinner.setSelection(languagePosition);
-		
-		adsCheckBox.setChecked(advertising);
-		if(mBluetoothAdapter == null) {
-			adsCheckBox.setEnabled(false);
-		}
-		
-		builder.setTitle(getString(R.string.action_settings));
-		builder.setView(view);
-		builder.setPositiveButton(getString(R.string.ok), new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-            	SharedPreferences.Editor editor = settings.edit();
-				
-            	editor.putInt(YodoGlobals.ID_LANGUAGE, languagesSpinner.getSelectedItemPosition());
-            	editor.putBoolean(YodoGlobals.ID_ADVERTISING, adsCheckBox.isChecked());
-				
-				editor.commit();
-                dialog.dismiss();
-                
-                finish();
-				startActivity(getIntent());
-            }
-        });
-		builder.setNegativeButton(getString(R.string.cancel), null);
-		
-		final AlertDialog alertDialog = builder.create();
-        alertDialog.show();
-    }
-    
     public void linksClick(View v) {
+    	if(mSlidingLayout.isOpen())
+    		mSlidingLayout.closePane();
+    	
     	ToastMaster.makeText(YodoPayment.this, R.string.not_available, Toast.LENGTH_SHORT).show();
     }
     
     public void pairClick(View v) {
+    	if(mSlidingLayout.isOpen())
+    		mSlidingLayout.closePane();
+    	
     	ToastMaster.makeText(YodoPayment.this, R.string.not_available, Toast.LENGTH_SHORT).show();
     }
-
+    
+    public void savedReceiptsClick(View v) {
+    	if(mSlidingLayout.isOpen())
+    		mSlidingLayout.closePane();
+    	
+        Intent intent = new Intent(YodoPayment.this, YodoReceipts.class);
+        startActivity(intent);
+    }
+    
     public void balanceClick(View v) {
+    	if(mSlidingLayout.isOpen())
+    		mSlidingLayout.closePane();
+    	
         // Input PIP dialog
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
         View layout = inflater.inflate(R.layout.dialog_password, null);
@@ -779,51 +695,18 @@ public class YodoPayment extends Activity implements YodoBase {
             }
         };
 
-        CreateAlertDialog.showAlertDialog(YodoPayment.this, layout, inputBox,
+        CreateAlertDialog.showAlertDialog(this, layout, inputBox,
                 getString(R.string.input_pip),
                 null,
                 pipDialogOkButtonClickListener,
                 null);
     }
-
-    public void closeAccClick(View v) {
-        // Input PIP dialog
-        LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View layout = inflater.inflate(R.layout.dialog_password, null);
-        inputBox = (EditText) layout.findViewById(R.id.dialogInputBox);
-
-        // Listener to click event on the dialog in order to view the sks code
-        DialogInterface.OnClickListener pipDialogOkButtonClickListener = new DialogInterface.OnClickListener() {
-            public void onClick(DialogInterface dialog, int which) {
-                temp_pip = inputBox.getText().toString();
-
-                // Check PIP
-                if(temp_pip == null || temp_pip.length() < YodoGlobals.MIN_PIP_LENGTH) {
-                    ToastMaster.makeText(YodoPayment.this, R.string.pip_length_short, Toast.LENGTH_SHORT).show();
-                }
-                else {
-                	//requestBiometricToken(temp_pip);
-                	requestCloseAccount(temp_pip);
-                }
-            }
-        };
-
-        CreateAlertDialog.showAlertDialog(YodoPayment.this, layout, inputBox,
-                getString(R.string.input_pip),
-                getString(R.string.close_message),
-                pipDialogOkButtonClickListener,
-                null);
-    }
-
+    
     /**
      * Main Layout Button Actions
      * */
     public void paymentClick(View v) {
     	advertisingImage.setImageDrawable(null);
-    	
-    	if(stateLayout) {
-    		navigationClick(null);
-    	}
     	
         // Input PIP dialog
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
@@ -841,18 +724,58 @@ public class YodoPayment extends Activity implements YodoBase {
                 }
                 else {
                 	processStopService(AdvertisingService.TAG);
-                    requestPIPHardwareAuthentication(temp_pip);
+                	requestSKSAuthentication(temp_pip);
+                }
+            }
+        };
+
+        CreateAlertDialog.showAlertDialog(this, layout, inputBox,
+                getString(R.string.input_pip),
+                null,
+                pipDialogOkButtonClickListener,
+                null);
+    }
+    
+    public void closeAccClick(View v) {
+    	if(mSlidingLayout.isOpen())
+    		mSlidingLayout.closePane();
+    	
+        // Input PIP dialog
+        LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+        View layout = inflater.inflate(R.layout.dialog_password, null);
+        inputBox = (EditText) layout.findViewById(R.id.dialogInputBox);
+
+        // Listener to click event on the dialog in order to view the sks code
+        DialogInterface.OnClickListener pipDialogOkButtonClickListener = new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                temp_pip = inputBox.getText().toString();
+
+                // Check PIP
+                if(temp_pip == null || temp_pip.length() < YodoGlobals.MIN_PIP_LENGTH) {
+                    ToastMaster.makeText(YodoPayment.this, R.string.pip_length_short, Toast.LENGTH_SHORT).show();
+                }
+                else {
+                	requestCloseAccount(temp_pip);
                 }
             }
         };
 
         CreateAlertDialog.showAlertDialog(YodoPayment.this, layout, inputBox,
                 getString(R.string.input_pip),
-                null,
+                getString(R.string.close_message),
                 pipDialogOkButtonClickListener,
                 null);
     }
-
+    
+    public void couponClick(View v) {
+    	Intent intent = new Intent(YodoPayment.this, YodoCoupons.class);
+        startActivity(intent);
+    }
+    
+    public void networkClick(View v) {
+    	ToastMaster.makeText(YodoPayment.this, R.string.not_available, Toast.LENGTH_SHORT).show();
+    }
+    
     /**
      * Dialog Button Actions
      * */
@@ -862,30 +785,25 @@ public class YodoPayment extends Activity implements YodoBase {
         else
             inputBox.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
     }
-
+    
     /**
      * Connects to the switch and authenticate the user
      */
-    private void requestPIPHardwareAuthentication(String pip) {
-        String sEncryptedUsrData, sFormattedUsrData;
-        sFormattedUsrData = FormatHelper.formatUsrData(HARDWARE_TOKEN, pip);
+    private void requestSKSAuthentication(String pip) {
+        String data = YodoQueries.requestPIPHardwareAuthentication(this, hrdwToken, pip);
 
-        // Encrypting user's data to create request
-        getEncrypter().setsUnEncryptedString(sFormattedUsrData);
-        getEncrypter().rsaEncrypt(this);
-        sEncryptedUsrData = getEncrypter().bytesToHex();
-
-        SwitchServer request = new SwitchServer(YodoPayment.this);
+        SwitchServer request = mTaskFragment.getSwitchServerInstance();
         request.setType(AUTH_REQ);
         request.setDialog(true, getString(R.string.auth_message));
-        request.execute(SwitchServer.AUTH_HW_PIP_REQUEST, sEncryptedUsrData);
+        //request.execute(SwitchServer.AUTH_HW_PIP_REQUEST, data);
+        mTaskFragment.start(request, SwitchServer.AUTH_HW_PIP_REQUEST, data);
     }
     
     /**
 	 * Connects to the switch and request the biometric token
 	 * @return String message The message of good bye
 	 */
-	private void requestBiometricToken(String pip) {
+	/*private void requestBiometricToken(String pip) {
 		StringBuilder userData = new StringBuilder();
 		String sEncryptedUsrData;
 
@@ -898,108 +816,81 @@ public class YodoPayment extends Activity implements YodoBase {
 		this.getEncrypter().rsaEncrypt(this);
 		sEncryptedUsrData = this.getEncrypter().bytesToHex();
 		
-		SwitchServer request = new SwitchServer(YodoPayment.this);
+		SwitchServer request = new SwitchServer(this);
         request.setType(BIO_REQ);
         request.setDialog(true, getString(R.string.biometric_message));
         request.execute(SwitchServer.BIOMETRIC_REQUEST, sEncryptedUsrData);
-	}
+	}*/
 
     /**
      * Connects to the switch and close the account
      */
     private void requestCloseAccount(String pip) {
-        String sEncryptedUsrData;
-        StringBuilder sUsrData = new StringBuilder();
+        String data = YodoQueries.requestCloseAccount(this, hrdwToken, pip);
 
-        long time = System.currentTimeMillis();
-        String timeStamp = String.valueOf(time);
-
-        sUsrData.append(pip).append(USR_SEP);
-        sUsrData.append(HARDWARE_TOKEN).append(USR_SEP);
-        sUsrData.append(timeStamp).append(REQ_SEP);
-        sUsrData.append("0").append(REQ_SEP);
-        sUsrData.append("0");
-
-        // Encrypting user's data to create request
-        getEncrypter().setsUnEncryptedString(sUsrData.toString());
-        getEncrypter().rsaEncrypt(this);
-        sEncryptedUsrData = getEncrypter().bytesToHex();
-
-        SwitchServer request = new SwitchServer(YodoPayment.this);
+        SwitchServer request = mTaskFragment.getSwitchServerInstance();
         request.setType(CLS_REQ);
         request.setDialog(true, getString(R.string.closing_message));
-        request.execute(SwitchServer.CLOSE_REQUEST, sEncryptedUsrData);
+  
+        mTaskFragment.start(balanceRequest, SwitchServer.CLOSE_REQUEST, data);
     }
     
     /**
      * Connects to the switch and gets the user balance
      */
     private void requestBalance(String pip) {
-        String sEncryptedUsrData, sFormattedUsrData ;
-        sFormattedUsrData = FormatHelper.formatUsrData(HARDWARE_TOKEN, pip);
-
-        // Encrypting user's data to create request
-        getEncrypter().setsUnEncryptedString(sFormattedUsrData);
-        getEncrypter().rsaEncrypt(this);
-        sEncryptedUsrData = this.getEncrypter().bytesToHex();
-
-        balanceRequest = new SwitchServer(YodoPayment.this);
-        balanceRequest.setType(BAL_REQ);
-        if(!receiptFlag)
+    	String data = YodoQueries.requestBalance(this, hrdwToken, pip);
+    	
+    	balanceRequest = mTaskFragment.getSwitchServerInstance();
+    	balanceRequest.setType(BAL_REQ);
+    	
+    	if(!receiptFlag)
         	balanceRequest.setDialog(true, getString(R.string.balance_message));
-        balanceRequest.execute(SwitchServer.BALANCE_REQUEST, sEncryptedUsrData);
+    	
+    	mTaskFragment.start(balanceRequest, SwitchServer.BALANCE_REQUEST, data);
     }
 
     /**
      * Connects to the switch and request the receipt
      */
     private void requestReceipt(String pip) {
-        StringBuilder userData = new StringBuilder();
-        String sEncryptedUsrData;
+    	String data = YodoQueries.requestReceipt(this, hrdwToken, pip);
 
-        userData.append(HARDWARE_TOKEN).append(REQ_SEP);
-        userData.append(pip).append(REQ_SEP);
-        userData.append(YodoGlobals.RECORD_LOCATOR);
-
-        /// Encrypting user's data to create request
-        getEncrypter().setsUnEncryptedString(userData.toString());
-        getEncrypter().rsaEncrypt(this);
-        sEncryptedUsrData = this.getEncrypter().bytesToHex();
-
-        receiptRequest = new SwitchServer(YodoPayment.this);
+        receiptRequest = mTaskFragment.getSwitchServerInstance();
         receiptRequest.setType(REC_REQ);
         receiptRequest.setDialog(true, getString(R.string.receipt_message));
-        receiptRequest.execute(SwitchServer.RECEIPT_REQUEST, sEncryptedUsrData);
+        
+        mTaskFragment.start(receiptRequest, SwitchServer.RECEIPT_REQUEST, data);
     }
     
     /**
 	 * Connects to the switch and get merch images
 	 * @return String 
 	 */
-	private void requestAdvertisingRequest(String MERCHANT) {
-		String sEncryptedUsrData;
-		StringBuilder sAdvertisingData = new StringBuilder();
+	private void requestAdvertising(String merch) {
+		String data = YodoQueries.requestAdvertising(this, hrdwToken, merch);
 		
-		sAdvertisingData.append(HARDWARE_TOKEN).append(REQ_SEP);
-		sAdvertisingData.append(MERCHANT).append(REQ_SEP);
-		sAdvertisingData.append(YodoGlobals.QUERY_ADS);
-		
-		if(DEBUG)
-			Log.e("Query", sAdvertisingData.toString());
-		
-		// Encrypting user's data to create request
-		this.getEncrypter().setsUnEncryptedString(sAdvertisingData.toString());
-		this.getEncrypter().rsaEncrypt(this);
-		sEncryptedUsrData = this.getEncrypter().bytesToHex();
-		
-		SwitchServer request = new SwitchServer(YodoPayment.this);
+		SwitchServer request = mTaskFragment.getSwitchServerInstance();
         request.setType(ADS_REQ);
-        request.execute(SwitchServer.QUERY_ADS_REQUEST, sEncryptedUsrData);
+
+        mTaskFragment.start(request, SwitchServer.QUERY_ADS_REQUEST, data);
 	}
 
-    @Override
-    public void setData(ServerResponse data, int queryType) {
-    	AlertDialog.Builder builder = new AlertDialog.Builder(YodoPayment.this);
+	@Override
+	public void onPreExecute(String message) {
+		this.message = message;
+		Utils.showProgressDialog(progDialog, message);
+	}
+	
+	@Override
+	public void onPostExecute() {
+		if(progDialog != null)
+			progDialog.dismiss();
+	}
+	
+	@Override
+	public void onTaskCompleted(ServerResponse data, int queryType) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
     	
     	if(settings.getBoolean(YodoGlobals.ID_ADVERTISING, YodoGlobals.DEFAULT_ADS))
     		processStartService(AdvertisingService.TAG);
@@ -1008,7 +899,7 @@ public class YodoPayment extends Activity implements YodoBase {
             String code = data.getCode();
  
             if(code.equals(YodoGlobals.AUTHORIZED)) {
-            	switch (queryType) {
+            	switch(queryType) {
 	                case AUTH_REQ:
                         new TimeTask().execute(temp_pip);
 	                break;
@@ -1019,12 +910,13 @@ public class YodoPayment extends Activity implements YodoBase {
                             String aValParams[] = param.split(ServerResponse.VALUE_SEPARATOR);
                             if(aValParams[0].equals(ServerResponse.BALANCE_ELEM)) {
                                 DecimalFormat twoDForm = new DecimalFormat("#.##");
-                                if(DEBUG)
-                                	Log.e("valor", twoDForm.format(Double.valueOf(aValParams[1])).replace(",", "."));
+                                
+                                Utils.Logger(DEBUG, TAG, twoDForm.format(Double.valueOf(aValParams[1])).replace(",", "."));
+       
                                 double tempBalance = Double.valueOf(twoDForm.format(Double.valueOf(aValParams[1])).replace(",", "."));
 
                                 if(!receiptFlag) 
-                                	balanceText.setText(String.valueOf(tempBalance));
+                                	accBalanceText.setText(String.valueOf(tempBalance));
                                 else  
                                 	balanceData = String.valueOf(tempBalance);
                             }
@@ -1053,13 +945,12 @@ public class YodoPayment extends Activity implements YodoBase {
 	                	String url = data.getParams();
 	                	
 	                	if(!url.equals(YodoGlobals.NO_ADS)) {
-	                		//ToastMaster.makeText(YodoPayment.this, getString(R.string.merch_found) + " " + actualMerch, Toast.LENGTH_LONG).show();
 	                		new DownloadTask().execute(data.getParams().replaceAll(" ", "%20"));
 	                	}
 	                break;
 	                
 	                case BIO_REQ:
-	                	if(!isDefine) {
+	                	/*if(!isDefine) {
 	                		Intent intent = new Intent(YodoPayment.this, YodoCamera.class);
 		            		intent.putExtra(YodoGlobals.ID_TOKEN, data.getParams());
 		                	startActivityForResult(intent, REQUEST_FACE_ACTIVITY);
@@ -1070,8 +961,7 @@ public class YodoPayment extends Activity implements YodoBase {
 	                			ToastMaster.makeText(YodoPayment.this, R.string.token_defined, Toast.LENGTH_LONG).show();
 	                		}
 	                		isDefine = false;
-	                	}
-	                	
+	                	}*/
 	                break;
 	
 	                case CLS_REQ:
@@ -1097,7 +987,6 @@ public class YodoPayment extends Activity implements YodoBase {
                                 getString(R.string.farewell_message_tittle),
                                 getString(R.string.farewell_message),
                                 okButtonClickListener);
-	                    
                     break;
 	            }
             } else if(code.equals(YodoGlobals.ERROR_INTERNET)) {
@@ -1106,15 +995,16 @@ public class YodoPayment extends Activity implements YodoBase {
             	builder.setTitle(Html.fromHtml("<font color='#FF0000'>" + data.getCode() + "</font>"));
             	builder.setMessage(Html.fromHtml("<font color='#FF0000'>" + data.getMessage() + "</font>"));
             	builder.setPositiveButton(getString(R.string.ok), null);
+            	
             	alertDialog = builder.create();
             	alertDialog.show();
             }
         } else {
             handlerMessages.sendEmptyMessage(YodoGlobals.GENERAL_ERROR);
         }
-    }
+	}
 
-    @Override
+	@Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch(requestCode) {
             case(REQUEST_ENABLE_BLUETOOTH):
@@ -1129,7 +1019,7 @@ public class YodoPayment extends Activity implements YodoBase {
             break;
             
             case(REQUEST_FACE_ACTIVITY):
-            	if(resultCode == Activity.RESULT_OK) { 
+            	if(resultCode == RESULT_OK) { 
             		requestCloseAccount(temp_pip);
             	}
             break;
@@ -1151,7 +1041,7 @@ public class YodoPayment extends Activity implements YodoBase {
 					URL url = new URL(ads);
 					bmAdvertising = BitmapFactory.decodeStream(url.openConnection().getInputStream());
 				}
-			} catch (MalformedURLException e) {
+			} catch(MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -1172,17 +1062,13 @@ public class YodoPayment extends Activity implements YodoBase {
 
     class TimeTask extends AsyncTask<String, Void, Long> {
     	private String pip;
-    	private ProgressDialog progDialog;
+
     	
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-
-            progDialog = new ProgressDialog(YodoPayment.this);
-            progDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progDialog.setMessage(getString(R.string.sks_message));
-            progDialog.setCancelable(false);
-            progDialog.show();
+            message = getString(R.string.sks_message);
+            Utils.showProgressDialog(progDialog, getString(R.string.sks_message));
         }
         
         @Override
@@ -1194,8 +1080,7 @@ public class YodoPayment extends Activity implements YodoBase {
             
             List<String> timeList = Arrays.asList(YodoGlobals.TIME_SERVERS); 
             for(String server : timeList) {  
-            	if(DEBUG)
-            		Log.e("server", server);
+            	Utils.Logger(DEBUG, TAG, server);
             	
             	try {
             		InetAddress inetAddress = InetAddress.getByName(server);
@@ -1203,8 +1088,7 @@ public class YodoPayment extends Activity implements YodoBase {
                     Long returnTime = timeInfo.getMessage().getTransmitTimeStamp().getTime();   //server time
                      
                     if(returnTime != null) {
-                    	if(DEBUG)
-                    		Log.e("time", String.valueOf(returnTime));
+                    	Utils.Logger(DEBUG, TAG, String.valueOf(returnTime));
 
                     	return returnTime;
                     }
@@ -1223,14 +1107,13 @@ public class YodoPayment extends Activity implements YodoBase {
             	progDialog.dismiss();
             
             if(result != null) {
-	            String originalCode = pip + SKS_SEP + HARDWARE_TOKEN + SKS_SEP + result / 1000L;
+	            String originalCode = pip + SKS_SEP + hrdwToken + SKS_SEP + result / 1000L;
 	            
-	            if(DEBUG)
-	            	Log.e("Code", originalCode);
+	            Utils.Logger(DEBUG, TAG, originalCode);
 	        	
 	        	try {
 	                showSKSDialog(SKSCreater.createSKS(originalCode, YodoPayment.this, SKSCreater.SKS_CODE));
-	            } catch (UnsupportedEncodingException e) {
+	            } catch(UnsupportedEncodingException e) {
 	                e.printStackTrace();
 	            }
             } else {
@@ -1243,7 +1126,8 @@ public class YodoPayment extends Activity implements YodoBase {
 		@Override
 		public void onReceive(Context arg0, Intent intent) {
 			actualMerch = intent.getStringExtra(YodoGlobals.DATA_DEVICE);
-			requestAdvertisingRequest(actualMerch.replaceAll(" ", "%20"));
+			requestAdvertising(actualMerch.replaceAll(" ", "%20"));
 		}
 	}
+
 }

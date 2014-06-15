@@ -50,7 +50,7 @@ public class YodoGlobals {
     /*!< Minimun lenght of the PIP */
     public static final int MIN_PIP_LENGTH = 4;
 
-    /*!< Query Identifiers */
+    /*!< Query Identifiers (Record Locator) */
     public static final int QUERY_BIO      = 20;
     public static final int RECORD_LOCATOR = 21;
     public static final int QUERY_ADS      = 22;
@@ -76,4 +76,9 @@ public class YodoGlobals {
     
     /*!< Saved Instance State */
     public static final String DIALOG = "dialog";
+    
+    /*!< Fragment Information */
+    public static final String TAG_TASK_FRAGMENT = "task_fragment";
+    public static final String KEY_IS_SHOWING    = "dialog_is_showing";
+    public static final String KEY_MESSAGE       = "dialog_message";
 }

@@ -10,23 +10,20 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Hashtable;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
 import android.util.Log;
-
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
-
 import co.yodo.R;
 
 /**
@@ -140,6 +137,7 @@ public class SKSCreater {
 	 * @param parent	Activity that uses the SKSCreater
 	 * @return			Byte array containing the encrypted string
 	 */
+	@SuppressLint("TrulyRandom")
 	public static byte[] rsaEncrypt(byte[] data, Activity parent) {
 		PublicKey pubKey = readKeyFromFile(parent);
 		Cipher cipher;
@@ -149,7 +147,7 @@ public class SKSCreater {
 			cipher = Cipher.getInstance("RSA/ECB/PKCS1Padding");
 			cipher.init(Cipher.ENCRYPT_MODE, pubKey);
 			cipherData = cipher.doFinal(data);
-			 cipherString = new String(cipherData);
+			cipherString = new String(cipherData);
 			  
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();

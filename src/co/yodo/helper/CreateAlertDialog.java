@@ -6,14 +6,13 @@ import android.content.DialogInterface;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.EditText;
-
 import co.yodo.R;
 
 /**
  * Created by luis on 24/07/13.
  */
 public class CreateAlertDialog {
-    public static void showAlertDialog(Context context, View layout, EditText input, String title, String message,
+    public static void showAlertDialog(final Context context, View layout, EditText input, String title, String message,
                                        DialogInterface.OnClickListener okButtonClickListener,
                                        DialogInterface.OnClickListener cancelButtonClickListener) {
 
@@ -47,10 +46,11 @@ public class CreateAlertDialog {
                 }
             }
         });
+        
         alertDialog.show();
     }
 
-    public static void showAlertDialog(Context context, String title, String message,
+    public static void showAlertDialog(final Context context, String title, String message,
                                        DialogInterface.OnClickListener okButtonClickListener) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
@@ -67,6 +67,7 @@ public class CreateAlertDialog {
             builder.setPositiveButton(context.getString(R.string.ok), okButtonClickListener);
 
         final AlertDialog alertDialog = builder.create();
+        
         alertDialog.show();
     }
 }

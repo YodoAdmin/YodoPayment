@@ -1,18 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+
     <string name="app_name">Yodo mobile location based services application</string>
     <string name="desc">desc</string>
     <string name="delete">Delete</string>
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
-    
-     <!-- header data text -->
+
+    <!-- header data text -->
     <string name="account">Account:</string>
     <string name="date">Date:</string>
     <string name="balance">Balance:</string>
     <string name="version">Version:</string>
-    <string name="actual_version">1.1.7</string>
-    
+    <string name="actual_version">1.1.8</string>
+
     <!-- Settings -->
     <string name="action_settings">Settings</string>
     <string name="exit">Exit</string>
@@ -28,6 +29,7 @@
 
     <!-- Messages Text -->
     <string name="no_wifi">You must turn on your wifi first</string>
+    <string name="no_hdw">You must turn on your wifi or bluetooth first</string>
     <string name="start_biometric">Press the screen when you are ready</string>
     <string name="error">This is embarrassing! An error occurred in the process</string>
     <string name="no_internet">Internet access required</string>
@@ -49,6 +51,7 @@
     <string name="image_saved_ok">Coupon saved successfully</string>
     <string name="image_saved_failed">Error saving Coupon</string>
     <string name="token_defined">Token Already Defined</string>
+    <string name="crash_toast_text">Ooooops ! I crashed, but a report has been sent to my developer to help fix the issue !</string>
 
     <!-- configurations -->
     <string name="configuration_title">Configuration</string>
@@ -74,7 +77,7 @@
     <string name="yodo_balance">Yodo Balance:</string>
     <string name="saved_receipt">Receipt Saved</string>
     <string name="no_transaction">No receipt available</string>
-    
+
     <!-- Coupons -->
     <string name="coupons_title">Coupons</string>
     <string name="coupons_refresh">Refresh</string>
@@ -93,6 +96,7 @@
     <string name="current_pip_hint">PIP</string>
     <string name="new_pip_hint">New PIP (4–8 characters)</string>
     <string name="confirm_pip_hint">Confirm</string>
+    <string name="forgot_pip">FORGOT PIP?</string>
 
     <!-- Eula -->
     <string name="eula_title">Yodo User Agreement</string>
@@ -117,11 +121,20 @@
     <!-- Tutorial Instructions -->
     <string name="instructions_title">Tutorial</string>
     <string name="instructions_message">Press the Yodo icon to show or hide the menu</string>
-    
+
     <!-- Close Message -->
     <string name="close_message">WARNING: If your account has a positive balance it will be forfeited if you close your account now. Only enter your PIP to proceed if you are prepared to forfeit this funds</string>
     <string name="closing_message">Closing the account</string>
     <string name="farewell_message_tittle">Thank you for using Yodo!</string>
     <string name="farewell_message">We hope you use Yodo again in the future. Bye</string>
-
+    
+    <!-- Activities Titles -->
+	<string name="title_activity_yodo_payment">Yodo Payment</string>
+	<string name="title_activity_yodo_reset_pip">Yodo Reset PIP</string>
+	<string name="title_activity_yodo_receipts">Yodo Receipts</string>
+	<string name="title_activity_yodo_coupons">Yodo Coupons</string>
+	<string name="title_activity_yodo_registration">Yodo Registration</string>
+	<string name="title_activity_yodo_biometric">Yodo Biometric</string>
+	<string name="title_activity_yodo_camera">Yodo Camera</string>
+	
 </resources>

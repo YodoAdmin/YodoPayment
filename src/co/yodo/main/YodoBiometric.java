@@ -1,122 +1,86 @@
 package co.yodo.main;
 
-import java.lang.ref.WeakReference;
-
-import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import co.yodo.R;
-import co.yodo.helper.HardwareToken;
-import co.yodo.helper.Language;
 import co.yodo.helper.ToastMaster;
-import co.yodo.helper.YodoBase;
+import co.yodo.helper.Utils;
 import co.yodo.helper.YodoGlobals;
+import co.yodo.helper.YodoHandler;
+import co.yodo.helper.YodoQueries;
 import co.yodo.serverconnection.ServerResponse;
-import co.yodo.serverconnection.SwitchServer;
-import co.yodo.sks.Encrypter;
+import co.yodo.serverconnection.TaskFragment;
+import co.yodo.serverconnection.TaskFragment.SwitchServer;
 
-/**
- * Created by luis on 5/08/13.
- */
-public class YodoBiometric extends Activity implements YodoBase {
-    /*!< Result Activities Identifiers */
+public class YodoBiometric extends ActionBarActivity implements TaskFragment.YodoCallback {
+	/*!< DEBUG */
+	private final static String TAG = YodoBiometric.class.getName();
+	private final static boolean DEBUG = false;
+	
+	/*!< Result Activities Identifiers */
     private static final int FACE_ACTIVITY = 1;
-    
-    /*!< Variable used as an authentication number */
-    private static String HARDWARE_TOKEN;
-    private String AUTH_NUMBER = "";
-
-    /*!< Object used to encrypt user's information */
-    private Encrypter oEncrypter;
     
     /*!< ID for queries */
     private final static int AUTH_REQ = 0;
     private final static int BIO_REQ  = 1;
-
-    /*!< User Data */
-    private String BIOMETRIC_TOKEN = "";
     
-    /*!< User's data separator */
-    private static final String	REQ_SEP = ",";
-
-    /*!< Message Handler */
-    private static MainHandler handlerMessages;
+    /*!< Variable used as an authentication number */
+    private static String hrdwToken;
+    private String authNumber;
+    private String biometricToken;
     
-    /*!< Alert Messages */
+    /*!< Messages Handler */
+    private static YodoHandler handlerMessages;
+    
+    /*!< Fragment Information */
+    private TaskFragment mTaskFragment;
+    private ProgressDialog progDialog;
 	private AlertDialog alertDialog;
-
-    /**
-     * Handles the message if there isn't internet connection
-     */
-    private static class MainHandler extends Handler {
-        private final WeakReference<YodoBiometric> wMain;
-
-        public MainHandler(YodoBiometric main) {
-            super();
-            this.wMain = new WeakReference<YodoBiometric>(main);
-        }
-
-        @Override
-        public void handleMessage(Message msg) {
-            super.handleMessage(msg);
-            YodoBiometric main = wMain.get();
-
-            // message arrived after activity death
-            if(main == null)
-                return;
-
-            if(msg.what == YodoGlobals.NO_INTERNET) {
-                ToastMaster.makeText(main, R.string.no_internet, Toast.LENGTH_LONG).show();
-            }
-            else if(msg.what == YodoGlobals.GENERAL_ERROR) {
-                ToastMaster.makeText(main, R.string.error, Toast.LENGTH_LONG).show();
-            }
-        }
-    }
     
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Language.changeLanguage(this);
-    	setTitle(getString(R.string.registration));
+        Utils.changeLanguage(this);
     	setContentView(R.layout.activity_yodo_biometric);
     	
     	setupGUI();
         updateData();
     }
-
+    
     private void setupGUI() {
-    	Language.changeLanguage(this);
-    	handlerMessages = new MainHandler(this);
-    }
-
-    private void updateData() {
-    	 HardwareToken token = new HardwareToken(getApplicationContext());
-         HARDWARE_TOKEN = token.getToken();
-         
-         Bundle bundle = this.getIntent().getExtras();
-         
-         if(bundle != null)
- 			AUTH_NUMBER = bundle.getString(YodoGlobals.ID_AUTHORIZATION);
+    	handlerMessages = new YodoHandler(this);
+    	getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    	
+    	// Load Fragment Manager
+    	FragmentManager fm = getSupportFragmentManager();
+	    mTaskFragment = (TaskFragment) fm.findFragmentByTag(YodoGlobals.TAG_TASK_FRAGMENT);
+	    
+	    if(mTaskFragment == null) {
+	    	mTaskFragment = new TaskFragment();
+	    	fm.beginTransaction().add(mTaskFragment, YodoGlobals.TAG_TASK_FRAGMENT).commit();
+	    }
+	    
+	    progDialog = new ProgressDialog(this);
     }
     
-    /**
-     * Gets object used to encrypt user's information
-     * @return	Encrypter
-     */
-    public Encrypter getEncrypter(){
-        if(oEncrypter == null)
-            oEncrypter = new Encrypter();
-        return oEncrypter;
+    private void updateData() {
+    	hrdwToken = Utils.getHardwareToken(this);
+    	
+    	Bundle bundle = this.getIntent().getExtras();
+        
+        if(bundle != null)
+        	authNumber = bundle.getString(YodoGlobals.ID_AUTHORIZATION);
     }
-
+    
     /**
      * Handle Button Actions
      * */
@@ -136,7 +100,7 @@ public class YodoBiometric extends Activity implements YodoBase {
     }
     
     public void registerBiometricClick(View v) {
-    	if(BIOMETRIC_TOKEN.equals("")) {
+    	if(biometricToken == null || biometricToken.equals("")) {
     		ToastMaster.makeText(YodoBiometric.this, R.string.no_biometric, Toast.LENGTH_SHORT).show();
 			return;
     	} else {
@@ -145,61 +109,51 @@ public class YodoBiometric extends Activity implements YodoBase {
     }
     
     /**
-	 * Connects to the switch and gets the user authorization
-	 * @return boolean True if the user exists, else false 
-	 */
-	private void requestHardwareAuthorization() {
-		String sEncryptedUsrData;
-		
-		//Encrypting user's IMEI to create request
-		getEncrypter().setsUnEncryptedString(HARDWARE_TOKEN);
-		getEncrypter().rsaEncrypt(this);
-		sEncryptedUsrData = this.getEncrypter().bytesToHex();
-		
-		SwitchServer request = new SwitchServer(YodoBiometric.this);
-        request.setType(AUTH_REQ);
-        request.setDialog(true, getString(R.string.auth_message));
-        request.execute(SwitchServer.AUTH_HW_REQUEST, sEncryptedUsrData);
-	}
-	
-	/**
+     * Connects to the switch and gets the user authorization
+     */
+    private void requestHardwareAuthorization() {
+    	String data = YodoQueries.requestHardwareAuthorization(this, hrdwToken);
+    	
+    	SwitchServer request = mTaskFragment.getSwitchServerInstance();
+        mTaskFragment.start(request, SwitchServer.AUTH_HW_REQUEST, data);
+    }
+    
+    /**
 	 * Connects to the switch and send the user data
 	 * @return boolean True if the registration is successfully, else false 
 	 */
 	private void requestBiometricRegistration() {
-		StringBuilder userData = new StringBuilder();
-
-		userData.append(AUTH_NUMBER).append(REQ_SEP);
-		userData.append(BIOMETRIC_TOKEN);
-		
-		SwitchServer request = new SwitchServer(YodoBiometric.this);
-        request.setType(BIO_REQ);
-        request.setDialog(true, getString(R.string.registering_user_biometric));
-        request.execute(SwitchServer.BIO_REG_REQUEST, userData.toString());
+		String data = YodoQueries.requestBiometricRegistration(this, authNumber, biometricToken);
+    	
+    	SwitchServer request = mTaskFragment.getSwitchServerInstance();
+    	request.setType(BIO_REQ);
+    	request.setDialog(true, getString(R.string.registering_user_biometric));
+    	
+        mTaskFragment.start(request, SwitchServer.BIO_REG_REQUEST, data);
+	}
+    
+	@Override
+	public void onPreExecute(String message) {
+		Utils.showProgressDialog(progDialog, message);
 	}
 
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        switch(requestCode) {
-            case(FACE_ACTIVITY) : {
-                if(resultCode == Activity.RESULT_OK) {
-                    BIOMETRIC_TOKEN = data.getStringExtra(YodoGlobals.FACE_DATA);
-                    ToastMaster.makeText(YodoBiometric.this, R.string.saved_face, Toast.LENGTH_LONG).show();
-                }
-                break;
-            }
-        }
-    }
+	@Override
+	public void onPostExecute() {
+		if(progDialog != null)
+			progDialog.dismiss();
+	}
 
-    @Override
-    public void setData(ServerResponse data, int queryType) {
-    	AlertDialog.Builder builder = new AlertDialog.Builder(YodoBiometric.this);
+	@Override
+	public void onTaskCompleted(ServerResponse data, int queryType) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(YodoBiometric.this);
     	
+		if(DEBUG)
+			Log.e(TAG, data.toString());
+		
         if(data != null) {
             String code = data.getCode();
             if(code.equals(YodoGlobals.AUTHORIZED)) {
-            	switch (queryType) {
+            	switch(queryType) {
 	                case AUTH_REQ:
 	                	requestBiometricRegistration();
 	                break;
@@ -223,5 +177,20 @@ public class YodoBiometric extends Activity implements YodoBase {
         } else {
             handlerMessages.sendEmptyMessage(YodoGlobals.GENERAL_ERROR);
         }
+	}
+	
+	@Override
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+        switch(requestCode) {
+            case(FACE_ACTIVITY) : {
+                if(resultCode == RESULT_OK) {
+                    biometricToken = data.getStringExtra(YodoGlobals.FACE_DATA);
+                    ToastMaster.makeText(YodoBiometric.this, R.string.saved_face, Toast.LENGTH_LONG).show();
+                }
+                break;
+            }
+        }
     }
+
 }

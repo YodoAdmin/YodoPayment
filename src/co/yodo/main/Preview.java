@@ -26,7 +26,7 @@ package co.yodo.main;
 import java.io.IOException;
 import java.util.List;
 
-import co.yodo.helper.YodoUtils;
+import co.yodo.helper.Utils;
 import visidon.Lib.Parameters;
 import visidon.Lib.VerificationAPI;
 import visidon.Lib.VerificationAPI.InitState;
@@ -298,7 +298,7 @@ public class Preview extends ViewGroup  implements SurfaceHolder.Callback{
 	private void updateDB() {
 		mFrameCallback.input.mEnrollFlag = false;
 		mFrameCallback.input.mNbrOfItems = VerificationAPI.getNbrOfDBItems();	
-		byte[] faceTemplate = YodoUtils.hexToBytes(token);
+		byte[] faceTemplate = Utils.hexToBytes(token);
 		
 		Log.i("FaceAPI","face template obtained, size = " + faceTemplate.length);
 		// save template somewhere

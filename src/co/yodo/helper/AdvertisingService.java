@@ -68,7 +68,7 @@ public class AdvertisingService extends Service {
 		if(DEBUG)
 			Log.d(TAG, "onStart");    
 	    
-	    if(!mBluetoothAdapter.isEnabled()) {
+	    if(mBluetoothAdapter != null && !mBluetoothAdapter.isEnabled()) {
 	        stopSelf();
 	    } else {
 	        timer.schedule(task, DELAY_TIME, PERIOD_TIME);

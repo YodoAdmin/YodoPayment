@@ -2,119 +2,124 @@
 <resources>
     <string name="app_name">Yodo mobile location based services application</string>
     <string name="desc">desc</string>
-    <string name="delete">Delete</string>
+    <string name="delete">削除</string>
     <string name="ok">OK</string>
     <string name="cancel">取消</string>
     
      <!-- header data text -->
-    <string name="account">口座:</string>
+    <string name="account">アカウント:</string>
     <string name="date">日付:</string>
     <string name="balance">残額:</string>
     <string name="version">バージョン:</string>
+    <string name="actual_version">1.1.1</string>
     
     <!-- Settings -->
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">設定</string>
     <string name="exit">終了</string>
 
     <!-- Progress Dialog Messages -->
-    <string name="sks_message">QRコード作成中.....</string>
-    <string name="balance_message">残額</string>
-    <string name="auth_message">Authenticating the user</string>
-    <string name="change_pip_message">PIP変更が完了しました。</string>
-    <string name="receipt_message">Getting receipt</string>
-    <string name="biometric_message">Getting biometric token</string>
-    <string name="loading">Loading &#x2026;</string>
+    <string name="sks_message">SKSコード作成中</string>
+    <string name="balance_message">残額確認中</string>
+    <string name="auth_message">ユーザ確認中</string>
+    <string name="change_pip_message">PIP変更中</string>
+    <string name="receipt_message">レシート入手中</string>
+    <string name="biometric_message">生態認証トークン入手中</string>
+    <string name="loading">読込み中 &#x2026;</string>
 
     <!-- Messages Text -->
-    <string name="no_wifi">WiFiをオフにしてください。</string>
-    <string name="start_biometric">Press the screen when you are ready</string>
-    <string name="error">エラー</string>
-    <string name="no_internet">現在インターネットに接続されていないようです</string>
-    <string name="show_pass">パスワード表示</string>
-    <string name="input_pip">Personal Identification Phrase (PIP)</string>
-    <string name="pip_length_short">エラー：PIPは４桁以上必要です</string>
-    <string name="pip_confirm_diff">PIPが一致しません。</string>
+    <string name="no_wifi">Wi-Fiをオンにしてください</string>
+    <string name="start_biometric">準備ができたら画面に触れてください</string>
+    <string name="error">エラーが発生しました</string>
+    <string name="no_internet">インターネット接続が必要です</string>
+    <string name="show_pass">PIP表示</string>
+    <string name="input_pip">個人識別コード(PIP)</string>
+    <string name="pip_length_short">PIPは４桁以上必要です</string>
+    <string name="pip_confirm_diff">PIPが一致しません</string>
     <string name="wrong_pip">PIPが誤っています</string>
-    <string name="balance_succesfull">残額情報の取得成功</string>
-    <string name="change_pip_succesfull">PIP successfully changed</string>
-    <string name="not_available">Sorry, this feature is not available yet</string>
-    <string name="connected">Connected</string>
-    <string name="null_response">Null Response</string>
-    <string name="no_camera">No available cameras</string>
-    <string name="no_biometric">Please, select a biometric token first</string>
-    <string name="not_support_bt">この機器はブルートゥースが使用できないためYodoサービスが使えません</string>
-    <string name="merch_found">A message from</string>
-    <string name="save_image">Save the image?</string>
-    <string name="image_saved_ok">Image saved with success</string>
-    <string name="image_saved_failed">Error during image saving</string>
+    <string name="balance_succesfull">残額が確認されました</string>
+    <string name="change_pip_succesfull">PIPが変更されました</string>
+    <string name="not_available">この機能は利用できません</string>
+    <string name="connected">接続されています</string>
+    <string name="null_response">空白応答</string>
+    <string name="no_camera">カメラがありません</string>
+    <string name="no_biometric">最初に生態認証トークンを選択してください</string>
+    <string name="not_support_bt">ブルートゥースが使えません。このデバイスでは一部のYodoサービスが利用できません</string>
+    <string name="merch_found">メッセージ：</string>
+    <string name="save_image">クーポンを保存しますか？</string>
+    <string name="image_saved_ok">クーポンが保存されました</string>
+    <string name="image_saved_failed">クーポン保存中にエラーが発生しました</string>
 
     <!-- configurations -->
-    <string name="configuration_title">Configuration</string>
-    <string name="options">Options</string>
-    <string name="tools">Tools</string>
-    <string name="get_balance">Get Balance</string>
-    <string name="reset_pip">PIPをリセットする</string>
-    <string name="saved_receipts">レシートが保存されました</string>
-    <string name="link">関連させる</string>
-    <string name="pair">一時的に組合わせる</string>
-    <string name="get_advertising">Get Advertising</string>
-    <string name="close_account">口座を閉鎖する</string>
+    <string name="configuration_title">構成</string>
+    <string name="options">オプション</string>
+    <string name="tools">ツール</string>
+    <string name="get_balance">残額を確認</string>
+    <string name="reset_pip">PIP変更</string>
+    <string name="saved_receipts">レシート</string>
+    <string name="link">リンクする</string>
+    <string name="pair">組み合わせる</string>
+    <string name="get_advertising">広告を入手</string>
+    <string name="close_account">アカウントを閉鎖する</string>
     <string name="change_language">言語</string>
-    <string name="language">Language:</string>
+    <string name="language">言語:</string>
 
     <!-- Receipts -->
-    <string name="recipts_title">Receipts</string>
-    <string name="paid">支払済み:</string>
+    <string name="recipts_title">レシート</string>
+    <string name="paid">支払額:</string>
     <string name="receipt_auth">AU#</string>
-    <string name="cash_tender">預かり現金:</string>
+    <string name="cash_tender">預かり現金額:</string>
     <string name="cash_back">おつり:</string>
     <string name="yodo_balance">Yodo残額:</string>
     <string name="saved_receipt">レシートが保存されました</string>
-    <string name="no_transaction">No successful transaction found</string>
+    <string name="no_transaction">レシートがありません</string>
+    
+    <!-- Coupons -->
+    <string name="coupons_title">クーポン</string>
+    <string name="coupons_refresh">リフレッシュ</string>
 
     <!-- Advertising -->
-    <string name="no_bluetooth">This device does not support Bluetooth and can not use this Yodo service</string>
-    <string name="no_devices">No merchants in the range</string>
+    <string name="no_bluetooth">ブルートゥースが使えません。このデバイスでは一部のYodoサービスが利用できません</string>
+    <string name="no_devices">範囲内にYodo加盟店がありません</string>
 
     <!-- Button Messages -->
-    <string name="update_pip">Update PIP</string>
+    <string name="update_pip">PIP更新</string>
 
     <!-- Change PIP -->
-    <string name="current_pip">現在有効のPIPを入力してください:</string>
+    <string name="current_pip">現在のPIP:</string>
     <string name="new_pip">新しいPIP:</string>
-    <string name="confirm_pip">Confirm New PIP:</string>
+    <string name="confirm_pip">新しいPIPを確認してください:</string>
     <string name="current_pip_hint">PIP</string>
-    <string name="new_pip_hint">New PIP (4–8 characters)</string>
-    <string name="confirm_pip_hint">Confirm</string>
+    <string name="new_pip_hint">新しいPIP (4–8 characters)</string>
+    <string name="confirm_pip_hint">確認</string>
 
     <!-- Eula -->
-    <string name="eula_title">Yodo顧客契約</string>
+    <string name="eula_title">Yodoユーザ契約</string>
     <string name="eula_accept">承諾</string>
     <string name="eula_refuse">拒否</string>
 
     <!-- Registration Messages -->
-    <string name="registration">Registration</string>
-    <string name="register_pip">両方の欄に秘密のPIPを入力してください(4â€“8 characters)</string>
+    <string name="registration">登録</string>
+    <string name="register_pip">両枠に秘密のPIPを入力してください (4–8 characters)</string>
     <string name="pip_hint">PIP</string>
     <string name="next">次へ</string>
-    <string name="registering_user_pip">Registering PIP</string>
+    <string name="registering_user_pip">PIP登録中</string>
 
     <!-- Biometric Messages -->
-    <string name="finish_register">登録</string>
-    <string name="biometric">生体認証方法を選んでください</string>
-    <string name="registering_user_biometric">Registering Biometric Token</string>
-    <string name="voice_recognition">音声</string>
-    <string name="face_recognition">照合過程で承認されるまで顔を表示してください</string>
-    <string name="saved_face">顔面の保存成功</string>
+    <string name="finish_register">登録する</string>
+    <string name="biometric">生態認証トークンを選択してください</string>
+    <string name="registering_user_biometric">生態認証トークンを登録中</string>
+    <string name="voice_recognition">音声認識</string>
+    <string name="face_recognition">顔認識</string>
+    <string name="saved_face">トークンが保存されました</string>
 
     <!-- Tutorial Instructions -->
-    <string name="instructions_title">Tutorial</string>
-    <string name="instructions_message">Click on the Yodo icon to show and hide the settings</string>
+    <string name="instructions_title">使用説明</string>
+    <string name="instructions_message">Yodoアイコンをクリックしてメニューを表示・未表示してください</string>
     
     <!-- Close Message -->
-    <string name="close_message">警告：現在口座を閉鎖すると残額が喪失されます。残額喪失を承認する場合にのみ、PIPを入力してください。</string>
-    <string name="closing_message">Closing the account</string>
+    <string name="close_message">警告:現在アカウントを閉鎖すると残額が喪失となります。残額喪失を承認する場合にのみ、PIPを入力してください</string>
+    <string name="closing_message">アカウント閉鎖中</string>
     <string name="farewell_message_tittle">Yodoをご利用いただきありがとうございました!</string>
-    <string name="farewell_message">Yodoのまたのご利用をお待ちしております。さようなら</string>
+    <string name="farewell_message">またYodoをご利用いただけるのをお待ちしております。さようなら</string>
 
 </resources>

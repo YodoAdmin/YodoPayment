@@ -51,14 +51,14 @@
     <!-- configurations -->
     <string name="configuration_title">Configuration</string>
     <string name="options">Options</string>
-    <string name="tools">Tools</string>
-    <string name="get_balance">Get Balance</string>
-    <string name="reset_pip">Change PIP</string>
-    <string name="saved_receipts">Receipts</string>
+    <string name="tools">Outils</string>
+    <string name="get_balance">obtenir l\'équilibre</string>
+    <string name="reset_pip">Changer le code PIP</string>
+    <string name="saved_receipts">réception</string>
     <string name="link">Links</string>
     <string name="pair">P2P</string>
-    <string name="get_advertising">Get Advertising</string>
-    <string name="close_account">Close Account</string>
+    <string name="get_advertising">récupérer annonces</string>
+    <string name="close_account">près compte</string>
     <string name="change_language">Languages</string>
     <string name="language">Language:</string>
 
