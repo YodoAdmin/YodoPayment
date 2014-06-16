@@ -9,7 +9,7 @@
         style="@style/ButtonText"
         android:background="@drawable/red_button"
         android:id="@+id/updatePipButton"
-        android:text="@string/update_pip"
+        android:text="@string/reset_pip"
         android:layout_alignParentBottom="true"
         android:onClick="updatePipClick" />
 

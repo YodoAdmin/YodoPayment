@@ -1,8 +1,5 @@
 package co.yodo.main;
 
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
 import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -155,10 +152,9 @@ public class YodoRegistration extends ActionBarActivity implements TaskFragment.
    	 * @return String 
    	 */
    	private void requestRegistration(String pip) {
-   		DateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd'T'hh:mm:ssZZZZ", java.util.Locale.getDefault());
         long time = System.currentTimeMillis();
         
-   		String data = YodoQueries.requestRegistration(this, hrdwToken, pip, dateFormat.format(time));
+   		String data = YodoQueries.requestRegistration(this, hrdwToken, pip, String.valueOf(time));
    		
    		SwitchServer request = mTaskFragment.getSwitchServerInstance();
    		request.setDialog(true, getString(R.string.registering_user_pip));

@@ -55,6 +55,7 @@ public class YodoCoupons extends ActionBarActivity {
 	
 	protected void onDestroy() {
 	    super.onDestroy();
+	    
 	    if(datasource != null) 
 	    	datasource.close();
 	}

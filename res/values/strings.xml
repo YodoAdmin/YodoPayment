@@ -58,7 +58,7 @@
     <string name="options">Options</string>
     <string name="tools">Tools</string>
     <string name="get_balance">Get Balance</string>
-    <string name="reset_pip">Change PIP</string>
+    <string name="reset_pip">Reset PIP</string>
     <string name="set_biometric">Set Biometric</string>
     <string name="saved_receipts">Receipts</string>
     <string name="link">Links</string>
@@ -85,9 +85,6 @@
     <!-- Advertising -->
     <string name="no_bluetooth">No Bluetooth support. Device can not use all Yodo services</string>
     <string name="no_devices">No merchants within range</string>
-
-    <!-- Button Messages -->
-    <string name="update_pip">Update PIP</string>
 
     <!-- Change PIP -->
     <string name="current_pip">Current PIP:</string>

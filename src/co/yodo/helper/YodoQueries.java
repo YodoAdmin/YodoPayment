@@ -161,8 +161,8 @@ public class YodoQueries {
 		StringBuilder sRegistrationData = new StringBuilder();
 		
 		sRegistrationData.append(YodoGlobals.USER_BIOMETRIC).append(USR_SEP);
-		sRegistrationData.append(pip).append(REQ_SEP);
-		sRegistrationData.append(hrdwToken).append(REQ_SEP);
+		sRegistrationData.append(pip).append(USR_SEP);
+		sRegistrationData.append(hrdwToken).append(USR_SEP);
 		sRegistrationData.append(timeStamp);
 		
 		getEncrypter().setsUnEncryptedString(sRegistrationData.toString());
@@ -174,16 +174,11 @@ public class YodoQueries {
     
     // Registration Biometric String
     public static String requestBiometricRegistration(Activity activity, String authNumber, String biometricToken) {
-    	String sEncryptedUsrData;
 		StringBuilder sRegistrationData = new StringBuilder();
 		
 		sRegistrationData.append(authNumber).append(REQ_SEP);
 		sRegistrationData.append(biometricToken);
 		
-		getEncrypter().setsUnEncryptedString(sRegistrationData.toString());
-		getEncrypter().rsaEncrypt(activity);
-		sEncryptedUsrData = getEncrypter().bytesToHex();
-		
-		return sEncryptedUsrData;
+		return sRegistrationData.toString();
     }
 }

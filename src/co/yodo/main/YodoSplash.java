@@ -87,8 +87,8 @@ public class YodoSplash extends FragmentActivity implements TaskFragment.YodoCal
                 Intent intent = new Intent(YodoSplash.this, YodoPayment.class);
                 startActivity(intent);
             } else if(code.equals(YodoGlobals.ERROR_FAILED)) {
-            	//Intent intent = new Intent(YodoSplash.this, YodoRegistration.class);
-                //startActivity(intent);
+            	Intent intent = new Intent(YodoSplash.this, YodoRegistration.class);
+                startActivity(intent);
             } else if(code.equals(YodoGlobals.ERROR_INTERNET)) {
                 handlerMessages.sendEmptyMessage(YodoGlobals.NO_INTERNET);
             } else {

@@ -207,8 +207,12 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
         	processStopService(AdvertisingService.TAG);
         }
         
+        // Close open databases
         if(receiptsdb != null)
         	receiptsdb.close();
+        
+        if(couponsdb != null) 
+        	couponsdb.close();
         
         System.gc();
     }
@@ -216,7 +220,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 	@Override
     protected void onDestroy() {
         super.onDestroy();
-        System.gc();
+        System.gc();   
     }
 	
 	@Override
@@ -421,8 +425,8 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
     	hrdwToken = Utils.getHardwareToken(this);
     	
     	settings = getSharedPreferences(YodoGlobals.PREFERENCES, Context.MODE_PRIVATE);
-        advertising  = settings.getBoolean(YodoGlobals.ID_ADVERTISING, YodoGlobals.DEFAULT_ADS);
-        
+        advertising = settings.getBoolean(YodoGlobals.ID_ADVERTISING, YodoGlobals.DEFAULT_ADS);
+
         if(advertising && mBluetoothAdapter == null) {
         	advertising = false;
         	SharedPreferences.Editor editor = settings.edit();
@@ -832,7 +836,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
         request.setType(CLS_REQ);
         request.setDialog(true, getString(R.string.closing_message));
   
-        mTaskFragment.start(balanceRequest, SwitchServer.CLOSE_REQUEST, data);
+        mTaskFragment.start(request, SwitchServer.CLOSE_REQUEST, data);
     }
     
     /**
@@ -1063,7 +1067,6 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
     class TimeTask extends AsyncTask<String, Void, Long> {
     	private String pip;
 
-    	
         @Override
         protected void onPreExecute() {
             super.onPreExecute();

@@ -38,7 +38,8 @@
         
         <activity
             android:name=".main.YodoPayment"
-            android:label="@string/title_activity_yodo_payment" >
+            android:label="@string/title_activity_yodo_payment"
+            android:windowSoftInputMode="adjustPan|adjustResize" >
         </activity>
         
         <activity

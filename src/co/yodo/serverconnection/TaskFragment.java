@@ -200,11 +200,14 @@ public class TaskFragment extends Fragment {
 
 	    public void connect(String pRequest) {
 	    	XMLHandler myXMLHandler;
-	        try{
+	        try {
 	            // Handling XML
 	            SAXParserFactory spf = SAXParserFactory.newInstance();
 	            SAXParser sp = spf.newSAXParser();
 	            XMLReader xr = sp.getXMLReader();
+	            
+	            if(DEBUG)
+	            	Utils.Logger(DEBUG, TAG, IP + YODO_ADDRESS + pRequest);
 	            
 	            // Send URL to parse XML Tags
 	            URL sourceUrl = new URL(IP + YODO_ADDRESS + pRequest);
@@ -213,7 +216,7 @@ public class TaskFragment extends Fragment {
 	            myXMLHandler = new XMLHandler();
 	            xr.setContentHandler(myXMLHandler);
 	            xr.parse(new InputSource(sourceUrl.openStream()));
-	        } catch (Exception e) {
+	        } catch(Exception e) {
 	            System.out.println("XML Pasing Exception = " + e);
 	        }
 

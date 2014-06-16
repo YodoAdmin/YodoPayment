@@ -115,6 +115,9 @@ public class YodoBiometric extends ActionBarActivity implements TaskFragment.Yod
     	String data = YodoQueries.requestHardwareAuthorization(this, hrdwToken);
     	
     	SwitchServer request = mTaskFragment.getSwitchServerInstance();
+    	request.setType(AUTH_REQ);
+    	request.setDialog(true, getString(R.string.auth_message));
+    	
         mTaskFragment.start(request, SwitchServer.AUTH_HW_REQUEST, data);
     }
     
