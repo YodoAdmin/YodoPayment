@@ -94,8 +94,6 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
     private CouponsDataSource couponsdb;
     
     /*!< Async Tasks for Receipt */
-    private SwitchServer receiptRequest;
-    private SwitchServer balanceRequest;
     private boolean receiptFlag = false;
     private String receiptData;
     private String balanceData;
@@ -529,7 +527,6 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
                 getWindow().setAttributes(lp);
                 receiptFlag = true;
                 requestReceipt(temp_pip);
-                requestBalance(temp_pip);
             }
         });
         
@@ -799,7 +796,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
         SwitchServer request = mTaskFragment.getSwitchServerInstance();
         request.setType(AUTH_REQ);
         request.setDialog(true, getString(R.string.auth_message));
-        //request.execute(SwitchServer.AUTH_HW_PIP_REQUEST, data);
+
         mTaskFragment.start(request, SwitchServer.AUTH_HW_PIP_REQUEST, data);
     }
     
@@ -845,13 +842,11 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
     private void requestBalance(String pip) {
     	String data = YodoQueries.requestBalance(this, hrdwToken, pip);
     	
-    	balanceRequest = mTaskFragment.getSwitchServerInstance();
-    	balanceRequest.setType(BAL_REQ);
+    	SwitchServer request = mTaskFragment.getSwitchServerInstance();
+    	request.setType(BAL_REQ);
+    	request.setDialog(true, getString(R.string.balance_message));
     	
-    	if(!receiptFlag)
-        	balanceRequest.setDialog(true, getString(R.string.balance_message));
-    	
-    	mTaskFragment.start(balanceRequest, SwitchServer.BALANCE_REQUEST, data);
+    	mTaskFragment.start(request, SwitchServer.BALANCE_REQUEST, data);
     }
 
     /**
@@ -860,11 +855,11 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
     private void requestReceipt(String pip) {
     	String data = YodoQueries.requestReceipt(this, hrdwToken, pip);
 
-        receiptRequest = mTaskFragment.getSwitchServerInstance();
-        receiptRequest.setType(REC_REQ);
-        receiptRequest.setDialog(true, getString(R.string.receipt_message));
+    	SwitchServer request = mTaskFragment.getSwitchServerInstance();
+    	request.setType(REC_REQ);
+    	request.setDialog(true, getString(R.string.receipt_message));
         
-        mTaskFragment.start(receiptRequest, SwitchServer.RECEIPT_REQUEST, data);
+        mTaskFragment.start(request, SwitchServer.RECEIPT_REQUEST, data);
     }
     
     /**
@@ -926,22 +921,16 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
                             }
                         }
                         
-                        if(receiptRequest != null && receiptData != null && receiptRequest.getStatus() == AsyncTask.Status.FINISHED) {
+                        if(receiptFlag) 
                         	receiptDialog();
-                        	balanceRequest = receiptRequest = null;
-                    	}
+                        	
                         receiptFlag = false;
                         temp_pip = "";
                     break;
 	
 	                case REC_REQ:
 	                	receiptData = data.getParams();
-	                	
-	                	if(balanceRequest != null && balanceData!= null && balanceRequest.getStatus() == AsyncTask.Status.FINISHED) {
-                    		receiptDialog();
-                    		receiptFlag = false;
-                    		receiptRequest = balanceRequest = null;
-                   	 	} 
+	                	requestBalance(temp_pip);
                         temp_pip = "";
                     break;
                     
