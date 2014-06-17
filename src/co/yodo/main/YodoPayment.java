@@ -89,11 +89,6 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
     private SQLiteDatabase db;
     private CouponsDataSource couponsdb;
     
-    /*!< Async Tasks for Receipt */
-    private boolean receiptFlag = false;
-    private String receiptData;
-    private String balanceData;
-    
     /*!< Bluetooth */
     private BluetoothAdapter mBluetoothAdapter;
     private boolean advertising;
@@ -547,7 +542,6 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 	            	
 	        		lp.screenBrightness = brightnessNow;
 	        		getWindow().setAttributes(lp);
-	        		receiptFlag = true;
 	        		requestReceipt(temp_pip);
 	        		
 	        		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
@@ -577,7 +571,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 		}
     }
     
-    private void receiptDialog() {
+    private void receiptDialog(String receiptData) {
     	final Dialog receipt = new Dialog(YodoPayment.this);
         receipt.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
@@ -651,10 +645,16 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
                 query += aValParams[1] + ", ";
                 authNumber.setText(aValParams[1]);
             }
+            
+            else if(aValParams[0].equals(ServerResponse.BALANCE_ELEM)) {
+            	double tempBalance = Double.valueOf(twoDForm.format(Double.valueOf(aValParams[1])).replace(",", "."));
+                query += tempBalance + ")";
+                balance.setText(String.valueOf(tempBalance));
+            }
         }
-        query += balanceData + ")";
-        balance.setText(balanceData);
         final String finalQuery = query;
+        
+        Utils.Logger(DEBUG, TAG, finalQuery);
         
         saveButton.setOnClickListener(new OnClickListener() {
             @Override
@@ -952,24 +952,15 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
                                 Utils.Logger(DEBUG, TAG, twoDForm.format(Double.valueOf(aValParams[1])).replace(",", "."));
        
                                 double tempBalance = Double.valueOf(twoDForm.format(Double.valueOf(aValParams[1])).replace(",", "."));
-
-                                if(!receiptFlag) 
-                                	accBalanceText.setText(String.valueOf(tempBalance));
-                                else  
-                                	balanceData = String.valueOf(tempBalance);
+                                accBalanceText.setText(String.valueOf(tempBalance));
                             }
                         }
-                        
-                        if(receiptFlag) 
-                        	receiptDialog();
-                        	
-                        receiptFlag = false;
+
                         temp_pip = "";
                     break;
 	
 	                case REC_REQ:
-	                	receiptData = data.getParams();
-	                	requestBalance(temp_pip);
+	                	receiptDialog(data.getParams());
                         temp_pip = "";
                     break;
                     
@@ -1099,5 +1090,4 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 			requestAdvertising(actualMerch.replaceAll(" ", "%20"));
 		}
 	}
-
 }
