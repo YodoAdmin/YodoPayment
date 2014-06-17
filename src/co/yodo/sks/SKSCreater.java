@@ -36,7 +36,7 @@ public class SKSCreater {
 	private final static boolean DEBUG = false;
 
 	// size of qr code (px)
-	private static final int QR_WIDTH = 300;
+	private final static int QR_WIDTH = 300;
 	
 	public static final int SKS_CODE = 1;
 	public static final int QR_CODE  = 0;
@@ -96,6 +96,10 @@ public class SKSCreater {
 		}
 		return bitmap;
 	}
+	
+	/*public static void setWidth(int size) {
+		QR_WIDTH = size;
+	}*/
 	
 	/**
 	 * Function that opens the public key and returns the java object that contains it

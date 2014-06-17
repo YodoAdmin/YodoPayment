@@ -19,7 +19,8 @@ public class CreateAlertDialog {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setInverseBackgroundForced(true);
 
-        builder.setView(layout);
+        if(layout != null)
+        	builder.setView(layout);
 
         if(title != null)
             builder.setTitle(title);
@@ -67,7 +68,6 @@ public class CreateAlertDialog {
             builder.setPositiveButton(context.getString(R.string.ok), okButtonClickListener);
 
         final AlertDialog alertDialog = builder.create();
-        
         alertDialog.show();
     }
 }

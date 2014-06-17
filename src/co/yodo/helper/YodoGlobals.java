@@ -80,5 +80,6 @@ public class YodoGlobals {
     /*!< Fragment Information */
     public static final String TAG_TASK_FRAGMENT = "task_fragment";
     public static final String KEY_IS_SHOWING    = "dialog_is_showing";
+    public static final String KEY_SKS_SHOWING   = "sks_is_showing";
     public static final String KEY_MESSAGE       = "dialog_message";
 }

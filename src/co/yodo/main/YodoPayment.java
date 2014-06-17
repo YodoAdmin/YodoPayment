@@ -51,6 +51,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
+import android.content.pm.ActivityInfo;
 import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
@@ -138,9 +139,9 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
     private final static int ADS_REQ  = 4;
     private final static int BIO_REQ  = 5;
 	
-    /*!< Alert Messages */
-	private AlertDialog alertDialog;
-	
+    /*!< QR Bitmap */
+    private Bitmap qrCode;
+    
 	/*!< Preferences */
 	private SharedPreferences settings;
 	
@@ -150,6 +151,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
     /*!< Fragment Information */
     private TaskFragment mTaskFragment;
     private ProgressDialog progDialog;
+    private AlertDialog alertDialog;
     private String message;
 
 	@Override
@@ -165,13 +167,15 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 	    if(savedInstanceState != null && savedInstanceState.getBoolean(YodoGlobals.KEY_IS_SHOWING)) {
 	    	temp_pip = savedInstanceState.getString(KEY_TEMP_PIP);
 	    	message =  savedInstanceState.getString(YodoGlobals.KEY_MESSAGE);
+	    	
 	    	Utils.showProgressDialog(progDialog, message);
-	    }
+	    } 
 	}
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
+		
 	    outState.putBoolean(YodoGlobals.KEY_IS_SHOWING, progDialog.isShowing());
 	    outState.putString(YodoGlobals.KEY_MESSAGE, message);
 	    
@@ -213,12 +217,15 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
         	couponsdb.close();
         
         System.gc();
+        Runtime.getRuntime().gc();
     }
 	
 	@Override
     protected void onDestroy() {
-        super.onDestroy();
-        System.gc();   
+        super.onDestroy();  
+        
+        if(progDialog != null && progDialog.isShowing())
+        	progDialog.cancel();
     }
 	
 	@Override
@@ -292,7 +299,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
                 });
         		builder.setNegativeButton(getString(R.string.cancel), null);
         		
-        		final AlertDialog alertDialog = builder.create();
+        		alertDialog = builder.create();
                 alertDialog.show();
 			break;
 			
@@ -498,49 +505,76 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
      * Method to show the dialog containing the SKS code
      * @param qrBitmap
      */
-    private void showSKSDialog(Bitmap qrBitmap) {
-        // brightness
-        final WindowManager.LayoutParams lp = getWindow().getAttributes();
-        final float brightnessNow = lp.screenBrightness;
-        lp.screenBrightness = 100 / 100.0f;
-        getWindow().setAttributes(lp);
-
-        final Dialog dialog = new Dialog(this);
-        dialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
-        dialog.setContentView(R.layout.dialog_sks);
-        dialog.setCancelable(false);
-        
-        dialog.setOnKeyListener(new Dialog.OnKeyListener() {
-			@Override
-			public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
-				if(keyCode == KeyEvent.KEYCODE_BACK) {
-                    dialog.dismiss();
-                }
-				return true;
-			}
-        });
-        
-        dialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
-            @Override
-            public void onDismiss(DialogInterface dialog) {
-                lp.screenBrightness = brightnessNow;
-                getWindow().setAttributes(lp);
-                receiptFlag = true;
-                requestReceipt(temp_pip);
-            }
-        });
-        
-        ImageView image = (ImageView) dialog.findViewById(R.id.sks);
-        image.setImageBitmap(qrBitmap);
-        dialog.show();
-
-        final Timer t = new Timer();
-        t.schedule(new TimerTask() {
-            public void run() {
-            	dialog.dismiss(); /// When the task active then close the dialog
-                t.cancel(); /// Also just top the timer thread, otherwise, you may receive a crash report
-            }
-        }, TIME_TO_DISMISS_SKS);
+    private void showSKSDialog(String code) {
+    	try {
+			qrCode = SKSCreater.createSKS(code, YodoPayment.this, SKSCreater.SKS_CODE);
+    	
+	    	final Dialog sksDialog = new Dialog(this);
+	        
+	        sksDialog.requestWindowFeature(Window.FEATURE_NO_TITLE);
+	        sksDialog.setContentView(R.layout.dialog_sks);
+	        sksDialog.setCancelable(false);
+	        
+	        // brightness
+	        final WindowManager.LayoutParams lp = getWindow().getAttributes();
+	        final float brightnessNow = lp.screenBrightness;
+	        
+	        sksDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+				@Override
+				public void onShow(DialogInterface dialog) {
+					lp.screenBrightness = 100 / 100.0f;
+			        getWindow().setAttributes(lp);
+				}
+	        });
+	        
+	        sksDialog.setOnKeyListener(new Dialog.OnKeyListener() {
+				@Override
+				public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+					if(keyCode == KeyEvent.KEYCODE_BACK) {
+	                    dialog.dismiss();
+	                }
+					return true;
+				}
+	        });
+	        
+	        sksDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+	            @Override
+	            public void onDismiss(DialogInterface dialog) {
+	            	if(qrCode != null) {
+	            		qrCode.recycle();
+	            		qrCode = null;
+	            	}
+	            	
+	        		lp.screenBrightness = brightnessNow;
+	        		getWindow().setAttributes(lp);
+	        		receiptFlag = true;
+	        		requestReceipt(temp_pip);
+	        		
+	        		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+	            }
+	        });
+	        
+	        ImageView image = (ImageView) sksDialog.findViewById(R.id.sks);
+	        image.setImageBitmap(qrCode);
+	        
+	        int currentOrientation = getResources().getConfiguration().orientation;
+	        if(currentOrientation == Configuration.ORIENTATION_LANDSCAPE) 
+	        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+	        else
+	        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
+	        
+	        sksDialog.show();
+	
+	        final Timer t = new Timer();
+	        t.schedule(new TimerTask() {
+	            public void run() {
+	            	sksDialog.dismiss(); /// When the task active then close the dialog
+	                t.cancel(); /// Also just top the timer thread, otherwise, you may receive a crash report
+	            }
+	        }, TIME_TO_DISMISS_SKS);
+    	} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		}
     }
     
     private void receiptDialog() {
@@ -1099,15 +1133,18 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
             	progDialog.dismiss();
             
             if(result != null) {
-	            String originalCode = pip + SKS_SEP + hrdwToken + SKS_SEP + result / 1000L;
+            	String originalCode = pip + SKS_SEP + hrdwToken + SKS_SEP + result / 1000L;
 	            
 	            Utils.Logger(DEBUG, TAG, originalCode);
 	        	
-	        	try {
-	                showSKSDialog(SKSCreater.createSKS(originalCode, YodoPayment.this, SKSCreater.SKS_CODE));
-	            } catch(UnsupportedEncodingException e) {
-	                e.printStackTrace();
-	            }
+	        
+	        		// retrieve display dimensions
+	                /*Rect displayRectangle = new Rect();
+	                Window window = getWindow();
+	                window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
+	                SKSCreater.setWidth((int)(displayRectangle.width() * 0.8f));*/
+	                showSKSDialog(originalCode);
+	            
             } else {
             	handlerMessages.sendEmptyMessage(YodoGlobals.GENERAL_ERROR);
             }
