@@ -33,7 +33,7 @@ import co.yodo.R;
  */
 public class SKSCreater {
 	/*!< DEBUG */
-	private final static boolean DEBUG = false;
+	private final static boolean DEBUG = true;
 
 	// size of qr code (px)
 	private final static int QR_WIDTH = 300;

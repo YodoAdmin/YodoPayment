@@ -81,6 +81,11 @@ public class XMLHandler extends DefaultHandler {
 			attr = attributes.getValue(ServerResponse.PARAMS_ELEM); 
 			responseValues.put(ServerResponse.PARAMS_ELEM, attr);
 		}
+		else if (localName.equalsIgnoreCase(ServerResponse.TIME_ELEM)){
+			/** Get attribute value */
+			attr = attributes.getValue(ServerResponse.TIME_ELEM); 
+			responseValues.put(ServerResponse.TIME_ELEM, attr);
+		}
 	}
 
 	/** Called when tag closing ( ex:- <name>AndroidPeople</name>
@@ -88,7 +93,7 @@ public class XMLHandler extends DefaultHandler {
 	@Override
 	public void endElement(String uri, String localName, String qName) throws SAXException {
 		currentElement = false;
-	
+		
 		/** set value */
 		if (localName.equalsIgnoreCase(ServerResponse.CODE_ELEM)) {
 			/** Get attribute value */
@@ -112,6 +117,15 @@ public class XMLHandler extends DefaultHandler {
 				responseValues.put(ServerResponse.PARAMS_ELEM, params + ServerResponse.ENTRY_SEPARATOR + ServerResponse.BALANCE_ELEM + ServerResponse.VALUE_SEPARATOR + currentValue);
 			else
 				responseValues.put(ServerResponse.PARAMS_ELEM, ServerResponse.BALANCE_ELEM+ServerResponse.VALUE_SEPARATOR+currentValue);
+		}
+		else if (localName.equalsIgnoreCase(ServerResponse.TIME_ELEM)){
+			/** Get attribute value */
+			String params = responseValues.get(ServerResponse.PARAMS_ELEM);
+			responseValues.put(ServerResponse.TIME_ELEM, currentValue);
+			if(params != null)
+				responseValues.put(ServerResponse.PARAMS_ELEM, params + ServerResponse.ENTRY_SEPARATOR + ServerResponse.TIME_ELEM + ServerResponse.VALUE_SEPARATOR + currentValue);
+			else
+				responseValues.put(ServerResponse.PARAMS_ELEM, ServerResponse.TIME_ELEM + ServerResponse.VALUE_SEPARATOR + currentValue);
 		}
 		else if(localName.equalsIgnoreCase(ServerResponse.DESCRIPTION_ELEM)){
 			/** Get attribute value */

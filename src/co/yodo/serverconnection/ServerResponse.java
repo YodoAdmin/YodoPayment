@@ -33,6 +33,8 @@ public class ServerResponse {
 	
 	public static final String RECEIVE_ELEM = "transauthnumber";
 	
+	public static final String TIME_ELEM = "rtime";
+	
 	public static final String VALUE_SEPARATOR = ">";
 	
 	public static final String ENTRY_SEPARATOR = "#";
@@ -95,6 +97,20 @@ public class ServerResponse {
 	 */
 	public static String getBalanceElem() {
 		return BALANCE_ELEM;
+	}
+	
+	public long getTime() {
+		Long time = null;
+		String aParams[] = params.split(ENTRY_SEPARATOR);
+		
+		for(String param : aParams) {
+            String aValParams[] = param.split(VALUE_SEPARATOR);
+            
+            if(aValParams[0].equals(TIME_ELEM)) 
+                time = Long.valueOf(aValParams[1]);
+		}
+        
+		return time;
 	}
 	
 	@Override

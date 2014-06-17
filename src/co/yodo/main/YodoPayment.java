@@ -5,18 +5,13 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.InetAddress;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DecimalFormat;
 import java.util.Arrays;
 import java.util.Calendar;
-import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
-
-import org.apache.commons.net.ntp.NTPUDPClient;
-import org.apache.commons.net.ntp.TimeInfo;
 
 import co.yodo.R;
 import co.yodo.database.CouponsDataSource;
@@ -506,6 +501,11 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
      * @param qrBitmap
      */
     private void showSKSDialog(String code) {
+    	//retrieve display dimensions
+        /*Rect displayRectangle = new Rect();
+        Window window = getWindow();
+        window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
+        SKSCreater.setWidth((int)(displayRectangle.width() * 0.8f));*/
     	try {
 			qrCode = SKSCreater.createSKS(code, YodoPayment.this, SKSCreater.SKS_CODE);
     	
@@ -934,7 +934,12 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
             if(code.equals(YodoGlobals.AUTHORIZED)) {
             	switch(queryType) {
 	                case AUTH_REQ:
-                        new TimeTask().execute(temp_pip);
+	                	Long time = data.getTime();
+	                	if(time != null) {
+		                	String originalCode = temp_pip + SKS_SEP + hrdwToken + SKS_SEP + time;
+		    	            Utils.Logger(DEBUG, TAG, originalCode);
+		    	            showSKSDialog(originalCode);
+	                	}
 	                break;
 	
 	                case BAL_REQ:
@@ -1083,70 +1088,6 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
             if(bmAdvertising != null) {
 				advertisingImage.setImageBitmap(bmAdvertising);
 				mAttacher.update();
-            }
-        }
-    }
-
-    class TimeTask extends AsyncTask<String, Void, Long> {
-    	private String pip;
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            message = getString(R.string.sks_message);
-            Utils.showProgressDialog(progDialog, getString(R.string.sks_message));
-        }
-        
-        @Override
-        protected Long doInBackground(String... params) {
-        	pip = params[0];
-            NTPUDPClient timeClient = new NTPUDPClient();
-            timeClient.setDefaultTimeout(YodoGlobals.TIMEOUT_SERVER);
-            TimeInfo timeInfo;
-            
-            List<String> timeList = Arrays.asList(YodoGlobals.TIME_SERVERS); 
-            for(String server : timeList) {  
-            	Utils.Logger(DEBUG, TAG, server);
-            	
-            	try {
-            		InetAddress inetAddress = InetAddress.getByName(server);
-                    timeInfo = timeClient.getTime(inetAddress);
-                    Long returnTime = timeInfo.getMessage().getTransmitTimeStamp().getTime();   //server time
-                     
-                    if(returnTime != null) {
-                    	Utils.Logger(DEBUG, TAG, String.valueOf(returnTime));
-
-                    	return returnTime;
-                    }
-                } catch (IOException e) {
-                	e.printStackTrace();
-                }
-            } 
-            return null;
-        }
-        
-        @Override
-        protected void onPostExecute(Long result) {
-            super.onPostExecute(result);
-            
-            if(progDialog != null)
-            	progDialog.dismiss();
-            
-            if(result != null) {
-            	String originalCode = pip + SKS_SEP + hrdwToken + SKS_SEP + result / 1000L;
-	            
-	            Utils.Logger(DEBUG, TAG, originalCode);
-	        	
-	        
-	        		// retrieve display dimensions
-	                /*Rect displayRectangle = new Rect();
-	                Window window = getWindow();
-	                window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
-	                SKSCreater.setWidth((int)(displayRectangle.width() * 0.8f));*/
-	                showSKSDialog(originalCode);
-	            
-            } else {
-            	handlerMessages.sendEmptyMessage(YodoGlobals.GENERAL_ERROR);
             }
         }
     }
