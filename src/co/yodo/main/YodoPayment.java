@@ -185,6 +185,9 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
         if(advertising && mBluetoothAdapter != null) {
     		setupBluetooth(); 
     	}
+        
+        if(couponsdb != null) 
+        	couponsdb.open();
     }
 	
 	@Override
@@ -373,18 +376,19 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 			                    int files = directory.listFiles().length;
 			                    File image = new File(directory, "ad" + (files++) + ".png");
 			                    
+			                    Utils.Logger(DEBUG, TAG, image.toString());
 			                    success = false;
 			                    // Encode the file as a PNG image.
 			                    FileOutputStream outStream;
 			                    try {
 			                        outStream = new FileOutputStream(image);
-			                        bitmap.compress(Bitmap.CompressFormat.PNG, 100, outStream); 
+			                        bitmap.compress(Bitmap.CompressFormat.PNG, 90, outStream); 
 	
 			                        outStream.flush();
 			                        outStream.close();
 			                        success = true;
 			                        
-			                        couponsdb.createCoupon(image.getPath(), actualMerch);
+        							couponsdb.createCoupon(image.getPath(), actualMerch);
 			                    } catch (FileNotFoundException e) {
 			                        e.printStackTrace();
 			                    } catch (IOException e) {
@@ -653,7 +657,6 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
             }
         }
         final String finalQuery = query;
-        
         Utils.Logger(DEBUG, TAG, finalQuery);
         
         saveButton.setOnClickListener(new OnClickListener() {
@@ -966,9 +969,11 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
                     
 	                case ADS_REQ:
 	                	String url = data.getParams();
+	                	int end    = url.indexOf(ServerResponse.ENTRY_SEPARATOR + ServerResponse.TIME_ELEM);
+	                	url        = url.substring(0, end);
 	                	
 	                	if(!url.equals(YodoGlobals.NO_ADS)) {
-	                		new DownloadTask().execute(data.getParams().replaceAll(" ", "%20"));
+	                		new DownloadTask().execute(url.replaceAll(" ", "%20"));
 	                	}
 	                break;
 	                
@@ -1060,6 +1065,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 					extension = ads.substring(ads.lastIndexOf("."));
 				}
 				
+				Utils.Logger(DEBUG, TAG, ads);
 				if(Arrays.asList(YodoGlobals.IMG_EXT).contains(extension)) {
 					URL url = new URL(ads);
 					bmAdvertising = BitmapFactory.decodeStream(url.openConnection().getInputStream());

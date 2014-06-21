@@ -16,13 +16,13 @@ import android.util.Log;
 public class AdvertisingService extends Service {
 	/*!< DEBUG */
 	private static final boolean DEBUG = false;
-	public static final String TAG = "BluetoothTag";
+	public static final String TAG = AdvertisingService.class.getName();
 	
 	/*!< Bluetooth Timer */
 	private BluetoothAdapter mBluetoothAdapter;
 	private boolean registered = false;
-	private TimerTask task;
-	private Timer timer;
+	private TimerTask task = null;
+	private Timer timer    = null;
 	
 	/*!< Times */
 	private static final int DELAY_TIME  = 0;
@@ -38,8 +38,7 @@ public class AdvertisingService extends Service {
 	
 	@Override
 	public void onCreate() {
-		if(DEBUG)
-			Log.d(TAG, "onCreate");
+		Utils.Logger(DEBUG, TAG, "onCreate");
 	    
 	    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 	    if(mBluetoothAdapter != null) {
@@ -47,17 +46,20 @@ public class AdvertisingService extends Service {
             registerReceiver(mReceiver, filter);
             registered = true;
             
-	    	timer = new Timer();
-	    	task = new TimerTask() {
+            if(timer != null) {
+            	timer.cancel();
+            } else {
+		    	timer = new Timer();
+            }
+            
+            task = new TimerTask() {
 	    		@Override
 	            public void run() {
 	    			if(mBluetoothAdapter.isDiscovering()) {
 	    	            mBluetoothAdapter.cancelDiscovery();
 	    	        }
 	    	    	mBluetoothAdapter.startDiscovery();
-	    	    	
-	    	    	if(DEBUG)
-	    	    		Log.d(TAG, "onDiscover");
+	    	    	Utils.Logger(DEBUG, TAG, "onDiscover");
 	            }
 	        };
 	    }
@@ -65,8 +67,7 @@ public class AdvertisingService extends Service {
 	
 	@Override
 	public void onStart(Intent intent, int startId) {
-		if(DEBUG)
-			Log.d(TAG, "onStart");    
+		Utils.Logger(DEBUG, TAG, "onStart");   
 	    
 	    if(mBluetoothAdapter != null && !mBluetoothAdapter.isEnabled()) {
 	        stopSelf();
@@ -74,11 +75,10 @@ public class AdvertisingService extends Service {
 	        timer.schedule(task, DELAY_TIME, PERIOD_TIME);
 	    }
 	}
-	 
+
 	@Override
 	public void onDestroy() {
-		if(DEBUG)
-			Log.d(TAG, "onDestroy");
+		Utils.Logger(DEBUG, TAG, "onDestroy");  
 		
 		if(mBluetoothAdapter!= null && mBluetoothAdapter.isDiscovering()) {
             mBluetoothAdapter.cancelDiscovery();

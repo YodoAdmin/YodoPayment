@@ -31,7 +31,7 @@ public class CouponsDataSource {
 	}
 
 	public void open() throws SQLException {
-	    database = dbHelper.getWritableDatabase();
+		database = dbHelper.getWritableDatabase();
 	}
 
 	public void close() {
