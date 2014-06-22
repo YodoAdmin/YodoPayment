@@ -1002,6 +1002,12 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
  					
 	 					db.delete(ReceiptsSQLiteHelper.TABLE_RECEIPTS, null, null);
 	 				    db.close();
+	 				   
+	 				    processStopService(AdvertisingService.TAG);
+	 					
+	 				    SharedPreferences.Editor editor = settings.edit();
+	 		        	editor.putBoolean(YodoGlobals.ID_ADVERTISING, false);
+	 					editor.commit();
 
                         // Listener to click event on the dialog in order to view the sks code
                         DialogInterface.OnClickListener okButtonClickListener = new DialogInterface.OnClickListener() {

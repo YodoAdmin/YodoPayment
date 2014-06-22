@@ -15,7 +15,7 @@ import android.util.Log;
 
 public class AdvertisingService extends Service {
 	/*!< DEBUG */
-	private static final boolean DEBUG = false;
+	private static final boolean DEBUG = true;
 	public static final String TAG = AdvertisingService.class.getName();
 	
 	/*!< Bluetooth Timer */
@@ -46,12 +46,6 @@ public class AdvertisingService extends Service {
             registerReceiver(mReceiver, filter);
             registered = true;
             
-            if(timer != null) {
-            	timer.cancel();
-            } else {
-		    	timer = new Timer();
-            }
-            
             task = new TimerTask() {
 	    		@Override
 	            public void run() {
@@ -72,6 +66,10 @@ public class AdvertisingService extends Service {
 	    if(mBluetoothAdapter != null && !mBluetoothAdapter.isEnabled()) {
 	        stopSelf();
 	    } else {
+	    	if(timer == null) {
+		    	timer = new Timer();
+            }
+	    	
 	        timer.schedule(task, DELAY_TIME, PERIOD_TIME);
 	    }
 	}
@@ -92,7 +90,6 @@ public class AdvertisingService extends Service {
 	}
 	
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-        @SuppressWarnings("unused")
 		public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if(BluetoothDevice.ACTION_FOUND.equals(action)) {
