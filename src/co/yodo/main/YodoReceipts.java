@@ -203,7 +203,7 @@ public class YodoReceipts extends ActionBarActivity {
  	   	TextView paid = (TextView)layout.findViewById(R.id.paidText);
  	   	TextView tender = (TextView)layout.findViewById(R.id.cashTenderText);
  	   	TextView cashBack = (TextView)layout.findViewById(R.id.cashBackText);
- 	   	TextView balance = (TextView)layout.findViewById(R.id.yodoBalanceText);
+ 	   	//TextView balance = (TextView)layout.findViewById(R.id.yodoBalanceText);
  	   	ImageView deleteButton = (ImageView)layout.findViewById(R.id.deleteButton);
  	   	ImageView saveButton = (ImageView)layout.findViewById(R.id.saveButton);
  	   	
@@ -215,7 +215,7 @@ public class YodoReceipts extends ActionBarActivity {
  	   	tender.setText("" + Double.valueOf(twoDForm.format(Double.valueOf(dataHash.get(KEY_TENDER))).replace(",", ".")));
  	   	cashBack.setText("" + Double.valueOf(twoDForm.format(Double.valueOf(dataHash.get(KEY_CASHBACK))).replace(",", ".")));
  	   	authNumber.setText(dataHash.get(KEY_AUTHNUMBER));
- 	  	balance.setText("" + Double.valueOf(twoDForm.format(Double.valueOf(dataHash.get(KEY_BALANCE))).replace(",", ".")));
+ 	  	//balance.setText("" + Double.valueOf(twoDForm.format(Double.valueOf(dataHash.get(KEY_BALANCE))).replace(",", ".")));
  	  	
  	  	deleteButton.setVisibility(View.GONE);
  	  	saveButton.setVisibility(View.GONE);

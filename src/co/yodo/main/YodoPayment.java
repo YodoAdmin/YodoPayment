@@ -219,6 +219,10 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
         
         if(progDialog != null && progDialog.isShowing())
         	progDialog.cancel();
+        
+        if(mBluetoothAdapter != null) {
+        	processStopService(AdvertisingService.TAG);
+        }
     }
 	
 	@Override
@@ -588,7 +592,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
         TextView paid = (TextView)layout.findViewById(R.id.paidText);
         TextView tender = (TextView)layout.findViewById(R.id.cashTenderText);
         TextView cashBack = (TextView)layout.findViewById(R.id.cashBackText);
-        TextView balance = (TextView)layout.findViewById(R.id.yodoBalanceText);
+        //TextView balance = (TextView)layout.findViewById(R.id.yodoBalanceText);
         ImageView deleteButton = (ImageView)layout.findViewById(R.id.deleteButton);
         ImageView saveButton = (ImageView)layout.findViewById(R.id.saveButton);
 
@@ -653,7 +657,8 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
             else if(aValParams[0].equals(ServerResponse.BALANCE_ELEM)) {
             	double tempBalance = Double.valueOf(twoDForm.format(Double.valueOf(aValParams[1])).replace(",", "."));
                 query += tempBalance + ")";
-                balance.setText(String.valueOf(tempBalance));
+                //balance.setText(String.valueOf(tempBalance));
+                accBalanceText.setText(String.valueOf(tempBalance));
             }
         }
         final String finalQuery = query;
@@ -1002,8 +1007,6 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
  					
 	 					db.delete(ReceiptsSQLiteHelper.TABLE_RECEIPTS, null, null);
 	 				    db.close();
-	 				   
-	 				    processStopService(AdvertisingService.TAG);
 	 					
 	 				    SharedPreferences.Editor editor = settings.edit();
 	 		        	editor.putBoolean(YodoGlobals.ID_ADVERTISING, false);
