@@ -8,6 +8,8 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.InputType;
+import android.util.Log;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
@@ -26,17 +28,22 @@ import co.yodo.serverconnection.TaskFragment;
 import co.yodo.serverconnection.TaskFragment.SwitchServer;
 
 public class YodoResetPip extends ActionBarActivity implements TaskFragment.YodoCallback {
+	/*!< DEBUG */
+	private final static String TAG = YodoResetPip.class.getName();
+	private final static boolean DEBUG = true;
+	
 	 /*!< GUI Controllers */
     private EditText pipText;
     private EditText newPipText;
     private EditText confirmPipText;
     
     /*!< User's password */
-    private String currentPip, newPip, confirmPip;
+    private String currentPip, newPip, confirmPip, authNumber;
     
     /*!< Variable used as an authentication number */
     private static final String KEY_TEMP_PIP     = "key_temp_pip";
     private static final String KEY_TEMP_NEW_PIP = "key_temp_new_pip";
+    private static final String KEY_TEMP_AUTH_N  = "key_temp_auth_number";
     private static String hrdwToken;
     
     /*!< Messages Handler */
@@ -68,12 +75,16 @@ public class YodoResetPip extends ActionBarActivity implements TaskFragment.Yodo
         updateData();
         
         // Restore saved state.
-	    if(savedInstanceState != null && savedInstanceState.getBoolean(YodoGlobals.KEY_IS_SHOWING)) {
+	    if(savedInstanceState != null) {
 	    	currentPip = savedInstanceState.getString(KEY_TEMP_PIP);
 	    	newPip     = savedInstanceState.getString(KEY_TEMP_NEW_PIP);
-	    	message    = savedInstanceState.getString(YodoGlobals.KEY_MESSAGE);
-	    	Utils.showProgressDialog(progDialog, message);
-	    }
+	    	authNumber = savedInstanceState.getString(KEY_TEMP_AUTH_N);
+	    	
+	    	if(savedInstanceState.getBoolean(YodoGlobals.KEY_IS_SHOWING)) {
+	    		message    = savedInstanceState.getString(YodoGlobals.KEY_MESSAGE);
+	    		Utils.showProgressDialog(progDialog, message);
+	    	}
+	    } 
     }
 	
 	@Override
@@ -87,6 +98,9 @@ public class YodoResetPip extends ActionBarActivity implements TaskFragment.Yodo
 	    
 	    if(newPip != null)
 	    	outState.putString(KEY_TEMP_NEW_PIP, newPip);
+	    
+	    if(authNumber != null)
+	    	outState.putString(KEY_TEMP_AUTH_N, authNumber);
 	}
 	
 	@Override
@@ -96,12 +110,49 @@ public class YodoResetPip extends ActionBarActivity implements TaskFragment.Yodo
     }
 	
 	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		getMenuInflater().inflate(R.menu.yodo_reset_pip, menu);
+		return true;
+	}
+	
+	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch(item.getItemId()) {
 	        case android.R.id.home:
 	            finish();
 	        break;
 	
+	        case R.id.action_forgot_pip:
+	            newPip     = newPipText.getText().toString();
+	            confirmPip = confirmPipText.getText().toString();
+	            
+	            Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+	            boolean errorMessage = false;
+	            
+	            if(newPip.length() < YodoGlobals.MIN_PIP_LENGTH) {
+	                newPipText.startAnimation(shake);
+
+	                if(!errorMessage) {
+	                    ToastMaster.makeText(YodoResetPip.this, R.string.pip_length_short, Toast.LENGTH_SHORT).show();
+	                    errorMessage = true;
+	                }
+	            }
+
+	            if(!newPip.equals(confirmPip)) {
+	                confirmPipText.startAnimation(shake);
+
+	                if(!errorMessage) {
+	                    ToastMaster.makeText(YodoResetPip.this, R.string.pip_confirm_diff, Toast.LENGTH_SHORT).show();
+	                    errorMessage = true;
+	                }
+	            }
+
+	            confirmPip = "";
+	            if(!errorMessage) {
+	            	requestBiometricToken();
+	            }
+	        break;
+	        
 	        default:
 	        break;
 	    }
@@ -202,8 +253,8 @@ public class YodoResetPip extends ActionBarActivity implements TaskFragment.Yodo
   	 * Connects to the switch and request the biometric token
   	 * @return String message The message of good bye
   	 */
-  	private void requestBiometricToken(String pip) {
-  		String data = YodoQueries.requestBiometricToken(this, hrdwToken, pip);
+  	private void requestBiometricToken() {
+  		String data = YodoQueries.requestBiometricToken(this, hrdwToken);
 
         SwitchServer request = mTaskFragment.getSwitchServerInstance();
         request.setType(BIO_REQ);
@@ -223,6 +274,19 @@ public class YodoResetPip extends ActionBarActivity implements TaskFragment.Yodo
         request.setDialog(true, getString(R.string.change_pip_message));
         
         mTaskFragment.start(request, SwitchServer.RESET_PIP_REQUEST, data);
+    }
+    
+    /**
+     * Connects to the switch and change the actual password for a new one
+     */
+    private void requestPIPResetBio(String authNumber, String newPip) {
+    	String data = YodoQueries.requestPIPResetBio(this, authNumber, hrdwToken, newPip);
+
+        SwitchServer request = mTaskFragment.getSwitchServerInstance();
+        request.setType(CPIP_REQ);
+        request.setDialog(true, getString(R.string.change_pip_message));
+        
+        mTaskFragment.start(request, SwitchServer.RESET_PIP_BIO_REQUEST, data);
     }
 	
 	@Override
@@ -247,13 +311,24 @@ public class YodoResetPip extends ActionBarActivity implements TaskFragment.Yodo
             if(code.equals(YodoGlobals.AUTHORIZED)) {
             	switch(queryType) {
 	                case AUTH_REQ:
-	                	requestBiometricToken(currentPip);
+	                	requestPIPReset(currentPip, newPip);
+		            	currentPip = "";
+	                    newPip = "";
+	                	//requestBiometricToken(currentPip);
 	                break;
 	                
 	                case BIO_REQ:
-	                	Intent intent = new Intent(YodoResetPip.this, YodoCamera.class);
-		            	intent.putExtra(YodoGlobals.ID_TOKEN, data.getParams());
-		            	startActivityForResult(intent, REQUEST_FACE_ACTIVITY);
+	                	String biometricToken = data.getParamsWithoutTime()[0];
+	                	
+	                	if(!biometricToken.equals(YodoGlobals.USER_BIOMETRIC)) {
+		                	authNumber = data.getAuthNumber();
+		                	
+		                	Intent intent = new Intent(YodoResetPip.this, YodoCamera.class);
+			            	intent.putExtra(YodoGlobals.ID_TOKEN, biometricToken);
+			            	startActivityForResult(intent, REQUEST_FACE_ACTIVITY);
+	                	} else {
+	                		ToastMaster.makeText(YodoResetPip.this, R.string.no_biometric, Toast.LENGTH_SHORT).show();
+	                	}
 	                break;
 	                
 	                case CPIP_REQ:
@@ -281,8 +356,11 @@ public class YodoResetPip extends ActionBarActivity implements TaskFragment.Yodo
         switch(requestCode) {      
             case(REQUEST_FACE_ACTIVITY):
             	if(resultCode == RESULT_OK) {
-            		requestPIPReset(currentPip, newPip);
-	            	currentPip = "";
+            		if(DEBUG)
+            			Log.i(TAG, "Biometric Success");
+            		
+            		requestPIPResetBio(authNumber, newPip);
+            		authNumber = "";
                     newPip = "";
             	}
             break;

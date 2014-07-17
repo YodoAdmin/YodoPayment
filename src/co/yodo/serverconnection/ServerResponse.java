@@ -1,5 +1,9 @@
 package co.yodo.serverconnection;
 
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
+
 public class ServerResponse {
 	/**
 	 * XML root element
@@ -97,6 +101,13 @@ public class ServerResponse {
 	 */
 	public static String getBalanceElem() {
 		return BALANCE_ELEM;
+	}
+	
+	public String[] getParamsWithoutTime() {
+		List<String> list = new LinkedList<String>(Arrays.asList(params.split(ENTRY_SEPARATOR)));
+		list.remove(list.size() - 1);
+		
+		return list.toArray(new String[list.size()]);
 	}
 	
 	public long getTime() {

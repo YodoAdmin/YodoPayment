@@ -18,6 +18,7 @@ public class CreateAlertDialog {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setInverseBackgroundForced(true);
+        builder.setIcon(R.drawable.ic_launcher);
 
         if(layout != null)
         	builder.setView(layout);
@@ -47,7 +48,7 @@ public class CreateAlertDialog {
                 }
             }
         });
-        
+
         alertDialog.show();
     }
 
@@ -55,6 +56,8 @@ public class CreateAlertDialog {
                                        DialogInterface.OnClickListener okButtonClickListener) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setInverseBackgroundForced(true);
+        builder.setIcon(R.drawable.ic_launcher);
 
         if(title != null)
             builder.setTitle(title);

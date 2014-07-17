@@ -68,6 +68,7 @@ import android.widget.ArrayAdapter;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.Spinner;
 import android.widget.TextView;
@@ -75,7 +76,7 @@ import android.widget.Toast;
 
 public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoCallback {
 	/*!< DEBUG */
-	private final static String TAG = "YodoPayment";
+	private final static String TAG = YodoPayment.class.getName();
 	private final static boolean DEBUG = true;
 	
 	/*!< SKS time to dismiss milliseconds */
@@ -258,7 +259,8 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
         		
         		AlertDialog.Builder builder = new AlertDialog.Builder(YodoPayment.this);
         		builder.setInverseBackgroundForced(true);
-        		View v = getLayoutInflater().inflate(R.layout.dialog_settings, null);
+        		builder.setIcon(R.drawable.ic_launcher);
+        		View v = getLayoutInflater().inflate(R.layout.dialog_settings, new LinearLayout(this), false);
         		
         		if(languagePosition == -1 && (Arrays.asList(YodoGlobals.lang_code).contains(code))) {
         			languagePosition = Arrays.asList(YodoGlobals.lang_code).indexOf(code);
@@ -584,7 +586,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
         receipt.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-        View layout = inflater.inflate(R.layout.dialog_receipt, null);
+        View layout = inflater.inflate(R.layout.dialog_receipt, new LinearLayout(this), false);
 
         TextView description = (TextView)layout.findViewById(R.id.descriptionText);
         TextView authNumber = (TextView)layout.findViewById(R.id.authNumberText);
@@ -720,10 +722,10 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
     	
         // Input PIP dialog
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View layout = inflater.inflate(R.layout.dialog_password, null);
+        View layout = inflater.inflate(R.layout.dialog_password, new LinearLayout(this), false);
         inputBox = (EditText) layout.findViewById(R.id.dialogInputBox);
 
-        // Listener to click event on the dialog in order to view the sks code
+        // Listener to click event on the dialog in order to view the SKS code
         DialogInterface.OnClickListener pipDialogOkButtonClickListener = new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int which) {
                 String temp_pip = inputBox.getText().toString();
@@ -753,7 +755,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
     	
         // Input PIP dialog
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View layout = inflater.inflate(R.layout.dialog_password, null);
+        View layout = inflater.inflate(R.layout.dialog_password, new LinearLayout(this), false);
         inputBox = (EditText) layout.findViewById(R.id.dialogInputBox);
 
         // Listener to click event on the dialog in order to view the sks code
@@ -785,7 +787,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
     	
         // Input PIP dialog
         LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
-        View layout = inflater.inflate(R.layout.dialog_password, null);
+        View layout = inflater.inflate(R.layout.dialog_password, new LinearLayout(this), false);
         inputBox = (EditText) layout.findViewById(R.id.dialogInputBox);
 
         // Listener to click event on the dialog in order to view the sks code

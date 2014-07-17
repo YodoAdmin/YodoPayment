@@ -4,7 +4,7 @@ import android.util.Log;
 
 public class ServerRequest {
 	/*!< DEBUG */
-	private final static boolean DEBUG = false;
+	private final static boolean DEBUG = true;
 	
 	/*!< Protocol version used in the request */
 	private static final String PROTOCOL_VERSION = "1.1.2";

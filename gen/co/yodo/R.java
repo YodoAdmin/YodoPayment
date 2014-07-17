@@ -1123,6 +1123,7 @@ containing a value of this type.
         public static final int action_bar_subtitle=0x7f050023;
         public static final int action_bar_title=0x7f050022;
         public static final int action_context_bar=0x7f05001d;
+        public static final int action_forgot_pip=0x7f050091;
         public static final int action_menu_divider=0x7f050016;
         public static final int action_menu_presenter=0x7f050017;
         public static final int action_mode_close_button=0x7f050024;
@@ -1207,8 +1208,8 @@ containing a value of this type.
         public static final int progress_horizontal=0x7f050019;
         public static final int radio=0x7f05002f;
         public static final int receiptsList=0x7f050048;
-        public static final int registerBiometricButton=0x7f05003d;
-        public static final int registerBiometricLabel=0x7f05003c;
+        public static final int registerBiometricButton=0x7f05003c;
+        public static final int registerBiometricLabel=0x7f05003e;
         public static final int registerPIPLabel=0x7f05004c;
         public static final int registerPipButton=0x7f05004b;
         public static final int register_information=0x7f05003f;
@@ -1216,7 +1217,7 @@ containing a value of this type.
         public static final int relativeLayout1=0x7f050043;
         public static final int saveButton=0x7f050069;
         public static final int scrollPipLayout=0x7f050051;
-        public static final int scrollView=0x7f05003e;
+        public static final int scrollView=0x7f05003d;
         public static final int search_badge=0x7f050032;
         public static final int search_bar=0x7f050031;
         public static final int search_button=0x7f050033;
@@ -1333,7 +1334,8 @@ containing a value of this type.
         public static final int yodo_menu_coupon=0x7f0c0001;
         public static final int yodo_menu_receipt=0x7f0c0002;
         public static final int yodo_payment=0x7f0c0003;
-        public static final int yodo_splash=0x7f0c0004;
+        public static final int yodo_reset_pip=0x7f0c0004;
+        public static final int yodo_splash=0x7f0c0005;
     }
     public static final class string {
         /**  payments 
@@ -1388,6 +1390,7 @@ containing a value of this type.
  header data text 
          */
         public static final int account=0x7f0a0015;
+        public static final int action_forgot_pip=0x7f0a001b;
         /**  Settings 
  Settings 
  Settings 
@@ -1397,184 +1400,185 @@ containing a value of this type.
         public static final int action_settings=0x7f0a001a;
         public static final int actual_version=0x7f0a0019;
         public static final int app_name=0x7f0a0010;
-        public static final int auth_message=0x7f0a001e;
+        public static final int auth_message=0x7f0a001f;
         public static final int balance=0x7f0a0017;
-        public static final int balance_message=0x7f0a001d;
-        public static final int balance_succesfull=0x7f0a002d;
-        public static final int biometric=0x7f0a0064;
-        public static final int biometric_message=0x7f0a0021;
+        public static final int balance_message=0x7f0a001e;
+        public static final int balance_succesfull=0x7f0a002e;
+        public static final int biometric=0x7f0a0066;
+        public static final int biometric_message=0x7f0a0022;
         public static final int cancel=0x7f0a0014;
-        public static final int cash_back=0x7f0a004c;
-        public static final int cash_tender=0x7f0a004b;
-        public static final int change_language=0x7f0a0046;
-        public static final int change_pip_message=0x7f0a001f;
-        public static final int change_pip_succesfull=0x7f0a002e;
-        public static final int close_account=0x7f0a0045;
+        public static final int cash_back=0x7f0a004e;
+        public static final int cash_tender=0x7f0a004d;
+        public static final int change_language=0x7f0a0048;
+        public static final int change_pip_message=0x7f0a0020;
+        public static final int change_pip_succesfull=0x7f0a002f;
+        public static final int change_successfull=0x7f0a003c;
+        public static final int close_account=0x7f0a0047;
         /**  Close Message 
  Close Message 
  Close Message 
  Close Message 
  Close Message 
          */
-        public static final int close_message=0x7f0a006b;
-        public static final int closing_message=0x7f0a006c;
+        public static final int close_message=0x7f0a006d;
+        public static final int closing_message=0x7f0a006e;
         /**  configurations 
  configurations 
  configurations 
  configurations 
  configurations 
          */
-        public static final int configuration_title=0x7f0a003b;
-        public static final int confirm_pip=0x7f0a0056;
-        public static final int confirm_pip_hint=0x7f0a0059;
-        public static final int connected=0x7f0a0030;
-        public static final int coupons_refresh=0x7f0a0051;
+        public static final int configuration_title=0x7f0a003d;
+        public static final int confirm_pip=0x7f0a0058;
+        public static final int confirm_pip_hint=0x7f0a005b;
+        public static final int connected=0x7f0a0031;
+        public static final int coupons_refresh=0x7f0a0053;
         /**  Coupons 
  Coupons 
  Coupons 
  Coupons 
  Coupons 
          */
-        public static final int coupons_title=0x7f0a0050;
-        public static final int crash_toast_text=0x7f0a003a;
+        public static final int coupons_title=0x7f0a0052;
+        public static final int crash_toast_text=0x7f0a003b;
         /**  Change PIP 
  Change PIP 
  Change PIP 
  Change PIP 
  Change PIP 
          */
-        public static final int current_pip=0x7f0a0054;
-        public static final int current_pip_hint=0x7f0a0057;
+        public static final int current_pip=0x7f0a0056;
+        public static final int current_pip_hint=0x7f0a0059;
         public static final int date=0x7f0a0016;
         public static final int delete=0x7f0a0012;
         public static final int desc=0x7f0a0011;
-        public static final int error=0x7f0a0026;
-        public static final int eula_accept=0x7f0a005c;
-        public static final int eula_refuse=0x7f0a005d;
+        public static final int error=0x7f0a0027;
+        public static final int eula_accept=0x7f0a005e;
+        public static final int eula_refuse=0x7f0a005f;
         /**  Eula 
  Eula 
  Eula 
  Eula 
  Eula 
          */
-        public static final int eula_title=0x7f0a005b;
-        public static final int exit=0x7f0a001b;
-        public static final int face_recognition=0x7f0a0067;
-        public static final int farewell_message=0x7f0a006e;
-        public static final int farewell_message_tittle=0x7f0a006d;
+        public static final int eula_title=0x7f0a005d;
+        public static final int exit=0x7f0a001c;
+        public static final int face_recognition=0x7f0a0069;
+        public static final int farewell_message=0x7f0a0070;
+        public static final int farewell_message_tittle=0x7f0a006f;
         /**  Biometric Messages 
  Biometric Messages 
  Biometric Messages 
  Biometric Messages 
  Biometric Messages 
          */
-        public static final int finish_register=0x7f0a0063;
-        public static final int forgot_pip=0x7f0a005a;
-        public static final int get_advertising=0x7f0a0044;
-        public static final int get_balance=0x7f0a003e;
-        public static final int image_saved_failed=0x7f0a0038;
-        public static final int image_saved_ok=0x7f0a0037;
-        public static final int input_pip=0x7f0a0029;
-        public static final int instructions_message=0x7f0a006a;
+        public static final int finish_register=0x7f0a0065;
+        public static final int forgot_pip=0x7f0a005c;
+        public static final int get_advertising=0x7f0a0046;
+        public static final int get_balance=0x7f0a0040;
+        public static final int image_saved_failed=0x7f0a0039;
+        public static final int image_saved_ok=0x7f0a0038;
+        public static final int input_pip=0x7f0a002a;
+        public static final int instructions_message=0x7f0a006c;
         /**  Tutorial Instructions 
  Tutorial Instructions 
  Tutorial Instructions 
  Tutorial Instructions 
  Tutorial Instructions 
          */
-        public static final int instructions_title=0x7f0a0069;
-        public static final int language=0x7f0a0047;
-        public static final int link=0x7f0a0042;
-        public static final int loading=0x7f0a0022;
-        public static final int merch_found=0x7f0a0035;
-        public static final int new_pip=0x7f0a0055;
-        public static final int new_pip_hint=0x7f0a0058;
-        public static final int next=0x7f0a0061;
-        public static final int no_biometric=0x7f0a0033;
+        public static final int instructions_title=0x7f0a006b;
+        public static final int language=0x7f0a0049;
+        public static final int link=0x7f0a0044;
+        public static final int loading=0x7f0a0023;
+        public static final int merch_found=0x7f0a0036;
+        public static final int new_pip=0x7f0a0057;
+        public static final int new_pip_hint=0x7f0a005a;
+        public static final int next=0x7f0a0063;
+        public static final int no_biometric=0x7f0a0034;
         /**  Advertising 
  Advertising 
  Advertising 
  Advertising 
  Advertising 
          */
-        public static final int no_bluetooth=0x7f0a0052;
-        public static final int no_camera=0x7f0a0032;
-        public static final int no_devices=0x7f0a0053;
-        public static final int no_hdw=0x7f0a0024;
-        public static final int no_internet=0x7f0a0027;
-        public static final int no_transaction=0x7f0a004f;
+        public static final int no_bluetooth=0x7f0a0054;
+        public static final int no_camera=0x7f0a0033;
+        public static final int no_devices=0x7f0a0055;
+        public static final int no_hdw=0x7f0a0025;
+        public static final int no_internet=0x7f0a0028;
+        public static final int no_transaction=0x7f0a0051;
         /**  Messages Text 
  Messages Text 
  Messages Text 
  Messages Text 
  Messages Text 
          */
-        public static final int no_wifi=0x7f0a0023;
-        public static final int not_available=0x7f0a002f;
-        public static final int not_support_bt=0x7f0a0034;
-        public static final int null_response=0x7f0a0031;
+        public static final int no_wifi=0x7f0a0024;
+        public static final int not_available=0x7f0a0030;
+        public static final int not_support_bt=0x7f0a0035;
+        public static final int null_response=0x7f0a0032;
         public static final int ok=0x7f0a0013;
-        public static final int options=0x7f0a003c;
-        public static final int paid=0x7f0a0049;
-        public static final int pair=0x7f0a0043;
-        public static final int pip_confirm_diff=0x7f0a002b;
-        public static final int pip_hint=0x7f0a0060;
-        public static final int pip_length_short=0x7f0a002a;
-        public static final int receipt_auth=0x7f0a004a;
-        public static final int receipt_message=0x7f0a0020;
+        public static final int options=0x7f0a003e;
+        public static final int paid=0x7f0a004b;
+        public static final int pair=0x7f0a0045;
+        public static final int pip_confirm_diff=0x7f0a002c;
+        public static final int pip_hint=0x7f0a0062;
+        public static final int pip_length_short=0x7f0a002b;
+        public static final int receipt_auth=0x7f0a004c;
+        public static final int receipt_message=0x7f0a0021;
         /**  Receipts 
  Receipts 
  Receipts 
  Receipts 
  Receipts 
          */
-        public static final int recipts_title=0x7f0a0048;
-        public static final int register_pip=0x7f0a005f;
-        public static final int registering_user_biometric=0x7f0a0065;
-        public static final int registering_user_pip=0x7f0a0062;
+        public static final int recipts_title=0x7f0a004a;
+        public static final int register_pip=0x7f0a0061;
+        public static final int registering_user_biometric=0x7f0a0067;
+        public static final int registering_user_pip=0x7f0a0064;
         /**  Registration Messages 
  Registration Messages 
  Registration Messages 
  Registration Messages 
  Registration Messages 
          */
-        public static final int registration=0x7f0a005e;
-        public static final int reset_pip=0x7f0a003f;
-        public static final int save_image=0x7f0a0036;
-        public static final int saved_face=0x7f0a0068;
-        public static final int saved_receipt=0x7f0a004e;
-        public static final int saved_receipts=0x7f0a0041;
-        public static final int set_biometric=0x7f0a0040;
-        public static final int show_pass=0x7f0a0028;
+        public static final int registration=0x7f0a0060;
+        public static final int reset_pip=0x7f0a0041;
+        public static final int save_image=0x7f0a0037;
+        public static final int saved_face=0x7f0a006a;
+        public static final int saved_receipt=0x7f0a0050;
+        public static final int saved_receipts=0x7f0a0043;
+        public static final int set_biometric=0x7f0a0042;
+        public static final int show_pass=0x7f0a0029;
         /**  Progress Dialog Messages 
  Progress Dialog Messages 
  Progress Dialog Messages 
  Progress Dialog Messages 
  Progress Dialog Messages 
          */
-        public static final int sks_message=0x7f0a001c;
-        public static final int start_biometric=0x7f0a0025;
-        public static final int title_activity_yodo_biometric=0x7f0a0074;
-        public static final int title_activity_yodo_camera=0x7f0a0075;
-        public static final int title_activity_yodo_coupons=0x7f0a0072;
+        public static final int sks_message=0x7f0a001d;
+        public static final int start_biometric=0x7f0a0026;
+        public static final int title_activity_yodo_biometric=0x7f0a0076;
+        public static final int title_activity_yodo_camera=0x7f0a0077;
+        public static final int title_activity_yodo_coupons=0x7f0a0074;
         /**  Activities Titles 
          */
-        public static final int title_activity_yodo_payment=0x7f0a006f;
-        public static final int title_activity_yodo_receipts=0x7f0a0071;
-        public static final int title_activity_yodo_registration=0x7f0a0073;
-        public static final int title_activity_yodo_reset_pip=0x7f0a0070;
-        public static final int token_defined=0x7f0a0039;
-        public static final int tools=0x7f0a003d;
+        public static final int title_activity_yodo_payment=0x7f0a0071;
+        public static final int title_activity_yodo_receipts=0x7f0a0073;
+        public static final int title_activity_yodo_registration=0x7f0a0075;
+        public static final int title_activity_yodo_reset_pip=0x7f0a0072;
+        public static final int token_defined=0x7f0a003a;
+        public static final int tools=0x7f0a003f;
         /**  Button Messages 
  Button Messages 
  Button Messages 
  Button Messages 
          */
-        public static final int update_pip=0x7f0a0076;
+        public static final int update_pip=0x7f0a0078;
         public static final int version=0x7f0a0018;
-        public static final int voice_recognition=0x7f0a0066;
-        public static final int wrong_pip=0x7f0a002c;
-        public static final int yodo_balance=0x7f0a004d;
+        public static final int voice_recognition=0x7f0a0068;
+        public static final int wrong_pip=0x7f0a002d;
+        public static final int yodo_balance=0x7f0a004f;
     }
     public static final class style {
         /** 

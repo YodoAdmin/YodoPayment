@@ -14,6 +14,7 @@
     
     <!-- Settings -->
     <string name="action_settings">Ajustes</string>
+    <string name="action_forgot_pip">Olvidó el PIP?</string>
     <string name="exit">Salir</string>
 
     <!-- Progress Dialog Messages -->
@@ -48,6 +49,7 @@
     <string name="image_saved_ok">Imagen guardada satisfactoriamente</string>
     <string name="image_saved_failed">Error al guardar la imagen</string>
     <string name="token_defined">Token ya definido</string>
+    <string name="change_successfull">Cambio realizado satisfactoriamente</string>
 
     <!-- configurations -->
     <string name="configuration_title">Configuración</string>

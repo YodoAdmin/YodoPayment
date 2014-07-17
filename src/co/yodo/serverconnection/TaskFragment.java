@@ -126,20 +126,22 @@ public class TaskFragment extends Fragment {
 	    private boolean internetFlag = true;
 
 	    /*!< ID for identify requests */
-	    public static final String AUTH_HW_REQUEST     = "01";	// RT=0, ST=1
-	    public static final String AUTH_HW_PIP_REQUEST = "02";	// RT=0, ST=2
-	    public static final String BALANCE_REQUEST     = "03";	// RT=4, ST=1
-	    public static final String RECEIPT_REQUEST     = "04";	// RT=4, ST=3
-	    public static final String RESET_PIP_REQUEST   = "05";	// RT=3, ST=1
-	    public static final String REGISTER_REQUEST    = "06";	// RT=9, ST=0
-	    public static final String CLOSE_REQUEST       = "07";	// RT=8, ST=1
-	    public static final String BIO_REG_REQUEST     = "08";	// RT=9, ST=3
-	    public static final String QUERY_ADS_REQUEST   = "09";	// RT=4, ST=3
-	    public static final String BIOMETRIC_REQUEST   = "10";	// RT=4, ST=3
+	    public static final String AUTH_HW_REQUEST       = "01";	// RT=0, ST=1
+	    public static final String AUTH_HW_PIP_REQUEST   = "02";	// RT=0, ST=2
+	    public static final String BALANCE_REQUEST       = "03";	// RT=4, ST=1
+	    public static final String RECEIPT_REQUEST       = "04";	// RT=4, ST=3
+	    public static final String RESET_PIP_REQUEST     = "05";	// RT=3, ST=1
+	    public static final String REGISTER_REQUEST      = "06";	// RT=9, ST=0
+	    public static final String CLOSE_REQUEST         = "07";	// RT=8, ST=1
+	    public static final String BIO_REG_REQUEST       = "08";	// RT=9, ST=3
+	    public static final String QUERY_ADS_REQUEST     = "09";	// RT=4, ST=3
+	    public static final String BIOMETRIC_REQUEST     = "10";	// RT=4, ST=3
+	    public static final String RESET_PIP_BIO_REQUEST = "11";	// RT=3, ST=2
 
 	    /*!< Switch server ip address */ 
 	    //private static final String IP 		     = "http://192.168.1.34"; // Localhost
 	    //private static final String IP 		     = "http://50.56.180.133"; // Production 
+	    //private static final String IP 		     = "http://yodo.bytegolem.com"; // Production
 	    private static final String IP 			 = "http://198.101.209.120"; // Development 
 	    //private static final String YODO_ADDRESS = "/yodoLuis/yodoswitchrequest/getRequest/"; // Localhost
 	    private static final String YODO_ADDRESS = "/yodo/yodoswitchrequest/getRequest/"; // Production & Development
@@ -177,6 +179,9 @@ public class TaskFragment extends Fragment {
 	        }
 	        else if(requestParams[0].equals(RESET_PIP_REQUEST)) {
 	            this.connect(ServerRequest.createResetRequest(requestParams[1], Integer.parseInt(ServerRequest.RESET_PIP_SUBREQ)));
+	        }
+	        else if(requestParams[0].equals(RESET_PIP_BIO_REQUEST)) {
+	            this.connect(ServerRequest.createResetRequest(requestParams[1], Integer.parseInt(ServerRequest.BIO_RST_PIP_SUBREQ)));
 	        }
 	        else if(requestParams[0].equals(REGISTER_REQUEST)) {
 	            this.connect(ServerRequest.createRegistrationRequest(requestParams[1], Integer.parseInt(ServerRequest.CLIENT_SUBREQ)));

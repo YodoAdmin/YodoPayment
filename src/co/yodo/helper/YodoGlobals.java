@@ -51,9 +51,10 @@ public class YodoGlobals {
     public static final int MIN_PIP_LENGTH = 4;
 
     /*!< Query Identifiers (Record Locator) */
-    public static final int QUERY_BIO      = 20;
+    public static final int QUERY_BIO_PIP  = 20;
     public static final int RECORD_LOCATOR = 21;
     public static final int QUERY_ADS      = 22;
+    public static final int QUERY_BIO      = 24;
 
     /*!< Biometric Activity */
     public static final String FACE_DATA = "value_face";

@@ -25,7 +25,10 @@ public class YodoHandler extends Handler {
          if(main == null)
         	 return;
          
-         if(msg.what == YodoGlobals.NO_INTERNET) {
+         if(msg.what == YodoGlobals.SUCCESS) {
+             ToastMaster.makeText(main, R.string.change_successfull, Toast.LENGTH_LONG).show();
+         }
+         else if(msg.what == YodoGlobals.NO_INTERNET) {
              ToastMaster.makeText(main, R.string.no_internet, Toast.LENGTH_LONG).show();
          }
          else if(msg.what == YodoGlobals.GENERAL_ERROR) {
@@ -34,6 +37,6 @@ public class YodoHandler extends Handler {
          else if(msg.what == YodoGlobals.UNKOWN_ERROR) {
 				String response = msg.getData().getString("message");
 				ToastMaster.makeText(main, response, Toast.LENGTH_LONG).show();
-         }
+         } 
     }
 }

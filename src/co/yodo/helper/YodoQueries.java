@@ -1,9 +1,14 @@
 package co.yodo.helper;
 
 import android.app.Activity;
+import android.util.Log;
 import co.yodo.sks.Encrypter;
 
 public class YodoQueries {
+	// DEBUG
+	private static final boolean DEBUG = true;
+	private static final String TAG    = YodoQueries.class.getName();
+	
 	/*!< Object used to encrypt user's information */
     private static Encrypter oEncrypter;
     
@@ -114,13 +119,29 @@ public class YodoQueries {
 		return sEncryptedUsrData;
 	}
     
-    // Biometric Request String
-   	public static String requestBiometricToken(Activity activity, String hrdwToken, String pip) {
+    // Biometric Request String with PIP
+   	public static String requestBiometricTokenPIP(Activity activity, String hrdwToken, String pip) {
    		String sEncryptedUsrData;
 		StringBuilder sBiometricData = new StringBuilder();
 		
 		sBiometricData.append(hrdwToken).append(REQ_SEP);
 		sBiometricData.append(pip).append(REQ_SEP);
+		sBiometricData.append(YodoGlobals.QUERY_BIO_PIP);
+		
+		// Encrypting user's data to create request
+		getEncrypter().setsUnEncryptedString(sBiometricData.toString());
+		getEncrypter().rsaEncrypt(activity);
+		sEncryptedUsrData = getEncrypter().bytesToHex();
+		
+		return sEncryptedUsrData;
+   	}
+   	
+   	// Biometric Request String without PIP
+   	public static String requestBiometricToken(Activity activity, String hrdwToken) {
+   		String sEncryptedUsrData;
+		StringBuilder sBiometricData = new StringBuilder();
+		
+		sBiometricData.append(hrdwToken).append(REQ_SEP);
 		sBiometricData.append(YodoGlobals.QUERY_BIO);
 		
 		// Encrypting user's data to create request
@@ -153,6 +174,25 @@ public class YodoQueries {
 		sPipResetData.append(sEncryptedNewPip);
 
 		return sPipResetData.toString();
+    }
+    
+    // Reset PIP String
+    public static String requestPIPResetBio(Activity activity, String authNumber, String hrdwToken, String newPip) {
+    	String sEncryptedUsrData;
+		StringBuilder sPipResetData = new StringBuilder();
+		
+		sPipResetData.append(authNumber).append(REQ_SEP);
+		sPipResetData.append(hrdwToken).append(REQ_SEP);
+		sPipResetData.append(newPip);
+		
+		if(DEBUG)
+			Log.i(TAG, sPipResetData.toString());
+		
+		getEncrypter().setsUnEncryptedString(sPipResetData.toString());
+		getEncrypter().rsaEncrypt(activity);
+		sEncryptedUsrData = getEncrypter().bytesToHex();
+
+		return sEncryptedUsrData;
     }
     
     // Registration PIP String

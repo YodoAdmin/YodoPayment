@@ -7,6 +7,7 @@
               xmlns:tools="http://schemas.android.com/tools"
               tools:ignore="all"> <!-- Remove Later  -->
 
+    <!-- 
     <TextView
             android:id="@+id/registerBiometricLabel"
             android:layout_width="fill_parent"
@@ -16,7 +17,7 @@
             android:gravity="center"
             android:text="@string/biometric"
             android:textAppearance="?android:attr/textAppearanceLarge" />
-
+	-->
     <Button
         style="@style/ButtonText"
         android:background="@drawable/red_button"
