@@ -1,8 +1,10 @@
-package co.yodo.helper;
+package co.yodo.service;
 
 import java.util.Timer;
 import java.util.TimerTask;
 
+import co.yodo.helper.Utils;
+import co.yodo.helper.YodoGlobals;
 import android.app.Service;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
@@ -15,7 +17,7 @@ import android.util.Log;
 
 public class AdvertisingService extends Service {
 	/*!< DEBUG */
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	public static final String TAG = AdvertisingService.class.getName();
 	
 	/*!< Bluetooth Timer */
@@ -90,6 +92,7 @@ public class AdvertisingService extends Service {
 	}
 	
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
+		@SuppressWarnings("unused")
 		public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if(BluetoothDevice.ACTION_FOUND.equals(action)) {

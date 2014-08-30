@@ -29,6 +29,7 @@ public class YodoGlobals {
 	/*!< ID for messages */
 	public static final String AUTHORIZED		       = "AU00";
 	public static final String AUTHORIZED_REGISTRATION = "AU01";
+	public static final String AUTHORIZED_BALANCE      = "AU55";
 	public static final String AUTHORIZED_ALTERNATE    = "AU69";
 	public static final String AUTHORIZED_TRANSFER     = "AU88";
 	public static final String LOGIC_TEST              = "AU89";
@@ -49,12 +50,6 @@ public class YodoGlobals {
 
     /*!< Minimun lenght of the PIP */
     public static final int MIN_PIP_LENGTH = 4;
-
-    /*!< Query Identifiers (Record Locator) */
-    public static final int QUERY_BIO_PIP  = 20;
-    public static final int RECORD_LOCATOR = 21;
-    public static final int QUERY_ADS      = 22;
-    public static final int QUERY_BIO      = 24;
 
     /*!< Biometric Activity */
     public static final String FACE_DATA = "value_face";

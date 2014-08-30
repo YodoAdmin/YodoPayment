@@ -12,7 +12,7 @@
     <string name="date">Date:</string>
     <string name="balance">Balance:</string>
     <string name="version">Version:</string>
-    <string name="actual_version">1.2.5</string>
+    <string name="actual_version">1.2.8</string>
 
     <!-- Settings -->
     <string name="action_settings">Settings</string>
@@ -26,6 +26,8 @@
     <string name="change_pip_message">Changing the PIP</string>
     <string name="receipt_message">Getting receipt</string>
     <string name="biometric_message">Getting biometric token</string>
+    <string name="linking_code_message">Getting linking code</string>
+    <string name="linking_acc_message">Linking the accounts</string>
     <string name="loading">Loading &#x2026;</string>
 
     <!-- Messages Text -->
@@ -54,6 +56,7 @@
     <string name="token_defined">Token Already Defined</string>
     <string name="crash_toast_text">Ooooops ! I crashed, but a report has been sent to my developer to help fix the issue !</string>
     <string name="change_successfull">Change completed successfully</string>
+    <string name="copied_text">Text has been copied to clipboard</string>
 
     <!-- configurations -->
     <string name="configuration_title">Configuration</string>
@@ -116,6 +119,14 @@
     <string name="voice_recognition">Speech Recognition</string>
     <string name="face_recognition">Face Recognition</string>
     <string name="saved_face">Face successfully saved</string>
+    
+    <!-- Linking Account Messages -->
+    <string name="linking_menu">Select one option: </string>
+    <string name="link_account_text">Input your linking code: </string>
+    <string name="link_code_text">Linking Code: </string>
+    <string name="link_account_button">Link Account</string>
+    <string name="generate_code_button">Generate Code</string>
+    <string name="link_account_response">Linking Account</string>
 
     <!-- Tutorial Instructions -->
     <string name="instructions_title">Tutorial</string>
@@ -132,6 +143,7 @@
 	<string name="title_activity_yodo_reset_pip">Yodo Reset PIP</string>
 	<string name="title_activity_yodo_receipts">Yodo Receipts</string>
 	<string name="title_activity_yodo_coupons">Yodo Coupons</string>
+	<string name="title_activity_yodo_linking">Yodo Linking</string>
 	<string name="title_activity_yodo_registration">Yodo Registration</string>
 	<string name="title_activity_yodo_biometric">Yodo Biometric</string>
 	<string name="title_activity_yodo_camera">Yodo Camera</string>

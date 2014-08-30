@@ -4,7 +4,7 @@ import android.util.Log;
 
 public class ServerRequest {
 	/*!< DEBUG */
-	private final static boolean DEBUG = true;
+	private final static boolean DEBUG = false;
 	
 	/*!< Protocol version used in the request */
 	private static final String PROTOCOL_VERSION = "1.1.2";
@@ -19,6 +19,13 @@ public class ServerRequest {
     private static final String QUERY_REQ           = "4";
     public static final String QUERY_BAL_SUBREQ     = "1";
     public static final String QUERY_DATA_SUBREQ    = "3";
+    
+    /*!< Query Identifiers (Record Locator) */
+    public static final int QUERY_BIO_PIP  = 20;
+    public static final int RECORD_LOCATOR = 21;
+    public static final int QUERY_ADS      = 22;
+    public static final int QUERY_BIO      = 24;
+    public static final int LINKING_CODE   = 25;
 
     /*!< Parameters used for creating a reset request */
     private static final String RESET_REQ         = "3";
@@ -31,8 +38,12 @@ public class ServerRequest {
     public static final String BIOMETRIC_SUBREQ = "3";
 
     /*!< Parameters used for creating a close request */
-    private static final String CLOSE_REQ          = "8";
+    private static final String CLOSE_REQ           = "8";
     private static final String CLOSE_CLIENT_SUBREQ = "1";
+    
+    /*!< Parameters used for the linking requests */
+    private static final String LINKING_REQ           = "10";
+    public static final String LINKING_ACCOUNT_SUBREQ = "0";
 	
 	/*!< Variable that holds request string separator */
 	private static final String	REQ_SEP = ",";
@@ -87,7 +98,7 @@ public class ServerRequest {
             case 1: sQueryRequest.append(QUERY_BAL_SUBREQ).append(REQ_SEP);
                 break;
 
-            //RT = 4, ST = 3 Receipt and Biometric
+            //RT = 4, ST = 3 Get DATA
             case 3: sQueryRequest.append(QUERY_DATA_SUBREQ).append(REQ_SEP);
                 break;
         }
@@ -177,5 +188,31 @@ public class ServerRequest {
         if(DEBUG)
         	Log.e("Close Request", sCloseRequest.toString());
         return sCloseRequest.toString();
+    }
+    
+    /**
+     * Creates close switch request to link accounts
+     * @param sUserData	Encrypted user's data
+     * @param iRegReqType Sub-type of the request
+     * @return String 	Request to close a user account
+     */
+    public static String createLinkingRequest(String sUserData, int iRegReqType) {
+        StringBuilder sLinkingRequest = new StringBuilder();
+
+        sLinkingRequest.append(PROTOCOL_VERSION).append(REQ_SEP);
+        sLinkingRequest.append(LINKING_REQ).append(REQ_SEP);
+
+        /// depending on the request type we would form our request differently
+        switch(iRegReqType){
+            /// RT = 10, ST = 0
+            case 0:
+            	sLinkingRequest.append(LINKING_ACCOUNT_SUBREQ).append(REQ_SEP);
+                break;
+        }
+        sLinkingRequest.append(sUserData);
+        
+        if(DEBUG)
+        	Log.e("Linking Request", sLinkingRequest.toString());
+        return sLinkingRequest.toString();
     }
 }

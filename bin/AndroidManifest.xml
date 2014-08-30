@@ -70,6 +70,12 @@
                 android:screenOrientation="portrait" >
         </activity>
         
+        <activity
+                android:name=".main.YodoLinking"
+                android:screenOrientation="portrait"
+                android:label="@string/title_activity_yodo_linking" >
+        </activity>
+        
         <activity 
             android:name=".main.YodoCamera" 
             android:label="@string/title_activity_yodo_camera"
@@ -78,7 +84,7 @@
         
         <service 
             android:enabled="true" 
-            android:name=".helper.AdvertisingService"
+            android:name="co.yodo.service.AdvertisingService"
             android:exported="false" />
     </application>
 

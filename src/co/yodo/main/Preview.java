@@ -50,8 +50,6 @@ import android.widget.TextView;
  * support preview sizes at the same aspect ratio as the device's display.
  */
 public class Preview extends ViewGroup  implements SurfaceHolder.Callback{
-	
-
 	private final String TAG = "Preview";
 
 	SurfaceView mSurfaceView;

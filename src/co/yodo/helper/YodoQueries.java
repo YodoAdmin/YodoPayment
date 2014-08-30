@@ -2,11 +2,12 @@ package co.yodo.helper;
 
 import android.app.Activity;
 import android.util.Log;
+import co.yodo.serverconnection.ServerRequest;
 import co.yodo.sks.Encrypter;
 
 public class YodoQueries {
 	// DEBUG
-	private static final boolean DEBUG = true;
+	private static final boolean DEBUG = false;
 	private static final String TAG    = YodoQueries.class.getName();
 	
 	/*!< Object used to encrypt user's information */
@@ -70,7 +71,7 @@ public class YodoQueries {
 
         userData.append(hrdwToken).append(REQ_SEP);
         userData.append(pip).append(REQ_SEP);
-        userData.append(YodoGlobals.RECORD_LOCATOR);
+        userData.append(ServerRequest.RECORD_LOCATOR);
 
         /// Encrypting user's data to create request
         getEncrypter().setsUnEncryptedString(userData.toString());
@@ -109,7 +110,7 @@ public class YodoQueries {
 		
 		sAdvertisingData.append(hrdwToken).append(REQ_SEP);
 		sAdvertisingData.append(merch).append(REQ_SEP);
-		sAdvertisingData.append(YodoGlobals.QUERY_ADS);
+		sAdvertisingData.append(ServerRequest.QUERY_ADS);
 		
 		// Encrypting user's data to create request
 		getEncrypter().setsUnEncryptedString(sAdvertisingData.toString());
@@ -126,7 +127,7 @@ public class YodoQueries {
 		
 		sBiometricData.append(hrdwToken).append(REQ_SEP);
 		sBiometricData.append(pip).append(REQ_SEP);
-		sBiometricData.append(YodoGlobals.QUERY_BIO_PIP);
+		sBiometricData.append(ServerRequest.QUERY_BIO_PIP);
 		
 		// Encrypting user's data to create request
 		getEncrypter().setsUnEncryptedString(sBiometricData.toString());
@@ -142,7 +143,7 @@ public class YodoQueries {
 		StringBuilder sBiometricData = new StringBuilder();
 		
 		sBiometricData.append(hrdwToken).append(REQ_SEP);
-		sBiometricData.append(YodoGlobals.QUERY_BIO);
+		sBiometricData.append(ServerRequest.QUERY_BIO);
 		
 		// Encrypting user's data to create request
 		getEncrypter().setsUnEncryptedString(sBiometricData.toString());
@@ -221,4 +222,38 @@ public class YodoQueries {
 		
 		return sRegistrationData.toString();
     }
+    
+    // Request Linking Code
+   	public static String requestLinkingCode(Activity activity, String hrdwToken, String pip) {
+   		String sEncryptedUsrData;
+		StringBuilder sLinkingCodeData = new StringBuilder();
+		
+		sLinkingCodeData.append(hrdwToken).append(REQ_SEP);
+		sLinkingCodeData.append(pip).append(REQ_SEP);
+		sLinkingCodeData.append(ServerRequest.LINKING_CODE);
+		
+		// Encrypting user's data to create request
+		getEncrypter().setsUnEncryptedString(sLinkingCodeData.toString());
+		getEncrypter().rsaEncrypt(activity);
+		sEncryptedUsrData = getEncrypter().bytesToHex();
+		
+		return sEncryptedUsrData;
+   	}
+   	
+   	// Request Linking Account
+   	public static String requestLinkingAccount(Activity activity, String hrdwToken, String linkCode, String timeStamp) {
+   		String sEncryptedUsrData;
+		StringBuilder sLinkingAccountData = new StringBuilder();
+		
+		sLinkingAccountData.append(hrdwToken).append(REQ_SEP);
+		sLinkingAccountData.append(linkCode).append(REQ_SEP);
+		sLinkingAccountData.append(timeStamp);
+		
+		// Encrypting user's data to create request
+		getEncrypter().setsUnEncryptedString(sLinkingAccountData.toString());
+		getEncrypter().rsaEncrypt(activity);
+		sEncryptedUsrData = getEncrypter().bytesToHex();
+		
+		return sEncryptedUsrData;
+   	}
 }

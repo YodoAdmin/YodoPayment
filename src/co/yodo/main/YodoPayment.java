@@ -16,7 +16,6 @@ import java.util.TimerTask;
 import co.yodo.R;
 import co.yodo.database.CouponsDataSource;
 import co.yodo.database.ReceiptsSQLiteHelper;
-import co.yodo.helper.AdvertisingService;
 import co.yodo.helper.CreateAlertDialog;
 import co.yodo.helper.ToastMaster;
 import co.yodo.helper.Utils;
@@ -27,6 +26,7 @@ import co.yodo.photoview.PhotoViewAttacher;
 import co.yodo.serverconnection.ServerResponse;
 import co.yodo.serverconnection.TaskFragment;
 import co.yodo.serverconnection.TaskFragment.SwitchServer;
+import co.yodo.service.AdvertisingService;
 import co.yodo.sks.SKSCreater;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SlidingPaneLayout;
@@ -77,7 +77,7 @@ import android.widget.Toast;
 public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoCallback {
 	/*!< DEBUG */
 	private final static String TAG = YodoPayment.class.getName();
-	private final static boolean DEBUG = true;
+	private final static boolean DEBUG = false;
 	
 	/*!< SKS time to dismiss milliseconds */
     private static final int TIME_TO_DISMISS_SKS = 60000;
@@ -699,6 +699,8 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
     		mSlidingLayout.closePane();
     	
     	ToastMaster.makeText(YodoPayment.this, R.string.not_available, Toast.LENGTH_SHORT).show();
+    	/*Intent intent = new Intent(YodoPayment.this, YodoLinking.class);
+        startActivity(intent);*/
     }
     
     public void pairClick(View v) {
@@ -952,23 +954,6 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 	                	}
 	                break;
 	
-	                case BAL_REQ:
-	                	String aParams[] = data.getParams().split(ServerResponse.ENTRY_SEPARATOR);
-                        for(String param : aParams) {
-                            String aValParams[] = param.split(ServerResponse.VALUE_SEPARATOR);
-                            if(aValParams[0].equals(ServerResponse.BALANCE_ELEM)) {
-                                DecimalFormat twoDForm = new DecimalFormat("#.##");
-                                
-                                Utils.Logger(DEBUG, TAG, twoDForm.format(Double.valueOf(aValParams[1])).replace(",", "."));
-       
-                                double tempBalance = Double.valueOf(twoDForm.format(Double.valueOf(aValParams[1])).replace(",", "."));
-                                accBalanceText.setText(String.valueOf(tempBalance));
-                            }
-                        }
-
-                        temp_pip = "";
-                    break;
-	
 	                case REC_REQ:
 	                	receiptDialog(data.getParams());
                         temp_pip = "";
@@ -1028,7 +1013,31 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
                                 okButtonClickListener);
                     break;
 	            }
-            } else if(code.equals(YodoGlobals.ERROR_INTERNET)) {
+            } 
+            else if(code.equals(YodoGlobals.AUTHORIZED_BALANCE)) {
+            	switch(queryType) {
+	            	case BAL_REQ:
+	                	String aParams[] = data.getParams().split(ServerResponse.ENTRY_SEPARATOR);
+	                    for(String param : aParams) {
+	                        String aValParams[] = param.split(ServerResponse.VALUE_SEPARATOR);
+	                        if(aValParams[0].equals(ServerResponse.BALANCE_ELEM)) {
+	                            DecimalFormat twoDForm = new DecimalFormat("0.00");
+	                            
+	                            //Utils.Logger(DEBUG, TAG, String.format("%.2f", Double.valueOf(aValParams[1])));
+	   
+	                            double tempBalance = Double.valueOf(twoDForm.format(Double.valueOf(aValParams[1])).replace(",", "."));
+	                            
+	                            Utils.Logger(DEBUG, TAG, twoDForm.format(Double.valueOf(aValParams[1])).replace(",", "."));
+	                            
+	                            accBalanceText.setText(String.format("%.2f", tempBalance));
+	                        }
+	                    }
+	
+	                    temp_pip = "";
+	                break;
+            	}
+            } 
+            else if(code.equals(YodoGlobals.ERROR_INTERNET)) {
                 handlerMessages.sendEmptyMessage(YodoGlobals.NO_INTERNET);
             } else {
             	builder.setTitle(Html.fromHtml("<font color='#FF0000'>" + data.getCode() + "</font>"));
@@ -1038,7 +1047,8 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
             	alertDialog = builder.create();
             	alertDialog.show();
             }
-        } else {
+        } 
+        else {
             handlerMessages.sendEmptyMessage(YodoGlobals.GENERAL_ERROR);
         }
 	}

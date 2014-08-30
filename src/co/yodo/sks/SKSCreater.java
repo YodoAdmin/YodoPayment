@@ -34,6 +34,7 @@ import co.yodo.R;
 public class SKSCreater {
 	/*!< DEBUG */
 	private final static boolean DEBUG = true;
+	private final static String TAG = SKSCreater.class.getName();
 
 	// size of qr code (px)
 	private final static int QR_WIDTH = 300;
@@ -66,6 +67,9 @@ public class SKSCreater {
 			byte encrypted []= rsaEncrypt(original.getBytes("UTF-8"), parent);
 			response = bytesToHex(encrypted);
 
+			if(DEBUG)
+				Log.e(TAG, response + " - " + response.length());
+			
 			Hashtable<Object, String> hint = new Hashtable<Object, String>();
 			hint.put(EncodeHintType.CHARACTER_SET, encoding);
 			

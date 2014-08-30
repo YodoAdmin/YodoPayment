@@ -20,7 +20,7 @@ import android.widget.Toast;
 
 public class YodoSplash extends FragmentActivity implements TaskFragment.YodoCallback {
 	/*!< DEBUG */
-	private final static String TAG = "YodoSplash";
+	private final static String TAG = YodoSplash.class.getName();
 	private final static boolean DEBUG = false;
     
     /*!< Messages Handler */

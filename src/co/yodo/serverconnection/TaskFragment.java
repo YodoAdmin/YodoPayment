@@ -23,7 +23,7 @@ import android.support.v4.app.Fragment;
 public class TaskFragment extends Fragment {
 	/*!< DEBUG */
 	private final static boolean DEBUG = true;
-	private final static String TAG = "TaskFragment";
+	private final static String TAG = TaskFragment.class.getName();
 	
 	/**
 	 * Callback interface through which the AsyncTask will report the
@@ -137,6 +137,8 @@ public class TaskFragment extends Fragment {
 	    public static final String QUERY_ADS_REQUEST     = "09";	// RT=4, ST=3
 	    public static final String BIOMETRIC_REQUEST     = "10";	// RT=4, ST=3
 	    public static final String RESET_PIP_BIO_REQUEST = "11";	// RT=3, ST=2
+	    public static final String LINKING_CODE_REQUEST  = "12";	// RT=4, ST=3
+	    public static final String LINKING_ACC_REQUEST   = "13";	// RT=10, ST=0
 
 	    /*!< Switch server ip address */ 
 	    //private static final String IP 		     = "http://192.168.1.34"; // Localhost
@@ -162,6 +164,7 @@ public class TaskFragment extends Fragment {
 	        // Check internet connection
 	        if(!Utils.isOnline(IP)) {
 	        	internetFlag = false;
+	        	Utils.Logger(DEBUG, TAG, String.valueOf(internetFlag));
 	        }
 
 	        // Connecting to the server
@@ -195,6 +198,12 @@ public class TaskFragment extends Fragment {
 	        else if(requestParams[0].equals(BIOMETRIC_REQUEST)) {
 				this.connect(ServerRequest.createQueryRequest(requestParams[1], Integer.parseInt(ServerRequest.QUERY_DATA_SUBREQ)));
 			}
+	        else if(requestParams[0].equals(LINKING_CODE_REQUEST)) {
+				this.connect(ServerRequest.createQueryRequest(requestParams[1], Integer.parseInt(ServerRequest.QUERY_DATA_SUBREQ)));
+			}
+	        else if(requestParams[0].equals(LINKING_ACC_REQUEST)) {
+				this.connect(ServerRequest.createLinkingRequest(requestParams[1], Integer.parseInt(ServerRequest.LINKING_ACCOUNT_SUBREQ)));
+			}
 	        else if(requestParams[0].equals(CLOSE_REQUEST)) {
 	            this.connect(ServerRequest.createCloseRequest(requestParams[1]));
 	        }
@@ -206,6 +215,10 @@ public class TaskFragment extends Fragment {
 	    public void connect(String pRequest) {
 	    	XMLHandler myXMLHandler;
 	        try {
+	        	/*URLConnection conn = new URL(IP + YODO_ADDRESS + pRequest).openConnection();
+	        	conn.setConnectTimeout(5000);
+	        	conn.setReadTimeout(5000);*/
+	        	
 	            // Handling XML
 	            SAXParserFactory spf = SAXParserFactory.newInstance();
 	            SAXParser sp = spf.newSAXParser();
@@ -221,6 +234,7 @@ public class TaskFragment extends Fragment {
 	            myXMLHandler = new XMLHandler();
 	            xr.setContentHandler(myXMLHandler);
 	            xr.parse(new InputSource(sourceUrl.openStream()));
+	            //xr.parse(new InputSource(conn.getInputStream()));
 	        } catch(Exception e) {
 	            System.out.println("XML Pasing Exception = " + e);
 	        }

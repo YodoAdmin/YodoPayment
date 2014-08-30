@@ -30,7 +30,7 @@ import co.yodo.serverconnection.TaskFragment.SwitchServer;
 public class YodoResetPip extends ActionBarActivity implements TaskFragment.YodoCallback {
 	/*!< DEBUG */
 	private final static String TAG = YodoResetPip.class.getName();
-	private final static boolean DEBUG = true;
+	private final static boolean DEBUG = false;
 	
 	 /*!< GUI Controllers */
     private EditText pipText;
@@ -122,36 +122,9 @@ public class YodoResetPip extends ActionBarActivity implements TaskFragment.Yodo
 	            finish();
 	        break;
 	
-	        case R.id.action_forgot_pip:
-	            newPip     = newPipText.getText().toString();
-	            confirmPip = confirmPipText.getText().toString();
-	            
-	            Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
-	            boolean errorMessage = false;
-	            
-	            if(newPip.length() < YodoGlobals.MIN_PIP_LENGTH) {
-	                newPipText.startAnimation(shake);
-
-	                if(!errorMessage) {
-	                    ToastMaster.makeText(YodoResetPip.this, R.string.pip_length_short, Toast.LENGTH_SHORT).show();
-	                    errorMessage = true;
-	                }
-	            }
-
-	            if(!newPip.equals(confirmPip)) {
-	                confirmPipText.startAnimation(shake);
-
-	                if(!errorMessage) {
-	                    ToastMaster.makeText(YodoResetPip.this, R.string.pip_confirm_diff, Toast.LENGTH_SHORT).show();
-	                    errorMessage = true;
-	                }
-	            }
-
-	            confirmPip = "";
-	            if(!errorMessage) {
-	            	requestBiometricToken();
-	            }
-	        break;
+	        /*case R.id.action_forgot_pip:
+	        	forgotPipClick(null);
+	        break;*/
 	        
 	        default:
 	        break;
@@ -196,6 +169,37 @@ public class YodoResetPip extends ActionBarActivity implements TaskFragment.Yodo
             pipText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
             newPipText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
             confirmPipText.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+        }
+    }
+    
+    public void forgotPipClick(View v) {
+    	newPip     = newPipText.getText().toString();
+        confirmPip = confirmPipText.getText().toString();
+        
+        Animation shake = AnimationUtils.loadAnimation(this, R.anim.shake);
+        boolean errorMessage = false;
+        
+        if(newPip.length() < YodoGlobals.MIN_PIP_LENGTH) {
+            newPipText.startAnimation(shake);
+
+            if(!errorMessage) {
+                ToastMaster.makeText(YodoResetPip.this, R.string.pip_length_short, Toast.LENGTH_SHORT).show();
+                errorMessage = true;
+            }
+        }
+
+        if(!newPip.equals(confirmPip)) {
+            confirmPipText.startAnimation(shake);
+
+            if(!errorMessage) {
+                ToastMaster.makeText(YodoResetPip.this, R.string.pip_confirm_diff, Toast.LENGTH_SHORT).show();
+                errorMessage = true;
+            }
+        }
+
+        confirmPip = "";
+        if(!errorMessage) {
+        	requestBiometricToken();
         }
     }
     

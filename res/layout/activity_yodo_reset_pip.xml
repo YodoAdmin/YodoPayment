@@ -4,21 +4,36 @@
               android:orientation="vertical"
               android:layout_width="match_parent"
               android:layout_height="match_parent">
-
-    <Button
-        style="@style/ButtonText"
-        android:background="@drawable/red_button"
-        android:id="@+id/updatePipButton"
-        android:text="@string/reset_pip"
+    
+    <LinearLayout
+        android:id="@+id/updatePipButtons"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:onClick="updatePipClick" />
+        android:weightSum="2" >
+        
+        <Button
+	        style="@style/ButtonText"
+	        android:background="@drawable/red_button"
+	        android:layout_weight="1"
+	        android:text="@string/reset_pip"
+	        android:onClick="updatePipClick" />
+        
+        <Button
+	        style="@style/ButtonText"
+	        android:background="@drawable/black_button"
+	        android:layout_weight="1"
+	        android:text="@string/action_forgot_pip"
+	        android:onClick="forgotPipClick" />
+         
+    </LinearLayout>
 
     <ScrollView
             android:id="@+id/scrollPipLayout"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_alignParentTop="true"
-            android:layout_above="@+id/updatePipButton"
+            android:layout_above="@+id/updatePipButtons"
             android:layout_margin="10dp">
 
         <LinearLayout
