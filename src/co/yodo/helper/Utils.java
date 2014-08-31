@@ -203,6 +203,51 @@ public class Utils {
 
 	    return inSampleSize;
 	}
+	 
+	/**
+	 * A helper class just o obtain the config file for the Shared Preferences
+	 * using the default values for this Shared Preferences app.
+	 * 
+	 * @param c The Context of the Android system.
+	 * @return Returns the shared preferences with the defautl values.
+	 */
+	private static SharedPreferences getSPrefConfig(Context c) {
+		return c.getSharedPreferences(YodoGlobals.SHARED_PREF_FILE, Context.MODE_PRIVATE);
+	}
+	 
+	/**
+	 * It gets the linked accounts
+	 * 
+	 * @param c The Context of the Android system.
+	 * @return String The linked account numbers
+	 *         null    If there is no value set;
+	 */
+	public static String getLinkedAccount(Context c) {
+		SharedPreferences config = getSPrefConfig(c);
+		String n = config.getString(YodoGlobals.SPREF_LINKED_ACC, "");
+		
+		return n;
+	}
+	
+	/**
+	 * It saves the linked accounts to the Shared Preferences.
+	 * 
+	 * @param c The Context of the Android system.
+	 * @param n The new account
+	 * @return true  The account was saved successfully.
+	 *         false The account was not saved successfully.
+	 */
+	public static Boolean saveLinkedAccount(Context c, String n) {
+		SharedPreferences config = getSPrefConfig(c);
+		SharedPreferences.Editor writer = config.edit();
+		
+		String accounts = getLinkedAccount(c);
+		accounts += n + YodoGlobals.ACC_SEP;
+		
+		writer.putString(YodoGlobals.SPREF_LINKED_ACC, accounts);
+		
+		return writer.commit();
+	}
 	
 	public static void Logger(boolean DEBUG, String TAG, String data) {
 		if(DEBUG)

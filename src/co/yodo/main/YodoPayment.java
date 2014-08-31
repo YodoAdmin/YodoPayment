@@ -77,7 +77,7 @@ import android.widget.Toast;
 public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoCallback {
 	/*!< DEBUG */
 	private final static String TAG = YodoPayment.class.getName();
-	private final static boolean DEBUG = false;
+	private final static boolean DEBUG = true;
 	
 	/*!< SKS time to dismiss milliseconds */
     private static final int TIME_TO_DISMISS_SKS = 60000;
@@ -98,7 +98,8 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 	/*!< Variable used as an authentication number */
     private static final String KEY_TEMP_PIP = "key_temp_pip";
     private static String hrdwToken;
-    private String temp_pip = "";
+    private String temp_pip  = "";
+    private Long temp_time;
 	
 	/*!< GUI Controllers */
     private TextView accNumberText;
@@ -505,14 +506,14 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
      * Method to show the dialog containing the SKS code
      * @param qrBitmap
      */
-    private void showSKSDialog(String code) {
+    private void showSKSDialog(String code, Integer account_type) {
     	//retrieve display dimensions
         /*Rect displayRectangle = new Rect();
         Window window = getWindow();
         window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
         SKSCreater.setWidth((int)(displayRectangle.width() * 0.8f));*/
     	try {
-			qrCode = SKSCreater.createSKS(code, YodoPayment.this, SKSCreater.SKS_CODE);
+			qrCode = SKSCreater.createSKS(code, YodoPayment.this, SKSCreater.SKS_CODE, account_type);
     	
 	    	final Dialog sksDialog = new Dialog(this);
 	        
@@ -698,9 +699,9 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
     	if(mSlidingLayout.isOpen())
     		mSlidingLayout.closePane();
     	
-    	ToastMaster.makeText(YodoPayment.this, R.string.not_available, Toast.LENGTH_SHORT).show();
-    	/*Intent intent = new Intent(YodoPayment.this, YodoLinking.class);
-        startActivity(intent);*/
+    	//ToastMaster.makeText(YodoPayment.this, R.string.not_available, Toast.LENGTH_SHORT).show();
+    	Intent intent = new Intent(YodoPayment.this, YodoLinking.class);
+        startActivity(intent);
     }
     
     public void pairClick(View v) {
@@ -833,6 +834,40 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
             inputBox.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
     }
     
+    public void linkPayment(View v) {
+    	final ImageView account = (ImageView) v;
+    	Integer account_type = Integer.parseInt(account.getContentDescription().toString());
+    	String accounts = Utils.getLinkedAccount(getApplicationContext());
+    	
+    	if(account_type == 0) {
+    		account_type = null;
+    	} else {
+    		boolean flag = false;
+    		String[] numerosComoArray = accounts.split(",");
+    		Utils.Logger(DEBUG, TAG, accounts);
+            for(int i = 0; i < numerosComoArray.length; i++) {
+            	Utils.Logger(DEBUG, TAG, numerosComoArray[i]);
+                if(numerosComoArray[i] != "" && account_type == Integer.parseInt(numerosComoArray[i])) {
+                	flag = true;
+                	break;
+                }
+            }
+            
+            if(!flag) {
+            	ToastMaster.makeText(YodoPayment.this, R.string.no_linked_account, Toast.LENGTH_LONG).show();
+            	return;
+            }
+    	}
+    	
+    	if(temp_time != null) {
+        	String originalCode = temp_pip + SKS_SEP + hrdwToken + SKS_SEP + temp_time;
+            Utils.Logger(DEBUG, TAG, originalCode);
+            showSKSDialog(originalCode, account_type);
+    	}
+    	
+    	alertDialog.dismiss();
+    }
+    
     /**
      * Connects to the switch and authenticate the user
      */
@@ -946,11 +981,20 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
             if(code.equals(YodoGlobals.AUTHORIZED)) {
             	switch(queryType) {
 	                case AUTH_REQ:
-	                	Long time = data.getTime();
-	                	if(time != null) {
-		                	String originalCode = temp_pip + SKS_SEP + hrdwToken + SKS_SEP + time;
-		    	            Utils.Logger(DEBUG, TAG, originalCode);
-		    	            showSKSDialog(originalCode);
+	                	String accounts = Utils.getLinkedAccount(getApplicationContext());
+	                	temp_time = data.getTime();
+	                	
+	                	if(accounts.length() == 0) {
+		                	if(temp_time != null) {
+			                	String originalCode = temp_pip + SKS_SEP + hrdwToken + SKS_SEP + temp_time;
+			    	            Utils.Logger(DEBUG, TAG, originalCode);
+			    	            showSKSDialog(originalCode, null);
+		                	}
+	                	} else {
+	                		LayoutInflater inflater = (LayoutInflater) this.getSystemService(LAYOUT_INFLATER_SERVICE);
+	                        View layout = inflater.inflate(R.layout.dialog_linked, new LinearLayout(this), false);
+	                        
+	                        alertDialog = CreateAlertDialog.showAlertDialog(YodoPayment.this, layout, getString(R.string.linking_menu));
 	                	}
 	                break;
 	

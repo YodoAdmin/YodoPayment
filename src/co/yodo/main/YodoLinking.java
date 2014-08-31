@@ -37,7 +37,7 @@ import co.yodo.serverconnection.TaskFragment.SwitchServer;
 public class YodoLinking extends ActionBarActivity implements TaskFragment.YodoCallback {
 	/*!< DEBUG */
 	private final static String TAG = YodoLinking.class.getName();
-	private final static boolean DEBUG = false;
+	private final static boolean DEBUG = true;
 	
 	/*!< Variable used as an authentication number */
 	private static String hrdwToken;
@@ -51,6 +51,9 @@ public class YodoLinking extends ActionBarActivity implements TaskFragment.YodoC
     
     /*!< GUI Controllers */
     private EditText inputBox;
+    
+    /*!< Link Account */
+    private String account_type;
 	
 	/*!< Fragment Information */
     private TaskFragment mTaskFragment;
@@ -124,6 +127,8 @@ public class YodoLinking extends ActionBarActivity implements TaskFragment.YodoC
 	}
 	
 	public void linkingOptions(View v) {
+		final ImageView account = (ImageView) v;
+		
 		final CharSequence[] items = {
 				"Input Linking Code", "Generate Linking Code"
 		};
@@ -144,6 +149,11 @@ public class YodoLinking extends ActionBarActivity implements TaskFragment.YodoC
     		        DialogInterface.OnClickListener pipDialogOkButtonClickListener = new DialogInterface.OnClickListener() {
     		            public void onClick(DialogInterface dialog, int which) {
     		                String linkingCode = inputBox.getText().toString();
+    		                
+    		                if(DEBUG)
+    		            		Log.e(TAG, account.getContentDescription() + "");
+    		                
+    		                account_type = account.getContentDescription().toString();
     		                requestLinkingAccount(linkingCode);
     		            }
     		        };
@@ -285,6 +295,10 @@ public class YodoLinking extends ActionBarActivity implements TaskFragment.YodoC
 	                	
 	                	if(DEBUG)
 	                		Log.e(TAG, text);
+	                	
+	                	if(account_type != null) {
+	                		Utils.saveLinkedAccount(getApplicationContext(), account_type);
+	                	}
 	                	
 	                	CreateAlertDialog.showAlertDialog(YodoLinking.this,
                                 getString(R.string.link_account_response),

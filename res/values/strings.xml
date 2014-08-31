@@ -12,7 +12,7 @@
     <string name="date">Date:</string>
     <string name="balance">Balance:</string>
     <string name="version">Version:</string>
-    <string name="actual_version">1.2.8</string>
+    <string name="actual_version">1.2.9</string>
 
     <!-- Settings -->
     <string name="action_settings">Settings</string>
@@ -127,6 +127,7 @@
     <string name="link_account_button">Link Account</string>
     <string name="generate_code_button">Generate Code</string>
     <string name="link_account_response">Linking Account</string>
+    <string name="no_linked_account">This account is not linked</string>
 
     <!-- Tutorial Instructions -->
     <string name="instructions_title">Tutorial</string>
@@ -147,5 +148,13 @@
 	<string name="title_activity_yodo_registration">Yodo Registration</string>
 	<string name="title_activity_yodo_biometric">Yodo Biometric</string>
 	<string name="title_activity_yodo_camera">Yodo Camera</string>
+	
+	<!-- Linking Account Types -->
+	<string name="account_yodo">0</string>
+	<string name="account_visa_credit">1</string>
+	<string name="account_public_transit_pass">2</string>
+	<string name="account_yodo_heart">3</string>
+	<string name="account_visa_prepaid">4</string>
+	<string name="account_paypal">5</string>
 	
 </resources>

@@ -78,4 +78,15 @@ public class YodoGlobals {
     public static final String KEY_IS_SHOWING    = "dialog_is_showing";
     public static final String KEY_SKS_SHOWING   = "sks_is_showing";
     public static final String KEY_MESSAGE       = "dialog_message";
+    
+    // ID of the shared preferences file.
+ 	public static final String SHARED_PREF_FILE = "LinkingSharedPref";
+ 	
+ 	// Accounts Separato
+ 	public static final String ACC_SEP = ",";
+ 	
+ 	/* The Set of linked accounts
+	 * type -- String
+	 */
+	public static final String SPREF_LINKED_ACC = "SPLinkedAccounts";
 }

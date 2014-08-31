@@ -20,7 +20,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/heart"
-            android:contentDescription="@string/desc"
+            android:contentDescription="@string/account_yodo_heart"
             android:onClick="linkingOptions"
             android:layout_weight="1" />
 
@@ -28,7 +28,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/yodo_debit_card_icon"
-            android:contentDescription="@string/desc"
+            android:contentDescription="@string/account_visa_prepaid"
             android:layout_weight="1" />
 
     </LinearLayout>

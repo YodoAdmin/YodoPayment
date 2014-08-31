@@ -1325,17 +1325,18 @@ containing a value of this type.
         public static final int activity_yodo_reset_pip=0x7f03001f;
         public static final int activity_yodo_splash=0x7f030020;
         public static final int dialog_coupon=0x7f030021;
-        public static final int dialog_linking=0x7f030022;
-        public static final int dialog_password=0x7f030023;
-        public static final int dialog_receipt=0x7f030024;
-        public static final int dialog_settings=0x7f030025;
-        public static final int dialog_sks=0x7f030026;
-        public static final int dialog_text=0x7f030027;
-        public static final int row=0x7f030028;
-        public static final int row_grid=0x7f030029;
-        public static final int support_simple_spinner_dropdown_item=0x7f03002a;
-        public static final int yodo_payment_content=0x7f03002b;
-        public static final int yodo_payment_navigation=0x7f03002c;
+        public static final int dialog_linked=0x7f030022;
+        public static final int dialog_linking=0x7f030023;
+        public static final int dialog_password=0x7f030024;
+        public static final int dialog_receipt=0x7f030025;
+        public static final int dialog_settings=0x7f030026;
+        public static final int dialog_sks=0x7f030027;
+        public static final int dialog_text=0x7f030028;
+        public static final int row=0x7f030029;
+        public static final int row_grid=0x7f03002a;
+        public static final int support_simple_spinner_dropdown_item=0x7f03002b;
+        public static final int yodo_payment_content=0x7f03002c;
+        public static final int yodo_payment_navigation=0x7f03002d;
     }
     public static final class menu {
         public static final int yodo_coupons=0x7f0c0000;
@@ -1398,6 +1399,14 @@ containing a value of this type.
  header data text 
          */
         public static final int account=0x7f0a0015;
+        public static final int account_paypal=0x7f0a0088;
+        public static final int account_public_transit_pass=0x7f0a0085;
+        public static final int account_visa_credit=0x7f0a0084;
+        public static final int account_visa_prepaid=0x7f0a0087;
+        /**  Linking Account Types 
+         */
+        public static final int account_yodo=0x7f0a0083;
+        public static final int account_yodo_heart=0x7f0a0086;
         public static final int action_forgot_pip=0x7f0a001b;
         /**  Settings 
  Settings 
@@ -1428,8 +1437,8 @@ containing a value of this type.
  Close Message 
  Close Message 
          */
-        public static final int close_message=0x7f0a0076;
-        public static final int closing_message=0x7f0a0077;
+        public static final int close_message=0x7f0a0077;
+        public static final int closing_message=0x7f0a0078;
         /**  configurations 
  configurations 
  configurations 
@@ -1473,8 +1482,8 @@ containing a value of this type.
         public static final int eula_title=0x7f0a0060;
         public static final int exit=0x7f0a001c;
         public static final int face_recognition=0x7f0a006c;
-        public static final int farewell_message=0x7f0a0079;
-        public static final int farewell_message_tittle=0x7f0a0078;
+        public static final int farewell_message=0x7f0a007a;
+        public static final int farewell_message_tittle=0x7f0a0079;
         /**  Biometric Messages 
  Biometric Messages 
  Biometric Messages 
@@ -1489,14 +1498,14 @@ containing a value of this type.
         public static final int image_saved_failed=0x7f0a003b;
         public static final int image_saved_ok=0x7f0a003a;
         public static final int input_pip=0x7f0a002c;
-        public static final int instructions_message=0x7f0a0075;
+        public static final int instructions_message=0x7f0a0076;
         /**  Tutorial Instructions 
  Tutorial Instructions 
  Tutorial Instructions 
  Tutorial Instructions 
  Tutorial Instructions 
          */
-        public static final int instructions_title=0x7f0a0074;
+        public static final int instructions_title=0x7f0a0075;
         public static final int language=0x7f0a004c;
         public static final int link=0x7f0a0047;
         public static final int link_account_button=0x7f0a0071;
@@ -1525,6 +1534,7 @@ containing a value of this type.
         public static final int no_devices=0x7f0a0058;
         public static final int no_hdw=0x7f0a0027;
         public static final int no_internet=0x7f0a002a;
+        public static final int no_linked_account=0x7f0a0074;
         public static final int no_transaction=0x7f0a0054;
         /**  Messages Text 
  Messages Text 
@@ -1577,16 +1587,16 @@ containing a value of this type.
          */
         public static final int sks_message=0x7f0a001d;
         public static final int start_biometric=0x7f0a0028;
-        public static final int title_activity_yodo_biometric=0x7f0a0080;
-        public static final int title_activity_yodo_camera=0x7f0a0081;
-        public static final int title_activity_yodo_coupons=0x7f0a007d;
-        public static final int title_activity_yodo_linking=0x7f0a007e;
+        public static final int title_activity_yodo_biometric=0x7f0a0081;
+        public static final int title_activity_yodo_camera=0x7f0a0082;
+        public static final int title_activity_yodo_coupons=0x7f0a007e;
+        public static final int title_activity_yodo_linking=0x7f0a007f;
         /**  Activities Titles 
          */
-        public static final int title_activity_yodo_payment=0x7f0a007a;
-        public static final int title_activity_yodo_receipts=0x7f0a007c;
-        public static final int title_activity_yodo_registration=0x7f0a007f;
-        public static final int title_activity_yodo_reset_pip=0x7f0a007b;
+        public static final int title_activity_yodo_payment=0x7f0a007b;
+        public static final int title_activity_yodo_receipts=0x7f0a007d;
+        public static final int title_activity_yodo_registration=0x7f0a0080;
+        public static final int title_activity_yodo_reset_pip=0x7f0a007c;
         public static final int token_defined=0x7f0a003c;
         public static final int tools=0x7f0a0042;
         /**  Button Messages 
@@ -1594,7 +1604,7 @@ containing a value of this type.
  Button Messages 
  Button Messages 
          */
-        public static final int update_pip=0x7f0a0082;
+        public static final int update_pip=0x7f0a0089;
         public static final int version=0x7f0a0018;
         public static final int voice_recognition=0x7f0a006b;
         public static final int wrong_pip=0x7f0a002f;

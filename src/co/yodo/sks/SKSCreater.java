@@ -54,7 +54,7 @@ public class SKSCreater {
 	private static String PUBLIC_KEY = "YodoKey/12.public.der";
 	//"YodoKey/public.yodokey"
 
-	public static Bitmap createSKS(String original, Activity parent, int type) throws UnsupportedEncodingException{
+	public static Bitmap createSKS(String original, Activity parent, int type, Integer account_type) throws UnsupportedEncodingException{
 		int width, height, pixels [];
 		QRCodeWriter writer = new QRCodeWriter();
 		BitMatrix qrMatrix = null;
@@ -66,7 +66,10 @@ public class SKSCreater {
 			//byte encrypted []= rsaEncrypt(text2Encrypt.getBytes(), parent);
 			byte encrypted []= rsaEncrypt(original.getBytes("UTF-8"), parent);
 			response = bytesToHex(encrypted);
-
+			
+			if(account_type != null)
+				response += account_type;
+			
 			if(DEBUG)
 				Log.e(TAG, response + " - " + response.length());
 			

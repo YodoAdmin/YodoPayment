@@ -73,4 +73,23 @@ public class CreateAlertDialog {
         final AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
+    
+    public static AlertDialog showAlertDialog(final Context context, View layout, String title) {
+    	AlertDialog.Builder builder = new AlertDialog.Builder(context);
+        builder.setInverseBackgroundForced(true);
+        builder.setIcon(R.drawable.ic_launcher);
+
+        if(layout != null)
+        	builder.setView(layout);
+
+        if(title != null)
+            builder.setTitle(title);
+
+        builder.setCancelable(true);
+
+        final AlertDialog alertDialog = builder.create();
+        alertDialog.show();
+        
+        return alertDialog;
+    }
 }
