@@ -37,7 +37,7 @@ public class SKSCreater {
 	private final static String TAG = SKSCreater.class.getName();
 
 	// size of qr code (px)
-	private final static int QR_WIDTH = 300;
+	private final static int QR_WIDTH_DEFAULT = 300;
 	
 	public static final int SKS_CODE = 1;
 	public static final int QR_CODE  = 0;
@@ -54,12 +54,16 @@ public class SKSCreater {
 	private static String PUBLIC_KEY = "YodoKey/12.public.der";
 	//"YodoKey/public.yodokey"
 
-	public static Bitmap createSKS(String original, Activity parent, int type, Integer account_type) throws UnsupportedEncodingException{
+	public static Bitmap createSKS(String original, Activity parent, int type, Integer account_type, Integer QR_WIDTH) throws UnsupportedEncodingException{
 		int width, height, pixels [];
 		QRCodeWriter writer = new QRCodeWriter();
 		BitMatrix qrMatrix = null;
 		String encoding, response = "";
 		Bitmap bitmap = null;
+		
+		if(QR_WIDTH == null)
+			QR_WIDTH = QR_WIDTH_DEFAULT;
+		
 		//String text2Encrypt = "**renato123**1204122156";
 		encoding = (String)parent.getResources().getString(R.string.SC_LETTER_TYPE);
 		try {
@@ -103,10 +107,6 @@ public class SKSCreater {
 		}
 		return bitmap;
 	}
-	
-	/*public static void setWidth(int size) {
-		QR_WIDTH = size;
-	}*/
 	
 	/**
 	 * Function that opens the public key and returns the java object that contains it

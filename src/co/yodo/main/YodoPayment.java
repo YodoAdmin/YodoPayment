@@ -51,6 +51,7 @@ import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -188,6 +189,9 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
     		setupBluetooth(); 
     	}
         
+        if(receiptsdb != null && !db.isOpen()) 
+        	db = receiptsdb.getWritableDatabase();
+        
         if(couponsdb != null) 
         	couponsdb.open();
     }
@@ -222,9 +226,9 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
         if(progDialog != null && progDialog.isShowing())
         	progDialog.cancel();
         
-        if(mBluetoothAdapter != null) {
+        /*if(mBluetoothAdapter != null) {
         	processStopService(AdvertisingService.TAG);
-        }
+        }*/
     }
 	
 	@Override
@@ -513,7 +517,10 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
         window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
         SKSCreater.setWidth((int)(displayRectangle.width() * 0.8f));*/
     	try {
-			qrCode = SKSCreater.createSKS(code, YodoPayment.this, SKSCreater.SKS_CODE, account_type);
+    		Rect displayRectangle = new Rect();
+    		Window window = getWindow();
+            window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
+			qrCode = SKSCreater.createSKS(code, YodoPayment.this, SKSCreater.SKS_CODE, account_type, (int)(displayRectangle.width() * 0.7f));
     	
 	    	final Dialog sksDialog = new Dialog(this);
 	        
@@ -606,9 +613,6 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
             }
         });
 
-        if(!db.isOpen())
-            db = receiptsdb.getWritableDatabase();
-
         String query = "INSERT INTO " + ReceiptsSQLiteHelper.TABLE_RECEIPTS +
                 " (" + ReceiptsSQLiteHelper.COLUMN_DESCRIPTION +
                 ", " + ReceiptsSQLiteHelper.COLUMN_CREATED +
@@ -667,6 +671,9 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
         final String finalQuery = query;
         Utils.Logger(DEBUG, TAG, finalQuery);
         
+        if(!db.isOpen())
+            db = receiptsdb.getWritableDatabase();
+        
         saveButton.setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -676,8 +683,22 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 	            	ToastMaster.makeText(YodoPayment.this, R.string.saved_receipt, Toast.LENGTH_SHORT).show();
             	}
             	receipt.dismiss();
+            	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
             }
         });
+        
+        receipt.setOnDismissListener(new DialogInterface.OnDismissListener() {
+            @Override
+            public void onDismiss(DialogInterface dialog) {
+        		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+            }
+        });
+        
+        int currentOrientation = getResources().getConfiguration().orientation;
+        if(currentOrientation == Configuration.ORIENTATION_LANDSCAPE) 
+        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE);
+        else
+        	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT);
         
         receipt.setCancelable(false);
         receipt.setContentView(layout);
@@ -1157,6 +1178,9 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
     private class DevicesReceiver extends BroadcastReceiver {
 		@Override
 		public void onReceive(Context arg0, Intent intent) {
+			/*if(intent.getAction().equals(YodoGlobals.DEVICES_BT)) {
+				
+			}*/
 			actualMerch = intent.getStringExtra(YodoGlobals.DATA_DEVICE);
 			requestAdvertising(actualMerch.replaceAll(" ", "%20"));
 		}

@@ -9,6 +9,10 @@ import co.yodo.helper.YodoQueries;
 import co.yodo.serverconnection.ServerResponse;
 import co.yodo.serverconnection.TaskFragment;
 import co.yodo.serverconnection.TaskFragment.SwitchServer;
+import co.yodo.service.AdvertisingService;
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningServiceInfo;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
@@ -41,6 +45,7 @@ public class YodoSplash extends FragmentActivity implements TaskFragment.YodoCal
     }
     
     private void setupGUI() {
+    	stopAllRunningServices();
     	Utils.changeLanguage(this);
     	handlerMessages = new YodoHandler(this);
     	
@@ -114,5 +119,22 @@ public class YodoSplash extends FragmentActivity implements TaskFragment.YodoCal
 	@Override
 	public void onPostExecute() {
 
+	}
+	
+	private void stopAllRunningServices() {
+		Intent iAdv = new Intent(YodoSplash.this, AdvertisingService.class);
+		
+		//stop all services
+		if(isMyServiceRunning(AdvertisingService.class.getName()))
+			stopService(iAdv);
+	}
+	
+	private boolean isMyServiceRunning(String serviceName) {
+	    ActivityManager manager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+	    for(RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+	        if(serviceName.equals(service.service.getClassName())) 
+	            return true;
+	    }
+	    return false;
 	}
 }

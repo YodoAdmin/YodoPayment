@@ -23,7 +23,6 @@ public class AdvertisingService extends Service {
 	/*!< Bluetooth Timer */
 	private BluetoothAdapter mBluetoothAdapter;
 	private boolean registered = false;
-	private TimerTask task = null;
 	private Timer timer    = null;
 	
 	/*!< Times */
@@ -47,17 +46,6 @@ public class AdvertisingService extends Service {
 	    	IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
             registerReceiver(mReceiver, filter);
             registered = true;
-            
-            task = new TimerTask() {
-	    		@Override
-	            public void run() {
-	    			if(mBluetoothAdapter.isDiscovering()) {
-	    	            mBluetoothAdapter.cancelDiscovery();
-	    	        }
-	    	    	mBluetoothAdapter.startDiscovery();
-	    	    	Utils.Logger(DEBUG, TAG, "onDiscover");
-	            }
-	        };
 	    }
 	}
 	
@@ -68,10 +56,8 @@ public class AdvertisingService extends Service {
 	    if(mBluetoothAdapter != null && !mBluetoothAdapter.isEnabled()) {
 	        stopSelf();
 	    } else {
-	    	if(timer == null) {
-		    	timer = new Timer();
-            }
-	    	
+		    bluetoothTask task = new bluetoothTask();
+		    timer = new Timer();
 	        timer.schedule(task, DELAY_TIME, PERIOD_TIME);
 	    }
 	}
@@ -87,9 +73,23 @@ public class AdvertisingService extends Service {
 		if(mReceiver != null && registered)
 			unregisterReceiver(mReceiver);
 		
-		if(timer != null)
+		if(timer != null) {
 			timer.cancel();
+			timer.purge();
+			timer = null;
+		}
 	}
+	
+	private class bluetoothTask extends TimerTask {
+        @Override
+        public void run() {
+        	if(mBluetoothAdapter.isDiscovering()) {
+	            mBluetoothAdapter.cancelDiscovery();
+	        }
+	    	mBluetoothAdapter.startDiscovery();
+	    	Utils.Logger(DEBUG, TAG, "onDiscover");
+        }
+    }
 	
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
 		@SuppressWarnings("unused")

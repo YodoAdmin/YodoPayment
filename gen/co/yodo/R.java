@@ -1114,7 +1114,8 @@ containing a value of this type.
         public static final int sns_icon1=0x7f020070;
         public static final int trash_can=0x7f020071;
         public static final int voice_recognition=0x7f020072;
-        public static final int yodo_debit_card_icon=0x7f020073;
+        public static final int yodo=0x7f020073;
+        public static final int yodo_debit_card_icon=0x7f020074;
     }
     public static final class id {
         public static final int accountNumberText=0x7f05007c;

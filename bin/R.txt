@@ -269,7 +269,8 @@ int drawable sns_icon 0x7f02006f
 int drawable sns_icon1 0x7f020070
 int drawable trash_can 0x7f020071
 int drawable voice_recognition 0x7f020072
-int drawable yodo_debit_card_icon 0x7f020073
+int drawable yodo 0x7f020073
+int drawable yodo_debit_card_icon 0x7f020074
 int id accountNumberText 0x7f05007c
 int id accountNumberTextLabel 0x7f050077
 int id action_bar 0x7f05001c
