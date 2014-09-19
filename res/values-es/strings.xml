@@ -122,7 +122,7 @@
     <!-- Close Message -->
     <string name="close_message">ADVERTENCIA: Si su cuenta tiene un saldo positivo, se perderá en caso de que cierre su cuenta ahora. Sólo ingrese su PIP para continuar si usted está dispuesto a perder ese dinero.</string>
     <string name="closing_message">Cerrando la cuenta</string>
-    <string name="farewell_message_tittle">Gracias por usar Yodo!</string>
-    <string name="farewell_message">Esperamos que use Yodo de nuevo en el futuro. Bye</string>
+    <string name="farewell_message_tittle">Gracias por usar Yodo</string>
+    <string name="farewell_message">Por favor, elimine por completo Yodo utilizando las herramientas de Gestión de App en Ajustes de teléfono</string>
 
 </resources>

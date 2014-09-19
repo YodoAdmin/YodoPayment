@@ -136,8 +136,8 @@
     <!-- Close Message -->
     <string name="close_message">WARNING: If your account has a positive balance it will be forfeited if you close your account now. Only enter your PIP to proceed if you are prepared to forfeit this funds</string>
     <string name="closing_message">Closing the account</string>
-    <string name="farewell_message_tittle">Thank you for using Yodo!</string>
-    <string name="farewell_message">We hope you use Yodo again in the future. Bye</string>
+    <string name="farewell_message_tittle">Thank-you for using Yodo</string>
+    <string name="farewell_message">Please completely remove the Yodo App using the App Management tools under phone Settings</string>
     
     <!-- Activities Titles -->
 	<string name="title_activity_yodo_payment">Yodo Payment</string>

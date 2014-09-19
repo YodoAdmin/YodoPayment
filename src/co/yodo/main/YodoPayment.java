@@ -31,6 +31,7 @@ import co.yodo.sks.SKSCreater;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v4.widget.SlidingPaneLayout.LayoutParams;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.InputType;
@@ -79,6 +80,9 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 	/*!< DEBUG */
 	private final static String TAG = YodoPayment.class.getName();
 	private final static boolean DEBUG = true;
+	
+	/*!< Size of the parallax performed when hidden pane is opened or closed */
+	private static final int PARALLAX_SIZE = 30;
 	
 	/*!< SKS time to dismiss milliseconds */
     private static final int TIME_TO_DISMISS_SKS = 60000;
@@ -320,7 +324,9 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 	private void setupGUI() {
     	handlerMessages   = new YodoHandler(this);
     	mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-    	getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+    	ActionBar actionBar = getSupportActionBar();
+    	actionBar.setDisplayHomeAsUpEnabled(true);
+    	actionBar.setHomeAsUpIndicator(R.drawable.ic_drawer);
     	
     	// Load Fragment Manager
     	FragmentManager fm = getSupportFragmentManager();
@@ -350,6 +356,9 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 		advertisingImage = (ImageView) findViewById(R.id.advertisingImage);
 		mSlidingLayout   = (SlidingPaneLayout) findViewById(R.id.sliding_pane_layout);
 		mNavigation      = (ScrollView) findViewById(R.id.navigationScroll);
+		
+		// Sliding Panel Configurations
+		mSlidingLayout.setParallaxDistance(PARALLAX_SIZE);
 		
 		// Handle The Size of the Sidebar
 		int orientation = getResources().getConfiguration().orientation; 
@@ -1054,14 +1063,23 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
                         final SharedPreferences EulaPreferences = getSharedPreferences(YodoGlobals.PREFERENCES_EULA, Activity.MODE_PRIVATE);
                         EulaPreferences.edit().putBoolean(YodoGlobals.PREFERENCE_EULA_ACCEPTED, false).commit();
                         
+                        final SharedPreferences linkingPreferences = getSharedPreferences(YodoGlobals.SHARED_PREF_FILE, Activity.MODE_PRIVATE);
+                        linkingPreferences.edit().clear().commit();
+                        
                         if(!db.isOpen())
  	                       db = receiptsdb.getWritableDatabase();
  					
 	 					db.delete(ReceiptsSQLiteHelper.TABLE_RECEIPTS, null, null);
 	 				    db.close();
+	 				    
+	 				   if(couponsdb != null) 
+	 					   couponsdb.open();
+	 				    
+	 				    couponsdb.delete();
 	 					
 	 				    SharedPreferences.Editor editor = settings.edit();
-	 		        	editor.putBoolean(YodoGlobals.ID_ADVERTISING, false);
+	 				    editor.clear();
+	 		        	//editor.putBoolean(YodoGlobals.ID_ADVERTISING, false);
 	 					editor.commit();
 
                         // Listener to click event on the dialog in order to view the sks code

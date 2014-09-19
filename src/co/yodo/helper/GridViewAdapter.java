@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.yodo.R;
-import co.yodo.database.Coupon;
+import co.yodo.model.Coupon;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;

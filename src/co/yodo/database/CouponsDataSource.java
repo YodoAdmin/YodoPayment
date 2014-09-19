@@ -6,6 +6,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import co.yodo.helper.Utils;
+import co.yodo.model.Coupon;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -16,6 +18,7 @@ import android.database.sqlite.SQLiteStatement;
 public class CouponsDataSource {
 	/*!< DEBUG */
 	private final static boolean DEBUG = false;
+	private final static String TAG = CouponsDataSource.class.getSimpleName();
 	
 	/*!< Date format */
 	private final static String date_format = "yyyy-MM-dd HH:mm:ss";
@@ -66,6 +69,13 @@ public class CouponsDataSource {
 	    
 	    database.delete(CouponsSQLiteHelper.TABLE_COUPONS, CouponsSQLiteHelper.COLUMN_ID
 	        + " = " + id, null);
+	}
+	
+	public void delete() {
+		Utils.Logger(DEBUG, TAG, "Coupons database deleted");
+		
+		database.delete(CouponsSQLiteHelper.TABLE_COUPONS, null, null);
+		database.close();
 	}
 
 	public List<Coupon> getAllCoupons() {

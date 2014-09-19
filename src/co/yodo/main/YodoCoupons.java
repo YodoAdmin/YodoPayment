@@ -4,10 +4,10 @@ import java.io.File;
 import java.util.List;
 
 import co.yodo.R;
-import co.yodo.database.Coupon;
 import co.yodo.database.CouponsDataSource;
 import co.yodo.helper.GridViewAdapter;
 import co.yodo.helper.Utils;
+import co.yodo.model.Coupon;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
