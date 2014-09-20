@@ -52,7 +52,6 @@ import android.content.res.Configuration;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Rect;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -76,10 +75,9 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoCallback {
+public class YodoPayment extends ActionBarActivity implements SlidingPaneLayout.PanelSlideListener, TaskFragment.YodoCallback {
 	/*!< DEBUG */
-	private final static String TAG = YodoPayment.class.getName();
-	private final static boolean DEBUG = true;
+	private final static String TAG = YodoPayment.class.getSimpleName();
 	
 	/*!< Size of the parallax performed when hidden pane is opened or closed */
 	private static final int PARALLAX_SIZE = 30;
@@ -116,6 +114,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 	private SlidingPaneLayout mSlidingLayout;
 	private PhotoViewAttacher mAttacher;
 	private ScrollView mNavigation;
+	private ActionBar actionBar;
 	
 	/*!< Different Biometric */
     //private boolean isDefine = false;
@@ -183,7 +182,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 	@Override
     protected void onResume() {
     	super.onResume();
-    	Utils.Logger(DEBUG, TAG, "onResume");
+    	Utils.Logger(TAG, "onResume");
 
     	IntentFilter intentFilter = new IntentFilter();
 	    intentFilter.addAction(YodoGlobals.DEVICES_BT);
@@ -203,7 +202,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 	@Override
     protected void onPause() {
         super.onPause();
-        Utils.Logger(DEBUG, TAG, "onPause");
+        Utils.Logger(TAG, "onPause");
         
         if(myReceiver != null)
         	unregisterReceiver(myReceiver);
@@ -324,7 +323,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 	private void setupGUI() {
     	handlerMessages   = new YodoHandler(this);
     	mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-    	ActionBar actionBar = getSupportActionBar();
+    	actionBar = getSupportActionBar();
     	actionBar.setDisplayHomeAsUpEnabled(true);
     	actionBar.setHomeAsUpIndicator(R.drawable.ic_drawer);
     	
@@ -358,6 +357,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 		mNavigation      = (ScrollView) findViewById(R.id.navigationScroll);
 		
 		// Sliding Panel Configurations
+		mSlidingLayout.setPanelSlideListener(this);
 		mSlidingLayout.setParallaxDistance(PARALLAX_SIZE);
 		
 		// Handle The Size of the Sidebar
@@ -396,7 +396,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 			                    int files = directory.listFiles().length;
 			                    File image = new File(directory, "ad" + (files++) + ".png");
 			                    
-			                    Utils.Logger(DEBUG, TAG, image.toString());
+			                    Utils.Logger(TAG, image.toString());
 			                    success = false;
 			                    // Encode the file as a PNG image.
 			                    FileOutputStream outStream;
@@ -520,16 +520,8 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
      * @param qrBitmap
      */
     private void showSKSDialog(String code, Integer account_type) {
-    	//retrieve display dimensions
-        /*Rect displayRectangle = new Rect();
-        Window window = getWindow();
-        window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
-        SKSCreater.setWidth((int)(displayRectangle.width() * 0.8f));*/
     	try {
-    		Rect displayRectangle = new Rect();
-    		Window window = getWindow();
-            window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
-			qrCode = SKSCreater.createSKS(code, YodoPayment.this, SKSCreater.SKS_CODE, account_type, (int)(displayRectangle.width() * 0.7f));
+			qrCode = SKSCreater.createSKS(code, YodoPayment.this, SKSCreater.SKS_CODE, account_type, Utils.getSKSSize(this));
     	
 	    	final Dialog sksDialog = new Dialog(this);
 	        
@@ -678,9 +670,9 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
             }
         }
         final String finalQuery = query;
-        Utils.Logger(DEBUG, TAG, finalQuery);
+        Utils.Logger(TAG, finalQuery);
         
-        if(!db.isOpen())
+        if(receiptsdb != null && !db.isOpen())
             db = receiptsdb.getWritableDatabase();
         
         saveButton.setOnClickListener(new OnClickListener() {
@@ -874,9 +866,9 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
     	} else {
     		boolean flag = false;
     		String[] numerosComoArray = accounts.split(",");
-    		Utils.Logger(DEBUG, TAG, accounts);
+    		Utils.Logger(TAG, accounts);
             for(int i = 0; i < numerosComoArray.length; i++) {
-            	Utils.Logger(DEBUG, TAG, numerosComoArray[i]);
+            	Utils.Logger(TAG, numerosComoArray[i]);
                 if(numerosComoArray[i] != "" && account_type == Integer.parseInt(numerosComoArray[i])) {
                 	flag = true;
                 	break;
@@ -891,7 +883,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
     	
     	if(temp_time != null) {
         	String originalCode = temp_pip + SKS_SEP + hrdwToken + SKS_SEP + temp_time;
-            Utils.Logger(DEBUG, TAG, originalCode);
+            Utils.Logger(TAG, originalCode);
             showSKSDialog(originalCode, account_type);
     	}
     	
@@ -1017,7 +1009,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 	                	if(accounts.length() == 0) {
 		                	if(temp_time != null) {
 			                	String originalCode = temp_pip + SKS_SEP + hrdwToken + SKS_SEP + temp_time;
-			    	            Utils.Logger(DEBUG, TAG, originalCode);
+			    	            Utils.Logger(TAG, originalCode);
 			    	            showSKSDialog(originalCode, null);
 		                	}
 	                	} else {
@@ -1110,7 +1102,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 	   
 	                            double tempBalance = Double.valueOf(twoDForm.format(Double.valueOf(aValParams[1])).replace(",", "."));
 	                            
-	                            Utils.Logger(DEBUG, TAG, twoDForm.format(Double.valueOf(aValParams[1])).replace(",", "."));
+	                            Utils.Logger(TAG, twoDForm.format(Double.valueOf(aValParams[1])).replace(",", "."));
 	                            
 	                            accBalanceText.setText(String.format("%.2f", tempBalance));
 	                        }
@@ -1169,7 +1161,7 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 					extension = ads.substring(ads.lastIndexOf("."));
 				}
 				
-				Utils.Logger(DEBUG, TAG, ads);
+				Utils.Logger(TAG, ads);
 				if(Arrays.asList(YodoGlobals.IMG_EXT).contains(extension)) {
 					URL url = new URL(ads);
 					bmAdvertising = BitmapFactory.decodeStream(url.openConnection().getInputStream());
@@ -1202,5 +1194,19 @@ public class YodoPayment extends ActionBarActivity implements TaskFragment.YodoC
 			actualMerch = intent.getStringExtra(YodoGlobals.DATA_DEVICE);
 			requestAdvertising(actualMerch.replaceAll(" ", "%20"));
 		}
+	}
+
+	@Override
+	public void onPanelClosed(View arg0) {
+		actionBar.setHomeAsUpIndicator(R.drawable.ic_drawer);
+	}
+
+	@Override
+	public void onPanelOpened(View arg0) {
+		actionBar.setHomeAsUpIndicator(R.drawable.ic_drawer_open);
+	}
+
+	@Override
+	public void onPanelSlide(View arg0, float arg1) {
 	}
 }

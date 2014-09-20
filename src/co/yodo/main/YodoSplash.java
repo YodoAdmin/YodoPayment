@@ -24,8 +24,7 @@ import android.widget.Toast;
 
 public class YodoSplash extends FragmentActivity implements TaskFragment.YodoCallback {
 	/*!< DEBUG */
-	private final static String TAG = YodoSplash.class.getName();
-	private final static boolean DEBUG = false;
+	private final static String TAG = YodoSplash.class.getSimpleName();
     
     /*!< Messages Handler */
     private static YodoHandler handlerMessages;
@@ -63,10 +62,10 @@ public class YodoSplash extends FragmentActivity implements TaskFragment.YodoCal
     	String hrdwToken = Utils.getHardwareToken(this);
 
         if(hrdwToken == null) {
-            ToastMaster.makeText(YodoSplash.this, R.string.error, Toast.LENGTH_LONG).show();
+        	ToastMaster.makeText(this, R.string.no_hdw, Toast.LENGTH_LONG).show();
             finish();
         } else {
-        	Utils.Logger(DEBUG, TAG, hrdwToken);
+        	Utils.Logger(TAG, hrdwToken);
         	requestHardwareAuthorization(hrdwToken);
         }
     }

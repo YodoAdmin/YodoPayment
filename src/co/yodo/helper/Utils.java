@@ -7,6 +7,7 @@ import java.util.Locale;
 
 import org.apache.http.HttpStatus;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
@@ -14,16 +15,19 @@ import android.content.SharedPreferences;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.telephony.TelephonyManager;
 import android.text.format.Time;
 import android.util.Log;
-import android.widget.Toast;
-import co.yodo.R;
+import android.view.Window;
 
 public class Utils {
 	private static final String	PCLIENT_SEP = "/";
+	
+	/*!< DEFAULT SKS SIZE */
+	private final static int QR_WIDTH_DEFAULT = 300;
 	
 	/**
 	 * Gets the imei or the mac of the mobile
@@ -55,9 +59,6 @@ public class Utils {
 				HARDWARE_TOKEN = tempMAC.replaceAll(":", "");
 			}
 		}*/
-		
-		if(HARDWARE_TOKEN == null)
-			ToastMaster.makeText(_context, R.string.no_hdw, Toast.LENGTH_LONG).show();
 		
 		return HARDWARE_TOKEN;
 	}
@@ -249,8 +250,40 @@ public class Utils {
 		return writer.commit();
 	}
 	
-	public static void Logger(boolean DEBUG, String TAG, String data) {
-		if(DEBUG)
+	public static int getSKSSize(Activity context) {
+		int screenLayout = context.getResources().getConfiguration().screenLayout;
+	    screenLayout &= Configuration.SCREENLAYOUT_SIZE_MASK;
+	    
+	    Rect displayRectangle = new Rect();
+		Window window = context.getWindow();
+        window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
+        int size, currentOrientation = context.getResources().getConfiguration().orientation;
+		
+        if(currentOrientation == Configuration.ORIENTATION_LANDSCAPE) 
+	    	size = displayRectangle.height();
+        else
+        	size = displayRectangle.width();
+        Utils.Logger("asdfasdf", screenLayout + "");
+	    switch(screenLayout) {
+	    	case Configuration.SCREENLAYOUT_SIZE_SMALL:
+	    		return (int)(size * 0.7f);
+	    	
+	    	case Configuration.SCREENLAYOUT_SIZE_NORMAL:
+	    		return (int)(size * 0.6f);
+	    		
+    		case Configuration.SCREENLAYOUT_SIZE_LARGE:
+    			return (int)(size * 0.4f);
+    		
+    		case Configuration.SCREENLAYOUT_SIZE_XLARGE:
+    			return (int)(size * 0.3f);
+    		
+    		default:
+    			return QR_WIDTH_DEFAULT;
+	    }
+	}
+	
+	public static void Logger(String TAG, String data) {
+		if(YodoGlobals.DEBUG)
 			Log.e(TAG, data);
 	}
 }

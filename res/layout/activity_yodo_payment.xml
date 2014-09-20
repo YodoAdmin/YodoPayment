@@ -5,7 +5,7 @@
         android:layout_height="match_parent" >
 
     <!-- The navigation drawer -->
-    <include layout="@layout/yodo_payment_navigation"/>
+    <include layout="@layout/yodo_payment_navigation" />
 
     <!-- The main content view -->
     <include layout="@layout/yodo_payment_content" />

@@ -22,8 +22,7 @@ import android.support.v4.app.Fragment;
 
 public class TaskFragment extends Fragment {
 	/*!< DEBUG */
-	private final static boolean DEBUG = true;
-	private final static String TAG = TaskFragment.class.getName();
+	private final static String TAG = TaskFragment.class.getSimpleName();
 	
 	/**
 	 * Callback interface through which the AsyncTask will report the
@@ -164,7 +163,7 @@ public class TaskFragment extends Fragment {
 	        // Check internet connection
 	        if(!Utils.isOnline(IP)) {
 	        	internetFlag = false;
-	        	Utils.Logger(DEBUG, TAG, String.valueOf(internetFlag));
+	        	Utils.Logger(TAG, String.valueOf(internetFlag));
 	        }
 
 	        // Connecting to the server
@@ -224,8 +223,7 @@ public class TaskFragment extends Fragment {
 	            SAXParser sp = spf.newSAXParser();
 	            XMLReader xr = sp.getXMLReader();
 	            
-	            if(DEBUG)
-	            	Utils.Logger(DEBUG, TAG, IP + YODO_ADDRESS + pRequest);
+	            Utils.Logger(TAG, IP + YODO_ADDRESS + pRequest);
 	            
 	            // Send URL to parse XML Tags
 	            URL sourceUrl = new URL(IP + YODO_ADDRESS + pRequest);
@@ -294,9 +292,9 @@ public class TaskFragment extends Fragment {
 	        }
 	        
 	    	if(response == null)
-	    		Utils.Logger(DEBUG, TAG, ((Context) mCallbacks).getString(R.string.null_response));
+	    		Utils.Logger(TAG, ((Context) mCallbacks).getString(R.string.null_response));
 	    	else
-	    		Utils.Logger(DEBUG, TAG, response.toString());
+	    		Utils.Logger(TAG, response.toString());
 
 	        if(mCallbacks != null) {
 	        	TaskFragment.this.cancel();

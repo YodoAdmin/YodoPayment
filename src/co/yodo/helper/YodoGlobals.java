@@ -1,6 +1,9 @@
 package co.yodo.helper;
 
 public class YodoGlobals {
+	/*!< DEBUG */
+	public static final boolean DEBUG = true;
+	
     /*!< Dummy */
     public static final String USER_BIOMETRIC = "BiometricTest";
 

@@ -17,8 +17,7 @@ import android.util.Log;
 
 public class AdvertisingService extends Service {
 	/*!< DEBUG */
-	private static final boolean DEBUG = false;
-	public static final String TAG = AdvertisingService.class.getName();
+	public static final String TAG = AdvertisingService.class.getSimpleName();
 	
 	/*!< Bluetooth Timer */
 	private BluetoothAdapter mBluetoothAdapter;
@@ -39,7 +38,7 @@ public class AdvertisingService extends Service {
 	
 	@Override
 	public void onCreate() {
-		Utils.Logger(DEBUG, TAG, "onCreate");
+		Utils.Logger(TAG, "onCreate");
 	    
 	    mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 	    if(mBluetoothAdapter != null) {
@@ -51,7 +50,7 @@ public class AdvertisingService extends Service {
 	
 	@Override
 	public void onStart(Intent intent, int startId) {
-		Utils.Logger(DEBUG, TAG, "onStart");   
+		Utils.Logger(TAG, "onStart");   
 	    
 	    if(mBluetoothAdapter != null && !mBluetoothAdapter.isEnabled()) {
 	        stopSelf();
@@ -64,7 +63,7 @@ public class AdvertisingService extends Service {
 
 	@Override
 	public void onDestroy() {
-		Utils.Logger(DEBUG, TAG, "onDestroy");  
+		Utils.Logger(TAG, "onDestroy");  
 		
 		if(mBluetoothAdapter!= null && mBluetoothAdapter.isDiscovering()) {
             mBluetoothAdapter.cancelDiscovery();
@@ -87,18 +86,17 @@ public class AdvertisingService extends Service {
 	            mBluetoothAdapter.cancelDiscovery();
 	        }
 	    	mBluetoothAdapter.startDiscovery();
-	    	Utils.Logger(DEBUG, TAG, "onDiscover");
+	    	Utils.Logger(TAG, "onDiscover");
         }
     }
 	
     private BroadcastReceiver mReceiver = new BroadcastReceiver() {
-		@SuppressWarnings("unused")
 		public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
             if(BluetoothDevice.ACTION_FOUND.equals(action)) {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 
-                if(device != null && device.getName() != null && DEBUG)
+                if(device != null && device.getName() != null)
             		Log.e("Device", device.getName());
                 
                 if(device != null && device.getName() != null && device.getName().startsWith(YODO_POS)) {

@@ -17,7 +17,6 @@ import android.database.sqlite.SQLiteStatement;
 
 public class CouponsDataSource {
 	/*!< DEBUG */
-	private final static boolean DEBUG = false;
 	private final static String TAG = CouponsDataSource.class.getSimpleName();
 	
 	/*!< Date format */
@@ -64,15 +63,14 @@ public class CouponsDataSource {
 	public void deleteCoupon(Coupon coupon) {
 	    long id = coupon.getId();
 	    
-	    if(DEBUG)
-	    	System.out.println("Coupon deleted with id: " + id);
+	    Utils.Logger(TAG, "Coupon deleted with id: " + id);
 	    
 	    database.delete(CouponsSQLiteHelper.TABLE_COUPONS, CouponsSQLiteHelper.COLUMN_ID
 	        + " = " + id, null);
 	}
 	
 	public void delete() {
-		Utils.Logger(DEBUG, TAG, "Coupons database deleted");
+		Utils.Logger(TAG, "Coupons database deleted");
 		
 		database.delete(CouponsSQLiteHelper.TABLE_COUPONS, null, null);
 		database.close();
