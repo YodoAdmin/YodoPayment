@@ -13,7 +13,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.IBinder;
-import android.util.Log;
 
 public class AdvertisingService extends Service {
 	/*!< DEBUG */
@@ -97,7 +96,7 @@ public class AdvertisingService extends Service {
                 BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
                 
                 if(device != null && device.getName() != null)
-            		Log.e("Device", device.getName());
+                	Utils.Logger(TAG, device.getName());
                 
                 if(device != null && device.getName() != null && device.getName().startsWith(YODO_POS)) {
                 	if(mBluetoothAdapter.isDiscovering())

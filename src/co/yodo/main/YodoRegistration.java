@@ -8,7 +8,6 @@ import android.os.Message;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.text.InputType;
-import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
@@ -31,7 +30,6 @@ import co.yodo.serverconnection.TaskFragment.SwitchServer;
 public class YodoRegistration extends ActionBarActivity implements TaskFragment.YodoCallback {
 	/*!< DEBUG */
 	private final static String TAG = YodoRegistration.class.getName();
-	private final static boolean DEBUG = false;
 	
 	/*!< GUI Controllers */
     private RelativeLayout registration;
@@ -173,12 +171,12 @@ public class YodoRegistration extends ActionBarActivity implements TaskFragment.
 			progDialog.dismiss();
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public void onTaskCompleted(ServerResponse data, int type) {
 		finish();
 		
-		if(DEBUG)
-			Log.e(TAG, data.toString());
+		Utils.Logger(TAG, data.toString());
 
         if(data != null) {
             String code = data.getCode();
@@ -198,8 +196,7 @@ public class YodoRegistration extends ActionBarActivity implements TaskFragment.
             	
             	handlerMessages.sendMessage(message);
             }
-        } else {
-            handlerMessages.sendEmptyMessage(YodoGlobals.GENERAL_ERROR);
-        }
+        } else 
+        	handlerMessages.sendEmptyMessage(YodoGlobals.GENERAL_ERROR);
 	}
 }

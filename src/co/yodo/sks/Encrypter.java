@@ -11,15 +11,14 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
-
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
-
+import co.yodo.helper.Utils;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.AssetManager;
-import android.util.Log;
 
 /**
  * @author renatomarroquin
@@ -27,7 +26,7 @@ import android.util.Log;
  */
 public class Encrypter {
 	/*!< DEBUG */
-	private final static boolean DEBUG = false;
+	private final static String TAG = Encrypter.class.getSimpleName();
 
 	/**
 	 * Public key generated with: openssl rsa -in 11.private.pem -pubout -outform DER -out 11.public.der
@@ -82,8 +81,7 @@ public class Encrypter {
 			    
 		}
 		catch(Exception e) {
-			if(DEBUG)
-				Log.e(parent.getClass().toString() , "Error Reading Public Key - SKSCreater");
+			Utils.Logger(TAG, "Error Reading Public Key - SKSCreater");
 		}
 		
 		return pkPublic;
@@ -93,6 +91,7 @@ public class Encrypter {
 	 * @param parent	Activity that uses the SKSCreater
 	 * @return			Byte array containing the encrypted string
 	 */
+	@SuppressLint("TrulyRandom")
 	public void rsaEncrypt(Activity parent) {
 		PublicKey pubKey = readKeyFromFile(parent);
 		Cipher cipher;
@@ -103,22 +102,18 @@ public class Encrypter {
 			  
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
-			if(DEBUG)
-				Log.e(parent.getClass().toString() , "Error Encrypting string - SKSCreater");
+			Utils.Logger(TAG, "Error Encrypting string - SKSCreater");
 		} catch (NoSuchPaddingException e) {
 			e.printStackTrace();
-			if(DEBUG)
-				Log.e(parent.getClass().toString() , "Error Encrypting string - SKSCreater");
+			Utils.Logger(TAG, "Error Encrypting string - SKSCreater");
 		} catch (InvalidKeyException e) {
 			e.printStackTrace();
 		} catch (IllegalBlockSizeException e) {
 			e.printStackTrace();
-			if(DEBUG)
-				Log.e(parent.getClass().toString() , "Error Encrypting string - SKSCreater");
+			Utils.Logger(TAG, "Error Encrypting string - SKSCreater");
 		} catch (BadPaddingException e) {
 			e.printStackTrace();
-			if(DEBUG)
-				Log.e(parent.getClass().toString() , "Error Encrypting string - SKSCreater");
+			Utils.Logger(TAG, "Error Encrypting string - SKSCreater");
 		}
 	}
 	

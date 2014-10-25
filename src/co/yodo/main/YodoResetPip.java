@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.InputType;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -30,7 +29,6 @@ import co.yodo.serverconnection.TaskFragment.SwitchServer;
 public class YodoResetPip extends ActionBarActivity implements TaskFragment.YodoCallback {
 	/*!< DEBUG */
 	private final static String TAG = YodoResetPip.class.getName();
-	private final static boolean DEBUG = false;
 	
 	 /*!< GUI Controllers */
     private EditText pipText;
@@ -360,8 +358,7 @@ public class YodoResetPip extends ActionBarActivity implements TaskFragment.Yodo
         switch(requestCode) {      
             case(REQUEST_FACE_ACTIVITY):
             	if(resultCode == RESULT_OK) {
-            		if(DEBUG)
-            			Log.i(TAG, "Biometric Success");
+            		Utils.Logger(TAG, "Biometric Success");
             		
             		requestPIPResetBio(authNumber, newPip);
             		authNumber = "";

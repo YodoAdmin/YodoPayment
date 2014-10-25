@@ -10,21 +10,25 @@ import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
 import java.util.Hashtable;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.res.AssetManager;
 import android.graphics.Bitmap;
-import android.util.Log;
+
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
 import com.google.zxing.qrcode.QRCodeWriter;
+
 import co.yodo.R;
+import co.yodo.helper.Utils;
 
 /**
  * This class is used for create Yodo SKS by using 
@@ -33,7 +37,6 @@ import co.yodo.R;
  */
 public class SKSCreater {
 	/*!< DEBUG */
-	private final static boolean DEBUG = true;
 	private final static String TAG = SKSCreater.class.getName();
 
 	// size of qr code (px)
@@ -74,8 +77,7 @@ public class SKSCreater {
 			if(account_type != null)
 				response += account_type;
 			
-			if(DEBUG)
-				Log.e(TAG, response + " - " + response.length());
+			Utils.Logger(TAG, response + " - " + response.length());
 			
 			Hashtable<Object, String> hint = new Hashtable<Object, String>();
 			hint.put(EncodeHintType.CHARACTER_SET, encoding);
@@ -134,9 +136,8 @@ public class SKSCreater {
 			pkPublic = kf.generatePublic(publicKeySpec);
 			    
 		}
-		catch(Exception e){
-			if(DEBUG)
-				Log.e(parent.getClass().toString() , "Error Reading Public Key - SKSCreater");
+		catch(Exception e) {
+			Utils.Logger(TAG, "Error Reading Public Key - SKSCreater");
 		}
 		
 		return pkPublic;
@@ -162,24 +163,21 @@ public class SKSCreater {
 			  
 		} catch (NoSuchAlgorithmException e) {
 			e.printStackTrace();
-			if(DEBUG)
-				Log.e(parent.getClass().toString() , "Error Encrypting string - SKSCreater");
+			Utils.Logger(TAG, "Error Encrypting string - SKSCreater");
 		} catch (NoSuchPaddingException e) {
 			e.printStackTrace();
-			Log.e(parent.getClass().toString() , "Error Encrypting string - SKSCreater");
+			Utils.Logger(TAG, "Error Encrypting string - SKSCreater");
 		} catch (InvalidKeyException e) {
 			e.printStackTrace();
 		} catch (IllegalBlockSizeException e) {
 			e.printStackTrace();
-			if(DEBUG)
-				Log.e(parent.getClass().toString() , "Error Encrypting string - SKSCreater");
+			Utils.Logger(TAG, "Error Encrypting string - SKSCreater");
 		} catch (BadPaddingException e) {
 			e.printStackTrace();
-			if(DEBUG)
-				Log.e(parent.getClass().toString() , "Error Encrypting string - SKSCreater");
+			Utils.Logger(TAG, "Error Encrypting string - SKSCreater");
 		}
-		if(DEBUG)
-			Log.e(parent.getClass().toString() , cipherString);
+		
+		Utils.Logger(TAG, cipherString);
 		return cipherData;
 	}
 	
@@ -205,8 +203,8 @@ public class SKSCreater {
 				hexCrypt.append(hexNum);
 			}
 		}
-		if(DEBUG)
-			Log.e("User Crypt" , hexCrypt.toString());
+		
+		Utils.Logger(TAG, hexCrypt.toString());
 		return hexCrypt.toString();
 	}
 }

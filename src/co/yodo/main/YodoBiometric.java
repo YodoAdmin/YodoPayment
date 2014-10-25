@@ -8,7 +8,6 @@ import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
-import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 import co.yodo.R;
@@ -24,7 +23,6 @@ import co.yodo.serverconnection.TaskFragment.SwitchServer;
 public class YodoBiometric extends ActionBarActivity implements TaskFragment.YodoCallback {
 	/*!< DEBUG */
 	private final static String TAG = YodoBiometric.class.getName();
-	private final static boolean DEBUG = false;
 	
 	/*!< Result Activities Identifiers */
     private static final int FACE_ACTIVITY = 1;
@@ -146,12 +144,12 @@ public class YodoBiometric extends ActionBarActivity implements TaskFragment.Yod
 			progDialog.dismiss();
 	}
 
+	@SuppressWarnings("unused")
 	@Override
 	public void onTaskCompleted(ServerResponse data, int queryType) {
 		AlertDialog.Builder builder = new AlertDialog.Builder(YodoBiometric.this);
-    	
-		if(DEBUG)
-			Log.e(TAG, data.toString());
+		
+		Utils.Logger(TAG, data.toString());
 		
         if(data != null) {
             String code = data.getCode();
@@ -177,9 +175,8 @@ public class YodoBiometric extends ActionBarActivity implements TaskFragment.Yod
             	alertDialog = builder.create();
             	alertDialog.show();
             }
-        } else {
-            handlerMessages.sendEmptyMessage(YodoGlobals.GENERAL_ERROR);
-        }
+        } else 
+        	handlerMessages.sendEmptyMessage(YodoGlobals.GENERAL_ERROR);
 	}
 	
 	@Override

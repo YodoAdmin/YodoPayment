@@ -141,9 +141,9 @@ public class TaskFragment extends Fragment {
 
 	    /*!< Switch server ip address */ 
 	    //private static final String IP 		     = "http://192.168.1.34"; // Localhost
-	    //private static final String IP 		     = "http://50.56.180.133"; // Production 
+	    private static final String IP 		     = "http://50.56.180.133"; // Production 
 	    //private static final String IP 		     = "http://yodo.bytegolem.com"; // Production
-	    private static final String IP 			 = "http://198.101.209.120"; // Development 
+	    //private static final String IP 			 = "http://198.101.209.120"; // Development 
 	    //private static final String YODO_ADDRESS = "/yodoLuis/yodoswitchrequest/getRequest/"; // Localhost
 	    private static final String YODO_ADDRESS = "/yodo/yodoswitchrequest/getRequest/"; // Production & Development
 

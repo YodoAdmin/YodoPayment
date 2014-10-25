@@ -11,7 +11,6 @@ import android.support.v4.app.FragmentManager;
 import android.support.v7.app.ActionBarActivity;
 import android.text.Html;
 import android.text.InputType;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -37,7 +36,6 @@ import co.yodo.serverconnection.TaskFragment.SwitchServer;
 public class YodoLinking extends ActionBarActivity implements TaskFragment.YodoCallback {
 	/*!< DEBUG */
 	private final static String TAG = YodoLinking.class.getName();
-	private final static boolean DEBUG = true;
 	
 	/*!< Variable used as an authentication number */
 	private static String hrdwToken;
@@ -150,8 +148,7 @@ public class YodoLinking extends ActionBarActivity implements TaskFragment.YodoC
     		            public void onClick(DialogInterface dialog, int which) {
     		                String linkingCode = inputBox.getText().toString();
     		                
-    		                if(DEBUG)
-    		            		Log.e(TAG, account.getContentDescription() + "");
+    		                Utils.Logger(TAG, account.getContentDescription() + "");
     		                
     		                account_type = account.getContentDescription().toString();
     		                requestLinkingAccount(linkingCode);
@@ -265,8 +262,7 @@ public class YodoLinking extends ActionBarActivity implements TaskFragment.YodoC
 	                	int end              = generatedCode.indexOf(ServerResponse.ENTRY_SEPARATOR + ServerResponse.TIME_ELEM);
 	                	generatedCode        = generatedCode.substring(0, end);
 	                	
-	                	if(DEBUG)
-	                		Log.e(TAG, generatedCode);
+	                	Utils.Logger(TAG, generatedCode);
 	                	
 	                	Dialog dialog = new Dialog(YodoLinking.this);
 	                    dialog.getWindow();
@@ -293,8 +289,7 @@ public class YodoLinking extends ActionBarActivity implements TaskFragment.YodoC
 	                	int end1    = text.indexOf(ServerResponse.ENTRY_SEPARATOR + ServerResponse.TIME_ELEM);
 	                	text        = text.substring(0, end1);
 	                	
-	                	if(DEBUG)
-	                		Log.e(TAG, text);
+	                	Utils.Logger(TAG, text);
 	                	
 	                	if(account_type != null) {
 	                		Utils.saveLinkedAccount(getApplicationContext(), account_type);

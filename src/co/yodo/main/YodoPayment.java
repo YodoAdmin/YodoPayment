@@ -133,7 +133,6 @@ public class YodoPayment extends ActionBarActivity implements SlidingPaneLayout.
     private final static int REC_REQ  = 2;
     private final static int CLS_REQ  = 3;
     private final static int ADS_REQ  = 4;
-    private final static int BIO_REQ  = 5;
 	
     /*!< QR Bitmap */
     private Bitmap qrCode;
@@ -563,7 +562,7 @@ public class YodoPayment extends ActionBarActivity implements SlidingPaneLayout.
 	        		getWindow().setAttributes(lp);
 	        		requestReceipt(temp_pip);
 	        		
-	        		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+	        		//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
 	            }
 	        });
 	        
@@ -684,14 +683,14 @@ public class YodoPayment extends ActionBarActivity implements SlidingPaneLayout.
 	            	ToastMaster.makeText(YodoPayment.this, R.string.saved_receipt, Toast.LENGTH_SHORT).show();
             	}
             	receipt.dismiss();
-            	setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+            	//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
             }
         });
         
         receipt.setOnDismissListener(new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss(DialogInterface dialog) {
-        		setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
+        		//setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_SENSOR);
             }
         });
         
@@ -721,9 +720,9 @@ public class YodoPayment extends ActionBarActivity implements SlidingPaneLayout.
     	if(mSlidingLayout.isOpen())
     		mSlidingLayout.closePane();
     	
-    	//ToastMaster.makeText(YodoPayment.this, R.string.not_available, Toast.LENGTH_SHORT).show();
-    	Intent intent = new Intent(YodoPayment.this, YodoLinking.class);
-        startActivity(intent);
+    	ToastMaster.makeText(YodoPayment.this, R.string.not_available, Toast.LENGTH_SHORT).show();
+    	/*Intent intent = new Intent(YodoPayment.this, YodoLinking.class);
+        startActivity(intent);*/
     }
     
     public void pairClick(View v) {
@@ -1034,21 +1033,6 @@ public class YodoPayment extends ActionBarActivity implements SlidingPaneLayout.
 	                		new DownloadTask().execute(url.replaceAll(" ", "%20"));
 	                	}
 	                break;
-	                
-	                case BIO_REQ:
-	                	/*if(!isDefine) {
-	                		Intent intent = new Intent(YodoPayment.this, YodoCamera.class);
-		            		intent.putExtra(YodoGlobals.ID_TOKEN, data.getParams());
-		                	startActivityForResult(intent, REQUEST_FACE_ACTIVITY);
-	                	} else {
-	                		if(data.getParams().equals(YodoGlobals.USER_BIOMETRIC)) {
-	                			
-	                		} else {
-	                			ToastMaster.makeText(YodoPayment.this, R.string.token_defined, Toast.LENGTH_LONG).show();
-	                		}
-	                		isDefine = false;
-	                	}*/
-	                break;
 	
 	                case CLS_REQ:
 	                	temp_pip = "";
@@ -1115,6 +1099,11 @@ public class YodoPayment extends ActionBarActivity implements SlidingPaneLayout.
             else if(code.equals(YodoGlobals.ERROR_INTERNET)) {
                 handlerMessages.sendEmptyMessage(YodoGlobals.NO_INTERNET);
             } else {
+            	switch(queryType) {
+		            case ADS_REQ:
+		            	return;
+            	}
+            	
             	builder.setTitle(Html.fromHtml("<font color='#FF0000'>" + data.getCode() + "</font>"));
             	builder.setMessage(Html.fromHtml("<font color='#FF0000'>" + data.getMessage() + "</font>"));
             	builder.setPositiveButton(getString(R.string.ok), null);

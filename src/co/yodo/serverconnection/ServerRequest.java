@@ -1,10 +1,10 @@
 package co.yodo.serverconnection;
 
-import android.util.Log;
+import co.yodo.helper.Utils;
 
 public class ServerRequest {
 	/*!< DEBUG */
-	private final static boolean DEBUG = false;
+	private static final String TAG = ServerRequest.class.getSimpleName();
 	
 	/*!< Protocol version used in the request */
 	private static final String PROTOCOL_VERSION = "1.1.2";
@@ -76,8 +76,7 @@ public class ServerRequest {
 		}
 		sAuthRequest.append(pUsrData);
 		
-		if(DEBUG)
-			Log.e("Authentication Request", sAuthRequest.toString());
+		Utils.Logger(TAG, "Authentication Request: " + sAuthRequest.toString());
 		return sAuthRequest.toString();
 	}
 
@@ -104,8 +103,7 @@ public class ServerRequest {
         }
         sQueryRequest.append(pUsrData);
         
-        if(DEBUG)
-        	Log.e("Query Request", sQueryRequest.toString());
+        Utils.Logger(TAG, "Query Request: " + sQueryRequest.toString());
         return sQueryRequest.toString();
     }
 
@@ -134,8 +132,7 @@ public class ServerRequest {
         }
         sResetRequest.append(sUserData);
         
-        if(DEBUG)
-        	Log.e("Reset Request", sResetRequest.toString());
+        Utils.Logger(TAG, "Reset Request: " + sResetRequest.toString());
         return sResetRequest.toString();
     }
 
@@ -165,8 +162,7 @@ public class ServerRequest {
         }
         sRegRequest.append(sUserData);
         
-        if(DEBUG)
-        	Log.e("Registration Request", sRegRequest.toString());
+        Utils.Logger(TAG, "Registration Request: " + sRegRequest.toString());
         return sRegRequest.toString();
     }
 
@@ -185,8 +181,7 @@ public class ServerRequest {
         sCloseRequest.append(CLOSE_CLIENT_SUBREQ).append(REQ_SEP);
         sCloseRequest.append(sUserData);
         
-        if(DEBUG)
-        	Log.e("Close Request", sCloseRequest.toString());
+        Utils.Logger(TAG, "Close Request: " + sCloseRequest.toString());
         return sCloseRequest.toString();
     }
     
@@ -211,8 +206,7 @@ public class ServerRequest {
         }
         sLinkingRequest.append(sUserData);
         
-        if(DEBUG)
-        	Log.e("Linking Request", sLinkingRequest.toString());
+        Utils.Logger(TAG, "Linking Request: " + sLinkingRequest.toString());
         return sLinkingRequest.toString();
     }
 }

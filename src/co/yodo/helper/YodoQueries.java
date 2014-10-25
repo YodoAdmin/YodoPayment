@@ -1,13 +1,11 @@
 package co.yodo.helper;
 
 import android.app.Activity;
-import android.util.Log;
 import co.yodo.serverconnection.ServerRequest;
 import co.yodo.sks.Encrypter;
 
 public class YodoQueries {
 	// DEBUG
-	private static final boolean DEBUG = false;
 	private static final String TAG    = YodoQueries.class.getName();
 	
 	/*!< Object used to encrypt user's information */
@@ -186,8 +184,7 @@ public class YodoQueries {
 		sPipResetData.append(hrdwToken).append(REQ_SEP);
 		sPipResetData.append(newPip);
 		
-		if(DEBUG)
-			Log.i(TAG, sPipResetData.toString());
+		Utils.Logger(TAG, sPipResetData.toString());
 		
 		getEncrypter().setsUnEncryptedString(sPipResetData.toString());
 		getEncrypter().rsaEncrypt(activity);

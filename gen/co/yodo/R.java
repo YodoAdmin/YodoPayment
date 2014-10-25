@@ -1088,36 +1088,37 @@ containing a value of this type.
         public static final int abc_textfield_searchview_right_holo_light=0x7f020056;
         public static final int background=0x7f020057;
         public static final int black_button=0x7f020058;
-        public static final int clear_button_image=0x7f020059;
-        public static final int clear_button_image2=0x7f02005a;
-        public static final int close_account=0x7f02005b;
-        public static final int configure_pip=0x7f02005c;
-        public static final int copy=0x7f02005d;
-        public static final int coupon_icon=0x7f02005e;
-        public static final int face_icon=0x7f02005f;
-        public static final int get_advertising=0x7f020060;
-        public static final int get_balance=0x7f020061;
-        public static final int golden_coins=0x7f020062;
-        public static final int golden_coins1=0x7f020063;
-        public static final int heart=0x7f020064;
-        public static final int highlight_button=0x7f020065;
-        public static final int ic_drawer=0x7f020066;
-        public static final int ic_drawer_open=0x7f020067;
-        public static final int ic_launcher=0x7f020068;
-        public static final int ic_menu_refresh=0x7f020069;
-        public static final int link=0x7f02006a;
-        public static final int logo=0x7f02006b;
-        public static final int pair=0x7f02006c;
-        public static final int red_button=0x7f02006d;
-        public static final int rounded_corner=0x7f02006e;
-        public static final int save_file=0x7f02006f;
-        public static final int saved_receipts=0x7f020070;
-        public static final int sns_icon=0x7f020071;
-        public static final int sns_icon1=0x7f020072;
-        public static final int trash_can=0x7f020073;
-        public static final int voice_recognition=0x7f020074;
-        public static final int yodo=0x7f020075;
-        public static final int yodo_debit_card_icon=0x7f020076;
+        public static final int border_text=0x7f020059;
+        public static final int clear_button_image=0x7f02005a;
+        public static final int clear_button_image2=0x7f02005b;
+        public static final int close_account=0x7f02005c;
+        public static final int configure_pip=0x7f02005d;
+        public static final int copy=0x7f02005e;
+        public static final int coupon_icon=0x7f02005f;
+        public static final int face_icon=0x7f020060;
+        public static final int get_advertising=0x7f020061;
+        public static final int get_balance=0x7f020062;
+        public static final int golden_coins=0x7f020063;
+        public static final int golden_coins1=0x7f020064;
+        public static final int heart=0x7f020065;
+        public static final int highlight_button=0x7f020066;
+        public static final int ic_drawer=0x7f020067;
+        public static final int ic_drawer_open=0x7f020068;
+        public static final int ic_launcher=0x7f020069;
+        public static final int ic_menu_refresh=0x7f02006a;
+        public static final int link=0x7f02006b;
+        public static final int logo=0x7f02006c;
+        public static final int pair=0x7f02006d;
+        public static final int red_button=0x7f02006e;
+        public static final int rounded_corner=0x7f02006f;
+        public static final int save_file=0x7f020070;
+        public static final int saved_receipts=0x7f020071;
+        public static final int sns_icon=0x7f020072;
+        public static final int sns_icon1=0x7f020073;
+        public static final int trash_can=0x7f020074;
+        public static final int voice_recognition=0x7f020075;
+        public static final int yodo=0x7f020076;
+        public static final int yodo_debit_card_icon=0x7f020077;
     }
     public static final class id {
         public static final int accountNumberText=0x7f05007c;
@@ -1133,8 +1134,8 @@ containing a value of this type.
         public static final int action_menu_divider=0x7f050016;
         public static final int action_menu_presenter=0x7f050017;
         public static final int action_mode_close_button=0x7f050024;
-        public static final int action_refresh=0x7f05008f;
-        public static final int action_settings=0x7f050091;
+        public static final int action_refresh=0x7f050090;
+        public static final int action_settings=0x7f050092;
         public static final int activity_chooser_view_content=0x7f050025;
         public static final int ads_view=0x7f050084;
         public static final int advertisingCheckBox=0x7f05006f;
@@ -1146,12 +1147,12 @@ containing a value of this type.
         public static final int balanceText=0x7f05007e;
         public static final int balanceTextLabel=0x7f050079;
         public static final int beginning=0x7f050011;
-        public static final int button1=0x7f05008d;
-        public static final int buttonCloseAccount=0x7f05008e;
-        public static final int buttonLink=0x7f05008a;
-        public static final int buttonPair=0x7f05008b;
-        public static final int buttonResetPip=0x7f050088;
-        public static final int buttonSavedReceipts=0x7f050089;
+        public static final int button1=0x7f05008e;
+        public static final int buttonCloseAccount=0x7f05008f;
+        public static final int buttonLink=0x7f05008b;
+        public static final int buttonPair=0x7f05008c;
+        public static final int buttonResetPip=0x7f050089;
+        public static final int buttonSavedReceipts=0x7f05008a;
         public static final int cashBackLayout=0x7f050068;
         public static final int cashBackText=0x7f05006a;
         public static final int cashBackView=0x7f050069;
@@ -1172,7 +1173,7 @@ containing a value of this type.
         public static final int dateText=0x7f05007d;
         public static final int dateTextLabel=0x7f050078;
         public static final int default_activity_button=0x7f050028;
-        public static final int delete=0x7f050090;
+        public static final int delete=0x7f050091;
         public static final int deleteButton=0x7f05006c;
         public static final int descriptionText=0x7f05005c;
         public static final int descriptionView=0x7f050072;
@@ -1197,7 +1198,7 @@ containing a value of this type.
         public static final int languagesSpinner=0x7f05006e;
         public static final int listMode=0x7f050001;
         public static final int list_item=0x7f050029;
-        public static final int menu_exit=0x7f050092;
+        public static final int menu_exit=0x7f050093;
         public static final int middle=0x7f050012;
         public static final int navigationScroll=0x7f050086;
         public static final int networkButton=0x7f050083;
@@ -1205,9 +1206,10 @@ containing a value of this type.
         public static final int newPipText=0x7f050053;
         public static final int none=0x7f050010;
         public static final int normal=0x7f050000;
-        public static final int optionsView=0x7f050087;
+        public static final int optionsView=0x7f050088;
         public static final int paidText=0x7f050060;
         public static final int paidView=0x7f05005f;
+        public static final int panelLayout=0x7f050087;
         public static final int paymentButton=0x7f050081;
         public static final int pipText=0x7f05004d;
         public static final int preview=0x7f050044;
@@ -1253,7 +1255,7 @@ containing a value of this type.
         public static final int textView1=0x7f05006d;
         public static final int text_row=0x7f050074;
         public static final int title=0x7f05002b;
-        public static final int toolsView=0x7f05008c;
+        public static final int toolsView=0x7f05008d;
         public static final int topDataTextLabel=0x7f050076;
         public static final int top_action_bar=0x7f050020;
         public static final int top_data_text=0x7f05007b;
@@ -1402,14 +1404,14 @@ containing a value of this type.
  header data text 
          */
         public static final int account=0x7f0a0015;
-        public static final int account_paypal=0x7f0a0088;
-        public static final int account_public_transit_pass=0x7f0a0085;
-        public static final int account_visa_credit=0x7f0a0084;
-        public static final int account_visa_prepaid=0x7f0a0087;
+        public static final int account_paypal=0x7f0a0089;
+        public static final int account_public_transit_pass=0x7f0a0086;
+        public static final int account_visa_credit=0x7f0a0085;
+        public static final int account_visa_prepaid=0x7f0a0088;
         /**  Linking Account Types 
          */
-        public static final int account_yodo=0x7f0a0083;
-        public static final int account_yodo_heart=0x7f0a0086;
+        public static final int account_yodo=0x7f0a0084;
+        public static final int account_yodo_heart=0x7f0a0087;
         public static final int action_forgot_pip=0x7f0a001b;
         /**  Settings 
  Settings 
@@ -1440,8 +1442,8 @@ containing a value of this type.
  Close Message 
  Close Message 
          */
-        public static final int close_message=0x7f0a0077;
-        public static final int closing_message=0x7f0a0078;
+        public static final int close_message=0x7f0a0078;
+        public static final int closing_message=0x7f0a0079;
         /**  configurations 
  configurations 
  configurations 
@@ -1484,9 +1486,10 @@ containing a value of this type.
          */
         public static final int eula_title=0x7f0a0060;
         public static final int exit=0x7f0a001c;
+        public static final int face_explanation=0x7f0a006e;
         public static final int face_recognition=0x7f0a006c;
-        public static final int farewell_message=0x7f0a007a;
-        public static final int farewell_message_tittle=0x7f0a0079;
+        public static final int farewell_message=0x7f0a007b;
+        public static final int farewell_message_tittle=0x7f0a007a;
         /**  Biometric Messages 
  Biometric Messages 
  Biometric Messages 
@@ -1495,31 +1498,32 @@ containing a value of this type.
          */
         public static final int finish_register=0x7f0a0068;
         public static final int forgot_pip=0x7f0a005f;
-        public static final int generate_code_button=0x7f0a0072;
+        public static final int generate_code_button=0x7f0a0073;
         public static final int get_advertising=0x7f0a0049;
         public static final int get_balance=0x7f0a0043;
         public static final int image_saved_failed=0x7f0a003b;
         public static final int image_saved_ok=0x7f0a003a;
         public static final int input_pip=0x7f0a002c;
-        public static final int instructions_message=0x7f0a0076;
+        public static final int instructions_message=0x7f0a0077;
         /**  Tutorial Instructions 
  Tutorial Instructions 
  Tutorial Instructions 
  Tutorial Instructions 
  Tutorial Instructions 
          */
-        public static final int instructions_title=0x7f0a0075;
+        public static final int instructions_title=0x7f0a0076;
         public static final int language=0x7f0a004c;
         public static final int link=0x7f0a0047;
-        public static final int link_account_button=0x7f0a0071;
-        public static final int link_account_response=0x7f0a0073;
-        public static final int link_account_text=0x7f0a006f;
-        public static final int link_code_text=0x7f0a0070;
+        public static final int link_account_button=0x7f0a0072;
+        public static final int link_account_response=0x7f0a0074;
+        public static final int link_account_text=0x7f0a0070;
+        public static final int link_code_text=0x7f0a0071;
         public static final int linking_acc_message=0x7f0a0024;
         public static final int linking_code_message=0x7f0a0023;
         /**  Linking Account Messages 
+ Linking Account Messages 
          */
-        public static final int linking_menu=0x7f0a006e;
+        public static final int linking_menu=0x7f0a006f;
         public static final int loading=0x7f0a0025;
         public static final int merch_found=0x7f0a0038;
         public static final int new_pip=0x7f0a005a;
@@ -1537,7 +1541,7 @@ containing a value of this type.
         public static final int no_devices=0x7f0a0058;
         public static final int no_hdw=0x7f0a0027;
         public static final int no_internet=0x7f0a002a;
-        public static final int no_linked_account=0x7f0a0074;
+        public static final int no_linked_account=0x7f0a0075;
         public static final int no_transaction=0x7f0a0054;
         /**  Messages Text 
  Messages Text 
@@ -1590,24 +1594,23 @@ containing a value of this type.
          */
         public static final int sks_message=0x7f0a001d;
         public static final int start_biometric=0x7f0a0028;
-        public static final int title_activity_yodo_biometric=0x7f0a0081;
-        public static final int title_activity_yodo_camera=0x7f0a0082;
-        public static final int title_activity_yodo_coupons=0x7f0a007e;
-        public static final int title_activity_yodo_linking=0x7f0a007f;
+        public static final int title_activity_yodo_biometric=0x7f0a0082;
+        public static final int title_activity_yodo_camera=0x7f0a0083;
+        public static final int title_activity_yodo_coupons=0x7f0a007f;
+        public static final int title_activity_yodo_linking=0x7f0a0080;
         /**  Activities Titles 
          */
-        public static final int title_activity_yodo_payment=0x7f0a007b;
-        public static final int title_activity_yodo_receipts=0x7f0a007d;
-        public static final int title_activity_yodo_registration=0x7f0a0080;
-        public static final int title_activity_yodo_reset_pip=0x7f0a007c;
+        public static final int title_activity_yodo_payment=0x7f0a007c;
+        public static final int title_activity_yodo_receipts=0x7f0a007e;
+        public static final int title_activity_yodo_registration=0x7f0a0081;
+        public static final int title_activity_yodo_reset_pip=0x7f0a007d;
         public static final int token_defined=0x7f0a003c;
         public static final int tools=0x7f0a0042;
         /**  Button Messages 
  Button Messages 
  Button Messages 
- Button Messages 
          */
-        public static final int update_pip=0x7f0a0089;
+        public static final int update_pip=0x7f0a008a;
         public static final int version=0x7f0a0018;
         public static final int voice_recognition=0x7f0a006b;
         public static final int wrong_pip=0x7f0a002f;

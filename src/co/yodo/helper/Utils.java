@@ -2,7 +2,6 @@ package co.yodo.helper;
 
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.Arrays;
 import java.util.Locale;
 
 import org.apache.http.HttpStatus;
@@ -69,11 +68,11 @@ public class Utils {
 	 */
 	public static void changeLanguage(Context _context) {
 		SharedPreferences settings = _context.getSharedPreferences(YodoGlobals.PREFERENCES, Context.MODE_PRIVATE);
-		String code = _context.getResources().getConfiguration().locale.getLanguage();
+		//String code = _context.getResources().getConfiguration().locale.getLanguage();
 		int languagePosition = settings.getInt(YodoGlobals.ID_LANGUAGE, YodoGlobals.DEFAULT_LANGUAGE);
 		Locale appLoc = null;
 		
-		if(languagePosition == -1 && (Arrays.asList(YodoGlobals.lang_code).contains(code))) {
+		if(languagePosition == -1 /*&& (Arrays.asList(YodoGlobals.lang_code).contains(code))*/) {
 			appLoc = _context.getResources().getConfiguration().locale;		
 		}
 		else if(YodoGlobals.languages[languagePosition].equals("Spanish")) {
@@ -263,13 +262,13 @@ public class Utils {
 	    	size = displayRectangle.height();
         else
         	size = displayRectangle.width();
-        Utils.Logger("asdfasdf", screenLayout + "");
+        
 	    switch(screenLayout) {
 	    	case Configuration.SCREENLAYOUT_SIZE_SMALL:
 	    		return (int)(size * 0.7f);
 	    	
 	    	case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-	    		return (int)(size * 0.6f);
+	    		return (int)(size * 0.7f);
 	    		
     		case Configuration.SCREENLAYOUT_SIZE_LARGE:
     			return (int)(size * 0.4f);
