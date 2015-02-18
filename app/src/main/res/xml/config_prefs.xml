@@ -1,0 +1,20 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <ListPreference
+        android:key="SPCurrentLanguage"
+        android:title="@string/config_pref_languages"
+        android:summary="%s"
+        android:entries="@array/languages_array"
+        android:entryValues="@array/languages_array_values"
+        android:defaultValue="en"/>
+
+    <PreferenceCategory android:title="@string/config_pref_services">
+
+        <CheckBoxPreference
+            android:key="SPAdvertisingService"
+            android:title="@string/config_pref_advertising"
+            android:summary="@string/config_pref_advertising_summary" />
+
+    </PreferenceCategory>
+
+</PreferenceScreen>

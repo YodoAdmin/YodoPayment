@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="co.yodo.mobile" >
+
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.GET_TASKS" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+
+    <uses-feature android:name="android.hardware.camera.front" />
+
+    <application
+        android:allowBackup="true"
+        android:icon="@drawable/ic_launcher"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:theme="@style/AppTheme" >
+        <activity
+            android:name=".main.SplashActivity"
+            android:label="@string/app_name"
+            android:screenOrientation="portrait" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Start Services -->
+
+        <service android:name=".service.RESTService" />
+        <service
+            android:name=".service.AdvertisingService"
+            android:enabled="true"
+            android:exported="false" >
+        </service>
+
+        <!-- End Services -->
+
+        <activity
+            android:name=".main.RegistrationActivity"
+            android:label="@string/title_activity_registration"
+            android:screenOrientation="sensorPortrait" >
+        </activity>
+        <activity
+            android:name=".main.RegistrationBiometricActivity"
+            android:label="@string/title_activity_registration_biometric"
+            android:screenOrientation="sensorPortrait" >
+        </activity>
+        <activity
+            android:name=".main.CameraActivity"
+            android:label="@string/title_activity_camera"
+            android:screenOrientation="landscape" >
+        </activity>
+        <activity
+            android:name=".main.MainActivity"
+            android:label="@string/title_activity_main"
+            android:screenOrientation="sensorPortrait" >
+        </activity>
+        <activity
+            android:name=".main.SettingsActivity"
+            android:label="@string/title_activity_settings" >
+        </activity>
+        <activity
+            android:name=".main.PipResetActivity"
+            android:label="@string/title_activity_pip_reset" >
+        </activity>
+        <activity
+            android:name=".main.CouponsActivity"
+            android:label="@string/title_activity_coupons" >
+        </activity>
+        <activity
+            android:name=".main.ReceiptsActivity"
+            android:label="@string/title_activity_receipts" >
+        </activity>
+        <activity
+            android:name=".main.LinkingActivity"
+            android:label="@string/title_activity_linking" >
+        </activity>
+    </application>
+
+</manifest>
