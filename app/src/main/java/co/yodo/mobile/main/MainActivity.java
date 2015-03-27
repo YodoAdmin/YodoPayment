@@ -1,5 +1,6 @@
 package co.yodo.mobile.main;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -39,6 +40,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
 import java.util.HashMap;
 
 import co.yodo.mobile.R;
@@ -98,6 +100,9 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
 
     /** SKS code */
     private String originalCode;
+
+    /** AlertDialog for Payments */
+    private AlertDialog alertDialog;
 
     /** Messages Handler */
     private static YodoHandler handlerMessages;
@@ -194,7 +199,7 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
                         intent.putExtra( Intent.EXTRA_EMAIL, recipients ) ;
                         intent.putExtra( Intent.EXTRA_SUBJECT, hardwareToken );
                         intent.setType( "text/html" );
-                        startActivity( Intent.createChooser( intent, "Send mail" ) );
+                        startActivity( Intent.createChooser( intent, "Send Email" ) );
                     }
                 });
 
@@ -301,6 +306,7 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
                     .setContentText( R.string.tutorial_action_bar_message )
                     .setStyle( R.style.CustomShowcaseTheme )
                     .setOnClickListener( this )
+                    .hideOnTouchOutside()
                     .build();
             showcaseView.setButtonText( getString( R.string.next ) );
         }
@@ -355,7 +361,7 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
         AlertDialogHelper.showAlertDialog(
                 ac,
                 title,
-                null,
+                null, null,
                 inputBox,
                 onClick
         );
@@ -445,7 +451,7 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
         AlertDialogHelper.showAlertDialog(
                 ac,
                 title,
-                null,
+                null, null,
                 inputBox,
                 onClick
         );
@@ -486,10 +492,31 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
         AlertDialogHelper.showAlertDialog(
                 ac,
                 title,
-                message,
+                message, null,
                 inputBox,
                 onClick
         );
+    }
+
+    public void alternatePaymentClick(View v) {
+        final ImageView accountImage = (ImageView) v;
+        Integer account_type = Integer.parseInt( accountImage.getContentDescription().toString() );
+        String[] accounts = AppUtils.getLinkedAccount( ac ).split( AppUtils.ACC_SEP );
+
+        if( account_type == 0 ) {
+            account_type = null;
+        } else {
+            if( !Arrays.asList( accounts ).contains( String.valueOf( account_type ) ) ) {
+                ToastMaster.makeText( ac, R.string.no_linked_account, Toast.LENGTH_SHORT ).show();
+                return;
+            }
+        }
+
+        showSKSDialog( originalCode, account_type );
+        originalCode = null;
+
+        alertDialog.dismiss();
+        alertDialog = null;
     }
 
     /**
@@ -611,13 +638,17 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
         ImageView deleteButton      = (ImageView) layout.findViewById( R.id.deleteButton );
         ImageView saveButton        = (ImageView) layout.findViewById( R.id.saveButton );
 
+        // Trim the Balance
+        Double balanceValue = Double.parseDouble( params.get( ServerResponse.BALANCE ) );
+        balanceValue = Math.floor( balanceValue * 100 ) / 100;
+
         final String description    = params.get( ServerResponse.DESCRIPTION );
         final String authNumber     = params.get( ServerResponse.AUTHNUMBER );
         final String created        = params.get(ServerResponse.CREATED);
         final String totalAmount    = String.format( "%.2f", Double.parseDouble( params.get( ServerResponse.AMOUNT ) ) );
         final String tenderAmount   = String.format( "%.2f", Double.parseDouble( params.get( ServerResponse.TAMOUNT ) ) );
         final String cashBackAmount = String.format( "%.2f", Double.parseDouble( params.get( ServerResponse.CASHBACK ) ) );
-        final String balance        = String.format( "%.2f", Double.parseDouble( params.get( ServerResponse.BALANCE ) ) );
+        final String balance        = String.format( "%.2f", balanceValue );
 
         descriptionText.setText( description );
         authNumberText.setText( authNumber );
@@ -675,8 +706,16 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
 
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
                     originalCode += response.getRTime();
-                    showSKSDialog( originalCode, null );
-                    originalCode = null;
+                    String accounts = AppUtils.getLinkedAccount( ac );
+
+                    if( accounts.equals( "" ) ) {
+                        showSKSDialog( originalCode, null );
+                        originalCode = null;
+                    } else {
+                        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                        View layout = inflater.inflate(R.layout.dialog_payment, new LinearLayout( ac ), false );
+                        alertDialog = AlertDialogHelper.showAlertDialog( ac, layout, getString( R.string.linking_menu ) );
+                    }
                 } else {
                     mAdvertisingLayout.setVisibility( View.VISIBLE );
                     message = response.getMessage();
@@ -690,6 +729,8 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
 
                 if( code.equals( ServerResponse.AUTHORIZED_BALANCE ) ) {
                     double balance = Double.parseDouble( response.getParam( ServerResponse.BALANCE ) );
+                    // Trim the balance
+                    balance = Math.floor( balance * 100 ) / 100;
                     mAccountBalance.setText( String.format( "%.2f", balance ) );
                 } else {
                     mAccountBalance.setText( "" );

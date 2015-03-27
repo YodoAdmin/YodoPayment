@@ -2,6 +2,7 @@ package co.yodo.mobile.net;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -44,9 +45,13 @@ public class YodoRequest extends ResultReceiver {
         QUERY_BIO_REQUEST     ( "06" ), // RT=4, ST=3
         QUERY_ADV_REQUEST     ( "07" ), // RT=4, ST=3
         QUERY_RCV_REQUEST     ( "08" ), // RT=4, ST=3
-        CLOSE_ACC_REQUEST     ( "09" ), // RT=8, ST=1
-        REG_CLIENT_REQUEST    ( "10 "), // RT=9, ST=0
-        REG_BIO_REQUEST       ( "11 "); // RT=9, ST=3
+        QUERY_LNK_REQUEST     ( "09" ), // RT=4, ST=3
+        QUERY_LNK_ACC_REQUEST ( "10" ), // RT=4, ST=3
+        CLOSE_ACC_REQUEST     ( "11" ), // RT=8, ST=1
+        REG_CLIENT_REQUEST    ( "12 "), // RT=9, ST=0
+        REG_BIO_REQUEST       ( "13 "), // RT=9, ST=3
+        LINK_ACC_REQUEST      ( "14 "), // RT=10, ST=0
+        DELINK_ACC_REQUEST    ( "15 "); // RT=11
 
         private final String name;
 
@@ -112,10 +117,10 @@ public class YodoRequest extends ResultReceiver {
         externalListener = listener ;
     }
 
-    public void createProgressDialog(Activity activity, ProgressDialogType type) {
+    public void createProgressDialog(Context context, ProgressDialogType type) {
         switch( type ) {
             case NORMAL:
-                progressDialog = new ProgressDialog( activity );
+                progressDialog = new ProgressDialog( context );
                 progressDialog.setCancelable( false );
                 progressDialog.show();
                 progressDialog.setContentView( R.layout.custom_progressdialog );
@@ -373,7 +378,55 @@ public class YodoRequest extends ResultReceiver {
         );
 
         Intent intent = new Intent( activity, RESTService.class );
-        intent.putExtra( RESTService.ACTION_RESULT, RequestType.QUERY_ADV_REQUEST    );
+        intent.putExtra( RESTService.ACTION_RESULT, RequestType.QUERY_ADV_REQUEST );
+        intent.putExtra( RESTService.EXTRA_PARAMS, pRequest );
+        intent.putExtra( RESTService.EXTRA_RESULT_RECEIVER, instance );
+        activity.startService( intent );
+    }
+
+    public void requestLinkingCode(Activity activity, String hardwareToken, String pip) {
+        String sEncryptedClientData, pRequest;
+
+        // Encrypting to create request
+        oEncrypter.setsUnEncryptedString(
+                hardwareToken + REQ_SEP +
+                pip + REQ_SEP +
+                ServerRequest.QUERY_LINKING_CODE
+        );
+        oEncrypter.rsaEncrypt( activity );
+        sEncryptedClientData = oEncrypter.bytesToHex();
+
+        pRequest = ServerRequest.createQueryRequest(
+                sEncryptedClientData,
+                Integer.parseInt( ServerRequest.QUERY_ACC_SUBREQ )
+        );
+
+        Intent intent = new Intent( activity, RESTService.class );
+        intent.putExtra( RESTService.ACTION_RESULT, RequestType.QUERY_LNK_REQUEST );
+        intent.putExtra( RESTService.EXTRA_PARAMS, pRequest );
+        intent.putExtra( RESTService.EXTRA_RESULT_RECEIVER, instance );
+        activity.startService( intent );
+    }
+
+    public void requestLinkedAccounts(Activity activity, String hardwareToken, String pip) {
+        String sEncryptedClientData, pRequest;
+
+        // Encrypting to create request
+        oEncrypter.setsUnEncryptedString(
+                hardwareToken + REQ_SEP +
+                pip + REQ_SEP +
+                ServerRequest.QUERY_LINKED_ACCOUNTS
+        );
+        oEncrypter.rsaEncrypt( activity );
+        sEncryptedClientData = oEncrypter.bytesToHex();
+
+        pRequest = ServerRequest.createQueryRequest(
+                sEncryptedClientData,
+                Integer.parseInt( ServerRequest.QUERY_ACC_SUBREQ )
+        );
+
+        Intent intent = new Intent( activity, RESTService.class );
+        intent.putExtra( RESTService.ACTION_RESULT, RequestType.QUERY_LNK_ACC_REQUEST );
         intent.putExtra( RESTService.EXTRA_PARAMS, pRequest );
         intent.putExtra( RESTService.EXTRA_RESULT_RECEIVER, instance );
         activity.startService( intent );
@@ -402,6 +455,55 @@ public class YodoRequest extends ResultReceiver {
 
         Intent intent = new Intent( activity, RESTService.class );
         intent.putExtra( RESTService.ACTION_RESULT, RequestType.CLOSE_ACC_REQUEST );
+        intent.putExtra( RESTService.EXTRA_PARAMS, pRequest );
+        intent.putExtra( RESTService.EXTRA_RESULT_RECEIVER, instance );
+        activity.startService( intent );
+    }
+
+    public void requestLinkAccount(Activity activity, String hardwareToken, String linkCode) {
+        String sEncryptedClientData, pRequest;
+        String timeStamp = String.valueOf( System.currentTimeMillis() );
+
+        // Encrypting to create request
+        oEncrypter.setsUnEncryptedString(
+                hardwareToken + REQ_SEP +
+                        linkCode + REQ_SEP +
+                        timeStamp
+        );
+        oEncrypter.rsaEncrypt( activity );
+        sEncryptedClientData = oEncrypter.bytesToHex();
+
+        pRequest = ServerRequest.createLinkingRequest(
+                sEncryptedClientData,
+                Integer.parseInt( ServerRequest.LINK_ACC_SUBREQ )
+        );
+
+        Intent intent = new Intent( activity, RESTService.class );
+        intent.putExtra( RESTService.ACTION_RESULT, RequestType.LINK_ACC_REQUEST );
+        intent.putExtra( RESTService.EXTRA_PARAMS, pRequest );
+        intent.putExtra( RESTService.EXTRA_RESULT_RECEIVER, instance );
+        activity.startService( intent );
+    }
+
+    public void requestDeLinkAccount(Activity activity, String hardwareToken, String pip, String linkedAccount, String accountType) {
+        String sEncryptedClientData, pRequest;
+
+        // Encrypting to create request
+        oEncrypter.setsUnEncryptedString(
+                hardwareToken + REQ_SEP +
+                pip + REQ_SEP +
+                linkedAccount
+        );
+        oEncrypter.rsaEncrypt( activity );
+        sEncryptedClientData = oEncrypter.bytesToHex();
+
+        pRequest = ServerRequest.createDeLinkRequest(
+                sEncryptedClientData,
+                Integer.parseInt( accountType )
+        );
+
+        Intent intent = new Intent( activity, RESTService.class );
+        intent.putExtra( RESTService.ACTION_RESULT, RequestType.DELINK_ACC_REQUEST );
         intent.putExtra( RESTService.EXTRA_PARAMS, pRequest );
         intent.putExtra( RESTService.EXTRA_RESULT_RECEIVER, instance );
         activity.startService( intent );

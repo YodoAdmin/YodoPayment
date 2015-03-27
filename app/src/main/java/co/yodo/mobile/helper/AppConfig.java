@@ -50,6 +50,11 @@ public class AppConfig {
 	 */
     public static final String SPREF_CURRENT_LANGUAGE = "SPCurrentLanguage";
 
+    /* The Set of linked accounts
+	 * type -- String
+	 */
+    public static final String SPREF_LINKED_ACCOUNTS = "SPLinkedAccounts";
+
     /**
      * Default values
      * {{ ======================================================================

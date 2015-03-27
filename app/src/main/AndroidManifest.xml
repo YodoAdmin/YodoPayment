@@ -18,7 +18,7 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:theme="@style/AppTheme" >
+        android:theme="@style/AppTheme" android:name="YodoApplication" >
         <activity
             android:name=".main.SplashActivity"
             android:label="@string/app_name"
@@ -80,6 +80,10 @@
         <activity
             android:name=".main.LinkingActivity"
             android:label="@string/title_activity_linking" >
+        </activity>
+        <activity
+            android:name=".main.DeLinkActivity"
+            android:label="@string/title_activity_de_link" >
         </activity>
     </application>
 

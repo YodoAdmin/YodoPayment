@@ -39,6 +39,9 @@ import co.yodo.mobile.component.YodoHandler;
  * Utilities for the App, Mainly shared preferences
  */
 public class AppUtils {
+    /** Accounts Separato */
+    public static final String ACC_SEP = ",";
+
     /**
      * A helper class just o obtain the config file for the Shared Preferences
      * using the default values for this Shared Preferences app.
@@ -136,6 +139,52 @@ public class AppUtils {
     public static Boolean isAdvertising(Context c) {
         SharedPreferences config = getSPrefConfig( c );
         return config.getBoolean( AppConfig.SPREF_ADVERTISING_SERVICE, false );
+    }
+
+    /**
+     * It gets the linked accounts
+     *
+     * @param c The Context of the Android system.
+     * @return String The linked account numbers
+     *         null    If there is no value set;
+     */
+    public static String getLinkedAccount(Context c) {
+        SharedPreferences config = getSPrefConfig( c );
+        return config.getString( AppConfig.SPREF_LINKED_ACCOUNTS, "" );
+    }
+
+    /**
+     * It saves the linked accounts to the Shared Preferences.
+     *
+     * @param c The Context of the Android system.
+     * @param n The new account
+     * @return true  The account was saved successfully.
+     *         false The account was not saved successfully.
+     */
+    public static Boolean saveLinkedAccount(Context c, String n) {
+        SharedPreferences config = getSPrefConfig( c );
+        SharedPreferences.Editor writer = config.edit();
+
+        String accounts = getLinkedAccount( c ) + n + ACC_SEP;
+        writer.putString( AppConfig.SPREF_LINKED_ACCOUNTS, accounts );
+
+        return writer.commit();
+    }
+
+    /**
+     * It clears the linked accounts to the Shared Preferences.
+     *
+     * @param c The Context of the Android system.
+     * @return true  The account was saved successfully.
+     *         false The account was not saved successfully.
+     */
+    public static Boolean clearLinkedAccount(Context c) {
+        SharedPreferences config = getSPrefConfig( c );
+        SharedPreferences.Editor writer = config.edit();
+
+        writer.putString( AppConfig.SPREF_LINKED_ACCOUNTS, "" );
+
+        return writer.commit();
     }
 
     /**
@@ -365,6 +414,11 @@ public class AppUtils {
         return bitmap;
     }
 
+    /**
+     * Transforms a UTC date to the cellphone date
+     * @param date The date in UTC
+     * @return the Date in the cellphone time
+     */
     public static String UTCtoCurrent(String date) {
         Calendar c = Calendar.getInstance();
         SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss", Locale.US );
@@ -383,6 +437,17 @@ public class AppUtils {
         }
 
         return sdf.format( c.getTime() );
+    }
+
+    /**
+     * Copies a String to the clipboard
+     * @param c The Context of the Android system.
+     * @param text The text to be copied
+     */
+    public static void copyCode(Context c, String text) {
+        android.content.ClipboardManager clipboard = (android.content.ClipboardManager) c.getSystemService( Context.CLIPBOARD_SERVICE );
+        android.content.ClipData clip = android.content.ClipData.newPlainText( "Copied", text );
+        clipboard.setPrimaryClip( clip );
     }
 
     /**

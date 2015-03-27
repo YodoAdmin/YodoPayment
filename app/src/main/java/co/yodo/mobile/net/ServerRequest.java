@@ -34,6 +34,15 @@ public class ServerRequest {
     public static final String REG_CLIENT_SUBREQ    = "0";
     public static final String REG_BIOMETRIC_SUBREQ = "3";
 
+    /** Parameters used for the linking requests */
+    private static final String LINK_REQ       = "10";
+    public static final String LINK_ACC_SUBREQ = "0";
+
+    /** Parameters used for the de-link requests */
+    private static final String DELINK_REQ        = "11";
+    public static final String DELINK_TO_SUBREQ   = "0";
+    public static final String DELINK_FROM_SUBREQ = "1";
+
     /** Query Records */
     public static final int QUERY_BIOMETRIC_PIP   = 20;
     public static final int QUERY_RECEIPT         = 21;
@@ -130,7 +139,7 @@ public class ServerRequest {
     /**
      * Creates a close switch request to close the account
      * @param sUserData	Encrypted user's data
-     * @return String 	Request to close a user account
+     * @return String Request to close a user account
      */
     public static String createCloseRequest(String sUserData) {
         StringBuilder sCloseRequest = new StringBuilder();
@@ -169,5 +178,53 @@ public class ServerRequest {
 
         AppUtils.Logger( TAG, "Registration Request: " + sRegistrationRequest.toString() );
         return sRegistrationRequest.toString();
+    }
+
+    /**
+     * Creates a link switch request to link accounts
+     * @param sUserData	Encrypted user's data
+     * @param iLinkReqType Sub-type of the request
+     * @return String Request to link a user account
+     */
+    public static String createLinkingRequest(String sUserData, int iLinkReqType) {
+        StringBuilder sLinkingRequest = new StringBuilder();
+        sLinkingRequest.append( PROTOCOL_VERSION ).append( REQ_SEP );
+        sLinkingRequest.append( LINK_REQ ).append( REQ_SEP );
+
+        switch( iLinkReqType ){
+            // RT = 10, ST = 0
+            case 0: sLinkingRequest.append( LINK_ACC_SUBREQ ).append(REQ_SEP);
+                break;
+        }
+        sLinkingRequest.append( sUserData );
+
+        AppUtils.Logger( TAG, "Linking Request: " + sLinkingRequest.toString() );
+        return sLinkingRequest.toString();
+    }
+
+    /**
+     * Creates a de-link switch request to de-link accounts
+     * @param sUserData	Encrypted user's data
+     * @param iDeLinkReqType Sub-type of the request
+     * @return String Request to de-link a user account
+     */
+    public static String createDeLinkRequest(String sUserData, int iDeLinkReqType) {
+        StringBuilder sDeLinkRequest = new StringBuilder();
+        sDeLinkRequest.append( PROTOCOL_VERSION ).append( REQ_SEP );
+        sDeLinkRequest.append( DELINK_REQ ).append( REQ_SEP );
+
+        switch( iDeLinkReqType ) {
+            // RT = 11, ST = 0
+            case 0: sDeLinkRequest.append( DELINK_TO_SUBREQ ).append( REQ_SEP );
+                break;
+
+            // RT = 11, ST = 1
+            case 1: sDeLinkRequest.append( DELINK_FROM_SUBREQ ).append( REQ_SEP );
+                break;
+        }
+        sDeLinkRequest.append( sUserData );
+
+        AppUtils.Logger( TAG, "DeLink Request: " + sDeLinkRequest.toString() );
+        return sDeLinkRequest.toString();
     }
 }

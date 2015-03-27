@@ -15,10 +15,11 @@ public class ServerResponse implements Serializable {
     public static final String ERROR_INCORRECT_PIP = "ER22";
 
     /** Param keys */
-    public static final String LOGO        = "logo";
-    public static final String BALANCE     = "balance";
-    public static final String BIOMETRIC   = "biometric";
-    public static final String ADVERTISING = "advertising";
+    public static final String LOGO         = "logo";
+    public static final String BALANCE      = "balance";
+    public static final String BIOMETRIC    = "biometric";
+    public static final String ADVERTISING  = "advertising";
+    public static final String LINKING_CODE = "linking_code";
 
     /** Receipt elements */
     public static final String DESCRIPTION = "description";
@@ -28,6 +29,10 @@ public class ServerResponse implements Serializable {
     public static final String CASHBACK    = "cashback";
     public static final String AUTHNUMBER  = "transauthnumber";
     public static final String CURRENCY    = "currency";
+
+    /** Linked Account elements */
+    public static final String TO   = "to";
+    public static final String FROM = "from";
 
 	private String code;
 	private String authNumber;

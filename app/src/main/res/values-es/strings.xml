@@ -118,6 +118,7 @@
     <string name="title_activity_settings">Yodo Ajustes</string>
     <string name="title_activity_coupons">Yodo Cupones</string>
     <string name="title_activity_receipts">Yodo Recibos</string>
+    <string name="title_activity_linking">Yodo Linking</string>
 
     <!-- Languages -->
     <string-array name="languages_array">
