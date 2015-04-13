@@ -74,6 +74,10 @@
                 style="@style/ReceiptInfo"
                 android:id="@+id/cashTenderText" />
 
+            <TextView
+                style="@style/ReceiptInfo"
+                android:id="@+id/currencyText" />
+
         </LinearLayout>
 
         <LinearLayout
@@ -90,6 +94,7 @@
             <TextView
                 style="@style/ReceiptInfo"
                 android:id="@+id/cashBackText" />
+
         </LinearLayout>
 
     </LinearLayout>

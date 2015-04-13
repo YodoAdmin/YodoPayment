@@ -8,6 +8,7 @@ public class Receipt {
     private long id;
     private String description;
     private String authNumber;
+    private String currency;
     private String totalAmount;
     private String tenderAmount;
     private String cashBackAmount;
@@ -38,8 +39,16 @@ public class Receipt {
         this.authNumber = authNumber;
     }
 
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
+    }
+
     public String getTotalAmount() {
-        return totalAmount;
+        return totalAmount.replaceAll( ",", "." );
     }
 
     public void setTotalAmount(String totalAmount) {
@@ -47,7 +56,7 @@ public class Receipt {
     }
 
     public String getTenderAmount() {
-        return tenderAmount;
+        return tenderAmount.replaceAll( ",", "." );
     }
 
     public void setTenderAmount(String tenderAmount) {
@@ -55,7 +64,7 @@ public class Receipt {
     }
 
     public String getCashBackAmount() {
-        return cashBackAmount;
+        return cashBackAmount.replaceAll( ",", "." );
     }
 
     public void setCashBackAmount(String cashBackAmount) {
@@ -63,7 +72,7 @@ public class Receipt {
     }
 
     public String getBalanceAmount() {
-        return balanceAmount;
+        return balanceAmount.replaceAll( ",", "." );
     }
 
     public void setBalanceAmount(String balanceAmount) {
@@ -76,5 +85,12 @@ public class Receipt {
 
     public void setCreated(String created) {
         this.created = created;
+    }
+
+    @Override
+    public String toString() {
+        return "ID: "           + id             + "\n" + "AuthNumber: "    + authNumber   + "\n" +
+               "Total Amount: " + totalAmount    + "\n" + "Tender Amount: " + tenderAmount + "\n" +
+               "CashBack: "     + cashBackAmount + "\n" + "Created: "       + created;
     }
 }

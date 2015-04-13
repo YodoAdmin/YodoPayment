@@ -24,6 +24,7 @@ public class ServerResponse implements Serializable {
     /** Receipt elements */
     public static final String DESCRIPTION = "description";
     public static final String CREATED     = "created";
+    public static final String DCURRENCY   = "dcurrency";
     public static final String AMOUNT      = "amount";
     public static final String TAMOUNT     = "tamount";
     public static final String CASHBACK    = "cashback";

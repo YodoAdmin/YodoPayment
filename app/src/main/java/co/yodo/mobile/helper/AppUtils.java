@@ -451,6 +451,18 @@ public class AppUtils {
     }
 
     /**
+     * Truncates n number of positions (decimal) from a number
+     * @param number The number to be truncated
+     * @param positions the n positions
+     * @return The truncated number as String
+     */
+    public static String truncateDouble(Double number, int positions) {
+        int factor = (int) Math.pow( 10, positions );
+        long temp = (long)( number * factor );
+        return String.format( Locale.US, "%.2f", ( (double)temp / factor ) );
+    }
+
+    /**
      * Logger for Android
      * @param TAG The String of the TAG for the log
      * @param text The text to print on the log

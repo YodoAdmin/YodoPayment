@@ -8,10 +8,11 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
+    <string name="warning">Warning!</string>
     <string name="drawer_open">open</string>
     <string name="drawer_close">close</string>
     <string name="version">Version:</string>
-    <string name="actual_version">1.3.8</string>
+    <string name="actual_version">1.3.11</string>
 
     <!-- Action Menu -->
     <string name="action_settings">Settings</string>
@@ -21,6 +22,7 @@
     <string name="recipts_title">Receipts</string>
     <string name="paid">Total:</string>
     <string name="receipt_auth">AU#</string>
+    <string name="currency">Currency:</string>
     <string name="cash_tender">Cash Tender:</string>
     <string name="cash_back">Cash Back:</string>
     <string name="yodo_balance">Yodo Balance:</string>
@@ -122,6 +124,7 @@
     <string name="link_account_response">Linking Account</string>
     <string name="no_linked_account">This account is not linked</string>
     <string name="link_account_help">Select one of the options to start with the linking process:</string>
+    <string name="link_code_warning">You are responsible to distribute your link code only to trusted third parties. Anyone in possession of this code will have access to your funds. Yodo accepts no liability for losses due to delivery of Link Codes to unintended parties. Link codes are one-time-use codes and valid only for the next 24 hours.</string>
 
     <!-- Linking Account Types -->
     <string name="account_yodo">0</string>
@@ -132,8 +135,8 @@
     <string name="account_paypal">5</string>
 
     <!-- DeLink Accounts -->
-    <string name="to_account">To (Giving)</string>
-    <string name="from_account">From (Receiving)</string>
+    <string name="to_account">Giving To</string>
+    <string name="from_account">Receiving From</string>
 
     <!-- Activity titles -->
     <string name="title_activity_registration">Yodo Registration</string>
@@ -155,6 +158,7 @@
         <item>Japanese</item>
         <item>French</item>
     </string-array>
+
     <string-array name="languages_array_values">
         <item>en</item>
         <item>es</item>
@@ -164,6 +168,7 @@
     </string-array>
 
     <string-array name="link_options_array">
+        <item>Generate Linking Code</item>
         <item>Input Linking Code</item>
         <item>De-Link Account</item>
     </string-array>

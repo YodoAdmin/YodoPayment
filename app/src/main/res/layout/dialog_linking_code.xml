@@ -37,4 +37,20 @@
 
     </LinearLayout>
 
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:gravity="center"
+        android:textStyle="bold"
+        android:textColor="@android:color/holo_red_light"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="@string/warning" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textColor="@android:color/holo_red_light"
+        android:textAppearance="?android:attr/textAppearanceSmall"
+        android:text="@string/link_code_warning" />
+
 </LinearLayout>

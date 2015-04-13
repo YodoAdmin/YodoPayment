@@ -26,6 +26,9 @@ import co.yodo.mobile.database.ReceiptsDataSource;
 import co.yodo.mobile.helper.AppUtils;
 
 public class ReceiptsActivity extends ActionBarActivity {
+    /** DEBUG */
+    private final static String TAG = ReceiptsActivity.class.getSimpleName();
+
     /** The context object */
     private Context ac;
 
@@ -131,6 +134,8 @@ public class ReceiptsActivity extends ActionBarActivity {
     }
 
     private void receiptDialog(Receipt params) {
+        AppUtils.Logger( TAG, params.toString() );
+
         final Dialog receipt = new Dialog( ReceiptsActivity.this );
         receipt.requestWindowFeature( Window.FEATURE_NO_TITLE );
 
@@ -140,6 +145,7 @@ public class ReceiptsActivity extends ActionBarActivity {
         TextView descriptionText    = (TextView)  layout.findViewById( R.id.descriptionText );
         TextView authNumberText     = (TextView)  layout.findViewById( R.id.authNumberText );
         TextView createdText        = (TextView)  layout.findViewById( R.id.createdText );
+        TextView currencyText       = (TextView)  layout.findViewById( R.id.currencyText );
         TextView totalAmountText    = (TextView)  layout.findViewById( R.id.paidText );
         TextView tenderAmountText   = (TextView)  layout.findViewById( R.id.cashTenderText );
         TextView cashBackAmountText = (TextView)  layout.findViewById( R.id.cashBackText );
@@ -148,10 +154,11 @@ public class ReceiptsActivity extends ActionBarActivity {
 
         descriptionText.setText( params.getDescription() );
         authNumberText.setText( params.getAuthNumber() );
+        currencyText.setText( params.getCurrency() );
         createdText.setText( AppUtils.UTCtoCurrent( params.getCreated() ) );
-        totalAmountText.setText( params.getTotalAmount() );
-        tenderAmountText.setText( params.getTenderAmount() );
-        cashBackAmountText.setText( params.getCashBackAmount() );
+        totalAmountText.setText( AppUtils.truncateDouble( Double.parseDouble( params.getTotalAmount() ), 2 ) );
+        tenderAmountText.setText( AppUtils.truncateDouble( Double.parseDouble( params.getTenderAmount() ), 2 ) );
+        cashBackAmountText.setText( AppUtils.truncateDouble( Double.parseDouble( params.getCashBackAmount() ), 2 ) );
 
         deleteButton.setVisibility( View.GONE );
         saveButton.setVisibility( View.GONE );

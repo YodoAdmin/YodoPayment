@@ -32,6 +32,7 @@ public class XMLHandler extends DefaultHandler {
     /** Receipt elements */
     private static final String DESCRIPTION_ELEM = "description";
     private static final String CREATED_ELEM     = "created";
+    private static final String DCURRENCY_ELEM   = "dcurrency";
     private static final String AMOUNT_ELEM      = "amount";
     private static final String TAMOUNT_ELEM     = "tamount";
     private static final String CASHBACK_ELEM    = "cashback";
@@ -114,6 +115,9 @@ public class XMLHandler extends DefaultHandler {
             }
             else if( localName.equalsIgnoreCase( CREATED_ELEM ) ) {
                 response.addParam( ServerResponse.CREATED, currentValue );
+            }
+            else if( localName.equalsIgnoreCase( DCURRENCY_ELEM ) ) {
+                response.addParam( ServerResponse.DCURRENCY, currentValue );
             }
             else if( localName.equalsIgnoreCase( AMOUNT_ELEM ) ) {
                 response.addParam( ServerResponse.AMOUNT, currentValue );

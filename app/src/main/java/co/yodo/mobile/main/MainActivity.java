@@ -56,6 +56,7 @@ import co.yodo.mobile.helper.AlertDialogHelper;
 import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.AppEula;
 import co.yodo.mobile.helper.AppUtils;
+import co.yodo.mobile.helper.Intents;
 import co.yodo.mobile.net.YodoRequest;
 import co.yodo.mobile.service.AdvertisingService;
 import co.yodo.mobile.service.RESTService;
@@ -413,8 +414,113 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
     public void linkAccountsClick(View v) {
         mDrawerLayout.closeDrawers();
 
-        Intent intent = new Intent( MainActivity.this, LinkingActivity.class );
-        startActivity( intent );
+        //Intent intent = new Intent( MainActivity.this, LinkingActivity.class );
+        //startActivity( intent );
+
+        final EditText inputBox = new ClearEditText( ac );
+        String[] options = getResources().getStringArray( R.array.link_options_array );
+
+        DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, final int item) {
+                switch( item ) {
+                    case 0:
+                        DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int item1) {
+                                String pip = inputBox.getText().toString();
+                                AppUtils.hideSoftKeyboard( MainActivity.this );
+
+                                if( pip.length() < AppConfig.MIN_PIP_LENGTH ) {
+                                    ToastMaster.makeText( MainActivity.this, R.string.pip_short, Toast.LENGTH_SHORT ).show();
+                                } else {
+                                    YodoRequest.getInstance().createProgressDialog(
+                                            MainActivity.this,
+                                            YodoRequest.ProgressDialogType.NORMAL
+                                    );
+
+                                    YodoRequest.getInstance().requestLinkingCode(
+                                            MainActivity.this,
+                                            hardwareToken, pip
+                                    );
+                                }
+                            }
+                        };
+
+                        AlertDialogHelper.showAlertDialog(
+                                ac,
+                                getString( R.string.input_pip ),
+                                null, null,
+                                inputBox,
+                                onClick
+                        );
+                        break;
+
+                    case 1:
+                        String title = getString( R.string.input_linking_code );
+
+                        onClick = new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                String linkingCode = inputBox.getText().toString();
+
+                                YodoRequest.getInstance().createProgressDialog(
+                                        MainActivity.this,
+                                        YodoRequest.ProgressDialogType.NORMAL
+                                );
+
+                                YodoRequest.getInstance().requestLinkAccount(
+                                        MainActivity.this,
+                                        hardwareToken, linkingCode
+                                );
+                            }
+                        };
+
+                        AlertDialogHelper.showAlertDialog(
+                                ac,
+                                title,
+                                null, getString( R.string.show_linking_code ),
+                                inputBox,
+                                onClick
+                        );
+
+                        break;
+
+                    case 2:
+                        title = getString( R.string.input_pip );
+
+                        onClick = new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int item1) {
+                                String pip = inputBox.getText().toString();
+                                AppUtils.hideSoftKeyboard( MainActivity.this );
+
+                                if( pip.length() < AppConfig.MIN_PIP_LENGTH ) {
+                                    ToastMaster.makeText( MainActivity.this, R.string.pip_short, Toast.LENGTH_SHORT ).show();
+                                } else {
+                                    YodoRequest.getInstance().createProgressDialog(
+                                            MainActivity.this,
+                                            YodoRequest.ProgressDialogType.NORMAL
+                                    );
+
+                                    YodoRequest.getInstance().requestLinkedAccounts(
+                                            MainActivity.this,
+                                            hardwareToken, pip
+                                    );
+                                }
+                            }
+                        };
+
+                        AlertDialogHelper.showAlertDialog(
+                                ac,
+                                title,
+                                null, null,
+                                inputBox,
+                                onClick
+                        );
+
+                        break;
+                }
+            }
+        };
+
+        AlertDialogHelper.showAlertDialog( ac, getString( R.string.linking_menu ), options, onClick );
     }
 
     /**
@@ -632,27 +738,26 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
         TextView descriptionText    = (TextView)  layout.findViewById( R.id.descriptionText );
         TextView authNumberText     = (TextView)  layout.findViewById( R.id.authNumberText );
         TextView createdText        = (TextView)  layout.findViewById( R.id.createdText );
+        TextView currencyText       = (TextView)  layout.findViewById( R.id.currencyText );
         TextView totalAmountText    = (TextView)  layout.findViewById( R.id.paidText );
         TextView tenderAmountText   = (TextView)  layout.findViewById( R.id.cashTenderText );
         TextView cashBackAmountText = (TextView)  layout.findViewById( R.id.cashBackText );
         ImageView deleteButton      = (ImageView) layout.findViewById( R.id.deleteButton );
         ImageView saveButton        = (ImageView) layout.findViewById( R.id.saveButton );
 
-        // Trim the Balance
-        Double balanceValue = Double.parseDouble( params.get( ServerResponse.BALANCE ) );
-        balanceValue = Math.floor( balanceValue * 100 ) / 100;
-
         final String description    = params.get( ServerResponse.DESCRIPTION );
         final String authNumber     = params.get( ServerResponse.AUTHNUMBER );
-        final String created        = params.get(ServerResponse.CREATED);
-        final String totalAmount    = String.format( "%.2f", Double.parseDouble( params.get( ServerResponse.AMOUNT ) ) );
-        final String tenderAmount   = String.format( "%.2f", Double.parseDouble( params.get( ServerResponse.TAMOUNT ) ) );
-        final String cashBackAmount = String.format( "%.2f", Double.parseDouble( params.get( ServerResponse.CASHBACK ) ) );
-        final String balance        = String.format( "%.2f", balanceValue );
+        final String created        = params.get( ServerResponse.CREATED);
+        final String currency       = params.get( ServerResponse.DCURRENCY );
+        final String totalAmount    = AppUtils.truncateDouble( Double.parseDouble( params.get( ServerResponse.AMOUNT ) ), 2 );
+        final String tenderAmount   = AppUtils.truncateDouble( Double.parseDouble( params.get( ServerResponse.TAMOUNT ) ), 2 );
+        final String cashBackAmount = AppUtils.truncateDouble( Double.parseDouble( params.get( ServerResponse.CASHBACK ) ), 2 );
+        final String balance        = AppUtils.truncateDouble( Double.parseDouble( params.get( ServerResponse.BALANCE ) ), 2 );
 
         descriptionText.setText( description );
         authNumberText.setText( authNumber );
         createdText.setText( AppUtils.UTCtoCurrent( created ) );
+        currencyText.setText( currency );
         totalAmountText.setText( totalAmount );
         tenderAmountText.setText( tenderAmount );
         cashBackAmountText.setText( cashBackAmount );
@@ -670,9 +775,9 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
             @Override
             public void onClick(View v) {
                 receiptsdb.createReceipt(
-                        description, authNumber, totalAmount,
-                        tenderAmount, cashBackAmount, balance,
-                        created
+                        description, authNumber, currency,
+                        totalAmount, tenderAmount, cashBackAmount,
+                        balance, created
                 );
                 receipt.dismiss();
                 ToastMaster.makeText( ac, R.string.saved_receipt, Toast.LENGTH_SHORT ).show();
@@ -730,8 +835,7 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
                 if( code.equals( ServerResponse.AUTHORIZED_BALANCE ) ) {
                     double balance = Double.parseDouble( response.getParam( ServerResponse.BALANCE ) );
                     // Trim the balance
-                    balance = Math.floor( balance * 100 ) / 100;
-                    mAccountBalance.setText( String.format( "%.2f", balance ) );
+                    mAccountBalance.setText( AppUtils.truncateDouble( balance, 2 ) );
                 } else {
                     mAccountBalance.setText( "" );
                     message = response.getMessage();
@@ -755,6 +859,63 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
                 if( code.equals( ServerResponse.AUTHORIZED ) )
                     receiptDialog( response.getParams() );
 
+                break;
+
+            case QUERY_LNK_REQUEST:
+                code = response.getCode();
+
+                if( code.equals( ServerResponse.AUTHORIZED ) ) {
+                    String linking_code = response.getParam( ServerResponse.LINKING_CODE );
+
+                    Dialog dialog = new Dialog( ac );
+                    dialog.getWindow();
+                    dialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
+                    dialog.setContentView( R.layout.dialog_linking_code );
+
+                    final TextView codeText   = (TextView) dialog.findViewById(R.id.codeText);
+                    ImageView codeImage = (ImageView) dialog.findViewById(R.id.copyCodeImage);
+                    codeText.setText(linking_code);
+
+                    codeImage.setOnClickListener( new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            AppUtils.copyCode( ac, codeText.getText().toString() );
+                            ToastMaster.makeText( ac, R.string.copied_text, Toast.LENGTH_SHORT ).show();
+                        }
+                    });
+
+                    dialog.show();
+                } else {
+                    message = response.getMessage();
+                    AppUtils.sendMessage( handlerMessages, code, message );
+                }
+                break;
+
+            case QUERY_LNK_ACC_REQUEST:
+                code = response.getCode();
+
+                if( code.equals( ServerResponse.AUTHORIZED ) ) {
+                    String to   = response.getParam( ServerResponse.TO );
+                    String from = response.getParam( ServerResponse.FROM );
+
+                    Intent i = new Intent( ac, DeLinkActivity.class );
+                    i.putExtra( Intents.LINKED_ACC_TO, to );
+                    i.putExtra( Intents.LINKED_ACC_FROM, from );
+                    startActivity( i );
+                } else {
+                    message = response.getMessage();
+                    AppUtils.sendMessage( handlerMessages, code, message );
+                }
+                break;
+
+            case LINK_ACC_REQUEST:
+                code = response.getCode();
+                message = response.getMessage();
+                AppUtils.sendMessage( handlerMessages, code, message );
+
+                if( code.equals( ServerResponse.AUTHORIZED ) ) {
+                    AppUtils.saveLinkedAccount( ac, getString( R.string.account_yodo_heart ) );
+                }
                 break;
 
             case CLOSE_ACC_REQUEST:

@@ -21,7 +21,7 @@
     <string name="paid">Total:</string>
     <string name="receipt_auth">AU#</string>
     <string name="cash_tender">Pago:</string>
-    <string name="cash_back">Vueltok:</string>
+    <string name="cash_back">Vuelto:</string>
     <string name="yodo_balance">Balance Yodo:</string>
     <string name="saved_receipt">Recibo Salvado</string>
     <string name="no_transaction">No hay transacciones realizadas</string>

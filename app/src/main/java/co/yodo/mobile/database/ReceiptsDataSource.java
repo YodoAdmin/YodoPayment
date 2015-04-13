@@ -27,6 +27,7 @@ public class ReceiptsDataSource {
             ReceiptsSQLiteHelper.COLUMN_ID,
             ReceiptsSQLiteHelper.COLUMN_DESCRIPTION,
             ReceiptsSQLiteHelper.COLUMN_AUTHNUMBER,
+            ReceiptsSQLiteHelper.COLUMN_CURRENCY,
             ReceiptsSQLiteHelper.COLUMN_AMOUNT,
             ReceiptsSQLiteHelper.COLUMN_TAMOUNT,
             ReceiptsSQLiteHelper.COLUMN_CASHBACK,
@@ -47,12 +48,13 @@ public class ReceiptsDataSource {
             dbHelper.close();
     }
 
-    public Receipt createReceipt(String description, String authNumber, String amount,
+    public Receipt createReceipt(String description, String authNumber, String currency, String amount,
                                  String tAmount, String cashBack, String balance, String created) {
 
         ContentValues values = new ContentValues();
         values.put( ReceiptsSQLiteHelper.COLUMN_DESCRIPTION, description );
         values.put( ReceiptsSQLiteHelper.COLUMN_AUTHNUMBER, authNumber );
+        values.put( ReceiptsSQLiteHelper.COLUMN_CURRENCY, currency );
         values.put( ReceiptsSQLiteHelper.COLUMN_AMOUNT, amount );
         values.put( ReceiptsSQLiteHelper.COLUMN_TAMOUNT, tAmount );
         values.put( ReceiptsSQLiteHelper.COLUMN_CASHBACK, cashBack );
@@ -109,11 +111,12 @@ public class ReceiptsDataSource {
         receipt.setId(             cursor.getLong( 0 ) );
         receipt.setDescription(    cursor.getString( 1 ) );
         receipt.setAuthNumber(     cursor.getString( 2 ) );
-        receipt.setTotalAmount(    cursor.getString( 3 ) );
-        receipt.setTenderAmount(   cursor.getString( 4 ) );
-        receipt.setCashBackAmount( cursor.getString( 5 ) );
-        receipt.setBalanceAmount(  cursor.getString( 6 ) );
-        receipt.setCreated(        cursor.getString( 7 ) );
+        receipt.setCurrency(       cursor.getString( 3 ) );
+        receipt.setTotalAmount(    cursor.getString( 4 ) );
+        receipt.setTenderAmount(   cursor.getString( 5 ) );
+        receipt.setCashBackAmount( cursor.getString( 6 ) );
+        receipt.setBalanceAmount(  cursor.getString( 7 ) );
+        receipt.setCreated(        cursor.getString( 8 ) );
 
         return receipt;
     }

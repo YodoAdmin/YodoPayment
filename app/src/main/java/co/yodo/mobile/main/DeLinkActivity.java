@@ -2,14 +2,16 @@ package co.yodo.mobile.main;
 
 import android.content.Context;
 import android.content.DialogInterface;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.ActionBarActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.Gravity;
 import android.view.MenuItem;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
+import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import co.yodo.mobile.R;
@@ -38,7 +40,7 @@ public class DeLinkActivity extends ActionBarActivity implements YodoRequest.RES
     /** GUI controllers */
     private LinearLayout toLayout;
     private LinearLayout fromLayout;
-    private CheckBox currentDeLink;
+    private View currentDeLink;
 
     /** Messages Handler */
     private static YodoHandler handlerMessages;
@@ -135,61 +137,53 @@ public class DeLinkActivity extends ActionBarActivity implements YodoRequest.RES
         }
     }
 
-    private CheckBox getAccountCheckBox(final String text, final String accountType) {
-        final CheckBox account = new CheckBox( ac );
-        account.setChecked( true );
+    private TextView getAccountCheckBox(final String text, final String accountType) {
+        final TextView account = new TextView( ac );
+        account.setGravity( Gravity.CENTER_VERTICAL );
+        account.setTypeface( Typeface.DEFAULT_BOLD );
         account.setText( "..." + text.substring( text.length() - 5 ) );
+        account.setCompoundDrawablesWithIntrinsicBounds( R.drawable.yodo_heart, 0, 0, 0 );
         account.setContentDescription( accountType );
 
-        account.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+        account.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onCheckedChanged(final CompoundButton buttonView, boolean isChecked) {
-                if( !isChecked ) {
-                    final String title = ac.getString( R.string.input_pip );
-                    final EditText inputBox = new ClearEditText( ac );
+            public void onClick(final View account) {
+                final String title = ac.getString(R.string.input_pip);
+                final EditText inputBox = new ClearEditText(ac);
 
-                    DialogInterface.OnClickListener okClickListener = new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            String pip = inputBox.getText().toString();
+                DialogInterface.OnClickListener okClickListener = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String pip = inputBox.getText().toString();
 
-                            if( pip.length() < AppConfig.MIN_PIP_LENGTH ) {
-                                ToastMaster.makeText( ac, R.string.pip_short, Toast.LENGTH_SHORT ).show();
-                                buttonView.setChecked( true );
-                            } else {
-                                currentDeLink = account;
+                        if (pip.length() < AppConfig.MIN_PIP_LENGTH) {
+                            ToastMaster.makeText(ac, R.string.pip_short, Toast.LENGTH_SHORT).show();
+                        } else {
+                            currentDeLink = account;
 
-                                YodoRequest.getInstance().createProgressDialog(
-                                        ac,
-                                        YodoRequest.ProgressDialogType.NORMAL
-                                );
+                            YodoRequest.getInstance().createProgressDialog(
+                                    ac,
+                                    YodoRequest.ProgressDialogType.NORMAL
+                            );
 
-                                YodoRequest.getInstance().requestDeLinkAccount(
-                                        DeLinkActivity.this,
-                                        hardwareToken, pip,
-                                        text,
-                                        accountType
-                                );
-                            }
+                            YodoRequest.getInstance().requestDeLinkAccount(
+                                    DeLinkActivity.this,
+                                    hardwareToken, pip,
+                                    text,
+                                    accountType
+                            );
                         }
-                    };
+                    }
+                };
 
-                    DialogInterface.OnClickListener cancelClickListener = new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dlg, int which) {
-                            buttonView.setChecked( true );
-                        }
-                    };
-
-                    AlertDialogHelper.showAlertDialog(
-                            ac,
-                            title,
-                            null,
-                            inputBox,
-                            okClickListener,
-                            cancelClickListener
-                    );
-                }
+                AlertDialogHelper.showAlertDialog(
+                        ac,
+                        title,
+                        null,
+                        inputBox,
+                        okClickListener,
+                        null
+                );
             }
         });
 
@@ -216,8 +210,6 @@ public class DeLinkActivity extends ActionBarActivity implements YodoRequest.RES
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
                     ( (LinearLayout) currentDeLink.getParent() ).removeView( currentDeLink );
                     AppUtils.clearLinkedAccount( ac );
-                } else {
-                    currentDeLink.setChecked( true );
                 }
 
                 message = response.getMessage();
