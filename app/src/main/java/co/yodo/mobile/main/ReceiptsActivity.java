@@ -156,9 +156,9 @@ public class ReceiptsActivity extends ActionBarActivity {
         authNumberText.setText( params.getAuthNumber() );
         currencyText.setText( params.getCurrency() );
         createdText.setText( AppUtils.UTCtoCurrent( params.getCreated() ) );
-        totalAmountText.setText( AppUtils.truncateDouble( Double.parseDouble( params.getTotalAmount() ), 2 ) );
-        tenderAmountText.setText( AppUtils.truncateDouble( Double.parseDouble( params.getTenderAmount() ), 2 ) );
-        cashBackAmountText.setText( AppUtils.truncateDouble( Double.parseDouble( params.getCashBackAmount() ), 2 ) );
+        totalAmountText.setText( AppUtils.truncateDecimal( params.getTotalAmount() ) );
+        tenderAmountText.setText( AppUtils.truncateDecimal( params.getTenderAmount() ) );
+        cashBackAmountText.setText( AppUtils.truncateDecimal( params.getCashBackAmount() ) );
 
         deleteButton.setVisibility( View.GONE );
         saveButton.setVisibility( View.GONE );

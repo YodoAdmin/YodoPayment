@@ -9,13 +9,6 @@
         <dex dex="/home/luis/AndroidStudioProjects/YodoPayment/app/build/intermediates/pre-dexed/debug/QR-85dd8dd41d6a467896cbf3f0de537f5a7e6510f8.jar" />
     </item>
     <item
-        jar="/opt/android-sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.3/support-annotations-21.0.3.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
-        <dex dex="/home/luis/AndroidStudioProjects/YodoPayment/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-1cd1039154f1bb9cc0d4a9da3e8b7ec509fd8b06.jar" />
-    </item>
-    <item
         jar="/home/luis/.gradle/caches/modules-2/files-2.1/com.nineoldandroids/library/2.4.0/e9b63380f3a242dbdbf103a2355ad7e43bad17cb/library-2.4.0.jar"
         jumboMode="false"
         revision="21.1.2"
@@ -30,13 +23,6 @@
         <dex dex="/home/luis/AndroidStudioProjects/YodoPayment/app/build/intermediates/pre-dexed/debug/classes-9b594d6e0c8c46d6e1c523b009c260b5b9584d6b.jar" />
     </item>
     <item
-        jar="/home/luis/AndroidStudioProjects/YodoPayment/app/build/intermediates/exploded-aar/it.sephiroth.android.library.imagezoom/imagezoom/2.1.1/classes.jar"
-        jumboMode="false"
-        revision="21.1.2"
-        sha1="8fbd4390c086423b591596e4b04a03e0e59b9397">
-        <dex dex="/home/luis/AndroidStudioProjects/YodoPayment/app/build/intermediates/pre-dexed/debug/classes-8b3db3b652bdaeb4dc12383b40d456230d9e4934.jar" />
-    </item>
-    <item
         jar="/home/luis/AndroidStudioProjects/YodoPayment/app/build/intermediates/exploded-aar/com.android.support/appcompat-v7/21.0.3/classes.jar"
         jumboMode="false"
         revision="21.1.2"
@@ -49,6 +35,20 @@
         revision="21.1.2"
         sha1="2c91c949a45a21cdecf26e03951e46c7beec9ad8">
         <dex dex="/home/luis/AndroidStudioProjects/YodoPayment/app/build/intermediates/pre-dexed/debug/classes-dd43cb924781fdba1bf34f178c5fadebb6ffc62c.jar" />
+    </item>
+    <item
+        jar="/opt/android-sdk/extras/android/m2repository/com/android/support/support-annotations/21.0.3/support-annotations-21.0.3.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="4b74cefe1f0c1b819e7260c8627a14674e37fd35">
+        <dex dex="/home/luis/AndroidStudioProjects/YodoPayment/app/build/intermediates/pre-dexed/debug/support-annotations-21.0.3-1cd1039154f1bb9cc0d4a9da3e8b7ec509fd8b06.jar" />
+    </item>
+    <item
+        jar="/home/luis/AndroidStudioProjects/YodoPayment/app/build/intermediates/exploded-aar/it.sephiroth.android.library.imagezoom/imagezoom/2.1.1/classes.jar"
+        jumboMode="false"
+        revision="21.1.2"
+        sha1="8fbd4390c086423b591596e4b04a03e0e59b9397">
+        <dex dex="/home/luis/AndroidStudioProjects/YodoPayment/app/build/intermediates/pre-dexed/debug/classes-8b3db3b652bdaeb4dc12383b40d456230d9e4934.jar" />
     </item>
     <item
         jar="/home/luis/AndroidStudioProjects/YodoPayment/app/build/intermediates/exploded-aar/com.android.support/support-v4/21.0.3/libs/internal_impl-21.0.3.jar"

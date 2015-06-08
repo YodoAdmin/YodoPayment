@@ -57,7 +57,12 @@ public class PipResetActivityTest extends ActivityInstrumentationTestCase2<PipRe
         assertNotNull( YodoRequest.getInstance() );
     }
 
+    /**
+     * Test the reset PIP with a new PIP, current pip required
+     * @throws Exception
+     */
     public void testPIPReset() throws Exception {
+        // Register the user
         userRegistration();
 
         // All Correct
@@ -93,7 +98,12 @@ public class PipResetActivityTest extends ActivityInstrumentationTestCase2<PipRe
         response = null;
     }
 
+    /**
+     * Test the reset PIP using a biometric token
+     * @throws Exception
+     */
     public void testBiometricPIPReset() throws Exception {
+        // Register the user
         userRegistration();
 
         YodoRequest.getInstance().requestBiometricToken( activity, hardwareToken );
@@ -137,7 +147,12 @@ public class PipResetActivityTest extends ActivityInstrumentationTestCase2<PipRe
         response = null;
     }
 
+    /**
+     * Test the request of the biometric token to the server
+     * @throws Exception
+     */
     public void testBiometricToken() throws Exception {
+        // Register the user
         userRegistration();
 
         // All Correct

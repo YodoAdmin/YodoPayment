@@ -749,10 +749,10 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
         final String authNumber     = params.get( ServerResponse.AUTHNUMBER );
         final String created        = params.get( ServerResponse.CREATED);
         final String currency       = params.get( ServerResponse.DCURRENCY );
-        final String totalAmount    = AppUtils.truncateDouble( Double.parseDouble( params.get( ServerResponse.AMOUNT ) ), 2 );
-        final String tenderAmount   = AppUtils.truncateDouble( Double.parseDouble( params.get( ServerResponse.TAMOUNT ) ), 2 );
-        final String cashBackAmount = AppUtils.truncateDouble( Double.parseDouble( params.get( ServerResponse.CASHBACK ) ), 2 );
-        final String balance        = AppUtils.truncateDouble( Double.parseDouble( params.get( ServerResponse.BALANCE ) ), 2 );
+        final String totalAmount    = AppUtils.truncateDecimal( params.get( ServerResponse.AMOUNT ) );
+        final String tenderAmount   = AppUtils.truncateDecimal( params.get( ServerResponse.TAMOUNT ) );
+        final String cashBackAmount = AppUtils.truncateDecimal( params.get( ServerResponse.CASHBACK ) );
+        final String balance        = AppUtils.truncateDecimal( params.get( ServerResponse.BALANCE ) );
 
         descriptionText.setText( description );
         authNumberText.setText( authNumber );
@@ -833,9 +833,8 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
                 code = response.getCode();
 
                 if( code.equals( ServerResponse.AUTHORIZED_BALANCE ) ) {
-                    double balance = Double.parseDouble( response.getParam( ServerResponse.BALANCE ) );
                     // Trim the balance
-                    mAccountBalance.setText( AppUtils.truncateDouble( balance, 2 ) );
+                    mAccountBalance.setText( AppUtils.truncateDecimal( response.getParam( ServerResponse.BALANCE ) ) );
                 } else {
                     mAccountBalance.setText( "" );
                     message = response.getMessage();

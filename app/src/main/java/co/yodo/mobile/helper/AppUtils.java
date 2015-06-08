@@ -25,6 +25,8 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -456,10 +458,21 @@ public class AppUtils {
      * @param positions the n positions
      * @return The truncated number as String
      */
-    public static String truncateDouble(Double number, int positions) {
-        int factor = (int) Math.pow( 10, positions );
-        long temp = (long)( number * factor );
-        return String.format( Locale.US, "%.2f", ( (double)temp / factor ) );
+    public static String truncateDecimal(String number, int positions) {
+        BigDecimal value  = new BigDecimal( number );
+        BigDecimal factor = BigDecimal.TEN.pow( positions );
+        value = value.multiply( factor ).setScale( positions, RoundingMode.DOWN );
+
+        return value.divide( factor, positions, RoundingMode.DOWN ).toString();
+    }
+
+    /**
+     * Truncates 2 number of positions (decimal) from a number
+     * @param number The number to be truncated
+     * @return The truncated number as String
+     */
+    public static String truncateDecimal(String number) {
+        return truncateDecimal( number, 2 );
     }
 
     /**

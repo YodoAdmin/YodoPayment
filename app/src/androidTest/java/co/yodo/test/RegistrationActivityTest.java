@@ -57,7 +57,12 @@ public class RegistrationActivityTest extends ActivityInstrumentationTestCase2<R
         assertNotNull( YodoRequest.getInstance() );
     }
 
+    /**
+     * Test different registration requests (hardware - PIP)
+     * @throws Exception
+     */
     public void testRegistration() throws Exception {
+        // First close the account
         closeAccount();
 
         // All Correct
@@ -85,7 +90,12 @@ public class RegistrationActivityTest extends ActivityInstrumentationTestCase2<R
         response = null;
     }
 
+    /**
+     * Test the registration of the biometric token
+     * @throws Exception
+     */
     public void testBiometricRegistration() throws Exception {
+        // First close the account
         closeAccount();
 
         YodoRequest.getInstance().requestRegistration( activity, hardwareToken, userPIP );
