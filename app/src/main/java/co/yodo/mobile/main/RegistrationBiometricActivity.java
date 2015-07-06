@@ -3,7 +3,7 @@ package co.yodo.mobile.main;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
@@ -20,7 +20,7 @@ import co.yodo.mobile.helper.AppUtils;
 import co.yodo.mobile.helper.Intents;
 import co.yodo.mobile.net.YodoRequest;
 
-public class RegistrationBiometricActivity extends ActionBarActivity implements YodoRequest.RESTListener {
+public class RegistrationBiometricActivity extends AppCompatActivity implements YodoRequest.RESTListener {
     /** The context object */
     private Context ac;
 

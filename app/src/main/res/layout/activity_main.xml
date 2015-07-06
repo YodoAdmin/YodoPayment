@@ -20,4 +20,5 @@
         <include layout="@layout/yodo_payment_navigation" />
 
     </android.support.v4.widget.DrawerLayout>
+
 </LinearLayout>

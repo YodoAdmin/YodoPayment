@@ -5,6 +5,7 @@ package co.yodo.mobile.data;
  * POJO for the receipt
  */
 public class Receipt {
+    /** Main Attributes */
     private long id;
     private String description;
     private String authNumber;
@@ -14,6 +15,10 @@ public class Receipt {
     private String cashBackAmount;
     private String balanceAmount;
     private String created;
+    private boolean opened;
+
+    /** Handles the animation in the ListView */
+    public boolean isChecked;
 
     public long getId() {
         return id;
@@ -87,10 +92,23 @@ public class Receipt {
         this.created = created;
     }
 
+    public boolean isOpened() {
+        return opened;
+    }
+
+    public void setOpened(boolean opened) {
+        this.opened = opened;
+    }
+
+    public void setChecked(boolean checked) {
+        this.isChecked = checked;
+    }
+
     @Override
     public String toString() {
         return "ID: "           + id             + "\n" + "AuthNumber: "    + authNumber   + "\n" +
                "Total Amount: " + totalAmount    + "\n" + "Tender Amount: " + tenderAmount + "\n" +
-               "CashBack: "     + cashBackAmount + "\n" + "Created: "       + created;
+               "CashBack: "     + cashBackAmount + "\n" + "Created: "       + created      + "\n" +
+               "Opened: "       + opened         + "\n" + "Checked: "       + isChecked;
     }
 }

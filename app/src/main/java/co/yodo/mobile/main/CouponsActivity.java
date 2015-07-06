@@ -2,7 +2,7 @@ package co.yodo.mobile.main;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
@@ -20,7 +20,7 @@ import co.yodo.mobile.data.Coupon;
 import co.yodo.mobile.database.CouponsDataSource;
 import co.yodo.mobile.helper.AppUtils;
 
-public class CouponsActivity extends ActionBarActivity {
+public class CouponsActivity extends AppCompatActivity {
     /** DEBUG */
     private final static String TAG = CouponsActivity.class.getSimpleName();
 

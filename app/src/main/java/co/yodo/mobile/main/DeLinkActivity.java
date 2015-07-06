@@ -4,7 +4,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v7.app.ActionBarActivity;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.MenuItem;
@@ -30,7 +30,7 @@ import co.yodo.mobile.net.YodoRequest;
  * Created by luis on 20/02/15.
  * Dialog to de-link accounts
  */
-public class DeLinkActivity extends ActionBarActivity implements YodoRequest.RESTListener {
+public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RESTListener {
     /** The context object */
     private Context ac;
 

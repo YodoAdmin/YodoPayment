@@ -1,6 +1,6 @@
 package co.yodo.mobile.helper;
 
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.text.InputType;
@@ -28,7 +28,7 @@ public class AlertDialogHelper {
     public static void showAlertDialog(final Context c, final String title,
                                        final CharSequence[] values,
                                        final DialogInterface.OnClickListener clickListener) {
-        AlertDialog.Builder builder = new AlertDialog.Builder( c );
+        AlertDialog.Builder builder = new AlertDialog.Builder( c, R.style.AppCompatAlertDialogStyle );
         builder.setIcon( R.drawable.ic_launcher );
         builder.setTitle( title );
         builder.setCancelable( false );
@@ -48,7 +48,7 @@ public class AlertDialogHelper {
      */
     public static void showAlertDialog(final Context c, final int message,
                                        final DialogInterface.OnClickListener clickListener) {
-        AlertDialog.Builder builder = new AlertDialog.Builder( c );
+        AlertDialog.Builder builder = new AlertDialog.Builder( c, R.style.AppCompatAlertDialogStyle );
         builder.setMessage( message );
         builder.setCancelable( false );
 
@@ -68,7 +68,7 @@ public class AlertDialogHelper {
      */
     public static void showAlertDialog(final Context c, final String title, final String message,
                                        final DialogInterface.OnClickListener clickListener) {
-        AlertDialog.Builder builder = new AlertDialog.Builder( c );
+        AlertDialog.Builder builder = new AlertDialog.Builder( c, R.style.AppCompatAlertDialogStyle );
         builder.setIcon( R.drawable.ic_launcher );
         builder.setTitle( title );
         builder.setMessage( message );
@@ -87,7 +87,7 @@ public class AlertDialogHelper {
      * @param view The view of the dialog
      */
     public static void showAlertDialog(final Context c, final String title, final View view) {
-        AlertDialog.Builder builder = new AlertDialog.Builder( c );
+        AlertDialog.Builder builder = new AlertDialog.Builder( c, R.style.AppCompatAlertDialogStyle );
         builder.setIcon( R.drawable.ic_launcher );
         builder.setTitle( title );
         builder.setView( view );
@@ -143,7 +143,7 @@ public class AlertDialogHelper {
         if( showText != null )
             showPassword.setText( showText );
 
-        AlertDialog.Builder builder = new AlertDialog.Builder( c );
+        AlertDialog.Builder builder = new AlertDialog.Builder( c, R.style.AppCompatAlertDialogStyle );
         builder.setIcon( R.drawable.ic_launcher );
         builder.setTitle( title );
         builder.setMessage( message );
@@ -198,7 +198,7 @@ public class AlertDialogHelper {
             }
         });
 
-        AlertDialog.Builder builder = new AlertDialog.Builder( c );
+        AlertDialog.Builder builder = new AlertDialog.Builder( c, R.style.AppCompatAlertDialogStyle );
         builder.setIcon( R.drawable.ic_launcher );
         builder.setTitle( title );
         builder.setMessage( message );
@@ -213,7 +213,7 @@ public class AlertDialogHelper {
     }
 
     public static AlertDialog showAlertDialog(final Context c, View layout, String message) {
-        AlertDialog.Builder builder = new AlertDialog.Builder( c );
+        AlertDialog.Builder builder = new AlertDialog.Builder( c, R.style.AppCompatAlertDialogStyle );
         builder.setView( layout );
         builder.setMessage( message );
 

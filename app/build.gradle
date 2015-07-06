@@ -22,9 +22,10 @@ android {
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
     compile files('libs/verifyfaceapi.jar')
-    compile 'com.android.support:appcompat-v7:21.0.3'
-    compile 'com.github.amlcurran.showcaseview:library:5.0.0'
+    compile 'com.android.support:appcompat-v7:22.2.0'
+    compile 'com.android.support:design:22.2.0'
     compile 'it.sephiroth.android.library.imagezoom:imagezoom:2.1.1'
-    compile 'com.android.support:support-v4:21.0.3'
+    compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+    compile 'com.android.support:support-v4:22.2.0'
     compile files('libs/acra-4.5.0.jar')
 }

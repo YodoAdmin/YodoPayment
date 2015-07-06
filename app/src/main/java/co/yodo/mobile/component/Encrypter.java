@@ -13,6 +13,7 @@ import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 import co.yodo.mobile.helper.AppUtils;
+import co.yodo.mobile.service.RESTService;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -30,8 +31,16 @@ public class Encrypter {
 	 * Public key generated with: openssl rsa -in 11.private.pem -pubout -outform DER -out 11.public.der
 	 * This key is created using the private key generated using openssl in unix environments
 	*/
-	private static String PUBLIC_KEY = "YodoKey/12.public.der";
-	
+	//private static String PUBLIC_KEY = "YodoKey/12.public.der";
+    private static String PUBLIC_KEY;
+
+    static {
+        if( RESTService.getSwitch().equals( "D" ) )
+            PUBLIC_KEY = "YodoKey/Dev/12.public.der";
+        else
+            PUBLIC_KEY = "YodoKey/Prod/12.public.der";
+    }
+
 	/**
 	 * Cipher instance used for encryption
 	 */

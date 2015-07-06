@@ -37,10 +37,12 @@ import android.content.Context;
 import android.hardware.Camera;
 import android.hardware.Camera.Size;
 import android.util.AttributeSet;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.WindowManager;
 import android.widget.TextView;
 
 /**
@@ -56,8 +58,9 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 	SurfaceHolder mHolder;
 	Size mPreviewSize;
 	List<Size> mSupportedPreviewSizes;
-	Camera mCamera;
-	Context mContext;
+    private Integer mCameraId;
+	private Camera mCamera;
+	private Context mContext;
 	public TextView mStatusView;
 	public TextView mStatusView2;
 	private String token;
@@ -92,9 +95,11 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 		// underlying surface is created and destroyed.
 		mHolder = mSurfaceView.getHolder();
 		mHolder.addCallback( this );
+        mHolder.setType( SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS );
 	}
 
-	public void setCamera(Camera camera) {
+	public void setCamera(Camera camera, Integer cameraId) {
+        mCameraId = cameraId;
 		mCamera = camera;
 		if( mCamera != null ) {
 			mSupportedPreviewSizes = mCamera.getParameters().getSupportedPreviewSizes();
@@ -243,7 +248,32 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 			updateDB();
 		}
 
-		// Try to set camera fps to 30
+        // Get camera data to rotate image if necessary
+        Camera.CameraInfo info = new Camera.CameraInfo();
+        Camera.getCameraInfo( mCameraId, info );
+
+        WindowManager windowManager = (WindowManager) getContext().getSystemService( Context.WINDOW_SERVICE );
+        int rotation = windowManager.getDefaultDisplay().getRotation();
+
+        int degrees = 0;
+
+        switch( rotation ) {
+            case Surface.ROTATION_0: degrees = 0; break;
+            case Surface.ROTATION_90: degrees = 90; break;
+            case Surface.ROTATION_180: degrees = 180; break;
+            case Surface.ROTATION_270: degrees = 270; break;
+        }
+
+        int result;
+        if( info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT ) {
+            result = ( info.orientation + degrees ) % 360;
+            result = ( 360 - result ) % 360;  // compensate the mirror
+        } else {  // back-facing
+            result = ( info.orientation - degrees + 360 ) % 360;
+        }
+        mCamera.setDisplayOrientation( result );
+
+        // Try to set camera fps to 30
 		//parameters.setPreviewFpsRange(30000, 30000);
 		// Apply desired camera parameters
 		mCamera.setParameters( parameters );

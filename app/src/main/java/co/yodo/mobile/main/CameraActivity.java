@@ -11,10 +11,7 @@ import android.text.style.ForegroundColorSpan;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.TextView;
-
-import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.Target;
-import com.github.amlcurran.showcaseview.targets.ViewTarget;
+import android.widget.Toast;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -24,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.helper.AppConfig;
+import co.yodo.mobile.component.ToastMaster;
 import co.yodo.mobile.helper.AppUtils;
 import co.yodo.mobile.helper.Intents;
 import visidon.Lib.FaceInfo;
@@ -62,7 +59,7 @@ public class CameraActivity extends Activity {
 
         mCamera = Camera.open( defaultCameraId );
         cameraCurrentlyLocked = defaultCameraId;
-        mPreview.setCamera( mCamera );
+        mPreview.setCamera( mCamera, defaultCameraId );
     }
 
     @Override
@@ -82,7 +79,7 @@ public class CameraActivity extends Activity {
                 }
             }
 
-            mPreview.setCamera( null );
+            mPreview.setCamera( null, null );
             mCamera.release();
             mCamera = null;
         }
@@ -114,17 +111,19 @@ public class CameraActivity extends Activity {
             String token = extras.getString( Intents.BIOMETRIC_TOKEN );
             mPreview.setFace( token );
 
-            new ShowcaseView.Builder( this )
+            ToastMaster.makeText( this, R.string.message_face_recognition, Toast.LENGTH_LONG ).show();
+            /*new ShowcaseView.Builder( this )
                     .setTarget( Target.NONE )
                     .setContentTitle( R.string.title_face_recognition )
                     .setContentText( R.string.message_face_recognition )
-                    .build();
+                    .build();*/
         } else {
-            new ShowcaseView.Builder( this )
+            ToastMaster.makeText( this, R.string.message_train_camera, Toast.LENGTH_LONG ).show();
+            /*new ShowcaseView.Builder( this )
                     .setTarget( Target.NONE )
                     .setContentTitle( R.string.title_train_camera )
                     .setContentText( R.string.message_train_camera )
-                    .build();
+                    .build();*/
         }
     }
 }

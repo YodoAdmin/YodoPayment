@@ -19,9 +19,10 @@ public class ReceiptsSQLiteHelper extends SQLiteOpenHelper {
     public static final String COLUMN_CASHBACK    = "cashBack";
     public static final String COLUMN_BALANCE     = "balance";
     public static final String COLUMN_CREATED     = "created";
+    public static final String COLUMN_OPENED      = "opened";
 
     private static final String DATABASE_NAME = "receipts.db";
-    private static final int DATABASE_VERSION = 2;
+    private static final int DATABASE_VERSION = 3;
 
     //Sentencia SQL para crear la tabla de Usuarios
     String sqlCreate = "CREATE TABLE " + TABLE_RECEIPTS + " (" +
@@ -30,10 +31,19 @@ public class ReceiptsSQLiteHelper extends SQLiteOpenHelper {
             COLUMN_CURRENCY    + " TEXT, " +
             COLUMN_AMOUNT      + " REAL, " + COLUMN_TAMOUNT     + " REAL, " +
             COLUMN_CASHBACK    + " REAL, " + COLUMN_BALANCE     + " REAL, " +
-            COLUMN_CREATED     + " TEXT)";
+            COLUMN_CREATED     + " TEXT, " + COLUMN_OPENED      + " INTEGER DEFAULT 0)";
 
-    public ReceiptsSQLiteHelper(Context context) {
+    private static ReceiptsSQLiteHelper sInstance;
+
+    private ReceiptsSQLiteHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    }
+
+    public static synchronized ReceiptsSQLiteHelper getInstance(Context context) {
+        if( sInstance == null ) {
+            sInstance = new ReceiptsSQLiteHelper(context.getApplicationContext());
+        }
+        return sInstance;
     }
 
     @Override
@@ -47,7 +57,7 @@ public class ReceiptsSQLiteHelper extends SQLiteOpenHelper {
         //Se elimina la versión anterior de la tabla
         //db.execSQL( "DROP TABLE IF EXISTS Receipts" );
         if( newVersion > oldVersion ) {
-            db.execSQL( "ALTER TABLE " + TABLE_RECEIPTS + " ADD COLUMN dcurrency TEXT" );
+            db.execSQL( "ALTER TABLE " + TABLE_RECEIPTS + " ADD COLUMN opened INTEGER DEFAULT 0" );
         }
 
         //Se crea la nueva versión de la tabla

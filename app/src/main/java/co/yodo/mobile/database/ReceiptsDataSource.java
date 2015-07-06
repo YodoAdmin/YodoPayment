@@ -32,18 +32,19 @@ public class ReceiptsDataSource {
             ReceiptsSQLiteHelper.COLUMN_TAMOUNT,
             ReceiptsSQLiteHelper.COLUMN_CASHBACK,
             ReceiptsSQLiteHelper.COLUMN_BALANCE,
-            ReceiptsSQLiteHelper.COLUMN_CREATED
+            ReceiptsSQLiteHelper.COLUMN_CREATED,
+            ReceiptsSQLiteHelper.COLUMN_OPENED
     };
 
     public ReceiptsDataSource(Context context) {
-        dbHelper = new ReceiptsSQLiteHelper( context );
+        dbHelper = ReceiptsSQLiteHelper.getInstance( context );
     }
 
-    public void open() throws SQLException {
+    public synchronized void open() throws SQLException {
         database = dbHelper.getWritableDatabase();
     }
 
-    public void close() {
+    public synchronized void close() {
         if( dbHelper != null )
             dbHelper.close();
     }
@@ -60,26 +61,93 @@ public class ReceiptsDataSource {
         values.put( ReceiptsSQLiteHelper.COLUMN_CASHBACK, cashBack );
         values.put( ReceiptsSQLiteHelper.COLUMN_BALANCE, balance );
         values.put( ReceiptsSQLiteHelper.COLUMN_CREATED, created );
+        values.put( ReceiptsSQLiteHelper.COLUMN_OPENED, false );
 
-        long insertId = database.insert( ReceiptsSQLiteHelper.TABLE_RECEIPTS, null, values );
-        Cursor cursor = database.query(
-                ReceiptsSQLiteHelper.TABLE_RECEIPTS,
-                allColumns,
-                ReceiptsSQLiteHelper.COLUMN_ID + " = " + insertId,
-                null, null, null, null );
-        cursor.moveToFirst();
-        Receipt newReceipt = cursorToReceipt(cursor);
-        cursor.close();
+        database.beginTransactionNonExclusive();
+        try {
+            long insertId = database.insert( ReceiptsSQLiteHelper.TABLE_RECEIPTS, null, values );
+            database.setTransactionSuccessful();
 
-        return newReceipt;
+            Cursor cursor = database.query(
+                    ReceiptsSQLiteHelper.TABLE_RECEIPTS,
+                    allColumns,
+                    ReceiptsSQLiteHelper.COLUMN_ID + " = " + insertId,
+                    null, null, null, null );
+            cursor.moveToFirst();
+            Receipt newReceipt = cursorToReceipt( cursor );
+            cursor.close();
+
+            return newReceipt;
+        } finally {
+            database.endTransaction();
+        }
     }
 
-    public void deleteReceipt(Receipt receipt) {
+    /**
+     * Adds a receipt to the database
+     * @param receipt The Receipt
+     */
+    public void addReceipt( Receipt receipt ) {
+        ContentValues values = new ContentValues();
+        values.put( ReceiptsSQLiteHelper.COLUMN_ID, receipt.getId() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_DESCRIPTION, receipt.getDescription() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_AUTHNUMBER, receipt.getAuthNumber() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_CURRENCY, receipt.getCurrency() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_AMOUNT, receipt.getTotalAmount() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_TAMOUNT, receipt.getTenderAmount() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_CASHBACK, receipt.getCashBackAmount() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_BALANCE, receipt.getBalanceAmount() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_CREATED, receipt.getCreated() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_OPENED, receipt.isOpened() );
+
+        database.beginTransactionNonExclusive();
+
+        try {
+            long id = database.insert( ReceiptsSQLiteHelper.TABLE_RECEIPTS, null, values );
+            AppUtils.Logger( TAG, "Receipt deleted with id: " + id );
+            database.setTransactionSuccessful();
+        } finally {
+            database.endTransaction();
+        }
+    }
+
+    /**
+     * Updates a Receipt (only if it is opened)
+     * @param item The Receipt
+     */
+    public void updateReceipt( Receipt item ) {
+        ContentValues values = new ContentValues();
+        values.put( ReceiptsSQLiteHelper.COLUMN_OPENED, item.isOpened() );
+        database.beginTransaction();
+
+        try {
+            database.update( ReceiptsSQLiteHelper.TABLE_RECEIPTS,
+                    values,
+                    ReceiptsSQLiteHelper.COLUMN_ID + "=" + item.getId(),
+                    null );
+            database.setTransactionSuccessful();
+        } finally {
+            database.endTransaction();
+        }
+    }
+
+    /**
+     * Deletes a receipt from the database
+     * @param receipt The Receipt
+     */
+    public void deleteReceipt( Receipt receipt ) {
         long id = receipt.getId();
-        AppUtils.Logger(TAG, "Receipt deleted with id: " + id);
-        database.delete(
+        database.beginTransaction();
+
+        try {
+            database.delete(
                 ReceiptsSQLiteHelper.TABLE_RECEIPTS,
                 ReceiptsSQLiteHelper.COLUMN_ID + " = " + id, null );
+            AppUtils.Logger( TAG, "Receipt deleted with id: " + id );
+            database.setTransactionSuccessful();
+        } finally {
+            database.endTransaction();
+        }
     }
 
     public void delete() {
@@ -93,7 +161,7 @@ public class ReceiptsDataSource {
 
         Cursor cursor = database.query(
                 ReceiptsSQLiteHelper.TABLE_RECEIPTS,
-                allColumns, null, null, null, null, null );
+                allColumns, null, null, null, null, ReceiptsSQLiteHelper.COLUMN_CREATED + " DESC" );
 
         cursor.moveToFirst();
         while( !cursor.isAfterLast() ) {
@@ -117,6 +185,7 @@ public class ReceiptsDataSource {
         receipt.setCashBackAmount( cursor.getString( 6 ) );
         receipt.setBalanceAmount(  cursor.getString( 7 ) );
         receipt.setCreated(        cursor.getString( 8 ) );
+        receipt.setOpened(       ( cursor.getInt( 9 ) != 0) );
 
         return receipt;
     }

@@ -63,7 +63,8 @@
         </activity>
         <activity
             android:name=".main.SettingsActivity"
-            android:label="@string/title_activity_settings" >
+            android:label="@string/title_activity_settings"
+            android:theme="@style/AppTheme.Settings">>
         </activity>
         <activity
             android:name=".main.PipResetActivity"
@@ -75,11 +76,16 @@
         </activity>
         <activity
             android:name=".main.ReceiptsActivity"
-            android:label="@string/title_activity_receipts" >
-        </activity>
-        <activity
-            android:name=".main.LinkingActivity"
-            android:label="@string/title_activity_linking" >
+            android:label="@string/title_activity_receipts"
+            android:launchMode="singleTop">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable" />
         </activity>
         <activity
             android:name=".main.DeLinkActivity"

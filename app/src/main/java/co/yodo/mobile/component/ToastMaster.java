@@ -15,6 +15,7 @@ public class ToastMaster extends Toast {
     	ToastMaster.setToast(this);
     	super.show();
     }
+
     public static void setToast(Toast toast) {
         if(sToast != null)
             sToast.cancel();

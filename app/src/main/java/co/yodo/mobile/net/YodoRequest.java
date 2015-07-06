@@ -120,7 +120,7 @@ public class YodoRequest extends ResultReceiver {
     public void createProgressDialog(Context context, ProgressDialogType type) {
         switch( type ) {
             case NORMAL:
-                progressDialog = new ProgressDialog( context );
+                progressDialog = new ProgressDialog( context, R.style.TransparentProgressDialog );
                 progressDialog.setCancelable( false );
                 progressDialog.show();
                 progressDialog.setContentView( R.layout.custom_progressdialog );

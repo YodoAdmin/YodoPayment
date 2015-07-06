@@ -1,7 +1,7 @@
 package co.yodo.mobile.helper;
 
 import android.app.Activity;
-import android.app.AlertDialog;
+import android.support.v7.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Rect;
 import android.view.Window;
@@ -31,7 +31,7 @@ public class AppEula {
 
     public static boolean show(final Activity activity) {
         if( !AppUtils.isEulaAccepted( activity ) ) {
-            final AlertDialog.Builder builder = new AlertDialog.Builder( activity );
+            final AlertDialog.Builder builder = new AlertDialog.Builder( activity, R.style.AppCompatAlertDialogStyle );
             builder.setTitle( R.string.eula_title );
             builder.setCancelable( false );
 

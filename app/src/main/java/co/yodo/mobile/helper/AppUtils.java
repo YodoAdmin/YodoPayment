@@ -29,8 +29,10 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
 
@@ -439,6 +441,23 @@ public class AppUtils {
         }
 
         return sdf.format( c.getTime() );
+    }
+
+    /**
+     * Cast a Object to a List of type clazz
+     * @param obj The object to be cast
+     * @param clazz The class of the item's List
+     * @param <T> The type
+     * @return the list of the new type
+     */
+    public static <T> List<T> castList(Object obj, Class<T> clazz) {
+        List<T> result = new ArrayList<>();
+        if( obj instanceof List<?> ) {
+            for( Object o : (List<?>) obj )
+                result.add( clazz.cast( o ) );
+            return result;
+        }
+        return null;
     }
 
     /**

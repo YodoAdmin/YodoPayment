@@ -1,6 +1,7 @@
 package co.yodo.mobile.main;
 
-import android.app.AlertDialog;
+import android.support.v4.view.GravityCompat;
+import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -12,10 +13,11 @@ import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarActivity;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
 import android.text.style.UnderlineSpan;
@@ -33,9 +35,6 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.github.amlcurran.showcaseview.ShowcaseView;
-import com.github.amlcurran.showcaseview.targets.ViewTarget;
-
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -49,6 +48,7 @@ import co.yodo.mobile.component.ClearEditText;
 import co.yodo.mobile.component.ImageLoader;
 import co.yodo.mobile.component.ToastMaster;
 import co.yodo.mobile.component.YodoHandler;
+import co.yodo.mobile.data.Receipt;
 import co.yodo.mobile.data.ServerResponse;
 import co.yodo.mobile.database.CouponsDataSource;
 import co.yodo.mobile.database.ReceiptsDataSource;
@@ -64,7 +64,7 @@ import co.yodo.mobile.sks.SKSCreater;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 
-public class MainActivity extends ActionBarActivity implements YodoRequest.RESTListener, View.OnClickListener {
+public class MainActivity extends AppCompatActivity implements YodoRequest.RESTListener, View.OnClickListener {
     /** The context object */
     private Context ac;
 
@@ -76,10 +76,6 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
     private ImageViewTouch mAdvertisingImage;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
-
-    /** Tutorial */
-    private int counter = 0;
-    private ShowcaseView showcaseView;
 
     /** Database and current merchant */
     private CouponsDataSource couponsdb;
@@ -233,8 +229,9 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
         // Only used at creation
         Toolbar actionBarToolbar = (Toolbar) findViewById( R.id.actionBar );
 
-        setSupportActionBar(actionBarToolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled( true );
+        setSupportActionBar( actionBarToolbar );
+        if( getSupportActionBar() != null )
+            getSupportActionBar().setDisplayHomeAsUpEnabled( true );
 
         mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, actionBarToolbar, R.string.drawer_open, R.string.drawer_close) {
             @Override
@@ -301,7 +298,9 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
         });
 
         if( AppUtils.isFirstLogin( ac ) ) {
-            showcaseView = new ShowcaseView.Builder( this )
+            mDrawerLayout.openDrawer( GravityCompat.START );
+            AppUtils.saveFirstLogin( ac, false );
+            /*showcaseView = new ShowcaseView.Builder( this )
                     .setTarget( new ViewTarget( findViewById( R.id.actionBar ) ) )
                     .setContentTitle( R.string.tutorial_action_bar )
                     .setContentText( R.string.tutorial_action_bar_message )
@@ -309,7 +308,7 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
                     .setOnClickListener( this )
                     .hideOnTouchOutside()
                     .build();
-            showcaseView.setButtonText( getString( R.string.next ) );
+            showcaseView.setButtonText( getString( R.string.next ) );*/
         }
 
         AppEula.show( this );
@@ -374,7 +373,7 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
      */
     public void couponsClick(View v) {
         Intent intent = new Intent( MainActivity.this, CouponsActivity.class );
-        startActivity(intent);
+        startActivity( intent );
     }
 
     /**
@@ -382,7 +381,7 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
      * @param v, not used
      */
     public void networkClick(View v) {
-        ToastMaster.makeText( MainActivity.this, R.string.no_available, Toast.LENGTH_SHORT ).show();
+        Snackbar.make( mDrawerLayout, R.string.no_available, Snackbar.LENGTH_SHORT ).show();
     }
 
     /**
@@ -414,10 +413,9 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
     public void linkAccountsClick(View v) {
         mDrawerLayout.closeDrawers();
 
-        //Intent intent = new Intent( MainActivity.this, LinkingActivity.class );
-        //startActivity( intent );
+        Snackbar.make( mDrawerLayout, R.string.no_available, Snackbar.LENGTH_SHORT ).show();
 
-        final EditText inputBox = new ClearEditText( ac );
+        /*final EditText inputBox = new ClearEditText( ac );
         String[] options = getResources().getStringArray( R.array.link_options_array );
 
         DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
@@ -520,7 +518,7 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
             }
         };
 
-        AlertDialogHelper.showAlertDialog( ac, getString( R.string.linking_menu ), options, onClick );
+        AlertDialogHelper.showAlertDialog( ac, getString( R.string.linking_menu ), options, onClick );*/
     }
 
     /**
@@ -728,7 +726,7 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
         }
     }
 
-    private void receiptDialog(HashMap<String, String> params) {
+    private void receiptDialog(final HashMap<String, String> params) {
         final Dialog receipt = new Dialog( MainActivity.this );
         receipt.requestWindowFeature( Window.FEATURE_NO_TITLE );
 
@@ -768,19 +766,37 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
             @Override
             public void onClick(View v) {
                 receipt.dismiss();
+                // Show a notification which can reverse the delete
+                Snackbar.make( mDrawerLayout, R.string.message_deleted_receipt, Snackbar.LENGTH_LONG )
+                        .setAction( R.string.message_undo, new View.OnClickListener() {
+                            @Override
+                            public void onClick( View v ) {
+                                v.setEnabled( false );
+                                receiptDialog( params );
+                            }
+                        } ).show();
             }
         });
 
         saveButton.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                receiptsdb.createReceipt(
+                final Receipt item = receiptsdb.createReceipt(
                         description, authNumber, currency,
                         totalAmount, tenderAmount, cashBackAmount,
                         balance, created
                 );
                 receipt.dismiss();
-                ToastMaster.makeText( ac, R.string.saved_receipt, Toast.LENGTH_SHORT ).show();
+                // Show a notification which can reverse the save
+                Snackbar.make( mDrawerLayout, R.string.saved_receipt, Snackbar.LENGTH_LONG )
+                        .setAction( R.string.message_undo, new View.OnClickListener() {
+                            @Override
+                            public void onClick( View v ) {
+                                v.setEnabled( false );
+                                receiptsdb.deleteReceipt( item );
+                                receiptDialog( params );
+                            }
+                        } ).show();
             }
         });
 
@@ -968,7 +984,7 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
 
     @Override
     public void onClick(View v) {
-        switch( counter ) {
+        /*switch( counter ) {
             case 0:
                 showcaseView.setShowcase( new ViewTarget( findViewById( R.id.yodo_header ) ), true );
                 showcaseView.setContentTitle( getString( R.string.tutorial_header ) );
@@ -981,6 +997,6 @@ public class MainActivity extends ActionBarActivity implements YodoRequest.RESTL
                 AppUtils.saveFirstLogin( ac, false );
                 break;
         }
-        counter++;
+        counter++;*/
     }
 }
