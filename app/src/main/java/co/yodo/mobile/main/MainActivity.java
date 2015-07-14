@@ -413,9 +413,9 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
     public void linkAccountsClick(View v) {
         mDrawerLayout.closeDrawers();
 
-        Snackbar.make( mDrawerLayout, R.string.no_available, Snackbar.LENGTH_SHORT ).show();
+        //Snackbar.make( mDrawerLayout, R.string.no_available, Snackbar.LENGTH_SHORT ).show();
 
-        /*final EditText inputBox = new ClearEditText( ac );
+        final EditText inputBox = new ClearEditText( ac );
         String[] options = getResources().getStringArray( R.array.link_options_array );
 
         DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
@@ -518,7 +518,7 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
             }
         };
 
-        AlertDialogHelper.showAlertDialog( ac, getString( R.string.linking_menu ), options, onClick );*/
+        AlertDialogHelper.showAlertDialog( ac, getString( R.string.linking_menu ), options, onClick );
     }
 
     /**

@@ -79,7 +79,7 @@
     <string name="forgot_pip">Forgot the PIP?</string>
 
     <!-- Error Messages -->
-    <string name="error">This is embarrassing! An error occurred in the process</string>
+    <string name="error">This is embarrassing! An error occurred in the process. Try again later</string>
     <string name="error_registration">Something went wrong with the registration</string>
     <string name="no_balance">Sorry, seems that you don\'t have a balance</string>
     <string name="no_internet">Sorry, seems that you don\'t have an Internet connection right now</string>
