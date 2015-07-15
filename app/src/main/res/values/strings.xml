@@ -55,6 +55,7 @@
     <string name="title_train_camera">Token Record</string>
     <string name="message_train_camera">Press the screen when you are ready</string>
     <string name="title_face_recognition">Face Recognition</string>
+    <string name="title_activity_yodo_camera">Yodo Camera</string>
     <string name="message_face_recognition">Locate your entire face on the camera</string>
 
     <!-- header data text -->

@@ -8,9 +8,15 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancel</string>
     <string name="delete">Delete</string>
+    <string name="message.deleted">deleted</string>
+    <string name="message.undo">UNDO</string>
+    <string name="message.search">Search</string>
+    <string name="hint.search">Search…</string>
+    <string name="warning">Warning!</string>
     <string name="drawer_open">open</string>
     <string name="drawer_close">close</string>
     <string name="version">Version:</string>
+    <string name="actual.version">1.3.14</string>
 
     <!-- Action Menu -->
     <string name="action_settings">Settings</string>
@@ -22,7 +28,9 @@
     <string name="receipt_auth">AU#</string>
     <string name="cash_tender">Cash Tender:</string>
     <string name="cash_back">Cash Back:</string>
+    <string name="currency">Currency:</string>
     <string name="yodo_balance">Yodo Balance:</string>
+    <string name="message.deleted.receipt">Receipt Deleted</string>
     <string name="saved_receipt">Receipt Saved</string>
     <string name="no_transaction">No receipt available</string>
 
@@ -45,6 +53,9 @@
 
     <!-- Camera Messages -->
     <string name="title_train_camera">Token Record</string>
+    <string name="title_face_recognition">Face Recognition</string>
+    <string name="title_activity_yodo_camera">Yodo Camera</string>
+    <string name="message_face_recognition">Locate your entire face on the camera</string>
     <string name="message_train_camera">Press the screen when you are ready</string>
 
     <!-- header data text -->
@@ -83,9 +94,36 @@
     <string name="save_image">Save Coupon?</string>
     <string name="change_successfull">Change completed successfully</string>
     <string name="show_pass">Show Password</string>
+
+    <!-- Linking Account Messages -->
+    <string name="linking_menu">Select: </string>
+    <string name="link_code_text">Linking Code: </string>
+    <string name="link_account_button">Link Account</string>
+    <string name="generate_code_button">Generate Linking Code</string>
+    <string name="link_account_response">Linking Account</string>
+    <string name="no_linked_account">This account is not linked</string>
+    <string name="link_account_help">Select one of the options to start with the linking process:</string>
+    <string name="link_code_warning">You are responsible to distribute your link code only to trusted third parties. Anyone in possession of this code will have access to your funds. Yodo accepts no liability for losses due to delivery of Link Codes to unintended parties. Link codes are one-time-use codes and valid only for the next 24 hours.</string>
+
+    <!-- Linking Account Types -->
+    <string name="account_yodo">0</string>
+    <string name="account_visa_credit">1</string>
+    <string name="account_public_transit_pass">2</string>
+    <string name="account_yodo_heart">3</string>
+    <string name="account_visa_prepaid">4</string>
+    <string name="account_paypal">5</string>
+
+    <!-- DeLink Accounts -->
+    <string name="to_account">Giving To</string>
+    <string name="from_account">Receiving From</string>
+
+    <string name="show_linking_code">Show Linking Code</string>
+    <string name="input_linking_code">Input your Linking Code</string>
     <string name="input_token">Input your Token Password</string>
     <string name="input_pip">Personal Identity Phrase (PIP)</string>
     <string name="about_message">Yodo is a couple of guys in a garage building a platform to securely connect mobiles to the cloud.</string>
+    <string name="about_email">support@yodo.co</string>
+    <string name="copied_text">Text has been copied to clipboard</string>
 
     <!-- Close Messages -->
     <string name="close_message">WARNING: If your account has a positive balance it will be forfeited if you close your account now. Only enter your PIP to proceed if you are prepared to forfeit this funds</string>
@@ -116,6 +154,13 @@
     <string name="title_activity_settings">Yodo Settings</string>
     <string name="title_activity_coupons">Yodo Coupons</string>
     <string name="title_activity_receipts">Yodo Receipts</string>
+    <string name="title_activity_linking">Yodo Linking</string>
+    <string name="title_activity_de_link">Yodo DeLink</string>
+
+    <!-- payments -->
+    <string name="SC_KEY">zncvsuchaksdhfckasjdfnhaslkdfhuaksue</string>
+    <string name="SC_LETTER_TYPE">ISO-8859-1</string>
+    <string name="SKS_HEADER"></string>
 
     <!-- Languages -->
     <string-array name="languages_array">
@@ -133,5 +178,14 @@
         <item>ja</item>
         <item>fr</item>
     </string-array>
+
+    <string-array name="link_options_array">
+        <item>Generate Linking Code</item>
+        <item>Input Linking Code</item>
+        <item>De-Link Account</item>
+    </string-array>
+
+    <!-- ACRA -->
+    <string name="crash_toast_text">Ooooops ! I crashed, but a report has been sent to my developer to help fix the issue !</string>"
 
 </resources>
