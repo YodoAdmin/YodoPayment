@@ -1,7 +1,5 @@
 package co.yodo.mobile.main;
 
-import android.support.v4.view.GravityCompat;
-import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,8 +13,10 @@ import android.os.Environment;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
@@ -883,13 +883,12 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
                     String linking_code = response.getParam( ServerResponse.LINKING_CODE );
 
                     Dialog dialog = new Dialog( ac );
-                    dialog.getWindow();
                     dialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
                     dialog.setContentView( R.layout.dialog_linking_code );
 
                     final TextView codeText   = (TextView) dialog.findViewById(R.id.codeText);
                     ImageView codeImage = (ImageView) dialog.findViewById(R.id.copyCodeImage);
-                    codeText.setText(linking_code);
+                    codeText.setText( linking_code );
 
                     codeImage.setOnClickListener( new View.OnClickListener() {
                         @Override
