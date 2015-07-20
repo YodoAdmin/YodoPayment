@@ -8,9 +8,15 @@
     <string name="ok">OK</string>
     <string name="cancel">Cancelar</string>
     <string name="delete">Borrar</string>
+    <string name="message.deleted">borrado</string>
+    <string name="message.undo">DESHACER</string>
+    <string name="message.search">Buscar</string>
+    <string name="hint.search">Buscar…</string>
+    <string name="warning">Advertencia!</string>
     <string name="drawer_open">abrir</string>
     <string name="drawer_close">cerrar</string>
     <string name="version">Versión:</string>
+    <string name="actual.version">1.3.14</string>
 
     <!-- Action Menu -->
     <string name="action_settings">Ajustes</string>
@@ -20,9 +26,11 @@
     <string name="recipts_title">Recibos</string>
     <string name="paid">Total:</string>
     <string name="receipt_auth">AU#</string>
+    <string name="currency">Moneda:</string>
     <string name="cash_tender">Pago:</string>
     <string name="cash_back">Vuelto:</string>
     <string name="yodo_balance">Balance Yodo:</string>
+    <string name="message.deleted.receipt">Receipt Deleted</string>
     <string name="saved_receipt">Recibo Salvado</string>
     <string name="no_transaction">No hay transacciones realizadas</string>
 
@@ -47,6 +55,7 @@
     <string name="title_train_camera">Registro del Token</string>
     <string name="message_train_camera">Presione la pantalla cuando este listo</string>
     <string name="title_face_recognition">Reconocimiento de Rostro</string>
+    <string name="title_activity_yodo_camera">Yodo Camera</string>
     <string name="message_face_recognition">Ubique todo su rostro en la cámara</string>
 
     <!-- header data text -->
@@ -85,9 +94,36 @@
     <string name="save_image">Salvar el Cupón?</string>
     <string name="change_successfull">Cambio completado satisfactoriamente</string>
     <string name="show_pass">Mostrar contraseña</string>
+
+    <!-- Linking Account Messages -->
+    <string name="linking_menu">Seleccionar: </string>
+    <string name="link_code_text">Linking Code: </string>
+    <string name="link_account_button">Unir Cuenta</string>
+    <string name="generate_code_button">Generar Linking Code</string>
+    <string name="link_account_response">Uniendo Cuenta</string>
+    <string name="no_linked_account">Esta cuenta no esta unida</string>
+    <string name="link_account_help">Selecciona una de las opciones para iniciar el proceso de union:</string>
+    <string name="link_code_warning">Usted es responsable de entregar el link code solo a partes confiables. Cualquier persona en posecion de este codigo tendra acceso a tus fondos. Yodo no toma responsabilidad sobre las perdidas causadas por la distribucion equivocada de los Link Codes a personas no deseadas. Link codes son validos por una unica vez y validos solo por las siguiente 24 horas.</string>
+
+    <string name="show_linking_code">Show Linking Code</string>
+    <string name="input_linking_code">Input your Linking Code</string>
     <string name="input_token">Ingresa tu Contraseña Token</string>
     <string name="input_pip">Frase de Identificación Personal (PIP)</string>
     <string name="about_message">Yodo son un par de chicos en un garaje construyendo una plataforma para conectarse de manera segura a la nube.</string>
+    <string name="about_email">support@yodo.co</string>
+    <string name="copied_text">El texto ha sido copiado al clipboard</string>
+
+    <!-- Linking Account Types -->
+    <string name="account_yodo">0</string>
+    <string name="account_visa_credit">1</string>
+    <string name="account_public_transit_pass">2</string>
+    <string name="account_yodo_heart">3</string>
+    <string name="account_visa_prepaid">4</string>
+    <string name="account_paypal">5</string>
+
+    <!-- DeLink Accounts -->
+    <string name="to_account">Giving To</string>
+    <string name="from_account">Receiving From</string>
 
     <!-- Close Messages -->
     <string name="close_message">ADVERTENCIA: Si su cuenta tiene un saldo positivo, se perderá en caso de que cierre su cuenta ahora. Sólo ingrese su PIP para continuar si usted está dispuesto a perder ese dinero</string>
@@ -119,6 +155,12 @@
     <string name="title_activity_coupons">Yodo Cupones</string>
     <string name="title_activity_receipts">Yodo Recibos</string>
     <string name="title_activity_linking">Yodo Linking</string>
+    <string name="title_activity_de_link">Yodo DeLink</string>
+
+    <!-- payments -->
+    <string name="SC_KEY">zncvsuchaksdhfckasjdfnhaslkdfhuaksue</string>
+    <string name="SC_LETTER_TYPE">ISO-8859-1</string>
+    <string name="SKS_HEADER"></string>
 
     <!-- Languages -->
     <string-array name="languages_array">
@@ -136,5 +178,14 @@
         <item>ja</item>
         <item>fr</item>
     </string-array>
+
+    <string-array name="link_options_array">
+        <item>Generate Linking Code</item>
+        <item>Input Linking Code</item>
+        <item>De-Link Account</item>
+    </string-array>
+
+    <!-- ACRA -->
+    <string name="crash_toast_text">Ooooops ! I crashed, but a report has been sent to my developer to help fix the issue !</string>"
 
 </resources>
