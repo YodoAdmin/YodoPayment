@@ -13,6 +13,7 @@ import co.yodo.mobile.component.ToastMaster;
 import co.yodo.mobile.component.YodoHandler;
 import co.yodo.mobile.data.ServerResponse;
 import co.yodo.mobile.helper.AppUtils;
+import co.yodo.mobile.helper.Intents;
 import co.yodo.mobile.net.YodoRequest;
 
 public class SplashActivity extends Activity implements YodoRequest.RESTListener {
@@ -72,8 +73,16 @@ public class SplashActivity extends Activity implements YodoRequest.RESTListener
                 code = response.getCode();
 
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
-                    Intent intent = new Intent( SplashActivity.this, MainActivity.class );
-                    startActivity( intent );
+                    String authNumber = AppUtils.getAuthNumber( ac );
+                    if( !authNumber.equals( "" ) ) {
+                        Intent intent = new Intent( SplashActivity.this, RegistrationBiometricActivity.class );
+                        intent.putExtra( Intents.AUTH_NUMBER, authNumber );
+                        startActivity( intent );
+                        finish();
+                    } else {
+                        Intent intent = new Intent( SplashActivity.this, MainActivity.class );
+                        startActivity( intent );
+                    }
                 } else if( code.equals( ServerResponse.ERROR_FAILED ) ) {
                     Intent intent = new Intent( SplashActivity.this, RegistrationActivity.class);
                     startActivity( intent );

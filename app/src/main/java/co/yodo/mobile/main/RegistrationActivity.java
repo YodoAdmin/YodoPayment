@@ -147,6 +147,8 @@ public class RegistrationActivity extends AppCompatActivity implements AppEula.O
                 code = response.getCode();
 
                 if( code.equals( ServerResponse.AUTHORIZED_REGISTRATION ) ) {
+                    AppUtils.saveAuthNumber( ac, response.getAuthNumber() );
+
                     Intent intent = new Intent( RegistrationActivity.this, RegistrationBiometricActivity.class );
                     intent.putExtra( Intents.AUTH_NUMBER, response.getAuthNumber() );
                     startActivity( intent );
