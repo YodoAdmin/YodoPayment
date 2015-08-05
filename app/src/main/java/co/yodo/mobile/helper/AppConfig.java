@@ -55,6 +55,11 @@ public class AppConfig {
 	 */
     public static final String SPREF_LINKED_ACCOUNTS = "SPLinkedAccounts";
 
+    /* Registration authnumber
+	 * type -- String
+	 */
+    public static final String SPREF_AUTH_NUMBER = "SPAuthNumber";
+
     /**
      * Default values
      * {{ ======================================================================

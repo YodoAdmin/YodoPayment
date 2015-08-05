@@ -82,7 +82,7 @@ public class ServerResponse implements Serializable {
     }
 
     public String getParam(String key) {
-        return params.get(key);
+        return params.get( key );
     }
 
     public HashMap<String, String> getParams() { return params; }

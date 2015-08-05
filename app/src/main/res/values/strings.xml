@@ -16,7 +16,7 @@
     <string name="drawer_open">open</string>
     <string name="drawer_close">close</string>
     <string name="version">Version:</string>
-    <string name="actual.version">1.3.14</string>
+    <string name="actual.version">1.3.15</string>
 
     <!-- Action Menu -->
     <string name="action_settings">Settings</string>
@@ -55,7 +55,6 @@
     <string name="title_train_camera">Token Record</string>
     <string name="message_train_camera">Press the screen when you are ready</string>
     <string name="title_face_recognition">Face Recognition</string>
-    <string name="title_activity_yodo_camera">Yodo Camera</string>
     <string name="message_face_recognition">Locate your entire face on the camera</string>
 
     <!-- header data text -->
@@ -98,7 +97,7 @@
     <string name="input_token">Input your Token Password</string>
     <string name="input_linking_code">Input your Linking Code</string>
     <string name="input_pip">Personal Identity Phrase (PIP)</string>
-    <string name="about_message">Please use the email below to contact us. We\'ll do everything we can to respond to you as quickly as possible. Please be assured, we will never sell or distribute the personal information you provide to us.</string>
+    <string name="about_message">Please use the email below to contact us. We\'ll do everything we can to respond quickly. Be assured, we will never sell or distribute personal information you provide.</string>
     <string name="about_email">support@yodo.co</string>
     <string name="copied_text">Text has been copied to clipboard</string>
 

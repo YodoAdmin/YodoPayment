@@ -1,7 +1,5 @@
 package co.yodo.mobile.main;
 
-import android.support.v4.view.GravityCompat;
-import android.support.v7.app.AlertDialog;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -15,8 +13,10 @@ import android.os.Environment;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.text.SpannableString;
@@ -97,6 +97,15 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
 
     /** SKS code */
     private String originalCode;
+
+    /** PIP temporal */
+    private String pipTemp;
+
+    /** Differentiates the same query for different actions */
+    private Integer queryType;
+
+    private static final int GENERATE_SKS = 0;
+    private static final int DELINK       = 1;
 
     /** AlertDialog for Payments */
     private AlertDialog alertDialog;
@@ -344,6 +353,8 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
                 } else {
                     mAdvertisingLayout.setVisibility( View.GONE );
                     originalCode = pip + SKS_SEP + hardwareToken + SKS_SEP;
+                    pipTemp   = pip;
+                    queryType = GENERATE_SKS;
 
                     YodoRequest.getInstance().createProgressDialog(
                             MainActivity.this,
@@ -492,6 +503,9 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
                                 if( pip.length() < AppConfig.MIN_PIP_LENGTH ) {
                                     ToastMaster.makeText( MainActivity.this, R.string.pip_short, Toast.LENGTH_SHORT ).show();
                                 } else {
+                                    pipTemp   = pip;
+                                    queryType = DELINK;
+
                                     YodoRequest.getInstance().createProgressDialog(
                                             MainActivity.this,
                                             YodoRequest.ProgressDialogType.NORMAL
@@ -827,7 +841,18 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
 
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
                     originalCode += response.getRTime();
-                    String accounts = AppUtils.getLinkedAccount( ac );
+
+                    YodoRequest.getInstance().createProgressDialog(
+                            MainActivity.this,
+                            YodoRequest.ProgressDialogType.NORMAL
+                    );
+
+                    YodoRequest.getInstance().requestLinkedAccounts(
+                            MainActivity.this,
+                            hardwareToken, pipTemp
+                    );
+
+                    /*String accounts = AppUtils.getLinkedAccount( ac );
 
                     if( accounts.equals( "" ) ) {
                         showSKSDialog( originalCode, null );
@@ -836,7 +861,7 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
                         LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
                         View layout = inflater.inflate(R.layout.dialog_payment, new LinearLayout( ac ), false );
                         alertDialog = AlertDialogHelper.showAlertDialog( ac, layout, getString( R.string.linking_menu ) );
-                    }
+                    }*/
                 } else {
                     mAdvertisingLayout.setVisibility( View.VISIBLE );
                     message = response.getMessage();
@@ -883,13 +908,12 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
                     String linking_code = response.getParam( ServerResponse.LINKING_CODE );
 
                     Dialog dialog = new Dialog( ac );
-                    dialog.getWindow();
                     dialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
                     dialog.setContentView( R.layout.dialog_linking_code );
 
                     final TextView codeText   = (TextView) dialog.findViewById(R.id.codeText);
                     ImageView codeImage = (ImageView) dialog.findViewById(R.id.copyCodeImage);
-                    codeText.setText(linking_code);
+                    codeText.setText( linking_code );
 
                     codeImage.setOnClickListener( new View.OnClickListener() {
                         @Override
@@ -908,19 +932,56 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
 
             case QUERY_LNK_ACC_REQUEST:
                 code = response.getCode();
+                String from = response.getParam( ServerResponse.FROM );
 
-                if( code.equals( ServerResponse.AUTHORIZED ) ) {
-                    String to   = response.getParam( ServerResponse.TO );
-                    String from = response.getParam( ServerResponse.FROM );
+                if( queryType == GENERATE_SKS ) {
+                    if( code.equals( ServerResponse.AUTHORIZED ) && !from.isEmpty() ) {
+                        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                        View layout = inflater.inflate(R.layout.dialog_payment, new LinearLayout( ac ), false );
+                        alertDialog = AlertDialogHelper.showAlertDialog( ac, layout, getString( R.string.linking_menu ) );
+                    } else {
+                        showSKSDialog( originalCode, null );
+                        originalCode = null;
+                    }
+                } else if( queryType == DELINK ){
+                    if( code.equals( ServerResponse.AUTHORIZED ) ) {
+                        String to = response.getParam( ServerResponse.TO );
 
-                    Intent i = new Intent( ac, DeLinkActivity.class );
-                    i.putExtra( Intents.LINKED_ACC_TO, to );
-                    i.putExtra( Intents.LINKED_ACC_FROM, from );
-                    startActivity( i );
-                } else {
-                    message = response.getMessage();
-                    AppUtils.sendMessage( handlerMessages, code, message );
+                        Intent i = new Intent( ac, DeLinkActivity.class );
+                        i.putExtra( Intents.LINKED_ACC_TO, to );
+                        i.putExtra( Intents.LINKED_ACC_FROM, from );
+                        i.putExtra( Intents.LINKED_PIP, pipTemp );
+                        startActivity( i );
+                    } else {
+                        message = response.getMessage();
+                        AppUtils.sendMessage( handlerMessages, code, message );
+                    }
                 }
+
+                /*if( code.equals( ServerResponse.AUTHORIZED ) ) {
+                    if( pipTemp != null ) {
+                        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
+                        View layout = inflater.inflate(R.layout.dialog_payment, new LinearLayout( ac ), false );
+                        alertDialog = AlertDialogHelper.showAlertDialog( ac, layout, getString( R.string.linking_menu ) );
+                    } else {
+                        String to = response.getParam( ServerResponse.TO );
+
+                        Intent i = new Intent( ac, DeLinkActivity.class );
+                        i.putExtra( Intents.LINKED_ACC_TO, to );
+                        i.putExtra( Intents.LINKED_ACC_FROM, from );
+                        startActivity( i );
+                    }
+                } else {
+                    if( pipTemp != null ) {
+                        showSKSDialog( originalCode, null );
+                        originalCode = null;
+                    } else {
+                        message = response.getMessage();
+                        AppUtils.sendMessage( handlerMessages, code, message );
+                    }
+                }*/
+                pipTemp   = null;
+                queryType = null;
                 break;
 
             case LINK_ACC_REQUEST:

@@ -192,6 +192,35 @@ public class AppUtils {
     }
 
     /**
+     * It saves the authnumber of the pip registration to the Shared Preferences.
+     *
+     * @param c The Context of the Android system.
+     * @param authnumber The authnumber of the registration
+     * @return true  The account was saved successfully.
+     *         false The account was not saved successfully.
+     */
+    public static Boolean saveAuthNumber(Context c, String authnumber) {
+        SharedPreferences config = getSPrefConfig( c );
+        SharedPreferences.Editor writer = config.edit();
+
+        writer.putString( AppConfig.SPREF_AUTH_NUMBER, authnumber );
+
+        return writer.commit();
+    }
+
+    /**
+     * It gets authnumber of the pip registration
+     *
+     * @param c The Context of the Android system.
+     * @return String The authnumber of the pip registration
+     *         null    If there is no value set;
+     */
+    public static String getAuthNumber( Context c ) {
+        SharedPreferences config = getSPrefConfig( c );
+        return config.getString( AppConfig.SPREF_AUTH_NUMBER, "" );
+    }
+
+    /**
      * Gets the mobile hardware identifier
      * @param c The Context of the Android system.
      */

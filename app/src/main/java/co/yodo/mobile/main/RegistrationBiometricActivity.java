@@ -137,6 +137,8 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
                 code = response.getCode();
 
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
+                    AppUtils.saveAuthNumber( ac, "" );
+
                     Intent intent = new Intent( RegistrationBiometricActivity.this, MainActivity.class );
                     startActivity( intent );
                     finish();

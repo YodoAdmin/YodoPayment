@@ -1,7 +1,6 @@
 package co.yodo.mobile.main;
 
 import android.content.Context;
-import android.content.DialogInterface;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
@@ -9,17 +8,12 @@ import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.component.ClearEditText;
-import co.yodo.mobile.component.ToastMaster;
 import co.yodo.mobile.component.YodoHandler;
 import co.yodo.mobile.data.ServerResponse;
-import co.yodo.mobile.helper.AlertDialogHelper;
 import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.AppUtils;
 import co.yodo.mobile.helper.Intents;
@@ -36,6 +30,9 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
 
     /** Hardware Identifier */
     private String hardwareToken;
+
+    /** PIP */
+    private String pip;
 
     /** GUI controllers */
     private LinearLayout toLayout;
@@ -109,7 +106,8 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
         Toolbar actionBarToolbar = (Toolbar) findViewById( R.id.actionBar );
 
         setSupportActionBar( actionBarToolbar );
-        getSupportActionBar().setDisplayHomeAsUpEnabled( true );
+        if( getSupportActionBar() != null )
+            getSupportActionBar().setDisplayHomeAsUpEnabled( true );
     }
 
     private void updateData() {
@@ -123,6 +121,7 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
 
         String toAccounts   = extras.getString( Intents.LINKED_ACC_TO, "" );
         String fromAccounts = extras.getString( Intents.LINKED_ACC_FROM, "" );
+        pip = extras.getString( Intents.LINKED_PIP, "" );
 
         String[] temp = toAccounts.split( "-" );
         for( String account : temp ) {
@@ -148,10 +147,24 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
         account.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(final View account) {
-                final String title = ac.getString(R.string.input_pip);
-                final EditText inputBox = new ClearEditText(ac);
+                /*final String title = ac.getString(R.string.input_pip);
+                final EditText inputBox = new ClearEditText( ac );*/
 
-                DialogInterface.OnClickListener okClickListener = new DialogInterface.OnClickListener() {
+                currentDeLink = account;
+
+                YodoRequest.getInstance().createProgressDialog(
+                        ac,
+                        YodoRequest.ProgressDialogType.NORMAL
+                );
+
+                YodoRequest.getInstance().requestDeLinkAccount(
+                        DeLinkActivity.this,
+                        hardwareToken, pip,
+                        text,
+                        accountType
+                );
+
+                /*DialogInterface.OnClickListener okClickListener = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String pip = inputBox.getText().toString();
@@ -183,7 +196,7 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
                         inputBox,
                         okClickListener,
                         null
-                );
+                );*/
             }
         });
 
