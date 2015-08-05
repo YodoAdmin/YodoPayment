@@ -1,5 +1,9 @@
 package co.yodo.mobile.component;
 
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.res.AssetManager;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.security.InvalidKeyException;
@@ -8,16 +12,14 @@ import java.security.NoSuchAlgorithmException;
 import java.security.PublicKey;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.X509EncodedKeySpec;
+
 import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
 import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
+
 import co.yodo.mobile.helper.AppUtils;
 import co.yodo.mobile.service.RESTService;
-
-import android.annotation.SuppressLint;
-import android.app.Activity;
-import android.content.res.AssetManager;
 
 /**
  * @author renatomarroquin
