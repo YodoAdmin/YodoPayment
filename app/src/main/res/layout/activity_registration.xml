@@ -1,0 +1,81 @@
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context="co.yodo.mobile.main.RegistrationActivity">
+
+    <include layout="@layout/toolbar" />
+
+    <RelativeLayout
+        android:id="@+id/registration_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:paddingLeft="@dimen/activity_horizontal_margin"
+        android:paddingRight="@dimen/activity_horizontal_margin"
+        android:paddingBottom="@dimen/activity_vertical_margin">
+
+        <Button
+            android:id="@+id/registerPipButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="@drawable/flat_selector_red"
+            android:textColor="@android:color/white"
+            android:text="@string/next"
+            android:layout_alignParentBottom="true"
+            android:onClick="registrationClick" />
+
+        <LinearLayout
+            android:id="@+id/registrationLayout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/registerPipButton"
+            android:layout_centerHorizontal="true"
+            android:gravity="center"
+            android:orientation="vertical">
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:contentDescription="@string/desc"
+                android:layout_gravity="center"
+                android:src="@drawable/yodopay_logo" />
+
+            <TextView
+                android:textAppearance="?android:attr/textAppearanceLarge"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textStyle="bold"
+                android:text="@string/register_pip"/>
+
+            <co.yodo.mobile.component.ClearEditText
+                android:id="@+id/pipText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/edit_text_vertical_margin"
+                android:layout_marginBottom="@dimen/edit_text_vertical_margin"
+                android:inputType="textPassword"
+                android:hint="@string/pip_hint"
+                android:maxLength="8" />
+
+            <co.yodo.mobile.component.ClearEditText
+                android:id="@+id/confirmationPipText"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="@dimen/edit_text_vertical_margin"
+                android:layout_marginBottom="@dimen/edit_text_vertical_margin"
+                android:inputType="textPassword"
+                android:hint="@string/pip_hint"
+                android:maxLength="8" />
+
+            <CheckBox
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:text="@string/show_pass"
+                android:onClick="showPasswordClick" />
+
+        </LinearLayout>
+    </RelativeLayout>
+</LinearLayout>

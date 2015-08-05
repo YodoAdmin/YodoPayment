@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+	<!-- payments -->
+	<string name="SC_KEY">zncvsuchaksdhfckasjdfnhaslkdfhuaksue</string>
+	<string name="SC_LETTER_TYPE">ISO-8859-1</string>
+	<string name="SKS_HEADER"></string>
+	
+</resources>
