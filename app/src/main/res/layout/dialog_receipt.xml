@@ -56,6 +56,48 @@
 
     <LinearLayout
         style="@style/ReceiptLayout"
+        android:id="@+id/accountsLayout"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/donorAccountLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:visibility="gone">
+
+            <TextView
+                style="@style/ReceiptLabel"
+                android:id="@+id/tvDonorView"
+                android:text="@string/message.donor_account"/>
+
+            <TextView
+                style="@style/ReceiptInfo"
+                android:id="@+id/tvDonorText" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/receiverAccountLayout"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <TextView
+                style="@style/ReceiptLabel"
+                android:id="@+id/tvReceiverView"
+                android:text="@string/message.receiver_account"/>
+
+            <TextView
+                style="@style/ReceiptInfo"
+                android:id="@+id/tvReceiverText" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/ReceiptLayout"
         android:id="@+id/userDataLayout"
         android:orientation="vertical" >
 

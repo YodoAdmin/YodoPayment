@@ -10,10 +10,13 @@ public class Receipt {
     private String description;
     private String authNumber;
     private String currency;
+    private String exchRate; // Exchange rate
     private String totalAmount;
     private String tenderAmount;
     private String cashBackAmount;
     private String balanceAmount;
+    private String donorAccount;
+    private String receiverAccount;
     private String created;
     private boolean opened;
 
@@ -52,6 +55,14 @@ public class Receipt {
         this.currency = currency;
     }
 
+    public String getExchRate() {
+        return exchRate;
+    }
+
+    public void setExchRate( String exchRate ) {
+        this.exchRate = exchRate;
+    }
+
     public String getTotalAmount() {
         return totalAmount.replaceAll( ",", "." );
     }
@@ -64,7 +75,7 @@ public class Receipt {
         return tenderAmount.replaceAll( ",", "." );
     }
 
-    public void setTenderAmount(String tenderAmount) {
+    public void setTenderAmount( String tenderAmount ) {
         this.tenderAmount = tenderAmount;
     }
 
@@ -72,7 +83,7 @@ public class Receipt {
         return cashBackAmount.replaceAll( ",", "." );
     }
 
-    public void setCashBackAmount(String cashBackAmount) {
+    public void setCashBackAmount( String cashBackAmount ) {
         this.cashBackAmount = cashBackAmount;
     }
 
@@ -80,15 +91,31 @@ public class Receipt {
         return balanceAmount.replaceAll( ",", "." );
     }
 
-    public void setBalanceAmount(String balanceAmount) {
+    public void setBalanceAmount( String balanceAmount ) {
         this.balanceAmount = balanceAmount;
+    }
+
+    public String getDonorAccount() {
+        return donorAccount;
+    }
+
+    public void setDonorAccount( String donorAccount ) {
+        this.donorAccount = donorAccount;
+    }
+
+    public String getReceiverAccount() {
+        return receiverAccount;
+    }
+
+    public void setReceiverAccount( String receiverAccount ) {
+        this.receiverAccount = receiverAccount;
     }
 
     public String getCreated() {
         return created;
     }
 
-    public void setCreated(String created) {
+    public void setCreated( String created ) {
         this.created = created;
     }
 
@@ -96,17 +123,18 @@ public class Receipt {
         return opened;
     }
 
-    public void setOpened(boolean opened) {
+    public void setOpened( boolean opened ) {
         this.opened = opened;
     }
 
-    public void setChecked(boolean checked) {
+    public void setChecked( boolean checked ) {
         this.isChecked = checked;
     }
 
     @Override
     public String toString() {
-        return "ID: "           + id             + "\n" + "AuthNumber: "    + authNumber   + "\n" +
+        return "\nID: "         + id             + "\n" + "AuthNumber: "    + authNumber   + "\n" +
+               "Balance: "      + balanceAmount  + "\n" + "Currency: "      + currency     + "\n" +
                "Total Amount: " + totalAmount    + "\n" + "Tender Amount: " + tenderAmount + "\n" +
                "CashBack: "     + cashBackAmount + "\n" + "Created: "       + created      + "\n" +
                "Opened: "       + opened         + "\n" + "Checked: "       + isChecked;

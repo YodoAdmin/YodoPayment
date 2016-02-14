@@ -115,7 +115,8 @@ public class CouponsActivity extends AppCompatActivity {
         couponsdb = new CouponsDataSource( ac );
         couponsdb.open();
         setSupportActionBar( actionBarToolbar );
-        getSupportActionBar().setDisplayHomeAsUpEnabled( true );
+        if( getSupportActionBar() != null )
+            getSupportActionBar().setDisplayHomeAsUpEnabled( true );
     }
 
     private void updateData() {

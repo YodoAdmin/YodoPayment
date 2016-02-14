@@ -75,7 +75,8 @@ public class RegistrationActivity extends AppCompatActivity implements AppEula.O
         Toolbar mActionBarToolbar = (Toolbar) findViewById( R.id.actionBar );
 
         setSupportActionBar( mActionBarToolbar );
-        getSupportActionBar().setDisplayHomeAsUpEnabled( true );
+        if( getSupportActionBar() != null )
+            getSupportActionBar().setDisplayHomeAsUpEnabled( true );
 
         if( AppEula.show( this ) )
             mRegistrationLayout.setVisibility( View.GONE );
@@ -85,7 +86,7 @@ public class RegistrationActivity extends AppCompatActivity implements AppEula.O
      * Realize a registration request
      * @param v View of the button, not used
      */
-    public void registrationClick(View v) {
+    public void registrationClick( View v ) {
         Animation shake = AnimationUtils.loadAnimation( this, R.anim.shake );
 
         final String pip        = pipText.getText().toString();

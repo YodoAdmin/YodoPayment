@@ -1,17 +1,17 @@
 package co.yodo.mobile.database;
 
-import java.io.File;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteStatement;
+
+import java.io.File;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
 
 import co.yodo.mobile.data.Coupon;
 import co.yodo.mobile.helper.AppUtils;
@@ -69,7 +69,7 @@ public class CouponsDataSource {
 	    long id = coupon.getId();
 	    AppUtils.Logger( TAG, "Coupon deleted with id: " + id );
 	    database.delete( CouponsSQLiteHelper.TABLE_COUPONS, CouponsSQLiteHelper.COLUMN_ID
-	        + " = " + id, null );
+				+ " = " + id, null );
 	}
 
 	public void delete() {
@@ -98,6 +98,11 @@ public class CouponsDataSource {
 	    // make sure to close the cursor
 	    cursor.close();
 	    return coupons;
+	}
+
+	public long getAmount() {
+		SQLiteStatement statement = database.compileStatement( "SELECT COUNT(*) FROM " + CouponsSQLiteHelper.TABLE_COUPONS );
+		return statement.simpleQueryForLong();
 	}
 
 	private Coupon cursorToCoupon(Cursor cursor) {

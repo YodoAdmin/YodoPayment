@@ -16,19 +16,19 @@
     <string name="drawer_open">abrir</string>
     <string name="drawer_close">cerrar</string>
     <string name="version">Versión:</string>
-    <string name="actual.version">1.3.14</string>
 
     <!-- Action Menu -->
     <string name="action_settings">Ajustes</string>
     <string name="action_about">Acerca de Yodo</string>
 
     <!-- Receipts -->
+    <string name="new_recipt">Nuevo Recibo</string>
     <string name="recipts_title">Recibos</string>
     <string name="paid">Total:</string>
     <string name="receipt_auth">AU#</string>
     <string name="currency">Moneda:</string>
     <string name="cash_tender">Pago:</string>
-    <string name="cash_back">Vuelto:</string>
+    <string name="cash_back">Cambio:</string>
     <string name="yodo_balance">Balance Yodo:</string>
     <string name="message.deleted.receipt">Receipt Deleted</string>
     <string name="saved_receipt">Recibo Salvado</string>
@@ -55,7 +55,7 @@
     <string name="title_train_camera">Registro del Token</string>
     <string name="message_train_camera">Presione la pantalla cuando este listo</string>
     <string name="title_face_recognition">Reconocimiento de Rostro</string>
-    <string name="title_activity_yodo_camera">Yodo Camera</string>
+    <string name="title_activity_yodo_camera">Yodo Cámara</string>
     <string name="message_face_recognition">Ubique todo su rostro en la cámara</string>
 
     <!-- header data text -->
@@ -87,8 +87,9 @@
     <string name="no_hardware">Debe encender su bluetooth primero</string>
     <string name="no_camera">Esta cámara no existe</string>
     <string name="no_available">Aún no disponible</string>
-    <string name="no_biometric">Sorry, seems that you don\'t have a biometric token</string>
+    <string name="no_biometric">Disculpe, parece que no tiene un token biométrico</string>
     <string name="image_saved_failed">Error al salvar el Cupón</string>
+
 
     <!-- General Messages -->
     <string name="save_image">Salvar el Cupón?</string>
@@ -97,21 +98,21 @@
 
     <!-- Linking Account Messages -->
     <string name="linking_menu">Seleccionar: </string>
-    <string name="link_code_text">Linking Code: </string>
+    <string name="link_code_text">Código de Unión: </string>
     <string name="link_account_button">Unir Cuenta</string>
-    <string name="generate_code_button">Generar Linking Code</string>
+    <string name="generate_code_button">Generar Código de Unión</string>
     <string name="link_account_response">Uniendo Cuenta</string>
     <string name="no_linked_account">Esta cuenta no esta unida</string>
     <string name="link_account_help">Selecciona una de las opciones para iniciar el proceso de union:</string>
-    <string name="link_code_warning">Usted es responsable de entregar el link code solo a partes confiables. Cualquier persona en posecion de este codigo tendra acceso a tus fondos. Yodo no toma responsabilidad sobre las perdidas causadas por la distribucion equivocada de los Link Codes a personas no deseadas. Link codes son validos por una unica vez y validos solo por las siguiente 24 horas.</string>
+    <string name="link_code_warning">Usted es responsable de entregar el link code solo a partes confiables. Cualquier persona en posecion de este codigo tendra acceso a tus fondos. Yodo no toma responsabilidad sobre las perdidas causadas por la distribucion equivocada de los Link Codes a personas no deseadas. Link codes son validos por una única vez y validos solo por las siguiente 24 horas.</string>
 
-    <string name="show_linking_code">Show Linking Code</string>
-    <string name="input_linking_code">Input your Linking Code</string>
+    <string name="show_linking_code">Mostrar Código de Unión</string>
+    <string name="input_linking_code">Insertar Código de Unión</string>
     <string name="input_token">Ingresa tu Contraseña Token</string>
     <string name="input_pip">Frase de Identificación Personal (PIP)</string>
     <string name="about_message">Yodo son un par de chicos en un garaje construyendo una plataforma para conectarse de manera segura a la nube.</string>
     <string name="about_email">support@yodo.co</string>
-    <string name="copied_text">El texto ha sido copiado al clipboard</string>
+    <string name="copied_text">El texto ha sido copiado al portapapeles</string>
 
     <!-- Linking Account Types -->
     <string name="account_yodo">0</string>
@@ -127,7 +128,7 @@
 
     <!-- Close Messages -->
     <string name="close_message">ADVERTENCIA: Si su cuenta tiene un saldo positivo, se perderá en caso de que cierre su cuenta ahora. Sólo ingrese su PIP para continuar si usted está dispuesto a perder ese dinero</string>
-    <string name="closing_message">Cerrando la cuentat</string>
+    <string name="closing_message">Cerrando la cuenta</string>
     <string name="farewell_message_tittle">Gracias por usar Yodo</string>
     <string name="farewell_message">Por favor, elimine por completo Yodo utilizando las herramientas de Gestión de App en Ajustes de teléfono</string>
 
@@ -136,7 +137,7 @@
 
     <!-- Settings Titles -->
     <string name="config_pref_advertising">Promociones</string>
-    <string name="config_pref_advertising_summary">Recivir promociones de las tiendas más cercanas</string>
+    <string name="config_pref_advertising_summary">Recibir promociones de las tiendas más cercanas</string>
     <string name="config_pref_languages">Lenguaje</string>
 
     <!-- Tutorial -->
@@ -157,11 +158,6 @@
     <string name="title_activity_linking">Yodo Linking</string>
     <string name="title_activity_de_link">Yodo DeLink</string>
 
-    <!-- payments -->
-    <string name="SC_KEY">zncvsuchaksdhfckasjdfnhaslkdfhuaksue</string>
-    <string name="SC_LETTER_TYPE">ISO-8859-1</string>
-    <string name="SKS_HEADER"></string>
-
     <!-- Languages -->
     <string-array name="languages_array">
         <item>Inglés</item>
@@ -180,9 +176,9 @@
     </string-array>
 
     <string-array name="link_options_array">
-        <item>Generate Linking Code</item>
-        <item>Input Linking Code</item>
-        <item>De-Link Account</item>
+        <item>Generar Código de Unión</item>
+        <item>Insertar el Código de Unión</item>
+        <item>Separar Cuenta</item>
     </string-array>
 
     <!-- ACRA -->

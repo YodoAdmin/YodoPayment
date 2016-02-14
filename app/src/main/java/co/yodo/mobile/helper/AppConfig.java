@@ -8,7 +8,7 @@ import co.yodo.mobile.BuildConfig;
  */
 public class AppConfig {
     /** DEBUG flag */
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     /** ID of the shared preferences file */
     public static final String SHARED_PREF_FILE = "YodoPaymentSharedPref";
@@ -60,6 +60,16 @@ public class AppConfig {
 	 */
     public static final String SPREF_AUTH_NUMBER = "SPAuthNumber";
 
+    /* If the token was successfully sent to the server
+	 * type -- boolean
+	 */
+    public static final String SPREF_TOKEN_TO_SERVER  = "SPTokenToServer";
+
+    /* If the main activity is in foreground
+	 * type -- boolean
+	 */
+    public static final String SPREF_FOREGROUND  = "SPForeground";
+
     /**
      * Default values
      * {{ ======================================================================
@@ -93,4 +103,7 @@ public class AppConfig {
 
     /* Progress Dialog */
     public static final String IS_SHOWING = "is_showing";
+
+    /* GCM registration */
+    public static final String REGISTRATION_COMPLETE = "registrationComplete";
 }

@@ -1,7 +1,7 @@
 package co.yodo.mobile.component;
 
 import android.annotation.SuppressLint;
-import android.app.Activity;
+import android.content.Context;
 import android.content.res.AssetManager;
 
 import java.io.IOException;
@@ -71,7 +71,7 @@ public class Encrypter {
 	 * @throws NoSuchAlgorithmException
 	 * @throws InvalidKeySpecException
 	 */
-	static PublicKey readKeyFromFile(Activity parent){
+	static PublicKey readKeyFromFile(Context parent){
 		AssetManager as;
 		InputStream inFile;
 		byte[] encodedKey;
@@ -79,18 +79,17 @@ public class Encrypter {
 		
 		try{
 			as = parent.getResources().getAssets();   
-			inFile = as.open(PUBLIC_KEY);
+			inFile = as.open( PUBLIC_KEY );
 			encodedKey = new byte[inFile.available()];
-			inFile.read(encodedKey);
+			inFile.read( encodedKey );
 			inFile.close();
 			
-			X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(encodedKey);
-			KeyFactory kf = KeyFactory.getInstance(KEY_INSTANCE);
-			pkPublic = kf.generatePublic(publicKeySpec);
-			    
+			X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec( encodedKey );
+			KeyFactory kf = KeyFactory.getInstance( KEY_INSTANCE );
+			pkPublic = kf.generatePublic( publicKeySpec );
 		}
-		catch(Exception e) {
-			AppUtils.Logger(TAG, "Error Reading Public Key - SKSCreater");
+		catch( Exception e ) {
+			AppUtils.Logger( TAG, "Error Reading Public Key - SKSCreater" );
 		}
 		
 		return pkPublic;
@@ -98,21 +97,20 @@ public class Encrypter {
 	/**
 	 * Encrypts a string and returns a byte array containing the encrypted string
 	 * @param parent	Activity that uses the SKSCreater
-	 * @return			Byte array containing the encrypted string
 	 */
 	@SuppressLint("TrulyRandom")
-	public void rsaEncrypt(Activity parent) {
-		PublicKey pubKey = readKeyFromFile(parent);
+	public void rsaEncrypt( Context parent ) {
+		PublicKey pubKey = readKeyFromFile( parent );
 		Cipher cipher;
 		try {
-			cipher = Cipher.getInstance(CIPHER_INSTANCE);
-			cipher.init(Cipher.ENCRYPT_MODE, pubKey);
+			cipher = Cipher.getInstance( CIPHER_INSTANCE );
+			cipher.init( Cipher.ENCRYPT_MODE, pubKey );
 			this.cipherData = cipher.doFinal( this.sUnEncryptedString.getBytes() );
 			  
-		} catch (NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e) {
+		} catch( NoSuchAlgorithmException | NoSuchPaddingException | IllegalBlockSizeException | BadPaddingException e ) {
 			e.printStackTrace();
-            AppUtils.Logger(TAG, "Error Encrypting string - SKSCreater");
-		} catch (InvalidKeyException e) {
+            AppUtils.Logger( TAG, "Error Encrypting string - SKSCreater" );
+		} catch ( InvalidKeyException e ) {
 			e.printStackTrace();
 		}
     }

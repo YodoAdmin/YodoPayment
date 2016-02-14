@@ -17,6 +17,8 @@ import android.os.Bundle;
 import android.os.Message;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
+import android.text.format.DateUtils;
+import android.util.Base64;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -24,7 +26,13 @@ import android.view.Window;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.Toast;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.GoogleApiAvailability;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
@@ -35,7 +43,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 import java.util.TimeZone;
+import java.util.zip.GZIPOutputStream;
 
+import co.yodo.mobile.R;
+import co.yodo.mobile.component.ToastMaster;
 import co.yodo.mobile.component.YodoHandler;
 
 /**
@@ -43,6 +54,9 @@ import co.yodo.mobile.component.YodoHandler;
  * Utilities for the App, Mainly shared preferences
  */
 public class AppUtils {
+    @SuppressWarnings( "unused" )
+    private static final String TAG = AppUtils.class.getSimpleName();
+
     /** Accounts Separato */
     public static final String ACC_SEP = ",";
 
@@ -67,7 +81,7 @@ public class AppUtils {
      */
     public static String getLanguage(Context c) {
         SharedPreferences config = getSPrefConfig( c );
-        return config.getString(AppConfig.SPREF_CURRENT_LANGUAGE, AppConfig.DEFAULT_LANGUAGE);
+        return config.getString( AppConfig.SPREF_CURRENT_LANGUAGE, AppConfig.DEFAULT_LANGUAGE );
     }
 
     /**
@@ -92,7 +106,7 @@ public class AppUtils {
      */
     public static Boolean isFirstLogin(Context c) {
         SharedPreferences config = getSPrefConfig( c );
-        return config.getBoolean(AppConfig.SPREF_FIRST_LOGIN, true);
+        return config.getBoolean( AppConfig.SPREF_FIRST_LOGIN, true );
     }
 
     /**
@@ -117,7 +131,7 @@ public class AppUtils {
      */
     public static Boolean isEulaAccepted(Context c) {
         SharedPreferences config = getSPrefConfig( c );
-        return config.getBoolean(AppConfig.SPREF_EULA_ACCEPTED, false);
+        return config.getBoolean( AppConfig.SPREF_EULA_ACCEPTED, false );
     }
 
     /**
@@ -221,6 +235,64 @@ public class AppUtils {
     }
 
     /**
+     * It saves if the token was successfully sent to the server in the Shared Preferences.
+     *
+     * @param c The Context of the Android system.
+     * @param sent If the token was sent or not
+     * @return true  The boolean was saved successfully.
+     *         false The boolean was not saved successfully.
+     */
+    public static Boolean saveIsTokenSent( Context c, boolean sent ) {
+        SharedPreferences config = getSPrefConfig( c );
+        SharedPreferences.Editor writer = config.edit();
+
+        writer.putBoolean( AppConfig.SPREF_TOKEN_TO_SERVER, sent );
+
+        return writer.commit();
+    }
+
+    /**
+     * It gets if the token was sent to the server
+     *
+     * @param c The Context of the Android system.
+     * @return boolean If the token was sent to the server
+     *         null    If there is no value set;
+     */
+    public static boolean getIsTokenSent( Context c ) {
+        SharedPreferences config = getSPrefConfig( c );
+        return config.getBoolean( AppConfig.SPREF_TOKEN_TO_SERVER, false );
+    }
+
+    /**
+     * It saves if the main activity is in the foreground to the Shared Preferences.
+     *
+     * @param c The Context of the Android system.
+     * @param foreground If the MainActivity is paused or resumed
+     * @return true  The boolean was saved successfully.
+     *         false The boolean was not saved successfully.
+     */
+    public static Boolean saveIsForeground( Context c, boolean foreground ) {
+        SharedPreferences config = getSPrefConfig( c );
+        SharedPreferences.Editor writer = config.edit();
+
+        writer.putBoolean( AppConfig.SPREF_FOREGROUND, foreground );
+
+        return writer.commit();
+    }
+
+    /**
+     * It gets if the MainActivity is in the foreground
+     *
+     * @param c The Context of the Android system.
+     * @return boolean If the token was sent to the server
+     *         null    If there is no value set;
+     */
+    public static boolean isForeground( Context c ) {
+        SharedPreferences config = getSPrefConfig( c );
+        return config.getBoolean( AppConfig.SPREF_FOREGROUND, false );
+    }
+
+    /**
      * Gets the mobile hardware identifier
      * @param c The Context of the Android system.
      */
@@ -232,13 +304,16 @@ public class AppUtils {
         //WifiManager wifiManager            = (WifiManager) c.getSystemService( Context.WIFI_SERVICE );
 
         if( telephonyManager != null ) {
-            HARDWARE_TOKEN = telephonyManager.getDeviceId();
+            String tempMAC = telephonyManager.getDeviceId();
+            if( tempMAC != null )
+                HARDWARE_TOKEN = tempMAC.replace( "/", "" );
         }
 
         if( HARDWARE_TOKEN == null && mBluetoothAdapter != null ) {
             if( mBluetoothAdapter.isEnabled() ) {
                 String tempMAC = mBluetoothAdapter.getAddress();
-                HARDWARE_TOKEN = tempMAC.replaceAll( ":", "" );
+                if( tempMAC != null )
+                    HARDWARE_TOKEN = tempMAC.replaceAll( ":", "" );
             }
         }
 
@@ -452,9 +527,9 @@ public class AppUtils {
      * @param date The date in UTC
      * @return the Date in the cellphone time
      */
-    public static String UTCtoCurrent(String date) {
+    public static String UTCtoCurrent( Context ac, String date ) {
         Calendar c = Calendar.getInstance();
-        SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd HH:mm:ss", Locale.US );
+        SimpleDateFormat sdf = new SimpleDateFormat( "yyyy-MM-dd HH:mm", Locale.US );
 
         try {
             TimeZone z = c.getTimeZone();
@@ -469,7 +544,9 @@ public class AppUtils {
             e.printStackTrace();
         }
 
-        return sdf.format( c.getTime() );
+        return DateUtils. getRelativeTimeSpanString( ac, c.getTimeInMillis(), true ).toString();
+        //return DateUtils.getRelativeTimeSpanString( c.getTimeInMillis(), System.currentTimeMillis(), DateUtils.FORMAT_ABBREV_ALL ).toString();
+        //return sdf.format( c.getTime() );
     }
 
     /**
@@ -479,7 +556,7 @@ public class AppUtils {
      * @param <T> The type
      * @return the list of the new type
      */
-    public static <T> List<T> castList(Object obj, Class<T> clazz) {
+    public static <T> List<T> castList( Object obj, Class<T> clazz ) {
         List<T> result = new ArrayList<>();
         if( obj instanceof List<?> ) {
             for( Object o : (List<?>) obj )
@@ -506,7 +583,7 @@ public class AppUtils {
      * @param positions the n positions
      * @return The truncated number as String
      */
-    public static String truncateDecimal(String number, int positions) {
+    public static String truncateDecimal( String number, int positions ) {
         BigDecimal value  = new BigDecimal( number );
         BigDecimal factor = BigDecimal.TEN.pow( positions );
         value = value.multiply( factor ).setScale( positions, RoundingMode.DOWN );
@@ -519,8 +596,38 @@ public class AppUtils {
      * @param number The number to be truncated
      * @return The truncated number as String
      */
-    public static String truncateDecimal(String number) {
+    public static String truncateDecimal( String number ) {
         return truncateDecimal( number, 2 );
+    }
+
+    public static String compressString( String srcTxt ) throws IOException {
+        ByteArrayOutputStream rstBao = new ByteArrayOutputStream();
+        GZIPOutputStream zos = new GZIPOutputStream( rstBao );
+        zos.write( srcTxt.getBytes() );
+        zos.close();
+        byte[] bytes = rstBao.toByteArray();
+        rstBao.close();
+        return Base64.encodeToString( bytes, Base64.NO_WRAP );
+    }
+
+    /**
+     * Method to verify google play services on the device
+     * @param activity The activity that
+     * @param code The code for the activity result
+     * */
+    public static boolean checkPlayServices( Activity activity, int code ) {
+        GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable( activity );
+        if( resultCode != ConnectionResult.SUCCESS ) {
+            if( apiAvailability.isUserResolvableError( resultCode ) ) {
+                apiAvailability.getErrorDialog( activity, resultCode, code ).show();
+            } else {
+                ToastMaster.makeText( activity, R.string.error_not_supported, Toast.LENGTH_LONG ).show();
+                activity.finish();
+            }
+            return false;
+        }
+        return true;
     }
 
     /**

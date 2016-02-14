@@ -9,6 +9,19 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.text.format.Time;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
+
 import co.yodo.mobile.R;
 import co.yodo.mobile.component.Encrypter;
 import co.yodo.mobile.data.ServerResponse;
@@ -30,7 +43,7 @@ public class YodoRequest extends ResultReceiver {
          * @param type Type of the request
          * @param response POJO for the response
          */
-        public void onResponse(RequestType type, ServerResponse response);
+        void onResponse( RequestType type, ServerResponse response );
     }
 
     /** ID for each request */
@@ -50,12 +63,13 @@ public class YodoRequest extends ResultReceiver {
         CLOSE_ACC_REQUEST     ( "11" ), // RT=8, ST=1
         REG_CLIENT_REQUEST    ( "12 "), // RT=9, ST=0
         REG_BIO_REQUEST       ( "13 "), // RT=9, ST=3
-        LINK_ACC_REQUEST      ( "14 "), // RT=10, ST=0
-        DELINK_ACC_REQUEST    ( "15 "); // RT=11
+        REG_GCM_REQUEST       ( "14 "), // RT=9, ST=4
+        LINK_ACC_REQUEST      ( "15 "), // RT=10, ST=0
+        DELINK_ACC_REQUEST    ( "16 "); // RT=11
 
         private final String name;
 
-        private RequestType(String s) {
+        RequestType(String s) {
             name = s;
         }
 
@@ -94,7 +108,7 @@ public class YodoRequest extends ResultReceiver {
      *
      * @param handler Default
      */
-    private YodoRequest(Handler handler) {
+    private YodoRequest( Handler handler )  {
         super( handler );
         oEncrypter = new Encrypter();
     }
@@ -113,7 +127,7 @@ public class YodoRequest extends ResultReceiver {
      * Add a listener to the service
      * @param listener Listener for the requests to the server
      */
-    public void setListener(RESTListener listener) {
+    public void setListener( RESTListener listener ) {
         externalListener = listener ;
     }
 
@@ -139,7 +153,7 @@ public class YodoRequest extends ResultReceiver {
         }
     }
 
-    public void requestAuthentication(Activity activity, String hardwareToken) {
+    public void requestAuthentication( Activity activity, String hardwareToken ) {
         String sEncryptedClientData, pRequest;
 
         // Encrypting to create request
@@ -159,7 +173,7 @@ public class YodoRequest extends ResultReceiver {
         activity.startService( intent );
     }
 
-    public void requestPIPAuthentication(Activity activity, String hardwareToken, String pip) {
+    public void requestPIPAuthentication( Activity activity, String hardwareToken, String pip ) {
         String sEncryptedClientData, pRequest;
         StringBuilder sClientData = new StringBuilder();
 
@@ -187,7 +201,7 @@ public class YodoRequest extends ResultReceiver {
         activity.startService( intent );
     }
 
-    public void requestRegistration(Activity activity, String hardwareToken, String pip) {
+    public void requestRegistration( Activity activity, String hardwareToken, String pip ) {
         String sEncryptedClientData, pRequest;
         StringBuilder sClientData = new StringBuilder();
 
@@ -215,7 +229,7 @@ public class YodoRequest extends ResultReceiver {
         activity.startService( intent );
     }
 
-    public void requestBiometricRegistration(Activity activity, String authNumber, String token) {
+    public void requestBiometricRegistration( Activity activity, String authNumber, String token ) {
         String pRequest = ServerRequest.createRegistrationRequest(
                 authNumber + REQ_SEP + token,
                 Integer.parseInt( ServerRequest.REG_BIOMETRIC_SUBREQ )
@@ -228,7 +242,66 @@ public class YodoRequest extends ResultReceiver {
         activity.startService( intent );
     }
 
-    public void requestPIPReset(Activity activity, String hardwareToken, String pip, String newPip) {
+    public void requestGCMRegistration( Context activity, final String hardwareToken, final String token ) throws IOException {
+        // Encrypting to create request
+        oEncrypter.setsUnEncryptedString( hardwareToken );
+        oEncrypter.rsaEncrypt( activity );
+        final String sEncryptedClientData = oEncrypter.bytesToHex();
+
+        StringRequest postRequest = new StringRequest( Request.Method.POST, "http://198.101.209.120:8081/yodo",
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse( String json ) {
+                        try {
+                            ServerResponse response = new ServerResponse();
+                            JSONObject jsonResponse = new JSONObject( json );
+
+                            response.setCode( jsonResponse.getString( "respCode" ) );
+                            response.setAuthNumber( jsonResponse.getString( "authCode" ) );
+                            response.setMessage( jsonResponse.getString( "msg" ) );
+                            response.setRTime( jsonResponse.getLong( "respTime" ) );
+
+                            externalListener.onResponse( RequestType.REG_GCM_REQUEST, response );
+                            AppUtils.Logger( TAG, response.toString() );
+                        } catch( JSONException e ) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse( VolleyError error ) {
+                        error.printStackTrace();
+                        externalListener.onResponse( RequestType.ERROR_GENERAL, null );
+                    }
+                }
+        ) {
+            @Override
+            protected Map<String, String> getParams() {
+                Map<String, String> params = new HashMap<>();
+                // the POST parameters:
+                params.put( "prt", "1.1.2" );
+                params.put( "req", "9,4" );
+                params.put( "par", sEncryptedClientData + REQ_SEP + token );
+                return params;
+            }
+        };
+        postRequest.setTag( "POST" );
+        Volley.newRequestQueue( activity ).add( postRequest );
+
+        /*pRequest = ServerRequest.createRegistrationRequest(
+                sEncryptedClientData + REQ_SEP + token, //AppUtils.compressString( token ),
+                Integer.parseInt( ServerRequest.REG_GCM_SUBREQ )
+        );
+
+        Intent intent = new Intent( activity, RESTService.class );
+        intent.putExtra( RESTService.ACTION_RESULT, RequestType.REG_GCM_REQUEST );
+        intent.putExtra( RESTService.EXTRA_PARAMS, pRequest );
+        intent.putExtra( RESTService.EXTRA_RESULT_RECEIVER, instance );
+        activity.startService( intent );*/
+    }
+
+    public void requestPIPReset( Activity activity, String hardwareToken, String pip, String newPip ) {
         String sEncryptedClientData, sEncryptedPIP, sEncryptedNewPIP, pRequest;
         StringBuilder sClientData = new StringBuilder();
 
@@ -261,7 +334,7 @@ public class YodoRequest extends ResultReceiver {
         activity.startService( intent );
     }
 
-    public void requestBiometricPIPReset(Activity activity, String authNumber, String hardwareToken, String newPip) {
+    public void requestBiometricPIPReset( Activity activity, String authNumber, String hardwareToken, String newPip ) {
         String sEncryptedClientData, pRequest;
 
         // Encrypting to create request
@@ -285,7 +358,7 @@ public class YodoRequest extends ResultReceiver {
         activity.startService( intent );
     }
 
-    public void requestBalance(Activity activity, String hardwareToken, String pip) {
+    public void requestBalance( Activity activity, String hardwareToken, String pip ) {
         String sEncryptedClientData, pRequest;
         StringBuilder sClientData = new StringBuilder();
 
@@ -313,7 +386,7 @@ public class YodoRequest extends ResultReceiver {
         activity.startService( intent );
     }
 
-    public void requestBiometricToken(Activity activity, String hardwareToken) {
+    public void requestBiometricToken( Activity activity, String hardwareToken ) {
         String sEncryptedClientData, pRequest;
 
         // Encrypting to create request
@@ -336,7 +409,7 @@ public class YodoRequest extends ResultReceiver {
         activity.startService( intent );
     }
 
-    public void requestReceipt(Activity activity, String hardwareToken, String pip) {
+    public void requestReceipt( Activity activity, String hardwareToken, String pip ) {
         String sEncryptedClientData, pRequest;
 
         // Encrypting to create request
@@ -360,7 +433,7 @@ public class YodoRequest extends ResultReceiver {
         activity.startService( intent );
     }
 
-    public void requestAdvertising(Activity activity, String hardwareToken, String merchant) {
+    public void requestAdvertising( Activity activity, String hardwareToken, String merchant ) {
         String sEncryptedClientData, pRequest;
 
         // Encrypting to create request
@@ -384,7 +457,7 @@ public class YodoRequest extends ResultReceiver {
         activity.startService( intent );
     }
 
-    public void requestLinkingCode(Activity activity, String hardwareToken, String pip) {
+    public void requestLinkingCode( Activity activity, String hardwareToken, String pip ) {
         String sEncryptedClientData, pRequest;
 
         // Encrypting to create request
@@ -408,7 +481,7 @@ public class YodoRequest extends ResultReceiver {
         activity.startService( intent );
     }
 
-    public void requestLinkedAccounts(Activity activity, String hardwareToken, String pip) {
+    public void requestLinkedAccounts( Activity activity, String hardwareToken, String pip ) {
         String sEncryptedClientData, pRequest;
 
         // Encrypting to create request
@@ -432,7 +505,7 @@ public class YodoRequest extends ResultReceiver {
         activity.startService( intent );
     }
 
-    public void requestCloseAccount(Activity activity, String hardwareToken, String pip) {
+    public void requestCloseAccount( Activity activity, String hardwareToken, String pip ) {
         String sEncryptedClientData, pRequest;
         StringBuilder sClientData = new StringBuilder();
 
@@ -460,7 +533,7 @@ public class YodoRequest extends ResultReceiver {
         activity.startService( intent );
     }
 
-    public void requestLinkAccount(Activity activity, String hardwareToken, String linkCode) {
+    public void requestLinkAccount( Activity activity, String hardwareToken, String linkCode ) {
         String sEncryptedClientData, pRequest;
         String timeStamp = String.valueOf( System.currentTimeMillis() );
 
@@ -510,7 +583,7 @@ public class YodoRequest extends ResultReceiver {
     }
 
     @Override
-    protected void onReceiveResult(int resultCode, Bundle resultData) {
+    protected void onReceiveResult( int resultCode, Bundle resultData ) {
         if( resultCode == RESTService.STATUS_FAILED ) {
             externalListener.onResponse( RequestType.ERROR_GENERAL, null );
         }
@@ -522,7 +595,8 @@ public class YodoRequest extends ResultReceiver {
             ServerResponse response = (ServerResponse) resultData.getSerializable( RESTService.EXTRA_RESULT );
             externalListener.onResponse( action , response );
 
-            AppUtils.Logger( TAG, response.toString() );
+            if( response != null )
+                AppUtils.Logger( TAG, response.toString() );
         }
     }
 }

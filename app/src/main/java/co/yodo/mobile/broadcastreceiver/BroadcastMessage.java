@@ -23,4 +23,12 @@ public class BroadcastMessage {
 		= BROADCAST_APPID + "ActionNewLocation";
 	public static final String EXTRA_NEW_MERCHANT
 		= BROADCAST_APPID + "ExtraNewLocation";
+
+	/**
+	 * It is used to send the hardware token, to register the gcm_id
+	 *
+	 * EXTRA - The name - String object.
+	 */
+	public static final String EXTRA_HARDWARE_TOKEN
+			= BROADCAST_APPID + "ExtraHardwareToken";
 }

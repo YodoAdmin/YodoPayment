@@ -1,7 +1,7 @@
 package co.yodo.mobile.data;
 
 import java.io.Serializable;
-import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 
 public class ServerResponse implements Serializable {
@@ -12,24 +12,31 @@ public class ServerResponse implements Serializable {
 
     /** ID for error responses */
     public static final String ERROR_FAILED        = "ER00";
+    public static final String ERROR_NO_BALANCE    = "ER21";
     public static final String ERROR_INCORRECT_PIP = "ER22";
 
     /** Param keys */
     public static final String LOGO         = "logo";
     public static final String BALANCE      = "balance";
+    public static final String CURRENCY     = "currency";
     public static final String BIOMETRIC    = "biometric";
     public static final String ADVERTISING  = "advertising";
     public static final String LINKING_CODE = "linking_code";
 
-    /** Receipt elements */
+    /** Merchant elements */
     public static final String DESCRIPTION = "description";
-    public static final String CREATED     = "created";
     public static final String DCURRENCY   = "dcurrency";
+
+    /** Receipt elements */
+    public static final String CREATED     = "created";
     public static final String AMOUNT      = "amount";
     public static final String TAMOUNT     = "tamount";
     public static final String CASHBACK    = "cashback";
     public static final String AUTHNUMBER  = "transauthnumber";
-    public static final String CURRENCY    = "currency";
+    public static final String TCURRENCY   = "tcurrency";
+    public static final String EXCH_RATE   = "xch_rate";
+    public static final String DONOR       = "donor";
+    public static final String RECEIVER    = "receiver";
 
     /** Linked Account elements */
     public static final String TO   = "to";
@@ -93,6 +100,6 @@ public class ServerResponse implements Serializable {
                " AuthNumber : " + this.authNumber + "\n" +
                " Message : " + this.message + "\n" +
                " Time : " + this.rtime + "\n" +
-               " Params : " + Arrays.asList(this.params);
+               " Params : " + Collections.singletonList( this.params );
 	}
 }

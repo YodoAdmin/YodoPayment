@@ -6,6 +6,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
@@ -30,6 +31,7 @@ import co.yodo.mobile.adapter.ReceiptsListViewAdapter;
 import co.yodo.mobile.data.Receipt;
 import co.yodo.mobile.database.ReceiptsDataSource;
 import co.yodo.mobile.helper.AppUtils;
+import de.greenrobot.event.EventBus;
 
 public class ReceiptsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,
         AdapterView.OnItemLongClickListener, ActionMode.Callback {
@@ -65,8 +67,14 @@ public class ReceiptsActivity extends AppCompatActivity implements AdapterView.O
     public void onResume() {
         super.onResume();
 
-        if( receiptsdb != null )
+        if( receiptsdb != null ) {
             receiptsdb.open();
+
+            customListAdapter.clear();
+            List<Receipt> values = receiptsdb.getAllReceipts();
+            customListAdapter.addAll( values );
+            customListAdapter.notifyDataSetChanged();
+        }
     }
 
     @Override
@@ -75,6 +83,20 @@ public class ReceiptsActivity extends AppCompatActivity implements AdapterView.O
 
         if( receiptsdb != null )
             receiptsdb.close();
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // register to event bus
+        EventBus.getDefault().register( this );
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        // unregister from event bus
+        EventBus.getDefault().unregister( this );
     }
 
     @Override
@@ -119,12 +141,12 @@ public class ReceiptsActivity extends AppCompatActivity implements AdapterView.O
                 finish();
                 break;
         }
-        return super.onOptionsItemSelected(item);
+        return super.onOptionsItemSelected( item );
     }
 
     @Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
+        super.onCreateContextMenu( menu, v, menuInfo );
 
         if( v.getId() == R.id.receiptsList ) {
             MenuInflater inflater = getMenuInflater();
@@ -140,11 +162,13 @@ public class ReceiptsActivity extends AppCompatActivity implements AdapterView.O
         // Only used at creation
         Toolbar actionBarToolbar = (Toolbar) findViewById( R.id.actionBar );
         // Bootstrap
-        receiptsdb = new ReceiptsDataSource( ac );
+        //receiptsdb = new ReceiptsDataSource( ac );
+        receiptsdb = ReceiptsDataSource.getInstance( ac );
         receiptsdb.open();
         setSupportActionBar( actionBarToolbar );
-        if( getSupportActionBar() != null )
-            getSupportActionBar().setDisplayHomeAsUpEnabled( true );
+        ActionBar temp = getSupportActionBar();
+        if( temp != null )
+            temp.setDisplayHomeAsUpEnabled( true );
     }
 
     private void updateData() {
@@ -171,16 +195,26 @@ public class ReceiptsActivity extends AppCompatActivity implements AdapterView.O
         TextView totalAmountText    = (TextView)  layout.findViewById( R.id.paidText );
         TextView tenderAmountText   = (TextView)  layout.findViewById( R.id.cashTenderText );
         TextView cashBackAmountText = (TextView)  layout.findViewById( R.id.cashBackText );
+        TextView tvDonorText        = (TextView)  layout.findViewById( R.id.tvDonorText );
+        TextView tvReceiverText     = (TextView)  layout.findViewById( R.id.tvReceiverText );
         ImageView deleteButton      = (ImageView) layout.findViewById( R.id.deleteButton );
         ImageView saveButton        = (ImageView) layout.findViewById( R.id.saveButton );
+        LinearLayout donorLayout    = (LinearLayout) layout.findViewById( R.id.donorAccountLayout );
 
         descriptionText.setText( params.getDescription() );
         authNumberText.setText( params.getAuthNumber() );
         currencyText.setText( params.getCurrency() );
-        createdText.setText( AppUtils.UTCtoCurrent( params.getCreated() ) );
+        createdText.setText( AppUtils.UTCtoCurrent( ac, params.getCreated() ) );
         totalAmountText.setText( AppUtils.truncateDecimal( params.getTotalAmount() ) );
         tenderAmountText.setText( AppUtils.truncateDecimal( params.getTenderAmount() ) );
         cashBackAmountText.setText( AppUtils.truncateDecimal( params.getCashBackAmount() ) );
+
+        final String donor = params.getDonorAccount();
+        if( donor != null ) {
+            donorLayout.setVisibility( View.VISIBLE );
+            tvDonorText.setText( donor );
+        }
+        tvReceiverText.setText( params.getReceiverAccount() );
 
         deleteButton.setVisibility( View.GONE );
         saveButton.setVisibility( View.GONE );
@@ -283,6 +317,15 @@ public class ReceiptsActivity extends AppCompatActivity implements AdapterView.O
 
         ReceiptsListViewAdapter adapter = (ReceiptsListViewAdapter) receiptsListView.getAdapter();
         adapter.clearDeleteList();
+        adapter.notifyDataSetChanged();
+    }
+
+    @SuppressWarnings("unused") // receives GCM receipts
+    public void onEventMainThread( Receipt receipt ) {
+        ReceiptsListViewAdapter adapter = (ReceiptsListViewAdapter) receiptsListView.getAdapter();
+        //adapter.addReceipt( receipt );
+        adapter.add( receipt );
+        adapter.sort( ReceiptsListViewAdapter.ReceiptsComparator );
         adapter.notifyDataSetChanged();
     }
 }

@@ -30,8 +30,8 @@ public class RESTService extends IntentService {
     private static final String TAG = RESTService.class.getSimpleName();
 
     /** Switch server IP address */
-    private static final String IP 	         = "http://50.56.180.133";  // Production
-    //private static final String IP 			 = "http://198.101.209.120";  // Development
+    //private static final String IP 	         = "http://50.56.180.133";  // Production
+    private static final String IP 			 = "http://198.101.209.120";  // Development
     private static final String YODO_ADDRESS = "/yodo/yodoswitchrequest/getRequest/";
 
     /** It is the ID of the application (the package) used for the extras */
@@ -73,6 +73,11 @@ public class RESTService extends IntentService {
         String pRequest         = extras.getString( EXTRA_PARAMS );
         ResultReceiver receiver = extras.getParcelable( EXTRA_RESULT_RECEIVER );
 
+        if( receiver == null ) {
+            AppUtils.Logger( TAG, "You did not pass the receiver with the Intent." );
+            return;
+        }
+
         try {
             // Handling XML
             SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -87,11 +92,11 @@ public class RESTService extends IntentService {
             // Create handler to handle XML Tags ( extends DefaultHandler )
             xr.setContentHandler( new XMLHandler() );
             xr.parse( new InputSource( sourceUrl.getInputStream() ) );
-        } catch(ConnectTimeoutException | SocketTimeoutException | ConnectException e) {
+        } catch( ConnectTimeoutException | SocketTimeoutException | ConnectException e ) {
             AppUtils.Logger( TAG, "Timeout Exception = " + e );
             receiver.send( STATUS_NO_INTERNET, null );
             return;
-        } catch(Exception e) {
+        } catch( Exception e ) {
             AppUtils.Logger( TAG, "XML Parsing Exception = " + e );
             receiver.send( STATUS_FAILED, null );
             return;

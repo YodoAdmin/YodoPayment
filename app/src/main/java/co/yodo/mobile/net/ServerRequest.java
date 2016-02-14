@@ -33,6 +33,7 @@ public class ServerRequest {
     private static final String REG_REQ             = "9";
     public static final String REG_CLIENT_SUBREQ    = "0";
     public static final String REG_BIOMETRIC_SUBREQ = "3";
+    public static final String REG_GCM_SUBREQ       = "4";
 
     /** Parameters used for the linking requests */
     private static final String LINK_REQ       = "10";
@@ -160,7 +161,7 @@ public class ServerRequest {
      * @param iRegReqType Sub-type of the request
      * @return String Request for getting the registration code
      */
-    public static String createRegistrationRequest(String sUsrData, int iRegReqType) {
+    public static String createRegistrationRequest( String sUsrData, int iRegReqType ) {
         StringBuilder sRegistrationRequest = new StringBuilder();
         sRegistrationRequest.append( PROTOCOL_VERSION ).append( REQ_SEP );
         sRegistrationRequest.append( REG_REQ ).append( REQ_SEP );
@@ -173,10 +174,14 @@ public class ServerRequest {
             // RT = 9, ST = 3
             case 3: sRegistrationRequest.append( REG_BIOMETRIC_SUBREQ ).append( REQ_SEP );
                 break;
+
+            // RT = 9, ST = 4
+            case 4: sRegistrationRequest.append( REG_GCM_SUBREQ ).append( REQ_SEP );
+                break;
         }
         sRegistrationRequest.append( sUsrData );
 
-        AppUtils.Logger( TAG, "Registration Request: " + sRegistrationRequest.toString() );
+        AppUtils.Logger( TAG, "Registration(" + iRegReqType + ") Request: " + sRegistrationRequest.toString() );
         return sRegistrationRequest.toString();
     }
 

@@ -5,6 +5,7 @@ import android.content.Context;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -28,40 +29,67 @@ public class ReceiptsDataSource {
             ReceiptsSQLiteHelper.COLUMN_DESCRIPTION,
             ReceiptsSQLiteHelper.COLUMN_AUTHNUMBER,
             ReceiptsSQLiteHelper.COLUMN_CURRENCY,
+            ReceiptsSQLiteHelper.COLUMN_EXCH_RATE,
             ReceiptsSQLiteHelper.COLUMN_AMOUNT,
             ReceiptsSQLiteHelper.COLUMN_TAMOUNT,
             ReceiptsSQLiteHelper.COLUMN_CASHBACK,
             ReceiptsSQLiteHelper.COLUMN_BALANCE,
+            ReceiptsSQLiteHelper.COLUMN_DONOR,
+            ReceiptsSQLiteHelper.COLUMN_RECEIVER,
             ReceiptsSQLiteHelper.COLUMN_CREATED,
             ReceiptsSQLiteHelper.COLUMN_OPENED
     };
 
-    public ReceiptsDataSource(Context context) {
+    private boolean open = false;
+
+    /** Receipts instance */
+    private static ReceiptsDataSource instance = null;
+
+    public ReceiptsDataSource( Context context ) {
         dbHelper = ReceiptsSQLiteHelper.getInstance( context );
     }
 
+    public static ReceiptsDataSource getInstance( Context context ) {
+        if( instance == null )
+            instance = new ReceiptsDataSource( context );
+        return instance;
+    }
+
     public synchronized void open() throws SQLException {
-        database = dbHelper.getWritableDatabase();
+        if( !open ) {
+            database = dbHelper.getWritableDatabase();
+            open = true;
+        }
     }
 
     public synchronized void close() {
-        if( dbHelper != null )
+        if( dbHelper != null && open ) {
             dbHelper.close();
+            open = false;
+        }
     }
 
-    public Receipt createReceipt(String description, String authNumber, String currency, String amount,
-                                 String tAmount, String cashBack, String balance, String created) {
+    public boolean isOpen() {
+        return open;
+    }
+
+    public Receipt createReceipt( String description, String authNumber, String currency, String exchRate,
+                                  String amount, String tAmount, String cashBack, String balance,
+                                  String donor, String receiver, String created ) {
 
         ContentValues values = new ContentValues();
         values.put( ReceiptsSQLiteHelper.COLUMN_DESCRIPTION, description );
-        values.put( ReceiptsSQLiteHelper.COLUMN_AUTHNUMBER, authNumber );
-        values.put( ReceiptsSQLiteHelper.COLUMN_CURRENCY, currency );
-        values.put( ReceiptsSQLiteHelper.COLUMN_AMOUNT, amount );
-        values.put( ReceiptsSQLiteHelper.COLUMN_TAMOUNT, tAmount );
-        values.put( ReceiptsSQLiteHelper.COLUMN_CASHBACK, cashBack );
-        values.put( ReceiptsSQLiteHelper.COLUMN_BALANCE, balance );
-        values.put( ReceiptsSQLiteHelper.COLUMN_CREATED, created );
-        values.put( ReceiptsSQLiteHelper.COLUMN_OPENED, false );
+        values.put( ReceiptsSQLiteHelper.COLUMN_AUTHNUMBER,  authNumber );
+        values.put( ReceiptsSQLiteHelper.COLUMN_CURRENCY,    currency );
+        values.put( ReceiptsSQLiteHelper.COLUMN_EXCH_RATE,   exchRate );
+        values.put( ReceiptsSQLiteHelper.COLUMN_AMOUNT,      amount );
+        values.put( ReceiptsSQLiteHelper.COLUMN_TAMOUNT,     tAmount );
+        values.put( ReceiptsSQLiteHelper.COLUMN_CASHBACK,    cashBack );
+        values.put( ReceiptsSQLiteHelper.COLUMN_BALANCE,     balance );
+        values.put( ReceiptsSQLiteHelper.COLUMN_DONOR,       donor );
+        values.put( ReceiptsSQLiteHelper.COLUMN_RECEIVER,    receiver );
+        values.put( ReceiptsSQLiteHelper.COLUMN_CREATED,     created );
+        values.put( ReceiptsSQLiteHelper.COLUMN_OPENED,      false );
 
         database.beginTransactionNonExclusive();
         try {
@@ -89,16 +117,19 @@ public class ReceiptsDataSource {
      */
     public void addReceipt( Receipt receipt ) {
         ContentValues values = new ContentValues();
-        values.put( ReceiptsSQLiteHelper.COLUMN_ID, receipt.getId() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_ID,          receipt.getId() );
         values.put( ReceiptsSQLiteHelper.COLUMN_DESCRIPTION, receipt.getDescription() );
-        values.put( ReceiptsSQLiteHelper.COLUMN_AUTHNUMBER, receipt.getAuthNumber() );
-        values.put( ReceiptsSQLiteHelper.COLUMN_CURRENCY, receipt.getCurrency() );
-        values.put( ReceiptsSQLiteHelper.COLUMN_AMOUNT, receipt.getTotalAmount() );
-        values.put( ReceiptsSQLiteHelper.COLUMN_TAMOUNT, receipt.getTenderAmount() );
-        values.put( ReceiptsSQLiteHelper.COLUMN_CASHBACK, receipt.getCashBackAmount() );
-        values.put( ReceiptsSQLiteHelper.COLUMN_BALANCE, receipt.getBalanceAmount() );
-        values.put( ReceiptsSQLiteHelper.COLUMN_CREATED, receipt.getCreated() );
-        values.put( ReceiptsSQLiteHelper.COLUMN_OPENED, receipt.isOpened() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_AUTHNUMBER,  receipt.getAuthNumber() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_CURRENCY,    receipt.getCurrency() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_EXCH_RATE,   receipt.getExchRate() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_AMOUNT,      receipt.getTotalAmount() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_TAMOUNT,     receipt.getTenderAmount() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_CASHBACK,    receipt.getCashBackAmount() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_BALANCE,     receipt.getBalanceAmount() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_DONOR,       receipt.getDonorAccount() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_RECEIVER,    receipt.getReceiverAccount() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_CREATED,     receipt.getCreated() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_OPENED,      receipt.isOpened() );
 
         database.beginTransactionNonExclusive();
 
@@ -174,18 +205,32 @@ public class ReceiptsDataSource {
         return receipts;
     }
 
-    private Receipt cursorToReceipt(Cursor cursor) {
+    public long getAmount() {
+        SQLiteStatement statement = database.compileStatement( "SELECT COUNT(*) FROM " + ReceiptsSQLiteHelper.TABLE_RECEIPTS );
+        return statement.simpleQueryForLong();
+    }
+
+    private Receipt cursorToReceipt( Cursor cursor ) {
         Receipt receipt = new Receipt();
         receipt.setId(             cursor.getLong( 0 ) );
         receipt.setDescription(    cursor.getString( 1 ) );
         receipt.setAuthNumber(     cursor.getString( 2 ) );
         receipt.setCurrency(       cursor.getString( 3 ) );
-        receipt.setTotalAmount(    cursor.getString( 4 ) );
-        receipt.setTenderAmount(   cursor.getString( 5 ) );
-        receipt.setCashBackAmount( cursor.getString( 6 ) );
-        receipt.setBalanceAmount(  cursor.getString( 7 ) );
-        receipt.setCreated(        cursor.getString( 8 ) );
-        receipt.setOpened(       ( cursor.getInt( 9 ) != 0) );
+        receipt.setExchRate(       cursor.getString( 4 ) );
+        receipt.setTotalAmount(    cursor.getString( 5 ) );
+        receipt.setTenderAmount(   cursor.getString( 6 ) );
+        receipt.setCashBackAmount( cursor.getString( 7 ) );
+        receipt.setBalanceAmount(  cursor.getString( 8 ) );
+
+        // It only has donor and receiver for a heart transaction
+        if( !cursor.isNull( 9 ) )
+            receipt.setDonorAccount( cursor.getString( 9 ) );
+
+        if( !cursor.isNull( 10 ) )
+            receipt.setReceiverAccount( cursor.getString( 10 ) );
+
+        receipt.setCreated( cursor.getString( 11 ) );
+        receipt.setOpened( ( cursor.getInt( 12 ) != 0 ) );
 
         return receipt;
     }

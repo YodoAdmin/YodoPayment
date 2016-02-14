@@ -14,7 +14,6 @@
     <string name="drawer_close">close</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
-    <string name="actual.version">1.3.14</string>
     
     <!-- Camera Messages -->
     <string name="title_train_camera">Token Record</string>
@@ -223,11 +222,6 @@
     <string name="account_yodo_heart">3</string>
     <string name="account_visa_prepaid">4</string>
     <string name="account_paypal">5</string>
-
-    <!-- payments -->
-    <string name="SC_KEY">zncvsuchaksdhfckasjdfnhaslkdfhuaksue</string>
-    <string name="SC_LETTER_TYPE">ISO-8859-1</string>
-    <string name="SKS_HEADER"></string>
 
     <!-- Languages -->
     <string-array name="languages_array">

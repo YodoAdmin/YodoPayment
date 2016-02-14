@@ -43,8 +43,8 @@ public class ReceiptsListViewAdapter extends ArrayAdapter<Receipt> implements Fi
     private ColorGenerator mColorGenerator = ColorGenerator.MATERIAL;
     private TextDrawable.IBuilder mDrawableBuilder;
 
-    public ReceiptsListViewAdapter(Context context, int layoutResourceId, List<Receipt> data) {
-        super(context, layoutResourceId, data);
+    public ReceiptsListViewAdapter( Context context, int layoutResourceId, List<Receipt> data ) {
+        super( context, layoutResourceId, data );
 
         mDrawableBuilder = TextDrawable.builder()
                 .beginConfig()
@@ -83,7 +83,7 @@ public class ReceiptsListViewAdapter extends ArrayAdapter<Receipt> implements Fi
 
         // Fills the holder with the item data
         Receipt item = filteredData.get( position );
-        holder.created.setText( AppUtils.UTCtoCurrent( item.getCreated() ) );
+        holder.created.setText( AppUtils.UTCtoCurrent( context, item.getCreated() ) );
         holder.description.setText( item.getDescription() );
         holder.total.setText(
                 context.getString( R.string.paid ) + " " +
@@ -191,6 +191,12 @@ public class ReceiptsListViewAdapter extends ArrayAdapter<Receipt> implements Fi
         mSelectedItemsIds.clear();
 
         return removed;
+    }
+
+    public void addReceipt( Receipt receipt ) {
+        originalData.add( receipt );
+        filteredData.add( receipt );
+        add( receipt );
     }
 
     /**

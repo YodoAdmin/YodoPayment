@@ -39,7 +39,6 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.util.Arrays;
 import java.util.HashMap;
 
 import co.yodo.mobile.R;
@@ -61,10 +60,15 @@ import co.yodo.mobile.net.YodoRequest;
 import co.yodo.mobile.service.AdvertisingService;
 import co.yodo.mobile.service.RESTService;
 import co.yodo.mobile.sks.SKSCreater;
+import de.greenrobot.event.EventBus;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 
 public class MainActivity extends AppCompatActivity implements YodoRequest.RESTListener, View.OnClickListener {
+    /** DEBUG */
+    @SuppressWarnings( "unused" )
+    private static final String TAG = MainActivity.class.getSimpleName();
+
     /** The context object */
     private Context ac;
 
@@ -93,7 +97,7 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
 
     /** SKS data separator */
     private static final String SKS_SEP   = "**";
-    private static final String SKS_REGEX = "\\*\\*";
+    //private static final String SKS_REGEX = "\\*\\*";
 
     /** SKS code */
     private String originalCode;
@@ -115,17 +119,35 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+        super.onCreate( savedInstanceState );
         AppUtils.setLanguage( MainActivity.this );
-        setContentView(R.layout.activity_main);
+        setContentView( R.layout.activity_main );
 
         setupGUI();
         updateData();
+
+        /*HashMap<String,String> test = new HashMap<>();
+        test.put( ServerResponse.DESCRIPTION, "test" );
+        test.put( ServerResponse.AUTHNUMBER, "1453482094" );
+        test.put( ServerResponse.CREATED, "2016-01-22 17:01:34 " );
+        test.put( ServerResponse.TCURRENCY, "USD" );
+        test.put( ServerResponse.CURRENCY, "USD" );
+        test.put( ServerResponse.AMOUNT, "0.00000" );
+        test.put( ServerResponse.TAMOUNT, "0.00000" );
+        test.put( ServerResponse.CASHBACK, "0.00000" );
+        test.put( ServerResponse.BALANCE, "0.00000" );
+
+        receiptDialog( test );
+        receiptDialog( test );*/
     }
 
     @Override
     public void onResume() {
         super.onResume();
+
+        // True when the activity is in foreground
+        AppUtils.saveIsForeground( ac, true );
+        // Register listener for requests and  broadcast receivers
         YodoRequest.getInstance().setListener( this );
         registerBroadcasts();
         // Open databases
@@ -143,6 +165,10 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
     @Override
     public void onPause() {
         super.onPause();
+
+        // False when the activity is not in foreground
+        AppUtils.saveIsForeground( ac, false );
+        // Register broadcast receivers
         unregisterBroadcasts();
         // Close databases
         closeDatabases();
@@ -151,6 +177,20 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
         Intent iAdv = new Intent( ac, AdvertisingService.class );
         if( AppUtils.isMyServiceRunning( ac, AdvertisingService.class.getName() ) )
             stopService( iAdv );
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // register to event bus
+        EventBus.getDefault().register( this );
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        // unregister from event bus
+        EventBus.getDefault().unregister( this );
     }
 
     @Override
@@ -256,7 +296,8 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
         mDrawerLayout.setDrawerListener( mDrawerToggle );
 
         couponsdb  = new CouponsDataSource( ac );
-        receiptsdb = new ReceiptsDataSource( ac );
+        receiptsdb = ReceiptsDataSource.getInstance( ac );
+        //receiptsdb = new ReceiptsDataSource( ac );
 
         mAdvertisingImage.setOnLongClickListener( new View.OnLongClickListener() {
             @Override
@@ -339,7 +380,7 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
      * Asks for the PIP to realize a payment
      * @param v, not used
      */
-    public void paymentClick(View v) {
+    public void paymentClick( View v ) {
         final String title      = getString( R.string.input_pip );
         final EditText inputBox = new ClearEditText( ac );
 
@@ -616,19 +657,19 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
         );
     }
 
-    public void alternatePaymentClick(View v) {
+    public void alternatePaymentClick( View v ) {
         final ImageView accountImage = (ImageView) v;
         Integer account_type = Integer.parseInt( accountImage.getContentDescription().toString() );
-        String[] accounts = AppUtils.getLinkedAccount( ac ).split( AppUtils.ACC_SEP );
+        //String[] accounts = AppUtils.getLinkedAccount( ac ).split( AppUtils.ACC_SEP );
 
         if( account_type == 0 ) {
             account_type = null;
-        } else {
+        } /*else {
             if( !Arrays.asList( accounts ).contains( String.valueOf( account_type ) ) ) {
                 ToastMaster.makeText( ac, R.string.no_linked_account, Toast.LENGTH_SHORT ).show();
                 return;
             }
-        }
+        }*/
 
         showSKSDialog( originalCode, account_type );
         originalCode = null;
@@ -672,7 +713,7 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
     /**
      * Method to show the dialog containing the SKS code
      */
-    private void showSKSDialog(final String code, final Integer account_type) {
+    private void showSKSDialog( final String code, final Integer account_type ) {
         try {
             final Bitmap qrCode = SKSCreater.createSKS( code, this, SKSCreater.SKS_CODE, account_type );
             final Dialog sksDialog = new Dialog( this );
@@ -709,7 +750,7 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
                     getWindow().setAttributes( lp );
                     mAdvertisingLayout.setVisibility( View.VISIBLE );
 
-                    String[] parts = code.split( SKS_REGEX );
+                    /*String[] parts = code.split( SKS_REGEX );
 
                     YodoRequest.getInstance().createProgressDialog(
                             MainActivity.this,
@@ -719,7 +760,7 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
                     YodoRequest.getInstance().requestReceipt(
                             MainActivity.this,
                             hardwareToken, parts[0]
-                    );
+                    );*/
                 }
             });
 
@@ -729,18 +770,23 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
             sksDialog.show();
 
             final Handler t = new Handler();
-            t.postDelayed(new Runnable() {
+            t.postDelayed( new Runnable() {
                 @Override
                 public void run() {
-                    sksDialog.dismiss();
+                    if( sksDialog.isShowing() )
+                        sksDialog.dismiss();
                 }
             }, TIME_TO_DISMISS_SKS );
-        } catch (UnsupportedEncodingException e) {
+        } catch( UnsupportedEncodingException e ) {
             e.printStackTrace();
         }
     }
 
-    private void receiptDialog(final HashMap<String, String> params) {
+    /**
+     * BUild the receipt from the params (ServerResponse) obtained through GCM
+     * @param params All the parameters to be set in the receipt
+     */
+    private void receiptDialog( final HashMap<String, String> params ) {
         final Dialog receipt = new Dialog( MainActivity.this );
         receipt.requestWindowFeature( Window.FEATURE_NO_TITLE );
 
@@ -754,27 +800,40 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
         TextView totalAmountText    = (TextView)  layout.findViewById( R.id.paidText );
         TextView tenderAmountText   = (TextView)  layout.findViewById( R.id.cashTenderText );
         TextView cashBackAmountText = (TextView)  layout.findViewById( R.id.cashBackText );
+        TextView tvDonorText        = (TextView)  layout.findViewById( R.id.tvDonorText );
+        TextView tvReceiverText     = (TextView)  layout.findViewById( R.id.tvReceiverText );
         ImageView deleteButton      = (ImageView) layout.findViewById( R.id.deleteButton );
         ImageView saveButton        = (ImageView) layout.findViewById( R.id.saveButton );
+        LinearLayout donorLayout    = (LinearLayout) layout.findViewById( R.id.donorAccountLayout );
 
         final String description    = params.get( ServerResponse.DESCRIPTION );
         final String authNumber     = params.get( ServerResponse.AUTHNUMBER );
         final String created        = params.get( ServerResponse.CREATED);
-        final String currency       = params.get( ServerResponse.DCURRENCY );
+        final String tcurrency      = params.get( ServerResponse.TCURRENCY );
+        final String currency       = params.get( ServerResponse.CURRENCY );
+        final String exchRate       = params.get( ServerResponse.EXCH_RATE );
         final String totalAmount    = AppUtils.truncateDecimal( params.get( ServerResponse.AMOUNT ) );
         final String tenderAmount   = AppUtils.truncateDecimal( params.get( ServerResponse.TAMOUNT ) );
         final String cashBackAmount = AppUtils.truncateDecimal( params.get( ServerResponse.CASHBACK ) );
         final String balance        = AppUtils.truncateDecimal( params.get( ServerResponse.BALANCE ) );
+        final String donor          = params.get( ServerResponse.DONOR );
+        final String receiver       = params.get( ServerResponse.RECEIVER );
 
         descriptionText.setText( description );
         authNumberText.setText( authNumber );
-        createdText.setText( AppUtils.UTCtoCurrent( created ) );
-        currencyText.setText( currency );
+        createdText.setText( AppUtils.UTCtoCurrent( ac, created ) );
+        currencyText.setText( tcurrency );
         totalAmountText.setText( totalAmount );
         tenderAmountText.setText( tenderAmount );
         cashBackAmountText.setText( cashBackAmount );
 
-        mAccountBalance.setText( balance );
+        mAccountBalance.setText( balance + " " + currency );
+
+        if( donor != null ) {
+            donorLayout.setVisibility( View.VISIBLE );
+            tvDonorText.setText( donor );
+        }
+        tvReceiverText.setText( receiver );
 
         deleteButton.setOnClickListener( new View.OnClickListener() {
             @Override
@@ -796,9 +855,9 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
             @Override
             public void onClick(View v) {
                 final Receipt item = receiptsdb.createReceipt(
-                        description, authNumber, currency,
+                        description, authNumber, tcurrency, exchRate,
                         totalAmount, tenderAmount, cashBackAmount,
-                        balance, created
+                        balance, donor, receiver, created
                 );
                 receipt.dismiss();
                 // Show a notification which can reverse the save
@@ -873,13 +932,24 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
             case QUERY_BAL_REQUEST:
                 code = response.getCode();
 
-                if( code.equals( ServerResponse.AUTHORIZED_BALANCE ) ) {
-                    // Trim the balance
-                    mAccountBalance.setText( AppUtils.truncateDecimal( response.getParam( ServerResponse.BALANCE ) ) );
-                } else {
-                    mAccountBalance.setText( "" );
-                    message = response.getMessage();
-                    AppUtils.sendMessage( handlerMessages, code, message );
+                switch( code ) {
+                    case ServerResponse.AUTHORIZED_BALANCE:
+                        // Trim the balance
+                        mAccountBalance.setText(
+                                AppUtils.truncateDecimal( response.getParam( ServerResponse.BALANCE ) ) + " " +
+                                        response.getParam( ServerResponse.CURRENCY ) );
+                        break;
+
+                    case ServerResponse.ERROR_NO_BALANCE:
+                        mAccountBalance.setText( "" );
+                        Snackbar.make( mDrawerLayout, R.string.error_message_no_balance, Snackbar.LENGTH_SHORT ).show();
+                        break;
+
+                    default:
+                        mAccountBalance.setText( "" );
+                        message = response.getMessage();
+                        AppUtils.sendMessage( handlerMessages, code, message );
+                        break;
                 }
                 break;
 
@@ -936,8 +1006,8 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
 
                 if( queryType == GENERATE_SKS ) {
                     if( code.equals( ServerResponse.AUTHORIZED ) && !from.isEmpty() ) {
-                        LayoutInflater inflater = (LayoutInflater) getSystemService(LAYOUT_INFLATER_SERVICE);
-                        View layout = inflater.inflate(R.layout.dialog_payment, new LinearLayout( ac ), false );
+                        LayoutInflater inflater = (LayoutInflater) getSystemService( LAYOUT_INFLATER_SERVICE );
+                        View layout = inflater.inflate( R.layout.dialog_payment, new LinearLayout( ac ), false );
                         alertDialog = AlertDialogHelper.showAlertDialog( ac, layout, getString( R.string.linking_menu ) );
                     } else {
                         showSKSDialog( originalCode, null );
@@ -953,7 +1023,8 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
                         i.putExtra( Intents.LINKED_PIP, pipTemp );
                         startActivity( i );
                     } else {
-                        message = response.getMessage();
+                        //message = response.getMessage();
+                        message = getString( R.string.error_message_no_links );
                         AppUtils.sendMessage( handlerMessages, code, message );
                     }
                 }
@@ -1042,6 +1113,11 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
             }
         }
     };
+
+    @SuppressWarnings("unused") // receives GCM receipts
+    public void onEventMainThread( ServerResponse response ) {
+        receiptDialog( response.getParams() );
+    }
 
     @Override
     public void onClick(View v) {

@@ -1,8 +1,11 @@
 package co.yodo.mobile.main;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -13,12 +16,15 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import co.yodo.mobile.R;
+import co.yodo.mobile.broadcastreceiver.BroadcastMessage;
 import co.yodo.mobile.component.ToastMaster;
 import co.yodo.mobile.component.YodoHandler;
 import co.yodo.mobile.data.ServerResponse;
+import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.AppUtils;
 import co.yodo.mobile.helper.Intents;
 import co.yodo.mobile.net.YodoRequest;
+import co.yodo.mobile.service.RegistrationIntentService;
 
 public class RegistrationBiometricActivity extends AppCompatActivity implements YodoRequest.RESTListener {
     /** The context object */
@@ -50,6 +56,13 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
     public void onResume() {
         super.onResume();
         YodoRequest.getInstance().setListener( this );
+        LocalBroadcastManager.getInstance( this ).registerReceiver( mRegistrationBroadcastReceiver, new IntentFilter( AppConfig.REGISTRATION_COMPLETE ) );
+    }
+
+    @Override
+    protected void onPause() {
+        LocalBroadcastManager.getInstance( this ).unregisterReceiver( mRegistrationBroadcastReceiver );
+        super.onPause();
     }
 
     @Override
@@ -71,7 +84,8 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
         Toolbar mActionBarToolbar = (Toolbar) findViewById( R.id.actionBar );
 
         setSupportActionBar( mActionBarToolbar );
-        getSupportActionBar().setDisplayHomeAsUpEnabled( true );
+        if( getSupportActionBar() != null )
+            getSupportActionBar().setDisplayHomeAsUpEnabled( true );
     }
 
     private void updateData() {
@@ -138,10 +152,16 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
 
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
                     AppUtils.saveAuthNumber( ac, "" );
+                    String hardwareToken = AppUtils.getHardwareToken( ac );
 
-                    Intent intent = new Intent( RegistrationBiometricActivity.this, MainActivity.class );
+                    // Start IntentService to register this application with GCM.
+                    Intent intent = new Intent( this, RegistrationIntentService.class );
+                    intent.putExtra( BroadcastMessage.EXTRA_HARDWARE_TOKEN, hardwareToken );
+                    startService( intent );
+
+                    /*Intent intent = new Intent( RegistrationBiometricActivity.this, MainActivity.class );
                     startActivity( intent );
-                    finish();
+                    finish();*/
                 } else {
                     message  = response.getMessage();
                     AppUtils.sendMessage( handlerMessages, code, message );
@@ -163,4 +183,18 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
                 break;
         }
     }
+
+    private BroadcastReceiver mRegistrationBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive( Context context, Intent intent ) {
+            boolean sentToken = AppUtils.getIsTokenSent( context );
+            finish();
+            if( sentToken ) {
+                intent = new Intent( RegistrationBiometricActivity.this, MainActivity.class );
+                startActivity( intent );
+            } else {
+                Toast.makeText( ac, R.string.error_gcm_registration, Toast.LENGTH_SHORT ).show();
+            }
+        }
+    };
 }
