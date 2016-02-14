@@ -8,9 +8,15 @@ android {
     defaultConfig {
         applicationId "co.yodo"
         minSdkVersion 15
+<<<<<<< HEAD
         targetSdkVersion 23
         versionCode 7
         versionName "1.5"
+=======
+        targetSdkVersion 21
+        versionCode 8
+        versionName "1.6"
+>>>>>>> 50534995b823782477321543ecea3cb08a576578
     }
     buildTypes {
         release {
