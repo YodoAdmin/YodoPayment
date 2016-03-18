@@ -9,18 +9,31 @@ import android.os.Handler;
 import android.os.ResultReceiver;
 import android.text.format.Time;
 
+import com.android.volley.DefaultRetryPolicy;
+import com.android.volley.NoConnectionError;
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
+import com.android.volley.RetryPolicy;
+import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
+import org.xml.sax.XMLReader;
 
 import java.io.IOException;
+import java.io.StringReader;
 import java.util.HashMap;
 import java.util.Map;
+
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.parsers.SAXParser;
+import javax.xml.parsers.SAXParserFactory;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.component.Encrypter;
@@ -166,26 +179,24 @@ public class YodoRequest extends ResultReceiver {
                 Integer.parseInt( ServerRequest.AUTH_HW_SUBREQ )
         );
 
-        Intent intent = new Intent( activity, RESTService.class );
+        sendRequest( activity, pRequest, RequestType.AUTH_REQUEST );
+
+        /*Intent intent = new Intent( activity, RESTService.class );
         intent.putExtra( RESTService.ACTION_RESULT, RequestType.AUTH_REQUEST );
         intent.putExtra( RESTService.EXTRA_PARAMS, pRequest );
         intent.putExtra( RESTService.EXTRA_RESULT_RECEIVER, instance );
-        activity.startService( intent );
+        activity.startService( intent );*/
     }
 
     public void requestPIPAuthentication( Activity activity, String hardwareToken, String pip ) {
         String sEncryptedClientData, pRequest;
-        StringBuilder sClientData = new StringBuilder();
-
-        Time now = new Time();
-        now.setToNow();
-
-        sClientData.append( hardwareToken ).append( PCLIENT_SEP );
-        sClientData.append( pip ).append( PCLIENT_SEP );
-        sClientData.append( now.toMillis( true ) / 1000L );
 
         // Encrypting to create request
-        oEncrypter.setsUnEncryptedString( sClientData.toString() );
+        oEncrypter.setsUnEncryptedString(
+                hardwareToken + PCLIENT_SEP +
+                pip + PCLIENT_SEP +
+                System.currentTimeMillis() / 1000L
+        );
         oEncrypter.rsaEncrypt( activity );
         sEncryptedClientData = oEncrypter.bytesToHex();
 
@@ -194,11 +205,13 @@ public class YodoRequest extends ResultReceiver {
                 Integer.parseInt( ServerRequest.AUTH_HW_PIP_SUBREQ )
         );
 
-        Intent intent = new Intent( activity, RESTService.class );
+        sendRequest( activity, pRequest, RequestType.AUTH_PIP_REQUEST );
+
+        /*Intent intent = new Intent( activity, RESTService.class );
         intent.putExtra( RESTService.ACTION_RESULT, RequestType.AUTH_PIP_REQUEST );
         intent.putExtra( RESTService.EXTRA_PARAMS, pRequest );
         intent.putExtra( RESTService.EXTRA_RESULT_RECEIVER, instance );
-        activity.startService( intent );
+        activity.startService( intent );*/
     }
 
     public void requestRegistration( Activity activity, String hardwareToken, String pip ) {
@@ -339,9 +352,9 @@ public class YodoRequest extends ResultReceiver {
 
         // Encrypting to create request
         oEncrypter.setsUnEncryptedString(
-                authNumber    + REQ_SEP +
-                hardwareToken + REQ_SEP +
-                newPip
+                authNumber + REQ_SEP +
+                        hardwareToken + REQ_SEP +
+                        newPip
         );
         oEncrypter.rsaEncrypt( activity );
         sEncryptedClientData = oEncrypter.bytesToHex();
@@ -558,7 +571,7 @@ public class YodoRequest extends ResultReceiver {
         activity.startService( intent );
     }
 
-    public void requestDeLinkAccount(Activity activity, String hardwareToken, String pip, String linkedAccount, String accountType) {
+    public void requestDeLinkAccount( Activity activity, String hardwareToken, String pip, String linkedAccount, String accountType ) {
         String sEncryptedClientData, pRequest;
 
         // Encrypting to create request
@@ -598,5 +611,86 @@ public class YodoRequest extends ResultReceiver {
             if( response != null )
                 AppUtils.Logger( TAG, response.toString() );
         }
+    }
+
+    ///////////////////////////////////////////////////////
+    // NEW WAY TO REQUEST THE SERVER (REST) USING VOLLEY //
+    ///////////////////////////////////////////////////////
+
+    /** Switch server IP address */
+    //private static final String IP 	         = "http://50.56.180.133";  // Production
+    private static final String IP 			 = "http://198.101.209.120";  // Development
+    private static final String YODO_ADDRESS = "/yodo/yodoswitchrequest/getRequest/";
+
+    /** Timeout */
+    private final static int TIMEOUT = 10000;
+
+    private RetryPolicy retryPolicy = new DefaultRetryPolicy(
+            TIMEOUT,
+            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
+    );
+
+    /**
+     * Global request queue for Volley
+     */
+    private RequestQueue mRequestQueue;
+
+    /**
+     * @return The Volley Request queue, the queue will be created if it is null
+     */
+    public RequestQueue getRequestQueue( Context context ) {
+        // lazy initialize the request queue, the queue instance will be
+        // created when it is accessed for the first time
+        if (mRequestQueue == null) {
+            mRequestQueue = Volley.newRequestQueue( context );
+        }
+
+        return mRequestQueue;
+    }
+
+    private void sendRequest( final Context activity, final String pRequest, final RequestType type ) {
+        final StringRequest httpRequest = new StringRequest( Request.Method.GET, IP + YODO_ADDRESS + pRequest,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse( String xml ) {
+                        try {
+                            // Handling XML
+                            SAXParserFactory spf = SAXParserFactory.newInstance();
+                            SAXParser sp = spf.newSAXParser();
+                            XMLReader xr = sp.getXMLReader();
+
+                            // Create handler to handle XML Tags ( extends DefaultHandler )
+                            xr.setContentHandler( new XMLHandler() );
+                            xr.parse( new InputSource( new StringReader( xml ) ) );
+
+                            AppUtils.Logger( TAG, XMLHandler.response.toString() );
+                            externalListener.onResponse( type, XMLHandler.response );
+                        } catch( ParserConfigurationException | SAXException | IOException e ) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse( VolleyError error ) {
+                        error.printStackTrace();
+
+                        if( error instanceof TimeoutError || error instanceof NoConnectionError )
+                            externalListener.onResponse( RequestType.ERROR_NO_INTERNET, null );
+                        else
+                            externalListener.onResponse( RequestType.ERROR_GENERAL, null );
+                    }
+                }
+        );
+        httpRequest.setTag( "GET" );
+        httpRequest.setRetryPolicy( retryPolicy );
+        getRequestQueue( activity ).add( httpRequest );
+    }
+
+    public static String getSwitch() {
+        if( IP.equals( "http://50.56.180.133" ) )
+            return "P";
+        return "D";
     }
 }

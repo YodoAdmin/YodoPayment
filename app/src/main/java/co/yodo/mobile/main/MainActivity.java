@@ -35,6 +35,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -60,7 +64,6 @@ import co.yodo.mobile.net.YodoRequest;
 import co.yodo.mobile.service.AdvertisingService;
 import co.yodo.mobile.service.RESTService;
 import co.yodo.mobile.sks.SKSCreater;
-import de.greenrobot.event.EventBus;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 
@@ -113,6 +116,7 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
 
     /** AlertDialog for Payments */
     private AlertDialog alertDialog;
+    private Dialog sksDialog;
 
     /** Messages Handler */
     private static YodoHandler handlerMessages;
@@ -716,7 +720,8 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
     private void showSKSDialog( final String code, final Integer account_type ) {
         try {
             final Bitmap qrCode = SKSCreater.createSKS( code, this, SKSCreater.SKS_CODE, account_type );
-            final Dialog sksDialog = new Dialog( this );
+            //final Dialog sksDialog = new Dialog( this );
+            sksDialog = new Dialog( this );
 
             sksDialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
             sksDialog.setContentView( R.layout.dialog_sks );
@@ -806,24 +811,25 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
         ImageView saveButton        = (ImageView) layout.findViewById( R.id.saveButton );
         LinearLayout donorLayout    = (LinearLayout) layout.findViewById( R.id.donorAccountLayout );
 
-        final String description    = params.get( ServerResponse.DESCRIPTION );
         final String authNumber     = params.get( ServerResponse.AUTHNUMBER );
-        final String created        = params.get( ServerResponse.CREATED);
-        final String tcurrency      = params.get( ServerResponse.TCURRENCY );
-        final String currency       = params.get( ServerResponse.CURRENCY );
+        final String description    = params.get( ServerResponse.DESCRIPTION );
+        final String tCurrency      = params.get( ServerResponse.TCURRENCY ); // Merchant currency
         final String exchRate       = params.get( ServerResponse.EXCH_RATE );
+        final String dCurrency      = params.get( ServerResponse.DCURRENCY ); // Tender currency
         final String totalAmount    = AppUtils.truncateDecimal( params.get( ServerResponse.AMOUNT ) );
         final String tenderAmount   = AppUtils.truncateDecimal( params.get( ServerResponse.TAMOUNT ) );
         final String cashBackAmount = AppUtils.truncateDecimal( params.get( ServerResponse.CASHBACK ) );
         final String balance        = AppUtils.truncateDecimal( params.get( ServerResponse.BALANCE ) );
+        final String currency       = params.get( ServerResponse.CURRENCY ); // Account currency
         final String donor          = params.get( ServerResponse.DONOR );
         final String receiver       = params.get( ServerResponse.RECEIVER );
+        final String created        = params.get( ServerResponse.CREATED);
 
         descriptionText.setText( description );
         authNumberText.setText( authNumber );
         createdText.setText( AppUtils.UTCtoCurrent( ac, created ) );
-        currencyText.setText( tcurrency );
-        totalAmountText.setText( totalAmount );
+        currencyText.setText( dCurrency );
+        totalAmountText.setText( totalAmount + " " + tCurrency );
         tenderAmountText.setText( tenderAmount );
         cashBackAmountText.setText( cashBackAmount );
 
@@ -837,7 +843,10 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
 
         deleteButton.setOnClickListener( new View.OnClickListener() {
             @Override
-            public void onClick(View v) {
+            public void onClick( View v ) {
+                // Dismiss SKS and receipt
+                if( donor == null )
+                    sksDialog.dismiss();
                 receipt.dismiss();
                 // Show a notification which can reverse the delete
                 Snackbar.make( mDrawerLayout, R.string.message_deleted_receipt, Snackbar.LENGTH_LONG )
@@ -849,16 +858,19 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
                             }
                         } ).show();
             }
-        });
+        } );
 
         saveButton.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 final Receipt item = receiptsdb.createReceipt(
-                        description, authNumber, tcurrency, exchRate,
-                        totalAmount, tenderAmount, cashBackAmount,
-                        balance, donor, receiver, created
+                        authNumber, description, tCurrency, exchRate,
+                        dCurrency, totalAmount, tenderAmount, cashBackAmount,
+                        balance, currency, donor, receiver, created
                 );
+                // Dismiss SKS and receipt
+                if( donor == null )
+                    sksDialog.dismiss();
                 receipt.dismiss();
                 // Show a notification which can reverse the save
                 Snackbar.make( mDrawerLayout, R.string.saved_receipt, Snackbar.LENGTH_LONG )
@@ -1115,7 +1127,8 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
     };
 
     @SuppressWarnings("unused") // receives GCM receipts
-    public void onEventMainThread( ServerResponse response ) {
+    @Subscribe( threadMode = ThreadMode.MAIN )
+    public void onResponseEvent( ServerResponse response ) {
         receiptDialog( response.getParams() );
     }
 

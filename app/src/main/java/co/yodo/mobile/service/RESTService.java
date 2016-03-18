@@ -61,7 +61,7 @@ public class RESTService extends IntentService {
     }
 
     @Override
-    protected void onHandleIntent(Intent intent) {
+    protected void onHandleIntent( Intent intent ) {
         Bundle extras = intent.getExtras();
 
         if( extras == null || !extras.containsKey( EXTRA_RESULT_RECEIVER ) ) {

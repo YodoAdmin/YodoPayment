@@ -86,7 +86,7 @@
             <TextView
                 style="@style/ReceiptLabel"
                 android:id="@+id/tvReceiverView"
-                android:text="@string/message.receiver_account"/>
+                android:text="@string/message.recipient_account"/>
 
             <TextView
                 style="@style/ReceiptInfo"

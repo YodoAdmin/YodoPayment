@@ -301,7 +301,6 @@ public class AppUtils {
 
         TelephonyManager telephonyManager  = (TelephonyManager) c.getSystemService( Context.TELEPHONY_SERVICE );
         BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        //WifiManager wifiManager            = (WifiManager) c.getSystemService( Context.WIFI_SERVICE );
 
         if( telephonyManager != null ) {
             String tempMAC = telephonyManager.getDeviceId();
@@ -317,14 +316,6 @@ public class AppUtils {
             }
         }
 
-		/*if( HARDWARE_TOKEN == null && wifiManager != null ) {
-			if( wifiManager.isWifiEnabled() ) {
-				WifiInfo wifiInf = wifiManager.getConnectionInfo();
-				String tempMAC = wifiInf.getMacAddress();
-				HARDWARE_TOKEN = tempMAC.replaceAll( ":", "" );
-			}
-		}*/
-
         return HARDWARE_TOKEN;
     }
 
@@ -333,11 +324,11 @@ public class AppUtils {
      * @param state The checkbox
      * @param password The EditText for the password
      */
-    public static void showPassword(CheckBox state, EditText password) {
+    public static void showPassword( CheckBox state, EditText password ) {
         if( state.isChecked() )
-            password.setInputType(InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            password.setInputType( InputType.TYPE_TEXT_VARIATION_PASSWORD );
         else
-            password.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD);
+            password.setInputType( InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD );
 
         password.setTypeface( Typeface.MONOSPACE );
     }
@@ -354,7 +345,7 @@ public class AppUtils {
         }
     }
 
-    public static void setLanguage(Context c) {
+    public static void setLanguage( Context c ) {
         Locale appLoc = new Locale( getLanguage( c ) );
 
         Resources res = c.getResources();
@@ -628,6 +619,10 @@ public class AppUtils {
             return false;
         }
         return true;
+    }
+
+    public static String replaceNull( String input ) {
+        return input == null ? "" : input;
     }
 
     /**

@@ -7,14 +7,16 @@ package co.yodo.mobile.data;
 public class Receipt {
     /** Main Attributes */
     private long id;
-    private String description;
     private String authNumber;
-    private String currency;
+    private String description;
+    private String tCurrency;
     private String exchRate; // Exchange rate
+    private String dCurrency;
     private String totalAmount;
     private String tenderAmount;
     private String cashBackAmount;
     private String balanceAmount;
+    private String currency;
     private String donorAccount;
     private String receiverAccount;
     private String created;
@@ -31,14 +33,6 @@ public class Receipt {
         this.id = id;
     }
 
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getAuthNumber() {
         return authNumber;
     }
@@ -47,12 +41,20 @@ public class Receipt {
         this.authNumber = authNumber;
     }
 
-    public String getCurrency() {
-        return currency;
+    public String getDescription() {
+        return description;
     }
 
-    public void setCurrency(String currency) {
-        this.currency = currency;
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public String getTCurrency() {
+        return tCurrency;
+    }
+
+    public void setTCurrency( String tCurrency ) {
+        this.tCurrency = tCurrency;
     }
 
     public String getExchRate() {
@@ -61,6 +63,14 @@ public class Receipt {
 
     public void setExchRate( String exchRate ) {
         this.exchRate = exchRate;
+    }
+
+    public String getDCurrency() {
+        return dCurrency;
+    }
+
+    public void setDCurrency( String dCurrency ) {
+        this.dCurrency = dCurrency;
     }
 
     public String getTotalAmount() {
@@ -93,6 +103,14 @@ public class Receipt {
 
     public void setBalanceAmount( String balanceAmount ) {
         this.balanceAmount = balanceAmount;
+    }
+
+    public String getCurrency() {
+        return currency;
+    }
+
+    public void setCurrency(String currency) {
+        this.currency = currency;
     }
 
     public String getDonorAccount() {

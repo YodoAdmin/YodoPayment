@@ -12,6 +12,7 @@ import android.support.v4.app.NotificationCompat;
 import com.google.android.gms.gcm.GcmListenerService;
 
 import org.acra.ACRA;
+import org.greenrobot.eventbus.EventBus;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.data.Receipt;
@@ -20,7 +21,6 @@ import co.yodo.mobile.database.ReceiptsDataSource;
 import co.yodo.mobile.helper.AppUtils;
 import co.yodo.mobile.main.ReceiptsActivity;
 import co.yodo.mobile.net.JSONHandler;
-import de.greenrobot.event.EventBus;
 
 public class YodoGCMListenerService extends GcmListenerService {
     @SuppressWarnings( "unused" )
@@ -88,14 +88,16 @@ public class YodoGCMListenerService extends GcmListenerService {
                 receiptsdb.open();
 
             final Receipt receipt = receiptsdb.createReceipt(
-                    response.getParam( ServerResponse.DESCRIPTION ),
                     response.getParam( ServerResponse.AUTHNUMBER ),
+                    response.getParam( ServerResponse.DESCRIPTION ),
                     response.getParam( ServerResponse.TCURRENCY ),
                     response.getParam( ServerResponse.EXCH_RATE ),
+                    response.getParam( ServerResponse.DCURRENCY ),
                     AppUtils.truncateDecimal( response.getParam( ServerResponse.AMOUNT ) ),
                     AppUtils.truncateDecimal( response.getParam( ServerResponse.TAMOUNT ) ),
                     AppUtils.truncateDecimal( response.getParam( ServerResponse.CASHBACK ) ),
                     AppUtils.truncateDecimal( response.getParam( ServerResponse.BALANCE ) ),
+                    response.getParam( ServerResponse.CURRENCY ),
                     response.getParam( ServerResponse.DONOR ),
                     response.getParam( ServerResponse.RECEIVER ),
                     response.getParam( ServerResponse.CREATED )
@@ -112,8 +114,9 @@ public class YodoGCMListenerService extends GcmListenerService {
         intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
         PendingIntent pendingIntent = PendingIntent.getActivity( this, 0, intent, PendingIntent.FLAG_ONE_SHOT );
 
-        String text = AppUtils.truncateDecimal( response.getParam( ServerResponse.AMOUNT ) )
-         + " " + response.getParam( ServerResponse.TCURRENCY );
+        String text =
+                AppUtils.truncateDecimal( response.getParam( ServerResponse.AMOUNT ) ) + " " +
+                response.getParam( ServerResponse.TCURRENCY );
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri( RingtoneManager.TYPE_NOTIFICATION );
         mBuilder = new NotificationCompat.Builder( this )

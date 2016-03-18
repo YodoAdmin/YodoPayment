@@ -24,7 +24,7 @@ public class JSONHandler {
     /** Param elements */
     private static final String LOGO_ELEM         = "logo_url";
     private static final String BALANCE_ELEM      = "balance";
-    public static final String CURRENCY_ELEM     = "currency"; // It also belongs to the receipt
+    private static final String CURRENCY_ELEM     = "currency"; // It also belongs to the receipt
     private static final String BIOMETRIC_ELEM    = "BiometricToken";
     private static final String ADVERTISING_ELEM  = "url";
     private static final String LINKING_CODE_ELEM = "linking_code";
@@ -37,7 +37,7 @@ public class JSONHandler {
 
     /** Merchant elements */
     private static final String DESCRIPTION_ELEM = "description";
-    private static final String DCURRENCY_ELEM   = "dcurrency";
+    private static final String TCURRENCY_ELEM   = "dcurrency";
 
     /** Receipt elements */
     private static final String CREATED_ELEM   = "created";
@@ -62,19 +62,19 @@ public class JSONHandler {
             JSONArray temp  = new JSONArray( message );
             JSONObject jo   = temp.getJSONObject( 0 );
 
-            // Get "yi"
+            // Get "yi", data of the merchant
             JSONObject yi   = (JSONObject) jo.get( YI );
             response.addParam( ServerResponse.DESCRIPTION, String.valueOf( yi.get( DESCRIPTION_ELEM ) ) );
-            response.addParam( ServerResponse.DCURRENCY,   String.valueOf( yi.get( DCURRENCY_ELEM ) ) );
+            response.addParam( ServerResponse.TCURRENCY,   String.valueOf( yi.get( TCURRENCY_ELEM ) ) );
 
-            // Get "yt"
+            // Get "yt", data of the transaction
             JSONObject yt   = (JSONObject) jo.get( YT );
             response.addParam( ServerResponse.CREATED,    String.valueOf( yt.get( CREATED_ELEM ) ) );
             response.addParam( ServerResponse.AMOUNT,     String.valueOf( yt.get( AMOUNT_ELEM ) ) );
             response.addParam( ServerResponse.TAMOUNT,    String.valueOf( yt.get( TAMOUNT_ELEM ) ) );
             response.addParam( ServerResponse.CASHBACK,   String.valueOf( yt.get( CASHBACK_ELEM ) ) );
             response.addParam( ServerResponse.AUTHNUMBER, String.valueOf( yt.get( AUTHNUM_ELEM ) ) );
-            response.addParam( ServerResponse.TCURRENCY,  String.valueOf( yt.get( CURRENCY_ELEM ) ) );
+            response.addParam( ServerResponse.DCURRENCY,  String.valueOf( yt.get( CURRENCY_ELEM ) ) );
             response.addParam( ServerResponse.EXCH_RATE,  String.valueOf( yt.get( EXCH_RATE_ELEM ) ) );
 
             // Only for heart transactions

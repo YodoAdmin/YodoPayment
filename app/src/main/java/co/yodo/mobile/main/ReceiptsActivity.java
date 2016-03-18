@@ -24,6 +24,10 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import java.util.List;
 
 import co.yodo.mobile.R;
@@ -31,7 +35,6 @@ import co.yodo.mobile.adapter.ReceiptsListViewAdapter;
 import co.yodo.mobile.data.Receipt;
 import co.yodo.mobile.database.ReceiptsDataSource;
 import co.yodo.mobile.helper.AppUtils;
-import de.greenrobot.event.EventBus;
 
 public class ReceiptsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,
         AdapterView.OnItemLongClickListener, ActionMode.Callback {
@@ -54,8 +57,8 @@ public class ReceiptsActivity extends AppCompatActivity implements AdapterView.O
     private boolean isActionModeShowing = false;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate( Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
         AppUtils.setLanguage( ReceiptsActivity.this );
         setContentView(R.layout.activity_receipts);
 
@@ -203,9 +206,11 @@ public class ReceiptsActivity extends AppCompatActivity implements AdapterView.O
 
         descriptionText.setText( params.getDescription() );
         authNumberText.setText( params.getAuthNumber() );
-        currencyText.setText( params.getCurrency() );
+        currencyText.setText( params.getDCurrency() );
         createdText.setText( AppUtils.UTCtoCurrent( ac, params.getCreated() ) );
-        totalAmountText.setText( AppUtils.truncateDecimal( params.getTotalAmount() ) );
+        totalAmountText.setText(
+                AppUtils.truncateDecimal( params.getTotalAmount() ) + " " +
+                AppUtils.replaceNull( params.getTCurrency() ) );
         tenderAmountText.setText( AppUtils.truncateDecimal( params.getTenderAmount() ) );
         cashBackAmountText.setText( AppUtils.truncateDecimal( params.getCashBackAmount() ) );
 
@@ -321,7 +326,8 @@ public class ReceiptsActivity extends AppCompatActivity implements AdapterView.O
     }
 
     @SuppressWarnings("unused") // receives GCM receipts
-    public void onEventMainThread( Receipt receipt ) {
+    @Subscribe( threadMode = ThreadMode.MAIN )
+    public void onReceiptEvent( Receipt receipt ) {
         ReceiptsListViewAdapter adapter = (ReceiptsListViewAdapter) receiptsListView.getAdapter();
         //adapter.addReceipt( receipt );
         adapter.add( receipt );

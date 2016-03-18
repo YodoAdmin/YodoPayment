@@ -16,7 +16,7 @@
     <string name="drawer_open">open</string>
     <string name="drawer_close">close</string>
     <string name="version">Version:</string>
-    <string name="actual.version">1.4.2</string>
+    <string name="actual.version">1.4.3</string>
 
     <!-- Action Menu -->
     <string name="action_settings">Settings</string>
@@ -27,7 +27,7 @@
     <string name="recipts_title">Receipts</string>
     <string name="paid">Total:</string>
     <string name="receipt_auth">AU#</string>
-    <string name="message.receiver_account">Receiver:</string>
+    <string name="message.recipient_account">Recipient:</string>
     <string name="message.donor_account">Donor:</string>
     <string name="currency">Currency:</string>
     <string name="cash_tender">Cash Tender:</string>
@@ -39,7 +39,7 @@
 
     <!-- Registration Messages -->
     <string name="register_pip">Enter your secret PIP in both spaces (4–8 characters)</string>
-    <string name="pip_short">PIP must be more than 3 digits</string>
+    <string name="pip_short">PIP must contain 4 to 8 digits</string>
     <string name="pip_different">PIPs do not match</string>
     <string name="pip_hint">Personal Identity Phrase</string>
     <string name="face_recognition">Face Recognition</string>
@@ -58,7 +58,6 @@
     <string name="title_train_camera">Token Record</string>
     <string name="message_train_camera">Press the screen when you are ready</string>
     <string name="title_face_recognition">Face Recognition</string>
-    <string name="title_activity_yodo_camera">Yodo Camera</string>
     <string name="message_face_recognition">Locate your entire face on the camera</string>
 
     <!-- header data text -->

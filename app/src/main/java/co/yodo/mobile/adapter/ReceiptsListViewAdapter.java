@@ -87,7 +87,8 @@ public class ReceiptsListViewAdapter extends ArrayAdapter<Receipt> implements Fi
         holder.description.setText( item.getDescription() );
         holder.total.setText(
                 context.getString( R.string.paid ) + " " +
-                AppUtils.truncateDecimal( item.getTotalAmount() )
+                AppUtils.truncateDecimal( item.getTotalAmount() ) + " " +
+                AppUtils.replaceNull( item.getTCurrency() )
         );
 
         // If it is opened, change the text style

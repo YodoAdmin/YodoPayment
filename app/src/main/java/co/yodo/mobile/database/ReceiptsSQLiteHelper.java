@@ -17,31 +17,34 @@ public class ReceiptsSQLiteHelper extends SQLiteOpenHelper {
 
     public static final String TABLE_RECEIPTS     = "Receipts";
     public static final String COLUMN_ID          = "id";
-    public static final String COLUMN_DESCRIPTION = "description";
-    public static final String COLUMN_AUTHNUMBER  = "authNumber";
-    public static final String COLUMN_CURRENCY    = "dcurrency";
+    public static final String COLUMN_AUTHNUMBER  = "authNumber";  // Receipt identifier
+    public static final String COLUMN_DESCRIPTION = "description"; // Merchant description
+    public static final String COLUMN_TCURRENCY   = "tcurrency";   // Merchant currency
     public static final String COLUMN_EXCH_RATE   = "exchRate";
-    public static final String COLUMN_AMOUNT      = "amount";
-    public static final String COLUMN_TAMOUNT     = "tAmount";
-    public static final String COLUMN_CASHBACK    = "cashBack";
-    public static final String COLUMN_BALANCE     = "balance";
+    public static final String COLUMN_DCURRENCY   = "dcurrency";   // Tender currency
+    public static final String COLUMN_AMOUNT      = "amount";      // Total amount
+    public static final String COLUMN_TAMOUNT     = "tAmount";     // Tender amount
+    public static final String COLUMN_CASHBACK    = "cashBack";    // Cashback amount
+    public static final String COLUMN_BALANCE     = "balance";     // Account balance
+    public static final String COLUMN_CURRENCY    = "currency";    // Account currency
     public static final String COLUMN_DONOR       = "donor";
     public static final String COLUMN_RECEIVER    = "receiver";
     public static final String COLUMN_CREATED     = "created";
     public static final String COLUMN_OPENED      = "opened";
 
     private static final String DATABASE_NAME = "receipts.db";
-    private static final int DATABASE_VERSION = 5;
+    private static final int DATABASE_VERSION = 6;
 
     // Sentence to create the receipts table
     String sqlCreate = "CREATE TABLE " + TABLE_RECEIPTS + " (" +
             COLUMN_ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-            COLUMN_DESCRIPTION + " TEXT, " + COLUMN_AUTHNUMBER  + " INTEGER, " +
-            COLUMN_CURRENCY    + " TEXT, " + COLUMN_EXCH_RATE   + " REAL," +
-            COLUMN_AMOUNT      + " REAL, " + COLUMN_TAMOUNT     + " REAL, " +
-            COLUMN_CASHBACK    + " REAL, " + COLUMN_BALANCE     + " REAL, " +
-            COLUMN_DONOR       + " TEXT, " + COLUMN_RECEIVER    + " TEXT, " +
-            COLUMN_CREATED     + " TEXT, " + COLUMN_OPENED      + " INTEGER DEFAULT 0)";
+            COLUMN_AUTHNUMBER  + " INTEGER, " + COLUMN_DESCRIPTION + " TEXT, " +
+            COLUMN_TCURRENCY   + " TEXT, "    + COLUMN_EXCH_RATE   + " REAL,"  +
+            COLUMN_DCURRENCY   + " TEXT, "    + COLUMN_AMOUNT      + " REAL, " +
+            COLUMN_TAMOUNT     + " REAL, "    + COLUMN_CASHBACK    + " REAL, " +
+            COLUMN_BALANCE     + " REAL, "    + COLUMN_CURRENCY    + " TEXT, " +
+            COLUMN_DONOR       + " TEXT, "    + COLUMN_RECEIVER    + " TEXT, " +
+            COLUMN_CREATED     + " TEXT, "    + COLUMN_OPENED      + " INTEGER DEFAULT 0)";
 
     private static ReceiptsSQLiteHelper sInstance;
 
@@ -57,7 +60,7 @@ public class ReceiptsSQLiteHelper extends SQLiteOpenHelper {
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void onCreate( SQLiteDatabase db ) {
         // Creates the table
         db.execSQL( sqlCreate );
     }
@@ -70,8 +73,7 @@ public class ReceiptsSQLiteHelper extends SQLiteOpenHelper {
             try {
                 db.execSQL( "ALTER TABLE " + TABLE_RECEIPTS + " ADD COLUMN " + COLUMN_OPENED + " INTEGER DEFAULT 0" );
             } catch( SQLException e ) {
-                AppUtils.Logger( TAG,
-                        "Failed to create " + COLUMN_OPENED + " column. Most likely it already exists, which is fine." );
+                AppUtils.Logger( TAG, textToError( COLUMN_OPENED ) );
             }
 
             try {
@@ -86,11 +88,40 @@ public class ReceiptsSQLiteHelper extends SQLiteOpenHelper {
                 db.execSQL( "ALTER TABLE " + TABLE_RECEIPTS + " ADD COLUMN " + COLUMN_EXCH_RATE + " REAL" );
             } catch( SQLException e ) {
                 AppUtils.Logger( TAG,
-                        "Failed to create " + COLUMN_OPENED + " column. Most likely it already exists, which is fine." );
+                        "Failed to create " + COLUMN_EXCH_RATE + " column. Most likely it already exists, which is fine." );
+            }
+
+            try {
+                db.execSQL( "ALTER TABLE " + TABLE_RECEIPTS + " ADD COLUMN " + COLUMN_TCURRENCY + " TEXT" );
+            } catch( SQLException e ) {
+                AppUtils.Logger( TAG,
+                        "Failed to create " + COLUMN_TCURRENCY + " column. Most likely it already exists, which is fine." );
+            }
+
+            try {
+                db.execSQL( "ALTER TABLE " + TABLE_RECEIPTS + " ADD COLUMN " + COLUMN_CURRENCY + " TEXT" );
+            } catch( SQLException e ) {
+                AppUtils.Logger( TAG, textToError( COLUMN_CURRENCY ) );
             }
         }
 
         //Se crea la nueva versión de la tabla
         //db.execSQL( sqlCreate );
+    }
+
+    private String textToError( String... values ) {
+        String text = "Failed to create ";
+        final int size = values.length;
+
+        if( size > 1 ) {
+            text += "columns ";
+            for( int i = 0; i < size - 1; i++ )
+                text += values[i] + ", ";
+            text += values[size - 1] + ". ";
+        } else
+            text += values[0] + " column.";
+        text += "Most likely it already exists, which is fine.";
+
+        return text;
     }
 }
