@@ -1,5 +1,6 @@
 package co.yodo.mobile.net;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -46,6 +47,7 @@ import co.yodo.mobile.service.RESTService;
  * Created by luis on 15/12/14.
  * Request to the Yodo Server
  */
+@SuppressLint( "ParcelCreator" )
 public class YodoRequest extends ResultReceiver {
     /** DEBUG */
     private static final String TAG = YodoRequest.class.getSimpleName();
@@ -166,12 +168,12 @@ public class YodoRequest extends ResultReceiver {
         }
     }
 
-    public void requestAuthentication( Activity activity, String hardwareToken ) {
+    public void requestAuthentication( Context context, String hardwareToken ) {
         String sEncryptedClientData, pRequest;
 
         // Encrypting to create request
         oEncrypter.setsUnEncryptedString( hardwareToken );
-        oEncrypter.rsaEncrypt( activity );
+        oEncrypter.rsaEncrypt( context );
         sEncryptedClientData = oEncrypter.bytesToHex();
 
         pRequest = ServerRequest.createAuthenticationRequest(
@@ -179,13 +181,7 @@ public class YodoRequest extends ResultReceiver {
                 Integer.parseInt( ServerRequest.AUTH_HW_SUBREQ )
         );
 
-        sendRequest( activity, pRequest, RequestType.AUTH_REQUEST );
-
-        /*Intent intent = new Intent( activity, RESTService.class );
-        intent.putExtra( RESTService.ACTION_RESULT, RequestType.AUTH_REQUEST );
-        intent.putExtra( RESTService.EXTRA_PARAMS, pRequest );
-        intent.putExtra( RESTService.EXTRA_RESULT_RECEIVER, instance );
-        activity.startService( intent );*/
+        sendRequest( context, pRequest, RequestType.AUTH_REQUEST );
     }
 
     public void requestPIPAuthentication( Activity activity, String hardwareToken, String pip ) {
@@ -373,17 +369,14 @@ public class YodoRequest extends ResultReceiver {
 
     public void requestBalance( Activity activity, String hardwareToken, String pip ) {
         String sEncryptedClientData, pRequest;
-        StringBuilder sClientData = new StringBuilder();
 
-        Time now = new Time();
-        now.setToNow();
-
-        sClientData.append( hardwareToken ).append( PCLIENT_SEP );
-        sClientData.append( pip ).append( PCLIENT_SEP );
-        sClientData.append( now.toMillis( true ) / 1000L );
+        String sClientData =
+                hardwareToken + PCLIENT_SEP +
+                pip + PCLIENT_SEP +
+                System.currentTimeMillis() / 1000L;
 
         // Encrypting to create request
-        oEncrypter.setsUnEncryptedString( sClientData.toString() );
+        oEncrypter.setsUnEncryptedString( sClientData );
         oEncrypter.rsaEncrypt( activity );
         sEncryptedClientData = oEncrypter.bytesToHex();
 

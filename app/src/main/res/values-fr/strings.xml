@@ -15,26 +15,29 @@
     <string name="warning">Warning!</string>
     <string name="drawer_open">open</string>
     <string name="drawer_close">close</string>
-    <string name="version">Version:</string>
+    <string name="version.label">Version:</string>
 
     <!-- Action Menu -->
-    <string name="action_settings">Settings</string>
+    <string name="action_settings">Paramètres</string>
     <string name="action_about">About Yodo</string>
 
     <!-- Receipts -->
-    <string name="recipts_title">Receipts</string>
+    <string name="new_recipt">New réception</string>
+    <string name="recipts_title">Recettes</string>
     <string name="paid">Total:</string>
     <string name="receipt_auth">AU#</string>
-    <string name="cash_tender">Cash Tender:</string>
+    <string name="message.recipient_account">Bénéficiaire:</string>
+    <string name="message.donor_account">Donneur:</string>
+    <string name="currency">Devise:</string>
+    <string name="cash_tender">Liquidités Tender:</string>
     <string name="cash_back">Cash Back:</string>
-    <string name="currency">Currency:</string>
     <string name="yodo_balance">Yodo Balance:</string>
-    <string name="message.deleted.receipt">Receipt Deleted</string>
-    <string name="saved_receipt">Receipt Saved</string>
-    <string name="no_transaction">No receipt available</string>
+    <string name="message.deleted.receipt">Reçu supprimé</string>
+    <string name="saved_receipt">Reçu Saved</string>
+    <string name="no_transaction">Aucun reçu disponible</string>
 
     <!-- Registration Messages -->
-    <string name="register_pip">Enter your secret PIP in both spaces (4–8 characters)</string>
+    <string name="register_pip">Entrez votre PIP secrète dans les deux espaces (4–8 characters)</string>
     <string name="pip_short">PIP must be more than 3 digits</string>
     <string name="pip_different">PIPs do not match</string>
     <string name="pip_hint">Personal Identity Phrase</string>
@@ -47,15 +50,14 @@
 
     <!-- Eula Messages -->
     <string name="eula_title">Yodo User Agreement</string>
-    <string name="eula_accept">Accept</string>
-    <string name="eula_refuse">Refuse</string>
+    <string name="eula_accept">Acceptez</string>
+    <string name="eula_refuse">Refuser</string>
 
     <!-- Camera Messages -->
     <string name="title_train_camera">Token Record</string>
+    <string name="message_train_camera">Appuyez sur l\'écran lorsque vous êtes prêt</string>
     <string name="title_face_recognition">Face Recognition</string>
-    <string name="title_activity_yodo_camera">Yodo Camera</string>
-    <string name="message_face_recognition">Locate your entire face on the camera</string>
-    <string name="message_train_camera">Press the screen when you are ready</string>
+    <string name="message_face_recognition">Localiser l\'ensemble de votre visage sur la caméra</string>
 
     <!-- header data text -->
     <string name="account">Compte:</string>
@@ -83,44 +85,26 @@
     <string name="error_registration">Something went wrong with the registration</string>
     <string name="no_balance">Sorry, seems that you don\'t have a balance</string>
     <string name="no_internet">Sorry, seems that you don\'t have an Internet connection right now</string>
-    <string name="no_hardware">You must turn on your bluetooth first</string>
+    <string name="message.no_hardware">You must turn on your bluetooth first</string>
     <string name="no_camera">This camera doesn\'t exist</string>
     <string name="no_available">This feature is not available yet</string>
     <string name="no_biometric">Sorry, seems that you don\'t have a biometric token</string>
     <string name="image_saved_failed">Error saving Coupon</string>
+    <string name="error.message.no_balance">No balance recorded</string>
+    <string name="error.message.no_links">No links exist</string>
+    <string name="error.not_supported">This device is not supported</string>
+    <string name="error.play_services">Google Play Services is required</string>
+    <string name="error.gcm_registration">Sorry we couldn\'t save your token, try again later</string>
 
     <!-- General Messages -->
     <string name="save_image">Save Coupon?</string>
-    <string name="change_successfull">Change completed successfully</string>
+    <string name="change_successful">Change completed successfully</string>
     <string name="show_pass">Show Password</string>
-
-    <!-- Linking Account Messages -->
-    <string name="linking_menu">Select: </string>
-    <string name="link_code_text">Linking Code: </string>
-    <string name="link_account_button">Link Account</string>
-    <string name="generate_code_button">Generate Linking Code</string>
-    <string name="link_account_response">Linking Account</string>
-    <string name="no_linked_account">This account is not linked</string>
-    <string name="link_account_help">Select one of the options to start with the linking process:</string>
-    <string name="link_code_warning">You are responsible to distribute your link code only to trusted third parties. Anyone in possession of this code will have access to your funds. Yodo accepts no liability for losses due to delivery of Link Codes to unintended parties. Link codes are one-time-use codes and valid only for the next 24 hours.</string>
-
-    <!-- Linking Account Types -->
-    <string name="account_yodo">0</string>
-    <string name="account_visa_credit">1</string>
-    <string name="account_public_transit_pass">2</string>
-    <string name="account_yodo_heart">3</string>
-    <string name="account_visa_prepaid">4</string>
-    <string name="account_paypal">5</string>
-
-    <!-- DeLink Accounts -->
-    <string name="to_account">Giving To</string>
-    <string name="from_account">Receiving From</string>
-
     <string name="show_linking_code">Show Linking Code</string>
-    <string name="input_linking_code">Input your Linking Code</string>
     <string name="input_token">Input your Token Password</string>
+    <string name="input_linking_code">Input your Linking Code</string>
     <string name="input_pip">Personal Identity Phrase (PIP)</string>
-    <string name="about_message">Yodo is a couple of guys in a garage building a platform to securely connect mobiles to the cloud.</string>
+    <string name="about_message">Please use the email below to contact us. We\'ll do everything we can to respond quickly. Be assured, we will never sell or distribute personal information you provide.</string>
     <string name="about_email">support@yodo.co</string>
     <string name="copied_text">Text has been copied to clipboard</string>
 
@@ -144,6 +128,20 @@
     <string name="tutorial_header">Yodo Header</string>
     <string name="tutorial_header_message">Main information about the user\'s account.</string>
 
+    <!-- Linking Account Messages -->
+    <string name="linking_menu">Select: </string>
+    <string name="link_code_text">Linking Code: </string>
+    <string name="link_account_button">Link Account</string>
+    <string name="generate_code_button">Generate Linking Code</string>
+    <string name="link_account_response">Linking Account</string>
+    <string name="no_linked_account">This account is not linked</string>
+    <string name="link_account_help">Select one of the options to start with the linking process:</string>
+    <string name="link_code_warning">You are responsible to distribute your link code only to trusted third parties. Anyone in possession of this code will have access to your funds. Yodo accepts no liability for losses due to delivery of Link Codes to unintended parties. Link codes are one-time-use codes and valid only for the next 24 hours.</string>
+
+    <!-- DeLink Accounts -->
+    <string name="to_account">Giving To</string>
+    <string name="from_account">Receiving From</string>
+
     <!-- Activity titles -->
     <string name="title_activity_registration">Yodo Registration</string>
     <string name="title_activity_registration_biometric">Yodo Biometric Registration</string>
@@ -155,6 +153,7 @@
     <string name="title_activity_receipts">Yodo Receipts</string>
     <string name="title_activity_linking">Yodo Linking</string>
     <string name="title_activity_de_link">Yodo DeLink</string>
+    <string name="title_activity_yodo_camera">Yodo Camera</string>
 
     <!-- Languages -->
     <string-array name="languages_array">
@@ -165,19 +164,16 @@
         <item>French</item>
     </string-array>
 
-    <string-array name="languages_array_values">
-        <item>en</item>
-        <item>es</item>
-        <item>zh</item>
-        <item>ja</item>
-        <item>fr</item>
-    </string-array>
-
     <string-array name="link_options_array">
         <item>Generate Linking Code</item>
         <item>Input Linking Code</item>
         <item>De-Link Account</item>
     </string-array>
+
+    <!-- Messages for the permissions -->
+    <string name="message.permission.read_phone_state">Permission required to identify the device in order to access Yodo\'s cloud service</string>
+    <string name="message.permission.camera">Permission required to use the camera in order to capture payment credentials</string>
+    <string name="message.permission.write_external_storage">Permission required to store the coupons</string>
 
     <!-- ACRA -->
     <string name="crash_toast_text">Ooooops ! I crashed, but a report has been sent to my developer to help fix the issue !</string>"

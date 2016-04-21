@@ -1,5 +1,6 @@
 package co.yodo.mobile.main;
 
+import android.Manifest;
 import android.app.Dialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -121,6 +122,9 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
     /** Messages Handler */
     private static YodoHandler handlerMessages;
 
+    /** Request codes for the permissions */
+    private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
@@ -129,26 +133,11 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
 
         setupGUI();
         updateData();
-
-        /*HashMap<String,String> test = new HashMap<>();
-        test.put( ServerResponse.DESCRIPTION, "test" );
-        test.put( ServerResponse.AUTHNUMBER, "1453482094" );
-        test.put( ServerResponse.CREATED, "2016-01-22 17:01:34 " );
-        test.put( ServerResponse.TCURRENCY, "USD" );
-        test.put( ServerResponse.CURRENCY, "USD" );
-        test.put( ServerResponse.AMOUNT, "0.00000" );
-        test.put( ServerResponse.TAMOUNT, "0.00000" );
-        test.put( ServerResponse.CASHBACK, "0.00000" );
-        test.put( ServerResponse.BALANCE, "0.00000" );
-
-        receiptDialog( test );
-        receiptDialog( test );*/
     }
 
     @Override
     public void onResume() {
         super.onResume();
-
         // True when the activity is in foreground
         AppUtils.saveIsForeground( ac, true );
         // Register listener for requests and  broadcast receivers
@@ -169,7 +158,6 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
     @Override
     public void onPause() {
         super.onPause();
-
         // False when the activity is not in foreground
         AppUtils.saveIsForeground( ac, false );
         // Register broadcast receivers
@@ -178,9 +166,10 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
         closeDatabases();
 
         // Stops advertising service if running
-        Intent iAdv = new Intent( ac, AdvertisingService.class );
-        if( AppUtils.isMyServiceRunning( ac, AdvertisingService.class.getName() ) )
+        if( AppUtils.isMyServiceRunning( ac, AdvertisingService.class.getName() ) ) {
+            Intent iAdv = new Intent( ac, AdvertisingService.class );
             stopService( iAdv );
+        }
     }
 
     @Override
@@ -224,8 +213,8 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
 
             case R.id.action_about:
                 final String title   = item.getTitle().toString();
-                final String message = getString( R.string.version ) + " " +
-                                       getString( R.string.actual_version ) + "/" +
+                final String message = getString( R.string.version_label ) + " " +
+                                       getString( R.string.version_value ) + "/" +
                                        RESTService.getSwitch() + "\n\n" +
                                        getString( R.string.about_message );
 
@@ -297,7 +286,7 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
             }
         };
 
-        mDrawerLayout.setDrawerListener( mDrawerToggle );
+        mDrawerLayout.addDrawerListener( mDrawerToggle );
 
         couponsdb  = new CouponsDataSource( ac );
         receiptsdb = ReceiptsDataSource.getInstance( ac );
@@ -306,37 +295,45 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
         mAdvertisingImage.setOnLongClickListener( new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
+                boolean writePermission = AppUtils.requestPermission(
+                        MainActivity.this,
+                        R.string.message_permission_write_external_storage,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
+                );
+
                 final Drawable drawable = mAdvertisingImage.getDrawable();
+
+                if( !writePermission || drawable == null )
+                    return false;
 
                 DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
-                        if( drawable != null ) {
-                            Bitmap bitmap = AppUtils.drawableToBitmap( drawable );
-                            File directory = new File( Environment.getExternalStorageDirectory(), AppConfig.COUPONS_FOLDER );
-                            boolean success = true;
+                        Bitmap bitmap = AppUtils.drawableToBitmap( drawable );
+                        File directory = new File( Environment.getExternalStorageDirectory(), AppConfig.COUPONS_FOLDER );
+                        boolean success = true;
 
-                            if( !directory.exists() )
-                                success = directory.mkdir();
+                        if( !directory.exists() )
+                            success = directory.mkdir();
 
-                            if( !success ) {
-                                Toast.makeText( ac, R.string.image_saved_failed, Toast.LENGTH_SHORT ).show();
-                                return;
-                            }
+                        if( !success ) {
+                            Toast.makeText( ac, R.string.image_saved_failed, Toast.LENGTH_SHORT ).show();
+                            return;
+                        }
 
-                            int files = directory.listFiles().length;
-                            File image = new File( directory, "ad" + (files + 1) + ".png" );
+                        int files = directory.listFiles().length;
+                        File image = new File( directory, "ad" + (files + 1) + ".png" );
 
-                            FileOutputStream outStream;
-                            try {
-                                outStream = new FileOutputStream( image );
-                                bitmap.compress( Bitmap.CompressFormat.PNG, 90, outStream );
+                        FileOutputStream outStream;
+                        try {
+                            outStream = new FileOutputStream( image );
+                            bitmap.compress( Bitmap.CompressFormat.PNG, 90, outStream );
 
-                                outStream.flush();
-                                outStream.close();
-                                couponsdb.createCoupon( image.getPath(), merchant );
-                            } catch (IOException e) {
-                                e.printStackTrace();
-                            }
+                            outStream.flush();
+                            outStream.close();
+                            couponsdb.createCoupon( image.getPath(), merchant );
+                        } catch (IOException e) {
+                            e.printStackTrace();
                         }
                     }
                 };
@@ -354,15 +351,6 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
         if( AppUtils.isFirstLogin( ac ) ) {
             mDrawerLayout.openDrawer( GravityCompat.START );
             AppUtils.saveFirstLogin( ac, false );
-            /*showcaseView = new ShowcaseView.Builder( this )
-                    .setTarget( new ViewTarget( findViewById( R.id.actionBar ) ) )
-                    .setContentTitle( R.string.tutorial_action_bar )
-                    .setContentText( R.string.tutorial_action_bar_message )
-                    .setStyle( R.style.CustomShowcaseTheme )
-                    .setOnClickListener( this )
-                    .hideOnTouchOutside()
-                    .build();
-            showcaseView.setButtonText( getString( R.string.next ) );*/
         }
 
         AppEula.show( this );
@@ -372,7 +360,7 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
         hardwareToken = AppUtils.getHardwareToken( ac );
 
         if( hardwareToken == null ) {
-            ToastMaster.makeText( ac, R.string.no_hardware, Toast.LENGTH_LONG ).show();
+            ToastMaster.makeText( ac, R.string.message_no_hardware, Toast.LENGTH_LONG ).show();
             finish();
         }
 
@@ -754,18 +742,6 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
                     lp.screenBrightness = brightnessNow;
                     getWindow().setAttributes( lp );
                     mAdvertisingLayout.setVisibility( View.VISIBLE );
-
-                    /*String[] parts = code.split( SKS_REGEX );
-
-                    YodoRequest.getInstance().createProgressDialog(
-                            MainActivity.this,
-                            YodoRequest.ProgressDialogType.NORMAL
-                    );
-
-                    YodoRequest.getInstance().requestReceipt(
-                            MainActivity.this,
-                            hardwareToken, parts[0]
-                    );*/
                 }
             });
 

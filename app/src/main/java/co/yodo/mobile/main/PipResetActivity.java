@@ -110,7 +110,7 @@ public class PipResetActivity extends AppCompatActivity implements YodoRequest.R
         hardwareToken = AppUtils.getHardwareToken( ac );
 
         if( hardwareToken == null ) {
-            ToastMaster.makeText( ac, R.string.no_hardware, Toast.LENGTH_LONG ).show();
+            ToastMaster.makeText( ac, R.string.message_no_hardware, Toast.LENGTH_LONG ).show();
             finish();
         }
     }
@@ -229,7 +229,7 @@ public class PipResetActivity extends AppCompatActivity implements YodoRequest.R
                 code = response.getCode();
 
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
-                    ToastMaster.makeText( ac, R.string.change_successfull, Toast.LENGTH_LONG ).show();
+                    ToastMaster.makeText( ac, R.string.change_successful, Toast.LENGTH_LONG ).show();
                     finish();
                 } else {
                     message  = response.getMessage();

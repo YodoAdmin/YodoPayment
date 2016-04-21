@@ -1,10 +1,13 @@
 package co.yodo.mobile.main;
 
+import android.Manifest;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -42,11 +45,14 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
     /** Result Activities Identifiers */
     private static final int CAMERA_ACTIVITY = 1;
 
+    /** Request codes for the permissions */
+    private static final int PERMISSIONS_REQUEST_CAMERA = 1;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
+    protected void onCreate( Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
         AppUtils.setLanguage( RegistrationBiometricActivity.this );
-        setContentView(R.layout.activity_registration_biometric);
+        setContentView( R.layout.activity_registration_biometric );
 
         setupGUI();
         updateData();
@@ -104,9 +110,21 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
      * Starts the face biometric procedure
      * @param v View of the button, not used
      */
-    public void faceBiometricClicked(View v) {
+    public void faceBiometricClicked( View v ) {
+        boolean cameraPermission = AppUtils.requestPermission(
+                RegistrationBiometricActivity.this,
+                R.string.message_permission_camera,
+                Manifest.permission.CAMERA,
+                PERMISSIONS_REQUEST_CAMERA
+        );
+
+        if( cameraPermission )
+            showCamera();
+    }
+
+    private void showCamera() {
         Intent intent = new Intent( RegistrationBiometricActivity.this, CameraActivity.class );
-        startActivityForResult(intent, CAMERA_ACTIVITY);
+        startActivityForResult( intent, CAMERA_ACTIVITY );
     }
 
     /**
@@ -181,6 +199,22 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
                     ToastMaster.makeText( ac, R.string.face_trained, Toast.LENGTH_LONG ).show();
                 }
                 break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult( int requestCode, @NonNull String permissions[], @NonNull int[] grantResults ) {
+        switch( requestCode ) {
+            case PERMISSIONS_REQUEST_CAMERA:
+                // If request is cancelled, the result arrays are empty.
+                if( grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED ) {
+                    // Permission Granted
+                    showCamera();
+                }
+                break;
+
+            default:
+                super.onRequestPermissionsResult( requestCode, permissions, grantResults );
         }
     }
 

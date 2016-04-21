@@ -18,6 +18,11 @@ public class AppConfig {
      * {{ ======================================================================
      */
 
+    /* Hardware token for the account
+     * type -- String
+     */
+    public static final String SPREF_HARDWARE_TOKEN = "SPHardwareToken";
+
     /* EULA Accepted.
 	 * type -- Boolean
 	 *

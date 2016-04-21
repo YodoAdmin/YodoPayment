@@ -29,7 +29,7 @@ public class AdvertisingService extends Service {
     private BluetoothAdapter mBluetoothAdapter = null;
 
     /** Init Delay */
-    private final static Integer DEFAUL_INIT_DELAY = 1000 * 30; // 25 seconds
+    private final static Integer DEFAUL_INIT_DELAY = 1000 * 30; // 30 seconds
 
     /** Handlers */
     private Handler mTimerHandler;
@@ -44,7 +44,8 @@ public class AdvertisingService extends Service {
      * the service.
      */
     @Override
-    public int onStartCommand(Intent i, int flags, int startId) {
+    public int onStartCommand( Intent i, int flags, int startId ) {
+        AppUtils.Logger( TAG, "Start>> Promotions Service" );
         // get the context
         ac = AdvertisingService.this;
         // get local broadcast
@@ -69,8 +70,8 @@ public class AdvertisingService extends Service {
     }
 
     @Override
-    public IBinder onBind(Intent intent) {
-        throw new UnsupportedOperationException("Not yet implemented");
+    public IBinder onBind( Intent intent ) {
+        throw new UnsupportedOperationException( "Not yet implemented" );
     }
 
     /**
@@ -124,7 +125,6 @@ public class AdvertisingService extends Service {
             switch( intent.getAction() ) {
                 case BluetoothDevice.ACTION_FOUND:
                     final BluetoothDevice device = intent.getParcelableExtra( BluetoothDevice.EXTRA_DEVICE );
-
                     if( device.getName() != null && device.getName().startsWith( AppConfig.YODO_POS ) ) {
                         AppUtils.Logger( TAG, device.getName() );
 

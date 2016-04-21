@@ -15,8 +15,8 @@
     <string name="warning">Warning!</string>
     <string name="drawer_open">open</string>
     <string name="drawer_close">close</string>
-    <string name="version">Version:</string>
-    <string name="actual.version">1.4.3</string>
+    <string name="version.label">Version:</string>
+    <string name="version.value" translatable="false">1.5.0</string>
 
     <!-- Action Menu -->
     <string name="action_settings">Settings</string>
@@ -86,7 +86,7 @@
     <string name="error_registration">Something went wrong with the registration</string>
     <string name="no_balance">Sorry, seems that you don\'t have a balance</string>
     <string name="no_internet">Sorry, seems that you don\'t have an Internet connection right now</string>
-    <string name="no_hardware">You must turn on your bluetooth first</string>
+    <string name="message.no_hardware">You must turn on your bluetooth first</string>
     <string name="no_camera">This camera doesn\'t exist</string>
     <string name="no_available">This feature is not available yet</string>
     <string name="no_biometric">Sorry, seems that you don\'t have a biometric token</string>
@@ -140,12 +140,12 @@
     <string name="link_code_warning">You are responsible to distribute your link code only to trusted third parties. Anyone in possession of this code will have access to your funds. Yodo accepts no liability for losses due to delivery of Link Codes to unintended parties. Link codes are one-time-use codes and valid only for the next 24 hours.</string>
 
     <!-- Linking Account Types -->
-    <string name="account_yodo">0</string>
-    <string name="account_visa_credit">1</string>
-    <string name="account_public_transit_pass">2</string>
-    <string name="account_yodo_heart">3</string>
-    <string name="account_visa_prepaid">4</string>
-    <string name="account_paypal">5</string>
+    <string name="account_yodo" translatable="false">0</string>
+    <string name="account_visa_credit" translatable="false">1</string>
+    <string name="account_public_transit_pass" translatable="false">2</string>
+    <string name="account_yodo_heart" translatable="false">3</string>
+    <string name="account_visa_prepaid" translatable="false">4</string>
+    <string name="account_paypal" translatable="false">5</string>
 
     <!-- DeLink Accounts -->
     <string name="to_account">Giving To</string>
@@ -162,6 +162,7 @@
     <string name="title_activity_receipts">Yodo Receipts</string>
     <string name="title_activity_linking">Yodo Linking</string>
     <string name="title_activity_de_link">Yodo DeLink</string>
+    <string name="title_activity_yodo_camera">Yodo Camera</string>
 
     <!-- Languages -->
     <string-array name="languages_array">
@@ -172,7 +173,7 @@
         <item>French</item>
     </string-array>
 
-    <string-array name="languages_array_values">
+    <string-array name="languages_array_values" translatable="false">
         <item>en</item>
         <item>es</item>
         <item>zh</item>
@@ -186,7 +187,12 @@
         <item>De-Link Account</item>
     </string-array>
 
+    <!-- Messages for the permissions -->
+    <string name="message.permission.read_phone_state">Permission required to identify the device in order to access Yodo\'s cloud service</string>
+    <string name="message.permission.camera">Permission required to use the camera in order to capture payment credentials</string>
+    <string name="message.permission.write_external_storage">Permission required to store the coupons</string>
+
     <!-- ACRA -->
-    <string name="crash_toast_text">Ooooops ! I crashed, but a report has been sent to my developer to help fix the issue !</string>"
+    <string name="crash_toast_text">Ooooops ! I crashed, but a report has been sent to my developer to help fix the issue!</string>"
 
 </resources>

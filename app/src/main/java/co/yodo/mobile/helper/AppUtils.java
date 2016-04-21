@@ -4,7 +4,9 @@ import android.app.Activity;
 import android.app.ActivityManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.content.res.Resources;
 import android.graphics.Bitmap;
@@ -15,6 +17,8 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Message;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.text.format.DateUtils;
@@ -68,6 +72,46 @@ public class AppUtils {
      */
     private static SharedPreferences getSPrefConfig(Context c) {
         return c.getSharedPreferences( AppConfig.SHARED_PREF_FILE, Context.MODE_PRIVATE );
+    }
+
+    /**
+     * Generates the mobile hardware identifier either
+     * from the Phone (IMEI) or the Bluetooth (MAC)
+     * @param c The Context of the Android system.
+     */
+    public static String generateHardwareToken( Context c ) {
+        String HARDWARE_TOKEN = null;
+
+        TelephonyManager telephonyManager  = (TelephonyManager) c.getSystemService( Context.TELEPHONY_SERVICE );
+        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        if( telephonyManager != null ) {
+            String tempMAC = telephonyManager.getDeviceId();
+            if( tempMAC != null )
+                HARDWARE_TOKEN = tempMAC.replace( "/", "" );
+        }
+
+        if( HARDWARE_TOKEN == null && mBluetoothAdapter != null ) {
+            if( mBluetoothAdapter.isEnabled() ) {
+                String tempMAC = mBluetoothAdapter.getAddress();
+                HARDWARE_TOKEN = tempMAC.replaceAll( ":", "" );
+            }
+        }
+
+        return HARDWARE_TOKEN;
+    }
+
+    public static Boolean saveHardwareToken( Context c, String hardwareToken ) {
+        SharedPreferences config = getSPrefConfig( c );
+        SharedPreferences.Editor writer = config.edit();
+        writer.putString( AppConfig.SPREF_HARDWARE_TOKEN, hardwareToken );
+        return writer.commit();
+    }
+
+    public static String getHardwareToken( Context c ) {
+        SharedPreferences config = getSPrefConfig( c );
+        String token = config.getString( AppConfig.SPREF_HARDWARE_TOKEN, "" );
+        return ( token.equals( "" ) ) ? null : token;
     }
 
     public static boolean clearPrefConfig(Context c) {
@@ -290,33 +334,6 @@ public class AppUtils {
     public static boolean isForeground( Context c ) {
         SharedPreferences config = getSPrefConfig( c );
         return config.getBoolean( AppConfig.SPREF_FOREGROUND, false );
-    }
-
-    /**
-     * Gets the mobile hardware identifier
-     * @param c The Context of the Android system.
-     */
-    public static String getHardwareToken(Context c) {
-        String HARDWARE_TOKEN = null;
-
-        TelephonyManager telephonyManager  = (TelephonyManager) c.getSystemService( Context.TELEPHONY_SERVICE );
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        if( telephonyManager != null ) {
-            String tempMAC = telephonyManager.getDeviceId();
-            if( tempMAC != null )
-                HARDWARE_TOKEN = tempMAC.replace( "/", "" );
-        }
-
-        if( HARDWARE_TOKEN == null && mBluetoothAdapter != null ) {
-            if( mBluetoothAdapter.isEnabled() ) {
-                String tempMAC = mBluetoothAdapter.getAddress();
-                if( tempMAC != null )
-                    HARDWARE_TOKEN = tempMAC.replaceAll( ":", "" );
-            }
-        }
-
-        return HARDWARE_TOKEN;
     }
 
     /**
@@ -606,7 +623,7 @@ public class AppUtils {
      * @param activity The activity that
      * @param code The code for the activity result
      * */
-    public static boolean checkPlayServices( Activity activity, int code ) {
+    public static boolean isGooglePlayServicesAvailable( Activity activity, int code ) {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable( activity );
         if( resultCode != ConnectionResult.SUCCESS ) {
@@ -615,6 +632,44 @@ public class AppUtils {
             } else {
                 ToastMaster.makeText( activity, R.string.error_not_supported, Toast.LENGTH_LONG ).show();
                 activity.finish();
+            }
+            return false;
+        }
+        return true;
+    }
+
+    /**
+     * Requests a permission for the use of a phone's characteristic (e.g. Camera, Phone info, etc)
+     * @param ac The application context
+     * @param message A message to request the permission
+     * @param permission The permission
+     * @param requestCode The request code for the result
+     * @return If the permission was already allowed or not
+     */
+    public static boolean requestPermission( final Activity ac, final int message, final String permission, final int requestCode ) {
+        // Assume thisActivity is the current activity
+        int permissionCheck = ContextCompat.checkSelfPermission( ac, permission );
+        if( permissionCheck != PackageManager.PERMISSION_GRANTED ) {
+            if( ActivityCompat.shouldShowRequestPermissionRationale( ac, permission ) ) {
+                DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick( DialogInterface dialog, int which ) {
+                        ActivityCompat.requestPermissions(
+                                ac,
+                                new String[]{permission},
+                                requestCode
+                        );
+                    }
+                };
+
+                AlertDialogHelper.showAlertDialog(
+                        ac,
+                        message,
+                        onClick
+                );
+            } else {
+                // No explanation needed, we can request the permission.
+                ActivityCompat.requestPermissions( ac, new String[]{permission}, requestCode );
             }
             return false;
         }

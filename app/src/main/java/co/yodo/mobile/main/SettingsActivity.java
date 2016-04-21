@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.preference.CheckBoxPreference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
@@ -40,7 +41,9 @@ public class SettingsActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById( R.id.toolbar );
 
         setSupportActionBar( toolbar );
-        getSupportActionBar().setDisplayHomeAsUpEnabled( true );
+        ActionBar actionbar = getSupportActionBar();
+        if( actionbar != null )
+            actionbar.setDisplayHomeAsUpEnabled( true );
 
         getFragmentManager().beginTransaction().replace( R.id.content, new PrefsFragmentInner() ).commit();
     }

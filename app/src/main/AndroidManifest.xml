@@ -93,7 +93,7 @@
         <activity
             android:name=".main.CameraActivity"
             android:label="@string/title_activity_camera"
-            android:screenOrientation="landscape" >
+            android:screenOrientation="sensorLandscape" >
         </activity>
         <activity
             android:name=".main.MainActivity"
