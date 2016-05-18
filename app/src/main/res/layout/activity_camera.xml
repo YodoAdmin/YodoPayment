@@ -2,9 +2,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="co.yodo.mobile.main.CameraActivity">
+    tools:context="co.yodo.mobile.ui.CameraActivity">
 
-    <co.yodo.mobile.main.CameraPreview
+    <co.yodo.mobile.ui.CameraPreview
         android:id="@+id/preview"
         android:layout_height="match_parent"
         android:layout_width="match_parent"/>

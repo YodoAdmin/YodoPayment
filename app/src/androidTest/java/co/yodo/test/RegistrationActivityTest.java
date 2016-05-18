@@ -4,15 +4,13 @@ import android.test.ActivityInstrumentationTestCase2;
 
 import java.util.concurrent.Semaphore;
 
-import co.yodo.mobile.data.ServerResponse;
+import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.AppUtils;
-import co.yodo.mobile.main.RegistrationActivity;
-import co.yodo.mobile.net.YodoRequest;
+import co.yodo.mobile.ui.RegistrationActivity;
+import co.yodo.mobile.network.YodoRequest;
 
 public class RegistrationActivityTest extends ActivityInstrumentationTestCase2<RegistrationActivity> implements YodoRequest.RESTListener {
-    /** The activity object */
-    private RegistrationActivity activity;
 
     /** Authentication Number */
     private String hardwareToken;
@@ -20,6 +18,9 @@ public class RegistrationActivityTest extends ActivityInstrumentationTestCase2<R
     /** User PIP */
     private final static String userPIP   = "aaaa";
 
+    /** Manager for the server requests */
+    private YodoRequest mRequestManager;
+    
     /** Server Response */
     private ServerResponse response;
 
@@ -33,11 +34,13 @@ public class RegistrationActivityTest extends ActivityInstrumentationTestCase2<R
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        activity      = getActivity();
+        /* The activity object */
+        RegistrationActivity activity = getActivity();
         hardwareToken = AppUtils.getHardwareToken( activity );
         semaphore     = new Semaphore( 0 );
 
-        YodoRequest.getInstance().setListener( this );
+        mRequestManager = YodoRequest.getInstance( activity );
+        mRequestManager.setListener( this );
     }
 
     /**
@@ -45,7 +48,7 @@ public class RegistrationActivityTest extends ActivityInstrumentationTestCase2<R
      * @throws Exception
      */
     private void closeAccount() throws Exception {
-        YodoRequest.getInstance().requestCloseAccount( activity, hardwareToken, userPIP );
+        mRequestManager.requestCloseAccount( hardwareToken, userPIP );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -54,7 +57,7 @@ public class RegistrationActivityTest extends ActivityInstrumentationTestCase2<R
 
     public void test() throws Exception {
         assertNotNull( hardwareToken );
-        assertNotNull( YodoRequest.getInstance() );
+        assertNotNull( mRequestManager );
     }
 
     /**
@@ -66,7 +69,7 @@ public class RegistrationActivityTest extends ActivityInstrumentationTestCase2<R
         closeAccount();
 
         // All Correct
-        YodoRequest.getInstance().requestRegistration( activity, hardwareToken, userPIP );
+        mRequestManager.requestRegistration( hardwareToken, userPIP );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -74,7 +77,7 @@ public class RegistrationActivityTest extends ActivityInstrumentationTestCase2<R
         response = null;
 
         // No Hardware Token
-        YodoRequest.getInstance().requestRegistration( activity, "", userPIP );
+        mRequestManager.requestRegistration( "", userPIP );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -82,7 +85,7 @@ public class RegistrationActivityTest extends ActivityInstrumentationTestCase2<R
         response = null;
 
         // No Password
-        YodoRequest.getInstance().requestRegistration( activity, "", "" );
+        mRequestManager.requestRegistration( "", "" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -98,7 +101,7 @@ public class RegistrationActivityTest extends ActivityInstrumentationTestCase2<R
         // First close the account
         closeAccount();
 
-        YodoRequest.getInstance().requestRegistration( activity, hardwareToken, userPIP );
+        mRequestManager.requestRegistration( hardwareToken, userPIP );
         semaphore.acquire();
 
         String authNumber = response.getAuthNumber();
@@ -107,7 +110,7 @@ public class RegistrationActivityTest extends ActivityInstrumentationTestCase2<R
         response = null;
 
         // All Correct
-        YodoRequest.getInstance().requestBiometricRegistration( activity, authNumber, AppConfig.YODO_BIOMETRIC );
+        mRequestManager.requestBiometricRegistration( authNumber, AppConfig.YODO_BIOMETRIC );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -115,7 +118,7 @@ public class RegistrationActivityTest extends ActivityInstrumentationTestCase2<R
         response = null;
 
         // No Biometric Token
-        YodoRequest.getInstance().requestBiometricRegistration( activity, authNumber, "" );
+        mRequestManager.requestBiometricRegistration( authNumber, "" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -123,7 +126,7 @@ public class RegistrationActivityTest extends ActivityInstrumentationTestCase2<R
         response = null;
 
         // No Auth Number
-        YodoRequest.getInstance().requestBiometricRegistration( activity, "", AppConfig.YODO_BIOMETRIC );
+        mRequestManager.requestBiometricRegistration( "", AppConfig.YODO_BIOMETRIC );
         semaphore.acquire();
 
         assertNotNull( response );

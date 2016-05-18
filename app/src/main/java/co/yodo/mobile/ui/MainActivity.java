@@ -1,0 +1,1056 @@
+package co.yodo.mobile.ui;
+
+import android.Manifest;
+import android.app.Dialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
+import android.os.Bundle;
+import android.os.Environment;
+import android.os.Handler;
+import android.support.design.widget.Snackbar;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
+import android.support.v7.app.AlertDialog;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuItem;
+import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.HashMap;
+
+import co.yodo.mobile.R;
+import co.yodo.mobile.broadcastreceiver.BroadcastMessage;
+import co.yodo.mobile.component.ClearEditText;
+import co.yodo.mobile.ui.component.ImageLoader;
+import co.yodo.mobile.ui.component.ProgressDialogHelper;
+import co.yodo.mobile.ui.component.ToastMaster;
+import co.yodo.mobile.ui.component.YodoHandler;
+import co.yodo.mobile.database.model.Receipt;
+import co.yodo.mobile.network.model.ServerResponse;
+import co.yodo.mobile.database.CouponsDataSource;
+import co.yodo.mobile.database.ReceiptsDataSource;
+import co.yodo.mobile.ui.component.AlertDialogHelper;
+import co.yodo.mobile.helper.AppConfig;
+import co.yodo.mobile.helper.AppEula;
+import co.yodo.mobile.helper.AppUtils;
+import co.yodo.mobile.helper.Intents;
+import co.yodo.mobile.network.YodoRequest;
+import co.yodo.mobile.service.AdvertisingService;
+import co.yodo.mobile.component.SKSCreater;
+import it.sephiroth.android.library.imagezoom.ImageViewTouch;
+import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
+
+public class MainActivity extends AppCompatActivity implements YodoRequest.RESTListener {
+    /** DEBUG */
+    @SuppressWarnings( "unused" )
+    private static final String TAG = MainActivity.class.getSimpleName();
+
+    /** The context object */
+    private Context ac;
+
+    /** Account identifier */
+    private String hardwareToken;
+
+    /** Messages Handler */
+    private static YodoHandler handlerMessages;
+
+    /** Manager for the server requests */
+    private YodoRequest mRequestManager;
+
+    /** GUI Controllers */
+    private TextView mAccountNumber;
+    private TextView mAccountDate;
+    private TextView mAccountBalance;
+    private RelativeLayout mAdvertisingLayout;
+    private ImageViewTouch mAdvertisingImage;
+    private DrawerLayout mDrawerLayout;
+    private ActionBarDrawerToggle mDrawerToggle;
+
+    /** Database and current merchant */
+    private CouponsDataSource couponsdb;
+    private ReceiptsDataSource receiptsdb;
+    private String merchant;
+
+    /** The Local Broadcast Manager */
+    private LocalBroadcastManager lbm;
+
+    /** SKS time to dismiss milliseconds */
+    private static final int TIME_TO_DISMISS_SKS = 60000;
+
+    /** SKS data separator */
+    private static final String SKS_SEP   = "**";
+    //private static final String SKS_REGEX = "\\*\\*";
+
+    /** SKS code */
+    private String originalCode;
+
+    /** PIP temporal */
+    private String pipTemp;
+
+    /** Differentiates the same query for different actions */
+    private Integer queryType;
+
+    private static final int GENERATE_SKS = 0;
+    private static final int DELINK       = 1;
+
+    /** AlertDialog for Payments */
+    private AlertDialog alertDialog;
+    private Dialog sksDialog;
+
+    /** Request codes for the permissions */
+    private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate( savedInstanceState );
+        AppUtils.setLanguage( MainActivity.this );
+        setContentView( R.layout.activity_main );
+
+        setupGUI();
+        updateData();
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        // True when the activity is in foreground
+        AppUtils.saveIsForeground( ac, true );
+        // Register listener for requests and  broadcast receivers
+        mRequestManager.setListener( this );
+        registerBroadcasts();
+        // Open databases
+        openDatabases();
+
+        // Starts advertising service if enabled
+        Intent iAdv = new Intent( ac, AdvertisingService.class );
+        if( AppUtils.isMyServiceRunning( ac, AdvertisingService.class.getName() ) )
+            stopService( iAdv );
+
+        if( AppUtils.isAdvertising( ac ) )
+            startService( iAdv );
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        // False when the activity is not in foreground
+        AppUtils.saveIsForeground( ac, false );
+        // Register broadcast receivers
+        unregisterBroadcasts();
+        // Close databases
+        closeDatabases();
+
+        // Stops advertising service if running
+        if( AppUtils.isMyServiceRunning( ac, AdvertisingService.class.getName() ) ) {
+            Intent iAdv = new Intent( ac, AdvertisingService.class );
+            stopService( iAdv );
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
+        // register to event bus
+        EventBus.getDefault().register( this );
+    }
+
+    @Override
+    public void onStop() {
+        super.onStop();
+        // unregister from event bus
+        EventBus.getDefault().unregister( this );
+    }
+
+    @Override
+    protected void onPostCreate(Bundle savedInstanceState) {
+        super.onPostCreate(savedInstanceState);
+        mDrawerToggle.syncState();
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_main, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if( mDrawerToggle.onOptionsItemSelected( item ) ) {
+            return true;
+        }
+
+        int id = item.getItemId();
+        switch( id ) {
+            case R.id.action_settings:
+                Intent intent = new Intent( MainActivity.this, SettingsActivity.class );
+                startActivity( intent );
+                return true;
+
+            case R.id.action_about:
+                final String title   = item.getTitle().toString();
+                final String message = getString( R.string.version_label ) + " " +
+                                       getString( R.string.version_value ) + "/" +
+                                       YodoRequest.getSwitch() + "\n\n" +
+                                       getString( R.string.about_message );
+
+                LayoutInflater inflater = (LayoutInflater) getSystemService( LAYOUT_INFLATER_SERVICE );
+                View layout = inflater.inflate( R.layout.dialog_about, new LinearLayout( this ), false );
+
+                TextView emailView = (TextView) layout.findViewById( R.id.emailView );
+                TextView messageView = (TextView) layout.findViewById( R.id.messageView );
+
+                SpannableString email = new SpannableString( getString( R.string.about_email ) );
+                email.setSpan( new UnderlineSpan(), 0, email.length(), 0 );
+
+                emailView.setText( email );
+                messageView.setText( message );
+
+                emailView.setOnClickListener( new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        Intent intent = new Intent( Intent.ACTION_SEND );
+                        String[] recipients = { getString( R.string.about_email ) };
+                        intent.putExtra( Intent.EXTRA_EMAIL, recipients ) ;
+                        intent.putExtra( Intent.EXTRA_SUBJECT, hardwareToken );
+                        intent.setType( "text/html" );
+                        startActivity( Intent.createChooser( intent, "Send Email" ) );
+                    }
+                });
+
+                AlertDialogHelper.showAlertDialog(
+                        ac,
+                        title,
+                        layout
+                );
+                return true;
+        }
+        return super.onOptionsItemSelected( item );
+    }
+
+    /**
+     * Configures the main GUI Controllers
+     */
+    private void setupGUI() {
+        // get the context
+        ac = MainActivity.this;
+        handlerMessages = new YodoHandler( MainActivity.this );
+        mRequestManager = YodoRequest.getInstance( ac );
+
+        // get local broadcast
+        lbm = LocalBroadcastManager.getInstance( ac );
+
+        // Globals GUI Components
+        mAccountNumber     = (TextView) findViewById( R.id.accountNumberText );
+        mAccountDate       = (TextView) findViewById( R.id.accountDateText );
+        mAccountBalance    = (TextView) findViewById( R.id.accountBalanceText );
+        mAdvertisingLayout = (RelativeLayout) findViewById( R.id.advertisingLayout );
+        mAdvertisingImage  = (ImageViewTouch) findViewById( R.id.advertisingImage );
+        mDrawerLayout      = (DrawerLayout) findViewById(R.id.drawerLayout);
+
+        // Images fit parent
+        mAdvertisingImage.setDisplayType( ImageViewTouchBase.DisplayType.FIT_TO_SCREEN );
+
+        // Only used at creation
+        Toolbar toolbar = (Toolbar) findViewById( R.id.actionBar );
+
+        // Setup the toolbar
+        setSupportActionBar( toolbar );
+        ActionBar actionBar = getSupportActionBar();
+        if( actionBar != null )
+            actionBar.setDisplayHomeAsUpEnabled( true );
+
+        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed( drawerView );
+            }
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened( drawerView );
+            }
+        };
+
+        mDrawerLayout.addDrawerListener( mDrawerToggle );
+
+        couponsdb  = new CouponsDataSource( ac );
+        receiptsdb = ReceiptsDataSource.getInstance( ac );
+        //receiptsdb = new ReceiptsDataSource( ac );
+
+        mAdvertisingImage.setOnLongClickListener( new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                boolean writePermission = AppUtils.requestPermission(
+                        MainActivity.this,
+                        R.string.message_permission_write_external_storage,
+                        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+                        PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
+                );
+
+                final Drawable drawable = mAdvertisingImage.getDrawable();
+
+                if( !writePermission || drawable == null )
+                    return false;
+
+                DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int item) {
+                        Bitmap bitmap = AppUtils.drawableToBitmap( drawable );
+                        File directory = new File( Environment.getExternalStorageDirectory(), AppConfig.COUPONS_FOLDER );
+                        boolean success = true;
+
+                        if( !directory.exists() )
+                            success = directory.mkdir();
+
+                        if( !success ) {
+                            Toast.makeText( ac, R.string.image_saved_failed, Toast.LENGTH_SHORT ).show();
+                            return;
+                        }
+
+                        int files = directory.listFiles().length;
+                        File image = new File( directory, "ad" + (files + 1) + ".png" );
+
+                        FileOutputStream outStream;
+                        try {
+                            outStream = new FileOutputStream( image );
+                            bitmap.compress( Bitmap.CompressFormat.PNG, 90, outStream );
+
+                            outStream.flush();
+                            outStream.close();
+                            couponsdb.createCoupon( image.getPath(), merchant );
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                };
+
+                AlertDialogHelper.showAlertDialog(
+                        ac,
+                        R.string.save_image,
+                        onClick
+                );
+
+                return true;
+            }
+        });
+
+        if( AppUtils.isFirstLogin( ac ) ) {
+            mDrawerLayout.openDrawer( GravityCompat.START );
+            AppUtils.saveFirstLogin( ac, false );
+        }
+
+        AppEula.show( this );
+    }
+
+    /**
+     * Sets the main values
+     */
+    private void updateData() {
+        // Gets the hardware token - account identifier
+        hardwareToken = AppUtils.getHardwareToken( ac );
+        if( hardwareToken == null ) {
+            ToastMaster.makeText( ac, R.string.message_no_hardware, Toast.LENGTH_LONG ).show();
+            finish();
+        }
+        // Set the account number and current date
+        mAccountNumber.setText( hardwareToken );
+        mAccountDate.setText( AppUtils.getCurrentDate() );
+    }
+
+    /**
+     * Asks for the PIP to realize a payment
+     * @param v, not used
+     */
+    public void paymentClick( View v ) {
+        final String title      = getString( R.string.input_pip );
+        final EditText inputBox = new ClearEditText( ac );
+
+        DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+                String pip = inputBox.getText().toString();
+                AppUtils.hideSoftKeyboard( MainActivity.this );
+
+                if( pip.length() < AppConfig.MIN_PIP_LENGTH ) {
+                    ToastMaster.makeText( MainActivity.this, R.string.pip_short, Toast.LENGTH_SHORT ).show();
+                } else {
+                    mAdvertisingLayout.setVisibility( View.GONE );
+                    originalCode = pip + SKS_SEP + hardwareToken + SKS_SEP;
+                    pipTemp   = pip;
+                    queryType = GENERATE_SKS;
+
+                    ProgressDialogHelper.getInstance().createProgressDialog( ac );
+
+                    YodoRequest.getInstance( ac ).requestClientAuth(
+                            hardwareToken, pip
+                    );
+                }
+            }
+        };
+
+        AlertDialogHelper.showAlertDialog(
+                ac,
+                title,
+                null, null,
+                inputBox,
+                onClick
+        );
+    }
+
+    /**
+     * List of saved coupons
+     * @param v, not used
+     */
+    public void couponsClick(View v) {
+        Intent intent = new Intent( MainActivity.this, CouponsActivity.class );
+        startActivity( intent );
+    }
+
+    /**
+     * Future feature
+     * @param v, not used
+     */
+    public void networkClick(View v) {
+        Snackbar.make( mDrawerLayout, R.string.no_available, Snackbar.LENGTH_SHORT ).show();
+    }
+
+    /**
+     * Changes the current PIP
+     * @param v, not used
+     */
+    public void resetPipClick(View v) {
+        mDrawerLayout.closeDrawers();
+
+        Intent intent = new Intent( MainActivity.this, PipResetActivity.class );
+        startActivity( intent );
+    }
+
+    /**
+     * Get the saved receipts
+     * @param v, not used
+     */
+    public void savedReceiptsClick(View v) {
+        mDrawerLayout.closeDrawers();
+
+        Intent intent = new Intent( MainActivity.this, ReceiptsActivity.class );
+        startActivity( intent );
+    }
+
+    /**
+     * Link the account with another
+     * @param v, not used
+     */
+    public void linkAccountsClick(View v) {
+        mDrawerLayout.closeDrawers();
+
+        //Snackbar.make( mDrawerLayout, R.string.no_available, Snackbar.LENGTH_SHORT ).show();
+
+        final EditText inputBox = new ClearEditText( ac );
+        String[] options = getResources().getStringArray( R.array.link_options_array );
+
+        DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, final int item) {
+                switch( item ) {
+                    case 0:
+                        DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int item1) {
+                                String pip = inputBox.getText().toString();
+                                AppUtils.hideSoftKeyboard( MainActivity.this );
+
+                                if( pip.length() < AppConfig.MIN_PIP_LENGTH ) {
+                                    ToastMaster.makeText( MainActivity.this, R.string.pip_short, Toast.LENGTH_SHORT ).show();
+                                } else {
+                                    ProgressDialogHelper.getInstance().createProgressDialog( ac );
+                                    mRequestManager.requestLinkingCode(
+                                            hardwareToken,
+                                            pip
+                                    );
+                                }
+                            }
+                        };
+
+                        AlertDialogHelper.showAlertDialog(
+                                ac,
+                                getString( R.string.input_pip ),
+                                null, null,
+                                inputBox,
+                                onClick
+                        );
+                        break;
+
+                    case 1:
+                        String title = getString( R.string.input_linking_code );
+
+                        onClick = new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                String linkingCode = inputBox.getText().toString();
+
+                                ProgressDialogHelper.getInstance().createProgressDialog( ac );
+                                mRequestManager.requestLinkAccount(
+                                        hardwareToken,
+                                        linkingCode
+                                );
+                            }
+                        };
+
+                        AlertDialogHelper.showAlertDialog(
+                                ac,
+                                title,
+                                null, getString( R.string.show_linking_code ),
+                                inputBox,
+                                onClick
+                        );
+
+                        break;
+
+                    case 2:
+                        title = getString( R.string.input_pip );
+
+                        onClick = new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int item1) {
+                                String pip = inputBox.getText().toString();
+                                AppUtils.hideSoftKeyboard( MainActivity.this );
+
+                                if( pip.length() < AppConfig.MIN_PIP_LENGTH ) {
+                                    ToastMaster.makeText( MainActivity.this, R.string.pip_short, Toast.LENGTH_SHORT ).show();
+                                } else {
+                                    pipTemp   = pip;
+                                    queryType = DELINK;
+
+                                    ProgressDialogHelper.getInstance().createProgressDialog( ac );
+                                    mRequestManager.requestLinkedAccounts(
+                                            hardwareToken,
+                                            pip
+                                    );
+                                }
+                            }
+                        };
+
+                        AlertDialogHelper.showAlertDialog(
+                                ac,
+                                title,
+                                null, null,
+                                inputBox,
+                                onClick
+                        );
+
+                        break;
+                }
+            }
+        };
+
+        AlertDialogHelper.showAlertDialog( ac, getString( R.string.linking_menu ), options, onClick );
+    }
+
+    /**
+     * Get the user balance
+     * @param v, The button view, not used
+     */
+    public void balanceClick( View v ) {
+        mDrawerLayout.closeDrawers();
+
+        final String title      = getString( R.string.input_pip );
+        final EditText inputBox = new ClearEditText( ac );
+
+        DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+                String pip = inputBox.getText().toString();
+                AppUtils.hideSoftKeyboard( MainActivity.this );
+
+                if( pip.length() < AppConfig.MIN_PIP_LENGTH ) {
+                    ToastMaster.makeText( ac, R.string.pip_short, Toast.LENGTH_SHORT ).show();
+                } else {
+                    ProgressDialogHelper.getInstance().createProgressDialog( ac );
+                    mRequestManager.requestBalance(
+                            hardwareToken,
+                            pip
+                    );
+                }
+            }
+        };
+
+        AlertDialogHelper.showAlertDialog(
+                ac,
+                title,
+                null, null,
+                inputBox,
+                onClick
+        );
+    }
+
+    /**
+     * Closes the client account
+     * @param v, not used
+     */
+    public void closeAccountClick(View v) {
+        mDrawerLayout.closeDrawers();
+
+        final String title      = getString( R.string.input_pip );
+        final String message    = getString( R.string.close_message );
+        final EditText inputBox = new ClearEditText( ac );
+
+        DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int item) {
+                String pip = inputBox.getText().toString();
+                AppUtils.hideSoftKeyboard( MainActivity.this );
+
+                if( pip.length() < AppConfig.MIN_PIP_LENGTH ) {
+                    ToastMaster.makeText( MainActivity.this, R.string.pip_short, Toast.LENGTH_SHORT ).show();
+                } else {
+                    ProgressDialogHelper.getInstance().createProgressDialog( ac );
+                    mRequestManager.requestCloseAccount(
+                            hardwareToken,
+                            pip
+                    );
+                }
+            }
+        };
+
+        AlertDialogHelper.showAlertDialog(
+                ac,
+                title,
+                message, null,
+                inputBox,
+                onClick
+        );
+    }
+
+    public void alternatePaymentClick( View v ) {
+        final ImageView accountImage = (ImageView) v;
+        Integer account_type = Integer.parseInt( accountImage.getContentDescription().toString() );
+        //String[] accounts = AppUtils.getLinkedAccount( ac ).split( AppUtils.ACC_SEP );
+
+        if( account_type == 0 ) {
+            account_type = null;
+        } /*else {
+            if( !Arrays.asList( accounts ).contains( String.valueOf( account_type ) ) ) {
+                ToastMaster.makeText( ac, R.string.no_linked_account, Toast.LENGTH_SHORT ).show();
+                return;
+            }
+        }*/
+
+        showSKSDialog( originalCode, account_type );
+        originalCode = null;
+
+        alertDialog.dismiss();
+        alertDialog = null;
+    }
+
+    /**
+     * Register/Unregister the Broadcast Receivers.
+     */
+    private void registerBroadcasts() {
+        IntentFilter filter = new IntentFilter();
+        filter.addAction( BroadcastMessage.ACTION_NEW_MERCHANT );
+        lbm.registerReceiver(mYodoBroadcastReceiver, filter);
+    }
+
+    private void unregisterBroadcasts() {
+        lbm.unregisterReceiver(mYodoBroadcastReceiver);
+    }
+
+    /**
+     * Open/Close the databases.
+     */
+    private void openDatabases() {
+        if( couponsdb != null )
+            couponsdb.open();
+
+        if( receiptsdb != null )
+            receiptsdb.open();
+    }
+
+    private void closeDatabases() {
+        if( couponsdb != null )
+            couponsdb.close();
+
+        if( receiptsdb != null )
+            receiptsdb.close();
+    }
+
+    /**
+     * Method to show the dialog containing the SKS code
+     */
+    private void showSKSDialog( final String code, final Integer account_type ) {
+        try {
+            final Bitmap qrCode = SKSCreater.createSKS( code, this, SKSCreater.SKS_CODE, account_type );
+            //final Dialog sksDialog = new Dialog( this );
+            sksDialog = new Dialog( this );
+
+            sksDialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
+            sksDialog.setContentView( R.layout.dialog_sks );
+            sksDialog.setCancelable( false );
+
+            // brightness
+            final WindowManager.LayoutParams lp = getWindow().getAttributes();
+            final float brightnessNow = lp.screenBrightness;
+
+            sksDialog.setOnShowListener(new DialogInterface.OnShowListener() {
+                @Override
+                public void onShow(DialogInterface dialog) {
+                    lp.screenBrightness = 100 / 100.0f;
+                    getWindow().setAttributes( lp );
+                }
+            });
+
+            sksDialog.setOnKeyListener(new Dialog.OnKeyListener() {
+                @Override
+                public boolean onKey(DialogInterface dialog, int keyCode, KeyEvent event) {
+                    if( keyCode == KeyEvent.KEYCODE_BACK )
+                        dialog.dismiss();
+                    return true;
+                }
+            });
+
+            sksDialog.setOnDismissListener(new DialogInterface.OnDismissListener() {
+                @Override
+                public void onDismiss(DialogInterface dialog) {
+                    lp.screenBrightness = brightnessNow;
+                    getWindow().setAttributes( lp );
+                    mAdvertisingLayout.setVisibility( View.VISIBLE );
+                }
+            });
+
+            ImageView image = (ImageView) sksDialog.findViewById( R.id.sks );
+            image.setImageBitmap( qrCode );
+
+            sksDialog.show();
+
+            final Handler t = new Handler();
+            t.postDelayed( new Runnable() {
+                @Override
+                public void run() {
+                    if( sksDialog.isShowing() )
+                        sksDialog.dismiss();
+                }
+            }, TIME_TO_DISMISS_SKS );
+        } catch( UnsupportedEncodingException e ) {
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * BUild the receipt from the params (ServerResponse) obtained through GCM
+     * @param params All the parameters to be set in the receipt
+     */
+    private void receiptDialog( final HashMap<String, String> params ) {
+        final Dialog receipt = new Dialog( MainActivity.this );
+        receipt.requestWindowFeature( Window.FEATURE_NO_TITLE );
+
+        LayoutInflater inflater = (LayoutInflater) getSystemService( LAYOUT_INFLATER_SERVICE );
+        View layout = inflater.inflate( R.layout.dialog_receipt, new LinearLayout( this ), false );
+
+        TextView descriptionText    = (TextView)  layout.findViewById( R.id.descriptionText );
+        TextView authNumberText     = (TextView)  layout.findViewById( R.id.authNumberText );
+        TextView createdText        = (TextView)  layout.findViewById( R.id.createdText );
+        TextView currencyText       = (TextView)  layout.findViewById( R.id.currencyText );
+        TextView totalAmountText    = (TextView)  layout.findViewById( R.id.paidText );
+        TextView tenderAmountText   = (TextView)  layout.findViewById( R.id.cashTenderText );
+        TextView cashBackAmountText = (TextView)  layout.findViewById( R.id.cashBackText );
+        TextView tvDonorText        = (TextView)  layout.findViewById( R.id.tvDonorText );
+        TextView tvReceiverText     = (TextView)  layout.findViewById( R.id.tvReceiverText );
+        ImageView deleteButton      = (ImageView) layout.findViewById( R.id.deleteButton );
+        ImageView saveButton        = (ImageView) layout.findViewById( R.id.saveButton );
+        LinearLayout donorLayout    = (LinearLayout) layout.findViewById( R.id.donorAccountLayout );
+
+        final String authNumber     = params.get( ServerResponse.AUTHNUMBER );
+        final String description    = params.get( ServerResponse.DESCRIPTION );
+        final String tCurrency      = params.get( ServerResponse.TCURRENCY ); // Merchant currency
+        final String exchRate       = params.get( ServerResponse.EXCH_RATE );
+        final String dCurrency      = params.get( ServerResponse.DCURRENCY ); // Tender currency
+        final String totalAmount    = AppUtils.truncateDecimal( params.get( ServerResponse.AMOUNT ) );
+        final String tenderAmount   = AppUtils.truncateDecimal( params.get( ServerResponse.TAMOUNT ) );
+        final String cashBackAmount = AppUtils.truncateDecimal( params.get( ServerResponse.CASHBACK ) );
+        final String balance        = AppUtils.truncateDecimal( params.get( ServerResponse.BALANCE ) );
+        final String currency       = params.get( ServerResponse.CURRENCY ); // Account currency
+        final String donor          = params.get( ServerResponse.DONOR );
+        final String receiver       = params.get( ServerResponse.RECEIVER );
+        final String created        = params.get( ServerResponse.CREATED);
+
+        descriptionText.setText( description );
+        authNumberText.setText( authNumber );
+        createdText.setText( AppUtils.UTCtoCurrent( ac, created ) );
+        currencyText.setText( dCurrency );
+        totalAmountText.setText( String.format( "%s %s", totalAmount, tCurrency ) );
+        tenderAmountText.setText( tenderAmount );
+        cashBackAmountText.setText( cashBackAmount );
+
+        mAccountBalance.setText( String.format( "%s %s", balance, currency ) );
+
+        if( donor != null ) {
+            donorLayout.setVisibility( View.VISIBLE );
+            tvDonorText.setText( donor );
+        }
+        tvReceiverText.setText( receiver );
+
+        deleteButton.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick( View v ) {
+                // Dismiss SKS and receipt
+                if( donor == null )
+                    sksDialog.dismiss();
+                receipt.dismiss();
+                // Show a notification which can reverse the delete
+                Snackbar.make( mDrawerLayout, R.string.message_deleted_receipt, Snackbar.LENGTH_LONG )
+                        .setAction( R.string.message_undo, new View.OnClickListener() {
+                            @Override
+                            public void onClick( View v ) {
+                                v.setEnabled( false );
+                                receiptDialog( params );
+                            }
+                        } ).show();
+            }
+        } );
+
+        saveButton.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                final Receipt item = receiptsdb.createReceipt(
+                        authNumber, description, tCurrency, exchRate,
+                        dCurrency, totalAmount, tenderAmount, cashBackAmount,
+                        balance, currency, donor, receiver, created
+                );
+                // Dismiss SKS and receipt
+                if( donor == null && sksDialog != null )
+                    sksDialog.dismiss();
+                receipt.dismiss();
+                // Show a notification which can reverse the save
+                Snackbar.make( mDrawerLayout, R.string.saved_receipt, Snackbar.LENGTH_LONG )
+                        .setAction( R.string.message_undo, new View.OnClickListener() {
+                            @Override
+                            public void onClick( View v ) {
+                                v.setEnabled( false );
+                                receiptsdb.deleteReceipt( item );
+                                receiptDialog( params );
+                            }
+                        } ).show();
+            }
+        });
+
+        receipt.setCancelable( false );
+        receipt.setContentView( layout );
+        receipt.show();
+    }
+
+    @Override
+    public void onResponse( YodoRequest.RequestType type, ServerResponse response ) {
+        if( type != YodoRequest.RequestType.QUERY_ADV_REQUEST )
+            ProgressDialogHelper.getInstance().destroyProgressDialog();
+        String code, message;
+
+        switch( type ) {
+            case AUTH_PIP_REQUEST:
+                code = response.getCode();
+
+                if( code.equals( ServerResponse.AUTHORIZED ) ) {
+                    originalCode += response.getRTime();
+
+                    ProgressDialogHelper.getInstance().createProgressDialog( ac );
+
+                    mRequestManager.requestLinkedAccounts(
+                            hardwareToken,
+                            pipTemp
+                    );
+                } else {
+                    mAdvertisingLayout.setVisibility( View.VISIBLE );
+                    message = response.getMessage();
+                    AppUtils.sendMessage( handlerMessages, code, message );
+                }
+
+                break;
+
+            case QUERY_BAL_REQUEST:
+                code = response.getCode();
+
+                switch( code ) {
+                    case ServerResponse.AUTHORIZED_BALANCE:
+                        final String tvBalance =
+                                AppUtils.truncateDecimal( response.getParam( ServerResponse.BALANCE ) ) + " " +
+                                response.getParam( ServerResponse.CURRENCY );
+                        // Trim the balance
+                        mAccountBalance.setText( tvBalance );
+                        break;
+
+                    case ServerResponse.ERROR_NO_BALANCE:
+                        mAccountBalance.setText( "" );
+                        Snackbar.make( mDrawerLayout, R.string.error_message_no_balance, Snackbar.LENGTH_SHORT ).show();
+                        break;
+
+                    default:
+                        mAccountBalance.setText( "" );
+                        message = response.getMessage();
+                        AppUtils.sendMessage( handlerMessages, code, message );
+                        break;
+                }
+                break;
+
+            case QUERY_ADV_REQUEST:
+                code = response.getCode();
+
+                if( code.equals( ServerResponse.AUTHORIZED ) ) {
+                    String url = response.getParam( ServerResponse.ADVERTISING ).replaceAll( " ", "%20" );
+                    if( !url.isEmpty() )
+                        ImageLoader.getInstance().DisplayImage( url, mAdvertisingImage );
+                }
+                break;
+
+            case QUERY_RCV_REQUEST:
+                code = response.getCode();
+
+                if( code.equals( ServerResponse.AUTHORIZED ) )
+                    receiptDialog( response.getParams() );
+
+                break;
+
+            case QUERY_LNK_REQUEST:
+                code = response.getCode();
+
+                if( code.equals( ServerResponse.AUTHORIZED ) ) {
+                    String linking_code = response.getParam( ServerResponse.LINKING_CODE );
+
+                    Dialog dialog = new Dialog( ac );
+                    dialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
+                    dialog.setContentView( R.layout.dialog_linking_code );
+
+                    final TextView codeText   = (TextView) dialog.findViewById(R.id.codeText);
+                    ImageView codeImage = (ImageView) dialog.findViewById(R.id.copyCodeImage);
+                    codeText.setText( linking_code );
+
+                    codeImage.setOnClickListener( new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            AppUtils.copyCode( ac, codeText.getText().toString() );
+                            ToastMaster.makeText( ac, R.string.copied_text, Toast.LENGTH_SHORT ).show();
+                        }
+                    });
+
+                    dialog.show();
+                } else {
+                    message = response.getMessage();
+                    AppUtils.sendMessage( handlerMessages, code, message );
+                }
+                break;
+
+            case QUERY_LNK_ACC_REQUEST:
+                code = response.getCode();
+                String from = response.getParam( ServerResponse.FROM );
+
+                if( queryType == GENERATE_SKS ) {
+                    if( code.equals( ServerResponse.AUTHORIZED ) && !from.isEmpty() ) {
+                        LayoutInflater inflater = (LayoutInflater) getSystemService( LAYOUT_INFLATER_SERVICE );
+                        View layout = inflater.inflate( R.layout.dialog_payment, new LinearLayout( ac ), false );
+                        alertDialog = AlertDialogHelper.showAlertDialog( ac, layout, getString( R.string.linking_menu ) );
+                    } else {
+                        showSKSDialog( originalCode, null );
+                        originalCode = null;
+                    }
+                } else if( queryType == DELINK ){
+                    if( code.equals( ServerResponse.AUTHORIZED ) ) {
+                        String to = response.getParam( ServerResponse.TO );
+
+                        Intent i = new Intent( ac, DeLinkActivity.class );
+                        i.putExtra( Intents.LINKED_ACC_TO, to );
+                        i.putExtra( Intents.LINKED_ACC_FROM, from );
+                        i.putExtra( Intents.LINKED_PIP, pipTemp );
+                        startActivity( i );
+                    } else {
+                        //message = response.getMessage();
+                        message = getString( R.string.error_message_no_links );
+                        AppUtils.sendMessage( handlerMessages, code, message );
+                    }
+                }
+
+                pipTemp   = null;
+                queryType = null;
+                break;
+
+            case LINK_ACC_REQUEST:
+                code = response.getCode();
+                message = response.getMessage();
+                AppUtils.sendMessage( handlerMessages, code, message );
+
+                if( code.equals( ServerResponse.AUTHORIZED ) ) {
+                    AppUtils.saveLinkedAccount( ac, getString( R.string.account_yodo_heart ) );
+                }
+                break;
+
+            case CLOSE_ACC_REQUEST:
+                code = response.getCode();
+
+                if( code.equals( ServerResponse.AUTHORIZED ) ) {
+                    AppUtils.clearPrefConfig( ac );
+
+                    couponsdb.delete();
+
+                    DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            finish();
+                        }
+                    };
+
+                    AlertDialogHelper.showAlertDialog(
+                            ac,
+                            getString( R.string.farewell_message_tittle ),
+                            getString( R.string.farewell_message ),
+                            onClick
+                    );
+                } else {
+                    message  = response.getMessage();
+                    AppUtils.sendMessage( handlerMessages, code, message );
+                }
+                break;
+        }
+    }
+
+    /**
+     * The broadcast receiver.
+     */
+    public BroadcastReceiver mYodoBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context c, Intent i) {
+            String action = i.getAction();
+			/* Broadcast: ACTION_NEW_MERCHANT */
+			/* ****************************************** */
+            if( action.equals( BroadcastMessage.ACTION_NEW_MERCHANT ) ) {
+                merchant = i.getStringExtra( BroadcastMessage.EXTRA_NEW_MERCHANT );
+
+                mRequestManager.requestAdvertising(
+                        hardwareToken,
+                        merchant
+                );
+            }
+        }
+    };
+
+    @SuppressWarnings("unused") // receives GCM receipts
+    @Subscribe( threadMode = ThreadMode.MAIN )
+    public void onResponseEvent( ServerResponse response ) {
+        receiptDialog( response.getParams() );
+    }
+}

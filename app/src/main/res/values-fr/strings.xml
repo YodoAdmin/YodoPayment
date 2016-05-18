@@ -95,6 +95,11 @@
     <string name="error.not_supported">This device is not supported</string>
     <string name="error.play_services">Google Play Services is required</string>
     <string name="error.gcm_registration">Sorry we couldn\'t save your token, try again later</string>
+    <string name="message.error.unknown">This is embarrassing! An error occurred in the process</string>
+    <string name="message.error.network">Sorry, seems that you don\'t have an Internet connection right now</string>
+    <string name="message.error.timeout">Sorry, seems that the server is too busy. Try again later</string>
+    <string name="message.error.server">Sorry, the server responded with an error. Try again later</string>
+    <string name="message.error.transaction">Sorry, the type of transaction is not valid. Try again later</string>
 
     <!-- General Messages -->
     <string name="save_image">Save Coupon?</string>

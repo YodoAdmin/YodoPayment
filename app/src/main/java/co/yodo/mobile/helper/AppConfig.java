@@ -103,6 +103,9 @@ public class AppConfig {
     /* Coupons folder */
     public static final String COUPONS_FOLDER = "Yodo";
 
+    /* Type for gcm (1: Android 2: iOS) */
+    public static final String DEV_TYPE = "1";
+
     /* Minimum length for the PIP */
     public static final int MIN_PIP_LENGTH = 4;
 

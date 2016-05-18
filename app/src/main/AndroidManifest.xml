@@ -28,7 +28,7 @@
         android:largeHeap="true"
         android:theme="@style/AppTheme" >
         <activity
-            android:name=".main.SplashActivity"
+            android:name=".ui.SplashActivity"
             android:label="@string/app_name"
             android:screenOrientation="sensorPortrait"
             android:theme="@style/SplashTheme">
@@ -54,7 +54,6 @@
         <!-- END BroadcastReceivers -->
 
         <!-- Start Services -->
-        <service android:name=".service.RESTService" />
         <service
             android:name=".service.AdvertisingService"
             android:enabled="true"
@@ -81,41 +80,41 @@
         <!-- End Services -->
 
         <activity
-            android:name=".main.RegistrationActivity"
+            android:name=".ui.RegistrationActivity"
             android:label="@string/title_activity_registration"
             android:screenOrientation="sensorPortrait" >
         </activity>
         <activity
-            android:name=".main.RegistrationBiometricActivity"
+            android:name=".ui.RegistrationBiometricActivity"
             android:label="@string/title_activity_registration_biometric"
             android:screenOrientation="sensorPortrait" >
         </activity>
         <activity
-            android:name=".main.CameraActivity"
+            android:name=".ui.CameraActivity"
             android:label="@string/title_activity_camera"
             android:screenOrientation="sensorLandscape" >
         </activity>
         <activity
-            android:name=".main.MainActivity"
+            android:name=".ui.MainActivity"
             android:label="@string/title_activity_main"
             android:screenOrientation="sensorPortrait" >
         </activity>
         <activity
-            android:name=".main.SettingsActivity"
+            android:name=".ui.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:theme="@style/AppTheme.Settings" >
 >
         </activity>
         <activity
-            android:name=".main.PipResetActivity"
+            android:name=".ui.PipResetActivity"
             android:label="@string/title_activity_pip_reset" >
         </activity>
         <activity
-            android:name=".main.CouponsActivity"
+            android:name=".ui.CouponsActivity"
             android:label="@string/title_activity_coupons" >
         </activity>
         <activity
-            android:name=".main.ReceiptsActivity"
+            android:name=".ui.ReceiptsActivity"
             android:label="@string/title_activity_receipts"
             android:launchMode="singleTop" >
             <intent-filter>
@@ -127,7 +126,7 @@
                 android:resource="@xml/searchable" />
         </activity>
         <activity
-            android:name=".main.DeLinkActivity"
+            android:name=".ui.DeLinkActivity"
             android:label="@string/title_activity_de_link" >
         </activity>
 

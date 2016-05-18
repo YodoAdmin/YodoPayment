@@ -4,14 +4,14 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="co.yodo.mobile.main.CouponsActivity">
+    tools:context="co.yodo.mobile.ui.CouponsActivity">
 
     <include layout="@layout/toolbar" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="co.yodo.mobile.main.ReceiptsActivity">
+        tools:context="co.yodo.mobile.ui.ReceiptsActivity">
 
         <ListView
             android:id="@+id/receiptsList"

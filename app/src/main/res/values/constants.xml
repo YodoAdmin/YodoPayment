@@ -2,8 +2,8 @@
 <resources>
 
 	<!-- payments -->
-	<string name="SC_KEY">zncvsuchaksdhfckasjdfnhaslkdfhuaksue</string>
-	<string name="SC_LETTER_TYPE">ISO-8859-1</string>
-	<string name="SKS_HEADER"></string>
+	<string name="SC_KEY" translatable="false">zncvsuchaksdhfckasjdfnhaslkdfhuaksue</string>
+	<string name="SC_LETTER_TYPE" translatable="false">ISO-8859-1</string>
+	<string name="SKS_HEADER" translatable="false"></string>
 	
 </resources>

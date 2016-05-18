@@ -29,7 +29,7 @@ public class AppEula {
         void onEulaAgreedTo();
     }
 
-    public static boolean show(final Activity activity) {
+    public static boolean show( final Activity activity ) {
         if( !AppUtils.isEulaAccepted( activity ) ) {
             final AlertDialog.Builder builder = new AlertDialog.Builder( activity, R.style.AppCompatAlertDialogStyle );
             builder.setTitle( R.string.eula_title );

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="co.yodo.mobile.main.DeLinkActivity">
+    tools:context="co.yodo.mobile.ui.DeLinkActivity">
 
     <include layout="@layout/toolbar" />
 

@@ -11,16 +11,15 @@ import android.support.v4.app.NotificationCompat;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
-import org.acra.ACRA;
 import org.greenrobot.eventbus.EventBus;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.data.Receipt;
-import co.yodo.mobile.data.ServerResponse;
+import co.yodo.mobile.database.model.Receipt;
+import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.database.ReceiptsDataSource;
 import co.yodo.mobile.helper.AppUtils;
-import co.yodo.mobile.main.ReceiptsActivity;
-import co.yodo.mobile.net.JSONHandler;
+import co.yodo.mobile.ui.ReceiptsActivity;
+import co.yodo.mobile.network.handler.JSONHandler;
 
 public class YodoGCMListenerService extends GcmListenerService {
     @SuppressWarnings( "unused" )
@@ -129,7 +128,5 @@ public class YodoGCMListenerService extends GcmListenerService {
 
         mNotificationManager = (NotificationManager) getSystemService( Context.NOTIFICATION_SERVICE );
         mNotificationManager.notify( 0, mBuilder.build() );
-
-        ACRA.getErrorReporter().handleSilentException( new Exception( "Receipt" ) );
     }
 }

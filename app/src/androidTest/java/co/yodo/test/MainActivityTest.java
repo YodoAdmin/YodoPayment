@@ -4,23 +4,23 @@ import android.test.ActivityInstrumentationTestCase2;
 
 import java.util.concurrent.Semaphore;
 
-import co.yodo.mobile.data.ServerResponse;
+import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.helper.AppUtils;
-import co.yodo.mobile.main.MainActivity;
-import co.yodo.mobile.net.YodoRequest;
+import co.yodo.mobile.ui.MainActivity;
+import co.yodo.mobile.network.YodoRequest;
 
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
 public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActivity> implements YodoRequest.RESTListener {
-    /** The activity object */
-    private MainActivity activity;
-
     /** Authentication Number */
     private String hardwareToken;
 
     /** User PIP */
     private final static String userPIP = "aaaa";
+
+    /** Manager for the server requests */
+    private YodoRequest mRequestManager;
 
     /** Server Response */
     private ServerResponse response;
@@ -35,11 +35,13 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        activity      = getActivity();
+        /* The activity object */
+        MainActivity activity = getActivity();
         hardwareToken = AppUtils.getHardwareToken( activity );
         semaphore     = new Semaphore( 0 );
 
-        YodoRequest.getInstance().setListener( this );
+        mRequestManager = YodoRequest.getInstance( activity );
+        mRequestManager.setListener( this );
     }
 
     /**
@@ -47,7 +49,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
      * @throws Exception
      */
     private void userRegistration() throws Exception {
-        YodoRequest.getInstance().requestRegistration( activity, hardwareToken, userPIP );
+       mRequestManager.requestRegistration( hardwareToken, userPIP );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -56,7 +58,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
 
     public void test() throws Exception {
         assertNotNull( hardwareToken );
-        assertNotNull( YodoRequest.getInstance() );
+        assertNotNull(mRequestManager );
     }
 
     /**
@@ -67,14 +69,14 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         // Register the user
         userRegistration();
 
-        YodoRequest.getInstance().requestAuthentication( activity, hardwareToken );
+       mRequestManager.requestClientAuth( hardwareToken );
         semaphore.acquire();
 
         assertNotNull( response );
         assertEquals( ServerResponse.AUTHORIZED, response.getCode() );
         response = null;
 
-        YodoRequest.getInstance().requestAuthentication( activity, "" );
+       mRequestManager.requestClientAuth( "" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -91,7 +93,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         userRegistration();
 
         // All Correct
-        YodoRequest.getInstance().requestPIPAuthentication( activity, hardwareToken, userPIP );
+       mRequestManager.requestClientAuth( hardwareToken, userPIP );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -99,7 +101,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         response = null;
 
         // Wrong PIP
-        YodoRequest.getInstance().requestPIPAuthentication( activity, hardwareToken, "" );
+       mRequestManager.requestClientAuth( hardwareToken, "" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -107,7 +109,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         response = null;
 
         // Wrong Hardware Token
-        YodoRequest.getInstance().requestPIPAuthentication( activity, "", "" );
+       mRequestManager.requestClientAuth( "", "" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -124,7 +126,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         userRegistration();
 
         // All Correct
-        YodoRequest.getInstance().requestBalance( activity, hardwareToken, userPIP );
+       mRequestManager.requestBalance( hardwareToken, userPIP );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -132,7 +134,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         response = null;
 
         // Wrong PIP
-        YodoRequest.getInstance().requestBalance( activity, hardwareToken, "" );
+       mRequestManager.requestBalance( hardwareToken, "" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -140,44 +142,11 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         response = null;
 
         // Wrong Hardware Token
-        YodoRequest.getInstance().requestBalance( activity, "", "" );
+       mRequestManager.requestBalance( "", "" );
         semaphore.acquire();
 
         assertNotNull( response );
         assertEquals( ServerResponse.ERROR_INCORRECT_PIP, response.getCode() );
-        response = null;
-    }
-
-    /**
-     * Test the query request to get the last receipt
-     * @throws Exception
-     */
-    public void testReceipt() throws Exception {
-        // Register the user
-        userRegistration();
-
-        // All Correct
-        YodoRequest.getInstance().requestReceipt( activity, hardwareToken, userPIP );
-        semaphore.acquire();
-
-        assertNotNull( response );
-        assertEquals( ServerResponse.ERROR_FAILED, response.getCode() );
-        response = null;
-
-        // Wrong PIP
-        YodoRequest.getInstance().requestReceipt( activity, hardwareToken, "" );
-        semaphore.acquire();
-
-        assertNotNull( response );
-        assertEquals( ServerResponse.ERROR_FAILED, response.getCode() );
-        response = null;
-
-        // Wrong Hardware Token
-        YodoRequest.getInstance().requestReceipt( activity, "", "" );
-        semaphore.acquire();
-
-        assertNotNull( response );
-        assertEquals( ServerResponse.ERROR_FAILED, response.getCode() );
         response = null;
     }
 
@@ -193,7 +162,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         String merchant = "Oreganos";
 
         // All Correct
-        YodoRequest.getInstance().requestAdvertising( activity, hardwareToken, merchant );
+       mRequestManager.requestAdvertising( hardwareToken, merchant );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -201,7 +170,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         response = null;
 
         // Wrong PIP
-        YodoRequest.getInstance().requestAdvertising( activity, hardwareToken, "" );
+       mRequestManager.requestAdvertising( hardwareToken, "" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -209,7 +178,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         response = null;
 
         // Wrong Hardware Token
-        YodoRequest.getInstance().requestAdvertising( activity, "", "" );
+       mRequestManager.requestAdvertising( "", "" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -226,7 +195,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         userRegistration();
 
         // All Correct
-        YodoRequest.getInstance().requestCloseAccount( activity, hardwareToken, userPIP );
+       mRequestManager.requestCloseAccount( hardwareToken, userPIP );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -234,7 +203,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         response = null;
 
         // Wrong PIP
-        YodoRequest.getInstance().requestCloseAccount( activity, hardwareToken, "" );
+       mRequestManager.requestCloseAccount( hardwareToken, "" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -242,7 +211,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         response = null;
 
         // Wrong Hardware Token
-        YodoRequest.getInstance().requestCloseAccount( activity, "", "" );
+       mRequestManager.requestCloseAccount( "", "" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -259,7 +228,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         userRegistration();
 
         // All Correct
-        YodoRequest.getInstance().requestLinkingCode( activity, hardwareToken, userPIP );
+       mRequestManager.requestLinkingCode( hardwareToken, userPIP );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -267,7 +236,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         response = null;
 
         // Wrong PIP
-        YodoRequest.getInstance().requestLinkingCode( activity, hardwareToken, "" );
+       mRequestManager.requestLinkingCode( hardwareToken, "" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -275,7 +244,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         response = null;
 
         // Wrong Hardware Token
-        YodoRequest.getInstance().requestLinkingCode( activity, "", "" );
+       mRequestManager.requestLinkingCode( "", "" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -293,7 +262,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         userRegistration();
 
         // Wrong Code
-        YodoRequest.getInstance().requestLinkAccount( activity, hardwareToken, "" );
+       mRequestManager.requestLinkAccount( hardwareToken, "" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -301,7 +270,7 @@ public class MainActivityTest extends ActivityInstrumentationTestCase2<MainActiv
         response = null;
 
         // Wrong Hardware Token
-        YodoRequest.getInstance().requestLinkingCode( activity, "", "" );
+       mRequestManager.requestLinkingCode( "", "" );
         semaphore.acquire();
 
         assertNotNull( response );

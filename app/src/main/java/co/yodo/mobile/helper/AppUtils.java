@@ -50,8 +50,9 @@ import java.util.TimeZone;
 import java.util.zip.GZIPOutputStream;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.component.ToastMaster;
-import co.yodo.mobile.component.YodoHandler;
+import co.yodo.mobile.ui.component.ToastMaster;
+import co.yodo.mobile.ui.component.YodoHandler;
+import co.yodo.mobile.ui.component.AlertDialogHelper;
 
 /**
  * Created by luis on 15/12/14.
@@ -354,7 +355,7 @@ public class AppUtils {
      * Hides the soft keyboard
      * @param a The activity where the keyboard is open
      */
-    public static void hideSoftKeyboard(Activity a) {
+    public static void hideSoftKeyboard( Activity a ) {
         View v = a.getCurrentFocus();
         if( v != null ) {
             InputMethodManager imm = (InputMethodManager) a.getSystemService( Context.INPUT_METHOD_SERVICE );

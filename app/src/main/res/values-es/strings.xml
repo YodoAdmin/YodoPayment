@@ -95,7 +95,11 @@
     <string name="error.not_supported">Este dispositivo no es compatible</string>
     <string name="error.play_services">Se requiere los servicios de Google Play</string>
     <string name="error.gcm_registration">Disculpe no pudimos salvar su token, inténtelo más tarde</string>
-
+    <string name="message.error.unknown">Esto es embarazoso! Ocurrió un error en el proceso</string>
+    <string name="message.error.network">Lo sentimos, parece que no dispone de una conexion a Internet en este momentow</string>
+    <string name="message.error.timeout">Lo sentimos, parece que el servidor está muy ocupado. Intente de nuevo luego</string>
+    <string name="message.error.server">Lo sentimos, el servidor respondió con un error. Intente de nuevo luegor</string>
+    <string name="message.error.transaction">Lo sentimos, el tipo de transacción no es válido. Intente de nuevo luegor</string>
 
     <!-- General Messages -->
     <string name="save_image">Salvar el Cupón?</string>
@@ -105,7 +109,7 @@
     <string name="input_linking_code">Insertar Código de Unión</string>
     <string name="input_token">Ingresa tu Contraseña Token</string>
     <string name="input_pip">Frase de Identificación Personal (PIP)</string>
-    <string name="about_message">Yodo son un par de chicos en un garaje construyendo una plataforma para conectarse de manera segura a la nube.</string>
+    <string name="about_message">Utilice el correo electrónico para ponerse en contacto con nosotros. Nosotros haremos todo lo posible para responder con rapidez. Tenga la seguridad, nunca vamos a vender o distribuir información personal que proporcione.</string>
     <string name="about_email">support@yodo.co</string>
     <string name="copied_text">El texto ha sido copiado al portapapeles</string>
 

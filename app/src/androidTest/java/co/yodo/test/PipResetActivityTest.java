@@ -4,10 +4,10 @@ import android.test.ActivityInstrumentationTestCase2;
 
 import java.util.concurrent.Semaphore;
 
-import co.yodo.mobile.data.ServerResponse;
+import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.helper.AppUtils;
-import co.yodo.mobile.main.PipResetActivity;
-import co.yodo.mobile.net.YodoRequest;
+import co.yodo.mobile.ui.PipResetActivity;
+import co.yodo.mobile.network.YodoRequest;
 
 public class PipResetActivityTest extends ActivityInstrumentationTestCase2<PipResetActivity> implements YodoRequest.RESTListener {
     /** The activity object */
@@ -20,6 +20,9 @@ public class PipResetActivityTest extends ActivityInstrumentationTestCase2<PipRe
     private final static String userPIP    = "aaaa";
     private final static String userNewPIP = "aaaa";
 
+    /** Manager for the server requests */
+    private YodoRequest mRequestManager;
+    
     /** Server Response */
     private ServerResponse response;
 
@@ -37,7 +40,8 @@ public class PipResetActivityTest extends ActivityInstrumentationTestCase2<PipRe
         hardwareToken = AppUtils.getHardwareToken(activity);
         semaphore     = new Semaphore( 0 );
 
-        YodoRequest.getInstance().setListener( this );
+        mRequestManager = YodoRequest.getInstance( activity );
+        mRequestManager.setListener( this );
     }
 
     /**
@@ -45,7 +49,7 @@ public class PipResetActivityTest extends ActivityInstrumentationTestCase2<PipRe
      * @throws Exception
      */
     private void userRegistration() throws Exception {
-        YodoRequest.getInstance().requestRegistration( activity, hardwareToken, userPIP );
+        mRequestManager.requestRegistration( hardwareToken, userPIP );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -54,7 +58,7 @@ public class PipResetActivityTest extends ActivityInstrumentationTestCase2<PipRe
 
     public void test() throws Exception {
         assertNotNull( hardwareToken );
-        assertNotNull( YodoRequest.getInstance() );
+        assertNotNull( mRequestManager );
     }
 
     /**
@@ -66,7 +70,7 @@ public class PipResetActivityTest extends ActivityInstrumentationTestCase2<PipRe
         userRegistration();
 
         // All Correct
-        YodoRequest.getInstance().requestPIPReset( activity, hardwareToken, userPIP, userNewPIP );
+        mRequestManager.requestPIPReset( hardwareToken, userPIP, userNewPIP );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -74,7 +78,7 @@ public class PipResetActivityTest extends ActivityInstrumentationTestCase2<PipRe
         response = null;
 
         // Wrong PIP
-        YodoRequest.getInstance().requestPIPReset( activity, hardwareToken, "", userNewPIP );
+        mRequestManager.requestPIPReset( hardwareToken, "", userNewPIP );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -82,7 +86,7 @@ public class PipResetActivityTest extends ActivityInstrumentationTestCase2<PipRe
         response = null;
 
         // Wrong New PIP
-        YodoRequest.getInstance().requestPIPReset( activity, hardwareToken, userPIP, "" );
+        mRequestManager.requestPIPReset( hardwareToken, userPIP, "" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -90,7 +94,7 @@ public class PipResetActivityTest extends ActivityInstrumentationTestCase2<PipRe
         response = null;
 
         // Wrong Hardware Token
-        YodoRequest.getInstance().requestPIPReset( activity, "", userPIP, userNewPIP );
+        mRequestManager.requestPIPReset( "", userPIP, userNewPIP );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -106,7 +110,7 @@ public class PipResetActivityTest extends ActivityInstrumentationTestCase2<PipRe
         // Register the user
         userRegistration();
 
-        YodoRequest.getInstance().requestBiometricToken( activity, hardwareToken );
+        mRequestManager.requestBiometricToken( hardwareToken );
         semaphore.acquire();
 
         String authNumber = response.getAuthNumber();
@@ -115,7 +119,7 @@ public class PipResetActivityTest extends ActivityInstrumentationTestCase2<PipRe
         response = null;
 
         // All Correct
-        YodoRequest.getInstance().requestBiometricPIPReset( activity, authNumber, hardwareToken , userNewPIP );
+        mRequestManager.requestBiometricPIPReset( authNumber, hardwareToken , userNewPIP );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -123,7 +127,7 @@ public class PipResetActivityTest extends ActivityInstrumentationTestCase2<PipRe
         response = null;
 
         // Wrong Auth Number
-        YodoRequest.getInstance().requestBiometricPIPReset( activity, "", hardwareToken , userNewPIP );
+        mRequestManager.requestBiometricPIPReset( "", hardwareToken , userNewPIP );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -131,7 +135,7 @@ public class PipResetActivityTest extends ActivityInstrumentationTestCase2<PipRe
         response = null;
 
         // Wrong Hardware Token
-        YodoRequest.getInstance().requestBiometricPIPReset( activity, authNumber, "" , userNewPIP );
+        mRequestManager.requestBiometricPIPReset( authNumber, "" , userNewPIP );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -139,7 +143,7 @@ public class PipResetActivityTest extends ActivityInstrumentationTestCase2<PipRe
         response = null;
 
         // No New PIP
-        YodoRequest.getInstance().requestBiometricPIPReset( activity, authNumber, hardwareToken , "" );
+        mRequestManager.requestBiometricPIPReset( authNumber, hardwareToken , "" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -156,7 +160,7 @@ public class PipResetActivityTest extends ActivityInstrumentationTestCase2<PipRe
         userRegistration();
 
         // All Correct
-        YodoRequest.getInstance().requestBiometricToken( activity, hardwareToken );
+        mRequestManager.requestBiometricToken( hardwareToken );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -164,7 +168,7 @@ public class PipResetActivityTest extends ActivityInstrumentationTestCase2<PipRe
         response = null;
 
         // Wrong Hardware Token
-        YodoRequest.getInstance().requestBiometricToken( activity, "" );
+        mRequestManager.requestBiometricToken( "" );
         semaphore.acquire();
 
         assertNotNull( response );

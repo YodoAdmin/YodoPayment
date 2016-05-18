@@ -1,181 +1,186 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
-    <!-- Main Strings -->
+   
+    <!--Main Strings -->
     <string name="app_name">Yodo mobile location based services application</string>
     <string name="desc">desc</string>
-    <string name="loading">Loading</string>
+    <string name="loading">ローディング</string>
     <string name="ok">OK</string>
-    <string name="cancel">Cancel</string>
-    <string name="delete">Delete</string>
-    <string name="message.deleted">deleted</string>
-    <string name="message.undo">UNDO</string>
-    <string name="message.search">Search</string>
-    <string name="hint.search">Search…</string>
-    <string name="warning">Warning!</string>
-    <string name="drawer_open">open</string>
-    <string name="drawer_close">close</string>
-    <string name="version.label">Version:</string>
-
+    <string name="cancel">取消</string>
+    <string name="delete">削除</string>
+    <string name="message.deleted">削除されました</string>
+    <string name="message.undo">アンドゥ</string>
+    <string name="message.search">サーチ</string>
+    <string name="hint.search">サーチ…</string>
+    <string name="warning">警告！</string>
+    <string name="drawer_open">開いた</string>
+     <string name="drawer_close">閉じる</string>
+    <string name="version.label">バージョン:</string>
+      
     <!-- Action Menu -->
-    <string name="action_settings">Settings</string>
-    <string name="action_about">About Yodo</string>
-
+    <string name="action_settings">設定</string>
+    <string name="action_about">約 Yodo</string>
+    
     <!-- Receipts -->
-    <string name="new_recipt">New Receipt</string>
-    <string name="recipts_title">Receipts</string>
-    <string name="paid">Total:</string>
+    <string name="new_recipt">新しい領収書</string>
+    <string name="recipts_title">レシート</string>
+    <string name="paid">支払額:</string>
     <string name="receipt_auth">AU#</string>
-    <string name="message.recipient_account">Recipient:</string>
-    <string name="message.donor_account">Donor:</string>
-    <string name="currency">Currency:</string>
-    <string name="cash_tender">Cash Tender:</string>
-    <string name="cash_back">Cash Back:</string>
-    <string name="yodo_balance">Yodo Balance:</string>
+    <string name="message.recipient_account">受信者:</string>
+    <string name="message.donor_account">ドナー:</string>
+    <string name="currency">通貨:</string>
+    <string name="cash_tender">預かり現金額:</string>
+    <string name="cash_back">おつり:</string>
+    <string name="yodo_balance">Yodo残額:</string>
     <string name="message.deleted.receipt">Receipt Deleted</string>
-    <string name="saved_receipt">Receipt Saved</string>
-    <string name="no_transaction">No receipt available</string>
-
+    <string name="saved_receipt">レシートが保存されました</string>
+    <string name="no_transaction">レシートがありません</string>
+   
     <!-- Registration Messages -->
-    <string name="register_pip">Enter your secret PIP in both spaces (4–8 characters)</string>
-    <string name="pip_short">PIP must contain 4 to 8 digits</string>
-    <string name="pip_different">PIPs do not match</string>
-    <string name="pip_hint">Personal Identity Phrase</string>
-    <string name="face_recognition">Face Recognition</string>
-    <string name="face_required">You need to select a biometric token first</string>
-    <string name="next">NEXT</string>
-    <string name="register">REGISTER</string>
-    <string name="face_explanation">Yodo does not collect an image of your face, only a numeric token representing your face. This allows you to reset your PIP if forgotten while still remaining completely anonymous. Press the icon above to get started.</string>
-    <string name="face_trained">Successful Operation!</string>
+    <string name="register_pip">両枠に秘密のPIPを入力してください (4–8 characters)</string>
+    <string name="pip_short">PIPは4－8文字が必要です</string>
+    <string name="pip_different">PIPが合致しません</string>
+    <string name="pip_hint">個人識別フレーズ</string>
+    <string name="face_recognition">顔認識</string>
+    <string name="face_required">最初に生体認証トークンを選択してください</string>
+    <string name="next">次へ</string>
+    <string name="register">PIP登録中</string>
+    <string name="face_explanation">Yodoは顔画像を収集しません。匿名を維持しながら、忘れたPIPをリセットできるように生体認証トークンを収集します。上のアイコンを押してスタートしてください</string>
+    <string name="face_trained">操作が成功しました!</string>
 
     <!-- Eula Messages -->
-    <string name="eula_title">Yodo User Agreement</string>
-    <string name="eula_accept">Accept</string>
-    <string name="eula_refuse">Refuse</string>
-
+    <string name="eula_title">Yodoユーザ契約</string>
+    <string name="eula_accept">承諾</string>
+    <string name="eula_refuse">拒否</string>
+    
     <!-- Camera Messages -->
-    <string name="title_train_camera">Token Record</string>
-    <string name="message_train_camera">Press the screen when you are ready</string>
-    <string name="title_face_recognition">Face Recognition</string>
-    <string name="message_face_recognition">Locate your entire face on the camera</string>
-
+    <string name="title_train_camera">トークン記録</string>
+    <string name="message_train_camera">準備ができたら画面に触れてください</string>
+    <string name="title_face_recognition">顔認識</string>
+    <string name="message_face_recognition">カメラに顔全体を映してください</string>
+      
     <!-- header data text -->
-    <string name="account">Account:</string>
-    <string name="date">Date:</string>
-    <string name="balance">Balance:</string>
-
+    <string name="account">アカウント:</string>
+    <string name="date">日付:</string>
+    <string name="balance">残額:</string>
+          
     <!-- configurations -->
-    <string name="options">Options</string>
-    <string name="tools">Tools</string>
-    <string name="reset_pip">Reset PIP</string>
-    <string name="saved_receipts">Receipts</string>
-    <string name="link_accounts">Links</string>
-    <string name="get_balance">Get Balance</string>
-    <string name="close_account">Close Account</string>
-
-    <!-- Reset PIP Messages -->
-    <string name="current_pip">Current PIP:</string>
-    <string name="new_pip">New PIP:</string>
-    <string name="confirm_pip">Confirm New PIP:</string>
-    <string name="new_pip_hint">(4–8 characters)</string>
-    <string name="forgot_pip">Forgot the PIP?</string>
-
+    <string name="options">オプション</string>
+    <string name="tools">ツール</string>
+    <string name="reset_pip">PIP変更</string>
+    <string name="saved_receipts">レシート</string>
+    <string name="link_accounts">リンクする</string>
+    <string name="get_balance">残額を確認</string>
+    <string name="close_account">アカウントを閉鎖する</string>
+    
+    <!-- Reset PIP Messages  -->
+    <string name="current_pip">現在のPIP:</string>
+    <string name="new_pip">新しいPIP:</string>
+    <string name="confirm_pip">新しいPIPを確認してください:</string>
+    <string name="new_pip_hint">新しいPIP (4–8 文字)</string>
+    <string name="forgot_pip">PIPを忘れましたか?</string> 
+    
     <!-- Error Messages -->
-    <string name="error">This is embarrassing! An error occurred in the process. Try again later</string>
-    <string name="error_registration">Something went wrong with the registration</string>
-    <string name="no_balance">Sorry, seems that you don\'t have a balance</string>
-    <string name="no_internet">Sorry, seems that you don\'t have an Internet connection right now</string>
-    <string name="message.no_hardware">You must turn on your bluetooth first</string>
-    <string name="no_camera">This camera doesn\'t exist</string>
-    <string name="no_available">This feature is not available yet</string>
-    <string name="no_biometric">Sorry, seems that you don\'t have a biometric token</string>
-    <string name="image_saved_failed">Error saving Coupon</string>
-    <string name="error.message.no_balance">No balance recorded</string>
-    <string name="error.message.no_links">No links exist</string>
-    <string name="error.not_supported">This device is not supported</string>
-    <string name="error.play_services">Google Play Services is required</string>
-    <string name="error.gcm_registration">Sorry we couldn\'t save your token, try again later</string>
+    <string name="error">エラーが発生しました</string>
+    <string name="error_registration">登録中に問題が発生しました</string>
+    <string name="no_balance">残額がありません</string>
+    <string name="no_internet">インターネット接続に問題があります</string>
+    <string name="message.no_hardware">まずブルートゥースをオンにしてください</string>
+    <string name="no_camera">カメラがありません</string>
+    <string name="no_available">この機能はまだ利用できません</string>
+    <string name="no_biometric">生体認証トークンがありません</string>
+    <string name="image_saved_failed">クーポン保存中にエラーが発生しました</string>
+    <string name="error.message.no_balance">残額がありません</string>
+    <string name="error.message.no_links">リンクがありません</string>
+    <string name="error.not_supported">このデバイスは使用できません</string>
+    <string name="error.play_services">グーグルプレイのサービスが必要です</string>
+    <string name="error.gcm_registration">トークンを保存できませんでした。後で再度試してください</string>
+    <string name="message.error.unknown">This is embarrassing! An error occurred in the process</string>
+    <string name="message.error.network">Sorry, seems that you don\'t have an Internet connection right now</string>
+    <string name="message.error.timeout">Sorry, seems that the server is too busy. Try again later</string>
+    <string name="message.error.server">Sorry, the server responded with an error. Try again later</string>
+    <string name="message.error.transaction">Sorry, the type of transaction is not valid. Try again later</string>
 
     <!-- General Messages -->
-    <string name="save_image">Save Coupon?</string>
-    <string name="change_successful">Change completed successfully</string>
-    <string name="show_pass">Show Password</string>
-    <string name="show_linking_code">Show Linking Code</string>
-    <string name="input_token">Input your Token Password</string>
-    <string name="input_linking_code">Input your Linking Code</string>
+    <string name="save_image">クーポンを保存しますか？</string>
+    <string name="change_successful">変更完了</string>
+    <string name="show_pass">PIP表示</string>
+    <string name="show_linking_code">リンクコード表示</string>
+    <string name="input_token">トークンPIPを入力してください</string>
+    <string name="input_linking_code">リンクコードを入力してください</string>
     <string name="input_pip">Personal Identity Phrase (PIP)</string>
-    <string name="about_message">Please use the email below to contact us. We\'ll do everything we can to respond quickly. Be assured, we will never sell or distribute personal information you provide.</string>
+    <string name="about_message">下記のメールアドレスへご連絡ください。 できる限り迅速に応答します。提供された個人情報の販売・配布は一切行いません。</string>
     <string name="about_email">support@yodo.co</string>
-    <string name="copied_text">Text has been copied to clipboard</string>
+    <string name="copied_text">テキストがクリップボードにコピーされました</string>
 
     <!-- Close Messages -->
-    <string name="close_message">WARNING: If your account has a positive balance it will be forfeited if you close your account now. Only enter your PIP to proceed if you are prepared to forfeit this funds</string>
-    <string name="closing_message">Closing the account</string>
-    <string name="farewell_message_tittle">Thank-you for using Yodo</string>
-    <string name="farewell_message">Please completely remove the Yodo App using the App Management tools under phone Settings</string>
+    <string name="close_message">警告:現在アカウントを閉鎖すると残額が喪失となります。残額喪失を承認する場合にのみ、PIPを入力してください</string>
+    <string name="closing_message">アカウント閉鎖中</string>
+    <string name="farewell_message_tittle">Yodoをご利用いただきありがとうございました!</string>
+    <string name="farewell_message">携帯の設定メニューのアプリ管理ツールを使ってYodoアプリを携帯から削除してください</string>
 
     <!-- Settings Headers -->
-    <string name="config_pref_services">Services</string>
+    <string name="config_pref_services">サービス</string>
 
     <!-- Settings Titles -->
-    <string name="config_pref_advertising">Promotions</string>
-    <string name="config_pref_advertising_summary">Receive promotions from nearby stores</string>
-    <string name="config_pref_languages">Language</string>
+    <string name="config_pref_advertising">広告</string>
+    <string name="config_pref_advertising_summary">近辺の店舗から広告を受け取る</string>
+    <string name="config_pref_languages">言語</string>
 
     <!-- Tutorial -->
-    <string name="tutorial_action_bar">Action Bar</string>
-    <string name="tutorial_action_bar_message">Press the left button for the navigation panel, and the right for the settings.</string>
-    <string name="tutorial_header">Yodo Header</string>
-    <string name="tutorial_header_message">Main information about the user\'s account.</string>
+    <string name="tutorial_action_bar">アクションバー</string>
+    <string name="tutorial_action_bar_message">ナビゲーションパネルは左のボタン、設定は右のボタンを押してください</string>
+    <string name="tutorial_header">Yodo ヘッダ</string>
+    <string name="tutorial_header_message">ユーザ・アカウントの主要情報</string>
 
     <!-- Linking Account Messages -->
-    <string name="linking_menu">Select: </string>
-    <string name="link_code_text">Linking Code: </string>
-    <string name="link_account_button">Link Account</string>
-    <string name="generate_code_button">Generate Linking Code</string>
-    <string name="link_account_response">Linking Account</string>
-    <string name="no_linked_account">This account is not linked</string>
-    <string name="link_account_help">Select one of the options to start with the linking process:</string>
-    <string name="link_code_warning">You are responsible to distribute your link code only to trusted third parties. Anyone in possession of this code will have access to your funds. Yodo accepts no liability for losses due to delivery of Link Codes to unintended parties. Link codes are one-time-use codes and valid only for the next 24 hours.</string>
+    <string name="linking_menu">選択: </string>
+    <string name="link_code_text">リンクコード: </string>
+    <string name="link_account_button">アカウントをリンクする</string>
+    <string name="generate_code_button">リンクコードを作成</string>
+    <string name="link_account_response">アカウントをリンク中</string>
+    <string name="no_linked_account">このアカウントはリンクされていません</string>
+    <string name="link_account_help">オプションを1つ選んでリンクプロセスを始めてください:</string>
+    <string name="link_code_warning">ユーザは、リンクコードを信頼できる第三者のみに配布する責任を持ちます。このコードの所有者は誰でも、あなたの資金にアクセスできます。Yodoは、リンクコードの意図されない当事者への配布による損害に関して、いかなる責任も負いません。リンクコードは1回使用コードで、24時間のみ有効です</string>
 
     <!-- DeLink Accounts -->
-    <string name="to_account">Giving To</string>
-    <string name="from_account">Receiving From</string>
+    <string name="to_account">資金提供先</string>
+    <string name="from_account">資金提供者</string>
 
     <!-- Activity titles -->
-    <string name="title_activity_registration">Yodo Registration</string>
-    <string name="title_activity_registration_biometric">Yodo Biometric Registration</string>
-    <string name="title_activity_camera">Yodo Camera</string>
-    <string name="title_activity_main">Yodo Payment</string>
-    <string name="title_activity_pip_reset">Yodo PIP Reset</string>
-    <string name="title_activity_settings">Yodo Settings</string>
-    <string name="title_activity_coupons">Yodo Coupons</string>
-    <string name="title_activity_receipts">Yodo Receipts</string>
-    <string name="title_activity_linking">Yodo Linking</string>
-    <string name="title_activity_de_link">Yodo DeLink</string>
-    <string name="title_activity_yodo_camera">Yodo Camera</string>
+    <string name="title_activity_registration">Yodo 登録</string>
+    <string name="title_activity_registration_biometric">Yodo 生体認証登録</string>
+    <string name="title_activity_camera">Yodo カメラ</string>
+    <string name="title_activity_main">Yodo 支払い</string>
+    <string name="title_activity_pip_reset">Yodo PIP 変更</string>
+    <string name="title_activity_settings">Yodo 設定</string>
+    <string name="title_activity_coupons">Yodo クーポン</string>
+    <string name="title_activity_receipts">Yodo レシート</string>
+    <string name="title_activity_linking">Yodo リンキング</string>
+    <string name="title_activity_de_link">Yodo リンク切り離し</string>
+    <string name="title_activity_yodo_camera">Yodo カメラ</string>
 
     <!-- Languages -->
     <string-array name="languages_array">
-        <item>English</item>
-        <item>Spanish</item>
-        <item>Chinese</item>
-        <item>Japanese</item>
-        <item>French</item>
+        <item>英語</item>
+        <item>スペイン語</item>
+        <item>中国語</item>
+        <item>日本語</item>
+        <item>フランス語</item>
     </string-array>
 
     <string-array name="link_options_array">
-        <item>Generate Linking Code</item>
-        <item>Input Linking Code</item>
-        <item>De-Link Account</item>
+        <item>リンクコード作成</item>
+        <item>リンクコード入力</item>
+        <item>アカウントを切り離す</item>
     </string-array>
 
     <!-- Messages for the permissions -->
-    <string name="message.permission.read_phone_state">Permission required to identify the device in order to access Yodo\'s cloud service</string>
-    <string name="message.permission.camera">Permission required to use the camera in order to capture payment credentials</string>
-    <string name="message.permission.write_external_storage">Permission required to store the coupons</string>
+    <string name="message.permission.read_phone_state">Yodoクラウドサービスを利用するには、デバイスを識別する許可が必要です</string>
+    <string name="message.permission.camera">支払い認証情報をキャプチャーするために、カメラ使用の許可が必要です</string>
+    <string name="message.permission.write_external_storage">クーポンを保存するために、許可が必要です</string>
 
     <!-- ACRA -->
-    <string name="crash_toast_text">Ooooops ! I crashed, but a report has been sent to my developer to help fix the issue!</string>"
-
+    <string name="crash_toast_text">システムエラー。問題解決のために、ディベロッパーにレポートが送信されました！</string>"
+    
 </resources>

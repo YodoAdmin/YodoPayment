@@ -19,7 +19,7 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import co.yodo.mobile.helper.AppUtils;
-import co.yodo.mobile.service.RESTService;
+import co.yodo.mobile.network.YodoRequest;
 
 /**
  * @author renatomarroquin
@@ -37,7 +37,7 @@ public class Encrypter {
     private static String PUBLIC_KEY;
 
     static {
-        if( RESTService.getSwitch().equals( "D" ) )
+        if( YodoRequest.getSwitch().equals( "D" ) )
             PUBLIC_KEY = "YodoKey/Dev/12.public.der";
         else
             PUBLIC_KEY = "YodoKey/Prod/12.public.der";

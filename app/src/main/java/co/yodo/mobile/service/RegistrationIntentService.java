@@ -1,6 +1,7 @@
 package co.yodo.mobile.service;
 
 import android.app.IntentService;
+import android.content.Context;
 import android.content.Intent;
 import android.support.v4.content.LocalBroadcastManager;
 
@@ -12,10 +13,10 @@ import java.io.IOException;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.broadcastreceiver.BroadcastMessage;
-import co.yodo.mobile.data.ServerResponse;
+import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.AppUtils;
-import co.yodo.mobile.net.YodoRequest;
+import co.yodo.mobile.network.YodoRequest;
 
 /**
  * An {@link IntentService} subclass for handling asynchronous task requests in
@@ -25,6 +26,9 @@ import co.yodo.mobile.net.YodoRequest;
  * helper methods.
  */
 public class RegistrationIntentService extends IntentService implements YodoRequest.RESTListener {
+    /** The context object */
+    private Context ac;
+
     @SuppressWarnings( "unused" )
     private static final String TAG = RegistrationIntentService.class.getSimpleName();
     private static final String[] TOPICS = { "global" };
@@ -35,6 +39,9 @@ public class RegistrationIntentService extends IntentService implements YodoRequ
 
     @Override
     protected void onHandleIntent( Intent intent ) {
+        // get the context
+        ac = RegistrationIntentService.this;
+
         try {
             String hardwareToken = intent.getStringExtra( BroadcastMessage.EXTRA_HARDWARE_TOKEN );
             // Initially this call goes out to the network to retrieve the token, subsequent calls
@@ -72,8 +79,8 @@ public class RegistrationIntentService extends IntentService implements YodoRequ
      * @param token The new token.
      */
     private void sendRegistrationToServer( String hardwareToken, String token ) throws IOException {
-        YodoRequest.getInstance().setListener( this );
-        YodoRequest.getInstance().requestGCMRegistration( this, hardwareToken, token );
+        YodoRequest.getInstance( ac ).setListener( this );
+        YodoRequest.getInstance( ac ).requestGCMRegistration( this, hardwareToken, token );
     }
 
     /**

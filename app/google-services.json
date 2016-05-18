@@ -1,35 +1,55 @@
 {
   "project_info": {
-    "project_id": "yodoandroiddev",
     "project_number": "156468799689",
-    "name": "YodoAndroidDev"
+    "project_id": "yodoandroiddev"
   },
   "client": [
     {
       "client_info": {
         "mobilesdk_app_id": "1:156468799689:android:b80955693384355f",
-        "client_id": "android:co.yodo.mobile",
-        "client_type": 1,
         "android_client_info": {
           "package_name": "co.yodo.mobile"
         }
       },
       "oauth_client": [],
-      "api_key": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlMm3MYToQvWbl19-MEQcjq80Qwc4x3io"
+        }
+      ],
       "services": {
         "analytics_service": {
           "status": 1
-        },
-        "cloud_messaging_service": {
-          "status": 2,
-          "apns_config": []
         },
         "appinvite_service": {
           "status": 1,
           "other_platform_oauth_client": []
         },
-        "google_signin_service": {
+        "ads_service": {
           "status": 1
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:156468799689:android:be3e0e6d02a274c3",
+        "android_client_info": {
+          "package_name": "co.yodo"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDlMm3MYToQvWbl19-MEQcjq80Qwc4x3io"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
         },
         "ads_service": {
           "status": 1
@@ -37,6 +57,5 @@
       }
     }
   ],
-  "client_info": [],
-  "ARTIFACT_VERSION": "1"
+  "configuration_version": "1"
 }

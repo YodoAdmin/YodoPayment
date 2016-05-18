@@ -4,23 +4,23 @@ import android.test.ActivityInstrumentationTestCase2;
 
 import java.util.concurrent.Semaphore;
 
-import co.yodo.mobile.data.ServerResponse;
+import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.helper.AppUtils;
-import co.yodo.mobile.main.DeLinkActivity;
-import co.yodo.mobile.net.YodoRequest;
+import co.yodo.mobile.ui.DeLinkActivity;
+import co.yodo.mobile.network.YodoRequest;
 
 /**
  * <a href="http://d.android.com/tools/testing/testing_android.html">Testing Fundamentals</a>
  */
 public class DeLinkActivityTest extends ActivityInstrumentationTestCase2<DeLinkActivity> implements YodoRequest.RESTListener {
-    /** The activity object */
-    private DeLinkActivity activity;
-
     /** Authentication Number */
     private String hardwareToken;
 
     /** User PIP */
     private final static String userPIP = "aaaa";
+
+    /** Manager for the server requests */
+    private YodoRequest mRequestManager;
 
     /** Server Response */
     private ServerResponse response;
@@ -35,11 +35,13 @@ public class DeLinkActivityTest extends ActivityInstrumentationTestCase2<DeLinkA
     @Override
     protected void setUp() throws Exception {
         super.setUp();
-        activity      = getActivity();
+        /* The activity object */
+        DeLinkActivity activity = getActivity();
         hardwareToken = AppUtils.getHardwareToken( activity );
         semaphore     = new Semaphore( 0 );
 
-        YodoRequest.getInstance().setListener( this );
+        mRequestManager = YodoRequest.getInstance( activity );
+        mRequestManager.setListener( this );
     }
 
     /**
@@ -47,7 +49,7 @@ public class DeLinkActivityTest extends ActivityInstrumentationTestCase2<DeLinkA
      * @throws Exception
      */
     private void userRegistration() throws Exception {
-        YodoRequest.getInstance().requestRegistration( activity, hardwareToken, userPIP );
+        mRequestManager.requestRegistration( hardwareToken, userPIP );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -56,7 +58,7 @@ public class DeLinkActivityTest extends ActivityInstrumentationTestCase2<DeLinkA
 
     public void test() throws Exception {
         assertNotNull( hardwareToken );
-        assertNotNull( YodoRequest.getInstance() );
+        assertNotNull( mRequestManager );
     }
 
     /**
@@ -68,7 +70,7 @@ public class DeLinkActivityTest extends ActivityInstrumentationTestCase2<DeLinkA
         userRegistration();
 
         // All Correct
-        YodoRequest.getInstance().requestLinkedAccounts( activity, hardwareToken, userPIP );
+        mRequestManager.requestLinkedAccounts( hardwareToken, userPIP );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -76,7 +78,7 @@ public class DeLinkActivityTest extends ActivityInstrumentationTestCase2<DeLinkA
         response = null;
 
         // Wrong PIP
-        YodoRequest.getInstance().requestLinkedAccounts( activity, hardwareToken, "" );
+        mRequestManager.requestLinkedAccounts( hardwareToken, "" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -84,7 +86,7 @@ public class DeLinkActivityTest extends ActivityInstrumentationTestCase2<DeLinkA
         response = null;
 
         // Wrong Hardware Token
-        YodoRequest.getInstance().requestLinkedAccounts( activity, "", "" );
+        mRequestManager.requestLinkedAccounts( "", "" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -102,7 +104,7 @@ public class DeLinkActivityTest extends ActivityInstrumentationTestCase2<DeLinkA
         userRegistration();
 
         // Wrong Code
-        YodoRequest.getInstance().requestDeLinkAccount( activity, hardwareToken, userPIP, "", "0" );
+        mRequestManager.requestDeLinkAccount( hardwareToken, userPIP, "", "0" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -110,7 +112,7 @@ public class DeLinkActivityTest extends ActivityInstrumentationTestCase2<DeLinkA
         response = null;
 
         // Wrong Account Type
-        YodoRequest.getInstance().requestDeLinkAccount( activity, hardwareToken, userPIP, "", "2" );
+        mRequestManager.requestDeLinkAccount( hardwareToken, userPIP, "", "2" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -118,7 +120,7 @@ public class DeLinkActivityTest extends ActivityInstrumentationTestCase2<DeLinkA
         response = null;
 
         // Wrong PIP
-        YodoRequest.getInstance().requestDeLinkAccount( activity, hardwareToken, "", "", "1" );
+        mRequestManager.requestDeLinkAccount( hardwareToken, "", "", "1" );
         semaphore.acquire();
 
         assertNotNull( response );
@@ -126,7 +128,7 @@ public class DeLinkActivityTest extends ActivityInstrumentationTestCase2<DeLinkA
         response = null;
 
         // Wrong Hardware Token
-        YodoRequest.getInstance().requestDeLinkAccount( activity, "", "", "", "0" );
+        mRequestManager.requestDeLinkAccount( "", "", "", "0" );
         semaphore.acquire();
 
         assertNotNull( response );

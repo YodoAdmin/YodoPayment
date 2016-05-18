@@ -10,7 +10,7 @@ import android.database.sqlite.SQLiteStatement;
 import java.util.ArrayList;
 import java.util.List;
 
-import co.yodo.mobile.data.Receipt;
+import co.yodo.mobile.database.model.Receipt;
 import co.yodo.mobile.helper.AppUtils;
 
 /**

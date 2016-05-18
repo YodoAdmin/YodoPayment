@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import co.yodo.mobile.data.Coupon;
+import co.yodo.mobile.database.model.Coupon;
 import co.yodo.mobile.helper.AppUtils;
 
 public class CouponsDataSource {

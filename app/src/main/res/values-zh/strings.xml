@@ -1,63 +1,63 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Main Strings -->
-    <string name="app_name">Yodo mobile location based services application</string>
-    <string name="desc">详情</string>
-    <string name="loading">载入中&#x2026;</string>
+    <!--Main Strings -->
+    <string name="app_name">Yodo mobile location based services application</string>
+    <string name="desc">desc</string>
+    <string name="loading">Loading</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
-    <string name="delete">删除</string>
-    <string name="message.deleted">deleted</string>
-    <string name="message.undo">UNDO</string>
-    <string name="message.search">Search</string>
-    <string name="hint.search">Search…</string>
-    <string name="warning">Warning!</string>
-    <string name="drawer_open">open</string>
-    <string name="drawer_close">close</string>
-    <string name="version.label">版:</string>
-    
+    <string name="delete">删除</string>
+    <string name="message.deleted">删除</string>
+    <string name="message.undo">解开</string>
+    <string name="message.search">搜索</string>
+    <string name="hint.search">搜索 …</string>
+    <string name="warning">警告！</string>
+    <string name="drawer_open">打开</string>
+    <string name="drawer_close">关</string>
+    <string name="version.label">版本号:</string>
+
     <!-- Action Menu -->
     <string name="action_settings">设置</string>
-    <string name="action_about">About Yodo</string>
-
-     <!-- Receipts -->
+    <string name="action_about">关于 Yodo</string>
+     
+    <!-- Receipts -->
     <string name="new_recipt">新收据</string>
-    <string name="recipts_title">收据</string>
-    <string name="paid">总额:</string>
-    <string name="receipt_auth">AU#</string>
+    <string name="recipts_title">收据</string>
+    <string name="paid">总额:</string>
+    <string name="receipt_auth">AU#</string>
     <string name="message.recipient_account">接受者:</string>
     <string name="message.donor_account">捐赠者:</string>
     <string name="currency">货币:</string>
-    <string name="cash_tender">现金招标:</string>
-    <string name="cash_back">现金回赠:</string>
-    <string name="yodo_balance">平衡:</string>
+    <string name="cash_tender">现金招标:</string>
+    <string name="cash_back">现金回赠:</string>
+    <string name="yodo_balance">平衡:</string>
     <string name="message.deleted.receipt">删除收据</string>
-    <string name="saved_receipt">保存收据</string>
-    <string name="no_transaction">交易不成功</string>
+    <string name="saved_receipt">保存收据</string>
+    <string name="no_transaction">交易不成功</string>
 
     <!-- Registration Messages -->
-    <string name="register_pip">请输入你的PIP(4–8 字符)</string>
-    <string name="pip_short">PIP must contain 4 to 8 digits</string>
-    <string name="pip_different">PIPs do not match</string>
-    <string name="pip_hint">Personal Identity Phrase</string>
-    <string name="face_recognition">脸部</string>
-    <string name="face_required">You need to select a biometric token first</string>
+    <string name="register_pip">在这两个空格中输入你的秘密PIP（ 4–8个字符）</string>
+    <string name="pip_short">请输入你的PIP(4–8 字符)</string>
+    <string name="pip_different">PIP的不匹配</string>
+    <string name="pip_hint">PIP</string>
+    <string name="face_recognition">人臉識別</string>
+    <string name="face_required">您需要先選擇一個生物識別令牌</string>
     <string name="next">下一步</string>
-    <string name="register">REGISTER</string>
-    <string name="face_explanation">Yodo does not collect an image of your face, only a numeric token representing your face. This allows you to reset your PIP if forgotten while still remaining completely anonymous. Press the icon above to get started.</string>
-    <string name="face_trained">Successful Operation!</string>
+    <string name="register">注册PIP</string>
+    <string name="face_explanation">淀不會收集你的臉的圖像，只有一個生物標記，讓您可以在匿名的重置遺忘的點子。按上述上手的圖標。 </string>
+    <string name="face_trained">面对成功保存!</string>
 
     <!-- Eula Messages -->
-    <string name="eula_title">Yodo 用户协议</string>
-    <string name="eula_accept">接受</string>
-    <string name="eula_refuse">拒绝</string>
+     <string name="eula_title">Yodo 用户协议</string>
+     <string name="eula_accept">接受</string>
+     <string name="eula_refuse">拒绝</string>
 
     <!-- Camera Messages -->
-    <string name="title_train_camera">Token Record</string>
-    <string name="message_train_camera">Press the screen when you are ready</string>
-    <string name="title_face_recognition">Face Recognition</string>
-    <string name="message_face_recognition">Locate your entire face on the camera</string>
+    <string name="title_train_camera">令牌記錄</string>
+    <string name="message_train_camera"> 按屏幕，當你準備好 </string>
+    <string name="title_face_recognition">脸部</string>
+    <string name="message_face_recognition">找到相機在你的整個面部</string>
 
     <!-- header data text -->
     <string name="account">帐户:</string>
@@ -69,7 +69,7 @@
     <string name="tools">工具</string>
     <string name="reset_pip">重置PIP</string>
     <string name="saved_receipts">保存收据</string>
-    <string name="link_accounts">Links</string>
+    <string name="link_accounts">连接</string>
     <string name="get_balance">找平衡</string>
     <string name="close_account">关闭帐户</string>
 
@@ -79,48 +79,53 @@
     <string name="confirm_pip">确认新PIP:</string>
     <string name="new_pip_hint">新的PIP（4–8个字符）</string>
     <string name="forgot_pip">忘记 PIP?</string>
-
+       
     <!-- Error Messages -->
-    <string name="error">This is embarrassing! An error occurred in the process. Try again later</string>
-    <string name="error_registration">Something went wrong with the registration</string>
-    <string name="no_balance">Sorry, seems that you don\'t have a balance</string>
+    <string name="error">在此過程中發生錯誤。稍後再試</string>
+    <string name="error_registration">出了毛病，登記</string>
+    <string name="no_balance">对不起，看来你没有一个平衡点</string>
     <string name="no_internet">对不起，网络连接不成功。</string>
-    <string name="message.no_hardware">You must turn on your bluetooth first</string>
+    <string name="message.no_hardware">您必须先打开Bluetooth</string>
     <string name="no_camera">没有可用的摄像头</string>
-    <string name="no_available">This feature is not available yet</string>
+    <string name="no_available">对不起，此功能尚不可用</string>
     <string name="no_biometric">P请首先选择一个生物标记</string>
-    <string name="image_saved_failed">保存图像时的错误</string>
-    <string name="error.message.no_balance">No balance recorded</string>
-    <string name="error.message.no_links">No links exist</string>
-    <string name="error.not_supported">This device is not supported</string>
-    <string name="error.play_services">Google Play Services is required</string>
-    <string name="error.gcm_registration">Sorry we couldn\'t save your token, try again later</string>
+    <string name="image_saved_failed">保存时出错优惠券</string>
+    <string name="error.message.no_balance">记录没有平衡</string>
+    <string name="error.message.no_links">此帐户并未连结</string>
+    <string name="error.not_supported">这个装置不支持</string>
+    <string name="error.play_services">Google Play Services 是必须的</string>
+    <string name="error.gcm_registration">对不起，我们无法保存您的令牌，请稍后再试</string>
+    <string name="message.error.unknown">This is embarrassing! An error occurred in the process</string>
+    <string name="message.error.network">Sorry, seems that you don\'t have an Internet connection right now</string>
+    <string name="message.error.timeout">Sorry, seems that the server is too busy. Try again later</string>
+    <string name="message.error.server">Sorry, the server responded with an error. Try again later</string>
+    <string name="message.error.transaction">Sorry, the type of transaction is not valid. Try again later</string>
 
     <!-- General Messages -->
-    <string name="save_image">保存图片？ </string>
+    <string name="save_image">保存图片？</string>
     <string name="change_successful">修改成功</string>
     <string name="show_pass">显示密码</string>
-    <string name="show_linking_code">Show Linking Code</string>
-    <string name="input_token">Input your Token Password</string>
-    <string name="input_linking_code">Input your Linking Code</string>
+    <string name="show_linking_code">显示链接代码</string>
+    <string name="input_token">请输入您的密码令牌</string>
+    <string name="input_linking_code">输入连结代码</string>
     <string name="input_pip">个人识别词组（PIP）</string>
-    <string name="about_message">Please use the email below to contact us. We\'ll do everything we can to respond quickly. Be assured, we will never sell or distribute personal information you provide.</string>
+    <string name="about_message">请使用以下电子邮件与我们联系。我们\ \'会竭尽所能迅速作出反应。我们绝不会出售或分发您提供个人信息。</string>
     <string name="about_email">support@yodo.co</string>
-    <string name="copied_text">文字已拷贝到剪贴板</string>
+    <string name="copied_text">文字已复制到剪贴板</string>
 
     <!-- Close Messages -->
-    <string name="close_message">提醒: 如果您输入PIP关闭​​帐户的话，您的帐户余额将会丧失。 </string>
-    <string name="closing_message">关闭帐户</string>
-    <string name="farewell_message_tittle">感谢使用Yodo!</string>
-    <string name="farewell_message">请使用下手机设置的应用程序管理工具完全删除应用程序Yodo</string>
+    <string name="close_message">提醒: 如果您输入PIP关闭​​帐户的话，您的帐户余额将会丧失。 </string>
+    <string name="closing_message">关闭帐户</string>
+    <string name="farewell_message_tittle">感谢使用Yodo!</string>
+    <string name="farewell_message">请使用下手机设置的应用程序管理工具完全删除应用程序Yodo</string>
 
     <!-- Settings Headers -->
-    <string name="config_pref_services">Services</string>
+    <string name="config_pref_services">服务</string>
 
     <!-- Settings Titles -->
-    <string name="config_pref_advertising">Promotions</string>
-    <string name="config_pref_advertising_summary">Receive promotions from nearby stores</string>
-    <string name="config_pref_languages">Language</string>
+    <string name="config_pref_advertising">促销</string>
+    <string name="config_pref_advertising_summary">获取广告</string>
+    <string name="config_pref_languages">语言</string>
 
     <!-- Tutorial -->
     <string name="tutorial_action_bar">Action Bar</string>
@@ -129,51 +134,51 @@
     <string name="tutorial_header_message">Main information about the user\'s account.</string>
 
     <!-- Linking Account Messages -->
-    <string name="linking_menu">选择一个选项:</string>
-    <string name="link_code_text">关联代码:</string>
-    <string name="link_account_button">关联帐户t</string>
-    <string name="generate_code_button">生成代码</string>
-    <string name="link_account_response">关联帐户</string>
-    <string name="no_linked_account">这个帐户没有关联</string>
-    <string name="link_account_help">Select one of the options to start with the linking process:</string>
-    <string name="link_code_warning">You are responsible to distribute your link code only to trusted third parties. Anyone in possession of this code will have access to your funds. Yodo accepts no liability for losses due to delivery of Link Codes to unintended parties. Link codes are one-time-use codes and valid only for the next 24 hours.</string>
+    <string name="linking_menu">选择一个选项</string>
+    <string name="link_code_text"> 连结代码 :</string>
+    <string name="link_account_button">关联帐户</string>
+    <string name="generate_code_button">产生连结代码</string>
+    <string name="link_account_response">正进行帐户连结</string>
+    <string name="no_linked_account">此帐户并未连结</string>
+    <string name="link_account_help">选择的开始与链接过程中的选项之一：</string>
+    <string name="link_code_warning">请只向可信任者披露本连结代码任何拥有这组. 代码的人士均可存取您户口内的资金. Yodo 对于因第三者获得代码而招致的损失不承担任何责任. 连结代码是只于产生后的24小时内有效的一次性代码.</string>
 
     <!-- DeLink Accounts -->
-    <string name="to_account">Giving To</string>
-    <string name="from_account">Receiving From</string>
+    <string name="to_account">本户口连向之帐户</string>
+    <string name="from_account">连向本户口之帐户</string>
 
     <!-- Activity titles -->
     <string name="title_activity_registration">Yodo 注册</string>
     <string name="title_activity_registration_biometric">Yodo 生物识别</string>
-    <string name="title_activity_camera">Yodo Camera</string>
+    <string name="title_activity_camera">Yodo 相机</string>
     <string name="title_activity_main">Yodo 付款</string>
     <string name="title_activity_pip_reset">Yodo 重置 PIP</string>
-    <string name="title_activity_settings">Yodo Settings</string>
+    <string name="title_activity_settings">Yodo 设置</string>
     <string name="title_activity_coupons">Yodo 优惠券</string>
     <string name="title_activity_receipts">Yodo 收据</string>
     <string name="title_activity_linking">Yodo 连接</string>
-    <string name="title_activity_de_link">Yodo DeLink</string>
+    <string name="title_activity_de_link">Yodo 脱钩</string>
     <string name="title_activity_yodo_camera">Yodo 摄像机</string>
 
     <!-- Languages -->
     <string-array name="languages_array">
-        <item>English</item>
-        <item>Spanish</item>
-        <item>Chinese</item>
-        <item>Japanese</item>
-        <item>French</item>
+        <item>英语</item>
+        <item>西班牙语</item>
+        <item>中文</item>
+        <item>日语</item>
+        <item>法语</item>
     </string-array>
 
     <string-array name="link_options_array">
-        <item>Generate Linking Code</item>
-        <item>Input Linking Code</item>
-        <item>De-Link Account</item>
+        <item>产生连结代码</item>
+        <item>输入连结代码</item>
+        <item>中断与帐户的连结</item>
     </string-array>
 
     <!-- Messages for the permissions -->
-    <string name="message.permission.read_phone_state">Permission required to identify the device in order to access Yodo\'s cloud service</string>
-    <string name="message.permission.camera">Permission required to use the camera in order to capture payment credentials</string>
-    <string name="message.permission.write_external_storage">Permission required to store the coupons</string>
+    <string name="message.permission.read_phone_state">所需的权限，以确定该设备才能访问淀的云服务</string>
+    <string name="message.permission.camera">所需的权限使用相机以捕捉支付凭证</string>
+    <string name="message.permission.write_external_storage">所需的权限来存储券</string>
 
     <!-- ACRA -->
     <string name="crash_toast_text">系统错误: 报告已经发送给开发人员</string>
