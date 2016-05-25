@@ -1,7 +1,6 @@
 package co.yodo.mobile.helper;
 
 import android.app.Activity;
-import android.app.ActivityManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -34,6 +33,8 @@ import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
+import com.google.android.gms.nearby.messages.Strategy;
+import com.google.android.gms.nearby.sharing.AppContentReceivedResult;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -62,9 +63,6 @@ public class AppUtils {
     @SuppressWarnings( "unused" )
     private static final String TAG = AppUtils.class.getSimpleName();
 
-    /** Accounts Separato */
-    public static final String ACC_SEP = ",";
-
     /**
      * A helper class just o obtain the config file for the Shared Preferences
      * using the default values for this Shared Preferences app.
@@ -73,6 +71,24 @@ public class AppUtils {
      */
     private static SharedPreferences getSPrefConfig(Context c) {
         return c.getSharedPreferences( AppConfig.SHARED_PREF_FILE, Context.MODE_PRIVATE );
+    }
+
+    /**
+     * Register a listener for the preferences
+     * @param c The Context of the Android system
+     * @param listener The listener that will be registered to the preferences
+     */
+    public static void registerSPListener( Context c, SharedPreferences.OnSharedPreferenceChangeListener listener ) {
+        getSPrefConfig( c ).registerOnSharedPreferenceChangeListener( listener );
+    }
+
+    /**
+     * Unregisters a listener to the preferences
+     * @param c The Context of the Android system
+     * @param listener The listener that will be unregistered to the preferences
+     */
+    public static void unregisterSPListener( Context c, SharedPreferences.OnSharedPreferenceChangeListener listener ) {
+        getSPrefConfig( c ).unregisterOnSharedPreferenceChangeListener( listener );
     }
 
     /**
@@ -136,7 +152,7 @@ public class AppUtils {
      * @return true  The flag was saved successfully.
      *         false The flag was not saved successfully.
      */
-    public static Boolean saveFirstLogin(Context c, Boolean flag) {
+    public static Boolean saveFirstLogin( Context c, Boolean flag ) {
         SharedPreferences config = getSPrefConfig( c );
         SharedPreferences.Editor writer = config.edit();
         writer.putBoolean( AppConfig.SPREF_FIRST_LOGIN, flag );
@@ -149,7 +165,7 @@ public class AppUtils {
      * @return true  It is logged in.
      *         false It is not logged in.
      */
-    public static Boolean isFirstLogin(Context c) {
+    public static Boolean isFirstLogin( Context c ) {
         SharedPreferences config = getSPrefConfig( c );
         return config.getBoolean( AppConfig.SPREF_FIRST_LOGIN, true );
     }
@@ -180,85 +196,13 @@ public class AppUtils {
     }
 
     /**
-     * It saves the advertising service state.
-     * @param c The Context of the Android system.
-     * @param flag If it is advertising or not.
-     * @return true  The flag was saved successfully.
-     *         false The flag was not saved successfully.
-     */
-    public static Boolean saveAdvertising(Context c, Boolean flag) {
-        SharedPreferences config = getSPrefConfig( c );
-        SharedPreferences.Editor writer = config.edit();
-        writer.putBoolean( AppConfig.SPREF_ADVERTISING_SERVICE, flag );
-        return writer.commit();
-    }
-
-    /**
-     * It gets if the advertising service is active.
-     * @param c The Context of the Android system.
-     * @return true  The advertising service is executing
-     *         false The advertising service is off.
-     */
-    public static Boolean isAdvertising(Context c) {
-        SharedPreferences config = getSPrefConfig( c );
-        return config.getBoolean( AppConfig.SPREF_ADVERTISING_SERVICE, false );
-    }
-
-    /**
-     * It gets the linked accounts
-     *
-     * @param c The Context of the Android system.
-     * @return String The linked account numbers
-     *         null    If there is no value set;
-     */
-    public static String getLinkedAccount(Context c) {
-        SharedPreferences config = getSPrefConfig( c );
-        return config.getString( AppConfig.SPREF_LINKED_ACCOUNTS, "" );
-    }
-
-    /**
-     * It saves the linked accounts to the Shared Preferences.
-     *
-     * @param c The Context of the Android system.
-     * @param n The new account
-     * @return true  The account was saved successfully.
-     *         false The account was not saved successfully.
-     */
-    public static Boolean saveLinkedAccount(Context c, String n) {
-        SharedPreferences config = getSPrefConfig( c );
-        SharedPreferences.Editor writer = config.edit();
-
-        String accounts = getLinkedAccount( c ) + n + ACC_SEP;
-        writer.putString( AppConfig.SPREF_LINKED_ACCOUNTS, accounts );
-
-        return writer.commit();
-    }
-
-    /**
-     * It clears the linked accounts to the Shared Preferences.
-     *
-     * @param c The Context of the Android system.
-     * @return true  The account was saved successfully.
-     *         false The account was not saved successfully.
-     */
-    public static Boolean clearLinkedAccount(Context c) {
-        SharedPreferences config = getSPrefConfig( c );
-        SharedPreferences.Editor writer = config.edit();
-
-        writer.putString( AppConfig.SPREF_LINKED_ACCOUNTS, "" );
-
-        return writer.commit();
-    }
-
-    /**
      * It saves the authnumber of the pip registration to the Shared Preferences.
-     *
      * @param c The Context of the Android system.
      * @param authnumber The authnumber of the registration
      * @return true  The account was saved successfully.
      *         false The account was not saved successfully.
      */
-    public static Boolean saveAuthNumber(Context c, String authnumber) {
+    public static Boolean saveAuthNumber( Context c, String authnumber ) {
         SharedPreferences config = getSPrefConfig( c );
         SharedPreferences.Editor writer = config.edit();
 
@@ -269,7 +213,6 @@ public class AppUtils {
 
     /**
      * It gets authnumber of the pip registration
-     *
      * @param c The Context of the Android system.
      * @return String The authnumber of the pip registration
      *         null    If there is no value set;
@@ -290,15 +233,12 @@ public class AppUtils {
     public static Boolean saveIsTokenSent( Context c, boolean sent ) {
         SharedPreferences config = getSPrefConfig( c );
         SharedPreferences.Editor writer = config.edit();
-
         writer.putBoolean( AppConfig.SPREF_TOKEN_TO_SERVER, sent );
-
         return writer.commit();
     }
 
     /**
      * It gets if the token was sent to the server
-     *
      * @param c The Context of the Android system.
      * @return boolean If the token was sent to the server
      *         null    If there is no value set;
@@ -309,8 +249,31 @@ public class AppUtils {
     }
 
     /**
+     * Get the current task for the subscription
+     * @param c The Context of the Android system
+     * @return The task
+     */
+    public static Boolean isSubscribing( Context c ) {
+        SharedPreferences config = getSPrefConfig( c );
+        return config.getBoolean( AppConfig.SPREF_SUBSCRIPTION_TASK, false );
+    }
+
+    /**
+     * Sets the tasks for the subscription
+     * @param c The Context of the Android system
+     * @param value The task
+     * @return true  The flag was saved successfully.
+     *         false The flag was not saved successfully.
+     */
+    public static boolean setSubscribing( Context c, Boolean value ) {
+        SharedPreferences config = getSPrefConfig( c );
+        SharedPreferences.Editor writer = config.edit();
+        writer.putBoolean( AppConfig.SPREF_SUBSCRIPTION_TASK, value );
+        return writer.commit();
+    }
+
+    /**
      * It saves if the main activity is in the foreground to the Shared Preferences.
-     *
      * @param c The Context of the Android system.
      * @param foreground If the MainActivity is paused or resumed
      * @return true  The boolean was saved successfully.
@@ -319,15 +282,12 @@ public class AppUtils {
     public static Boolean saveIsForeground( Context c, boolean foreground ) {
         SharedPreferences config = getSPrefConfig( c );
         SharedPreferences.Editor writer = config.edit();
-
         writer.putBoolean( AppConfig.SPREF_FOREGROUND, foreground );
-
         return writer.commit();
     }
 
     /**
      * It gets if the MainActivity is in the foreground
-     *
      * @param c The Context of the Android system.
      * @return boolean If the token was sent to the server
      *         null    If there is no value set;
@@ -335,6 +295,20 @@ public class AppUtils {
     public static boolean isForeground( Context c ) {
         SharedPreferences config = getSPrefConfig( c );
         return config.getBoolean( AppConfig.SPREF_FOREGROUND, false );
+    }
+
+    /**
+     * It gets if the token was sent to the server
+     * @param c The Context of the Android system.
+     * @return Integer
+     */
+    public static Integer getPromotionsTime( Context c ) {
+        SharedPreferences config = getSPrefConfig( c );
+        String value = config.getString( AppConfig.SPREF_PROMOTION_TIME, AppConfig.DEFAULT_PROMOTION );
+
+        if( value.equals( "999" ) ) // 999 represents infinite in the array
+            return Strategy.TTL_SECONDS_INFINITE;
+        return Integer.parseInt( value );
     }
 
     /**
@@ -347,7 +321,6 @@ public class AppUtils {
             password.setInputType( InputType.TYPE_TEXT_VARIATION_PASSWORD );
         else
             password.setInputType( InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_VARIATION_PASSWORD );
-
         password.setTypeface( Typeface.MONOSPACE );
     }
 
@@ -374,21 +347,6 @@ public class AppUtils {
         config.locale = appLoc;
 
         res.updateConfiguration( config, dm );
-    }
-
-    /**
-     * Verify if a service is running
-     * @param c The Context of the Android system.
-     * @param serviceName The name of the service.
-     * @return Boolean true if is running otherwise false
-     */
-    public static boolean isMyServiceRunning(Context c, String serviceName) {
-        ActivityManager manager = (ActivityManager) c.getSystemService( Context.ACTIVITY_SERVICE );
-        for( ActivityManager.RunningServiceInfo service : manager.getRunningServices( Integer.MAX_VALUE ) )  {
-            if( serviceName.equals( service.service.getClassName() ) )
-                return true;
-        }
-        return false;
     }
 
     /**
@@ -450,9 +408,9 @@ public class AppUtils {
      * @param title The title for the alert
      * @param message The message for the alert
      */
-    public static void sendMessage(YodoHandler handlerMessages, String title, String message) {
+    public static void sendMessage( int messageType, YodoHandler handlerMessages, String title, String message ) {
         Message msg = new Message();
-        msg.what = YodoHandler.SERVER_ERROR;
+        msg.what = messageType;
 
         Bundle bundle = new Bundle();
         bundle.putString( YodoHandler.CODE, title );
@@ -463,12 +421,13 @@ public class AppUtils {
     }
 
     /**
-     * Check if the device possess bluetooth
-     * @return true if it possess bluetooth otherwise false
+     * Sends a message to the handler
+     * @param handlerMessages The Handler for the app
+     * @param title The title for the alert
+     * @param message The message for the alert
      */
-    public static boolean hasBluetooth() {
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        return mBluetoothAdapter != null;
+    public static void sendMessage( YodoHandler handlerMessages, String title, String message ) {
+        sendMessage( YodoHandler.SERVER_ERROR, handlerMessages, title, message );
     }
 
     /**

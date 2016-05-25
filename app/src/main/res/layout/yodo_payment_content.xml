@@ -75,6 +75,22 @@
                 android:layout_height="wrap_content"/>
 
         </LinearLayout>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/ibSubscription"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:background="@null"
+            android:contentDescription="@string/desc"
+            android:src="@drawable/ic_nearby"
+            android:onClick="getPromotionsClick"/>
+
     </LinearLayout>
     <!-- end header -->
 

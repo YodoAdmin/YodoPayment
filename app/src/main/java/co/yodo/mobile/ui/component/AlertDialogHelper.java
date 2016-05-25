@@ -66,8 +66,8 @@ public class AlertDialogHelper {
      * @param message A message to show
      * @param clickListener click for the negative button
      */
-    public static void showAlertDialog(final Context c, final String title, final String message,
-                                       final DialogInterface.OnClickListener clickListener) {
+    public static void showAlertDialog( final Context c, final String title, final String message,
+                                       final DialogInterface.OnClickListener clickListener ) {
         AlertDialog.Builder builder = new AlertDialog.Builder( c, R.style.AppCompatAlertDialogStyle );
         builder.setIcon( R.drawable.ic_launcher );
         builder.setTitle( title );
@@ -86,7 +86,7 @@ public class AlertDialogHelper {
      * @param title The title of the dialog
      * @param view The view of the dialog
      */
-    public static void showAlertDialog(final Context c, final String title, final View view) {
+    public static void showAlertDialog( final Context c, final String title, final View view ) {
         AlertDialog.Builder builder = new AlertDialog.Builder( c, R.style.AppCompatAlertDialogStyle );
         builder.setIcon( R.drawable.ic_launcher );
         builder.setTitle( title );

@@ -199,7 +199,6 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
 
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
                     ( (LinearLayout) vCurrentDeLink.getParent() ).removeView( vCurrentDeLink );
-                    AppUtils.clearLinkedAccount( ac );
                 }
 
                 message = response.getMessage();

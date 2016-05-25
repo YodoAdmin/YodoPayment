@@ -186,7 +186,7 @@ public class SplashActivity extends Activity implements YodoRequest.RESTListener
                     // There was an error during the process
                     default:
                         message = response.getMessage();
-                        AppUtils.sendMessage( handlerMessages, code, message );
+                        AppUtils.sendMessage( YodoHandler.INIT_ERROR, handlerMessages, code, message );
                         break;
                 }
                 break;

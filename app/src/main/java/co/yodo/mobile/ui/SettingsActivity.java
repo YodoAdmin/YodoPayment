@@ -3,7 +3,6 @@ package co.yodo.mobile.ui;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.preference.CheckBoxPreference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.support.v7.app.ActionBar;
@@ -54,8 +53,6 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public static class PrefsFragmentInner extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
-        /** GUI Controllers */
-        private CheckBoxPreference SPREF_ADVERTISING;
 
         @Override
         public void onCreate( final Bundle savedInstanceState ) {
@@ -66,8 +63,6 @@ public class SettingsActivity extends AppCompatActivity {
             prefMgr.setSharedPreferencesMode( MODE_PRIVATE );
 
             addPreferencesFromResource( R.xml.config_prefs );
-
-            setupGUI();
         }
 
         @Override
@@ -82,18 +77,6 @@ public class SettingsActivity extends AppCompatActivity {
             super.onPause();
             // unregister listener
             getPreferenceScreen().getSharedPreferences().unregisterOnSharedPreferenceChangeListener( this );
-        }
-
-        /**
-         * Configures the main GUI Controllers
-         */
-        private void setupGUI() {
-            SPREF_ADVERTISING = (CheckBoxPreference) getPreferenceScreen()
-                    .findPreference( AppConfig.SPREF_ADVERTISING_SERVICE );
-
-            // If the app doesn't have bluetooth, then disable the ads option
-            if( !AppUtils.hasBluetooth() )
-                SPREF_ADVERTISING.setEnabled( false );
         }
 
         @Override

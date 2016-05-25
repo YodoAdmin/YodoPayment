@@ -1,6 +1,7 @@
 package co.yodo.mobile.ui.component;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.Toast;
@@ -8,6 +9,7 @@ import android.widget.Toast;
 import java.lang.ref.WeakReference;
 
 import co.yodo.mobile.R;
+import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.ui.component.AlertDialogHelper;
 import co.yodo.mobile.ui.component.ToastMaster;
 
@@ -17,9 +19,8 @@ import co.yodo.mobile.ui.component.ToastMaster;
  */
 public class YodoHandler extends Handler {
     /** Id for Messages */
-    public static final int NO_INTERNET   = 0;
-    public static final int GENERAL_ERROR = 1;
-    public static final int SERVER_ERROR  = 2;
+    public static final int INIT_ERROR   = 1;
+    public static final int SERVER_ERROR = 2;
 
     /** Id for the content */
     public static final String CODE    = "code";
@@ -33,24 +34,40 @@ public class YodoHandler extends Handler {
     }
 
     @Override
-    public void handleMessage(Message msg) {
+    public void handleMessage( Message msg ) {
         super.handleMessage( msg );
-        Activity main = wMain.get();
+        final Activity main = wMain.get();
 
         // message arrived after activity death
         if( main == null )
             return;
 
-        if( msg.what == GENERAL_ERROR ) {
-            ToastMaster.makeText( main, R.string.error, Toast.LENGTH_LONG ).show();
+        DialogInterface.OnClickListener clickListener = null;
+
+        if( msg.what == INIT_ERROR ) {
+            clickListener = new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick( DialogInterface dialog, int which ) {
+                    main.finish();
+                }
+            };
         }
-        else if( msg.what == NO_INTERNET ) {
-            ToastMaster.makeText( main, R.string.no_internet, Toast.LENGTH_LONG ).show();
-        }
-        else if( msg.what == SERVER_ERROR ) {
-            String code     = msg.getData().getString( CODE );
-            String response = msg.getData().getString( MESSAGE );
-            AlertDialogHelper.showAlertDialog( main, code, response, null );
+
+        String code     = msg.getData().getString( CODE, ServerResponse.ERROR_FAILED );
+        String response = msg.getData().getString( MESSAGE );
+
+        switch( code ) {
+            case ServerResponse.ERROR_INCORRECT_PIP:
+                AlertDialogHelper.showAlertDialog(
+                        main,
+                        code,
+                        main.getString( R.string.message_error_incorrect_pip ),
+                        clickListener
+                );
+                break;
+
+            default:
+                AlertDialogHelper.showAlertDialog( main, code, response, clickListener );
         }
     }
 }
