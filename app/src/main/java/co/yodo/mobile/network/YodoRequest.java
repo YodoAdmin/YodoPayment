@@ -2,6 +2,8 @@ package co.yodo.mobile.network;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.support.v4.util.LruCache;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
@@ -12,6 +14,7 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
@@ -50,7 +53,7 @@ public class YodoRequest {
     /** Switch server IP address */
     private static final String PROD_IP      = "http://50.56.180.133";  // Production
     private static final String DEV_IP   	 = "http://198.101.209.120";  // Development
-    private static final String IP           = PROD_IP;
+    private static final String IP           = DEV_IP;
 
     /** Two paths used for the requests */
     private static final String YODO_ADDRESS = "/yodo/yodoswitchrequest/getRequest/";
@@ -67,8 +70,9 @@ public class YodoRequest {
     /** Object used to encrypt information */
     private Encrypter oEncrypter;
 
-    /** Global request queue for Volley */
+    /** Global request queue for Volley and Image Loader */
     private RequestQueue mRequestQueue = null;
+    private ImageLoader mImageLoader = null;
 
     /** Singleton instance */
     private static YodoRequest instance = null;
@@ -133,6 +137,22 @@ public class YodoRequest {
         mCtx = context.getApplicationContext();
         mRequestQueue = getRequestQueue();
         oEncrypter = new Encrypter();
+
+        mImageLoader = new ImageLoader( mRequestQueue,
+                new ImageLoader.ImageCache() {
+                    private final LruCache<String, Bitmap> cache = new LruCache<>( 10 );
+
+                    @Override
+                    public Bitmap getBitmap( String url) {
+                        return cache.get( url );
+                    }
+
+                    @Override
+                    public void putBitmap( String url, Bitmap bitmap ) {
+                        cache.put( url, bitmap );
+                    }
+                }
+        );
     }
 
     /**
@@ -156,6 +176,14 @@ public class YodoRequest {
             mRequestQueue = Volley.newRequestQueue( mCtx );
         }
         return mRequestQueue;
+    }
+
+    /**
+     * Gets the image loader object
+     * @return The image loader
+     */
+    public ImageLoader getImageLoader() {
+        return mImageLoader;
     }
 
     /**

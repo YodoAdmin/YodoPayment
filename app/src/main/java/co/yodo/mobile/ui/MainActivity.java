@@ -2,18 +2,19 @@ package co.yodo.mobile.ui;
 
 import android.Manifest;
 import android.app.Dialog;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.IntentSender;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
+import android.support.annotation.NonNull;
+import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
@@ -31,11 +32,26 @@ import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.ImageLoader;
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.common.api.ResultCallback;
+import com.google.android.gms.common.api.Status;
+import com.google.android.gms.nearby.Nearby;
+import com.google.android.gms.nearby.messages.Message;
+import com.google.android.gms.nearby.messages.MessageListener;
+import com.google.android.gms.nearby.messages.NearbyMessagesStatusCodes;
+import com.google.android.gms.nearby.messages.Strategy;
+import com.google.android.gms.nearby.messages.SubscribeCallback;
+import com.google.android.gms.nearby.messages.SubscribeOptions;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -48,9 +64,7 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.broadcastreceiver.BroadcastMessage;
 import co.yodo.mobile.component.ClearEditText;
-import co.yodo.mobile.ui.component.ImageLoader;
 import co.yodo.mobile.ui.component.ProgressDialogHelper;
 import co.yodo.mobile.ui.component.ToastMaster;
 import co.yodo.mobile.ui.component.YodoHandler;
@@ -64,12 +78,15 @@ import co.yodo.mobile.helper.AppEula;
 import co.yodo.mobile.helper.AppUtils;
 import co.yodo.mobile.helper.Intents;
 import co.yodo.mobile.network.YodoRequest;
-import co.yodo.mobile.service.AdvertisingService;
 import co.yodo.mobile.component.SKSCreater;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 
-public class MainActivity extends AppCompatActivity implements YodoRequest.RESTListener {
+public class MainActivity extends AppCompatActivity implements
+        YodoRequest.RESTListener,
+        SharedPreferences.OnSharedPreferenceChangeListener,
+        GoogleApiClient.ConnectionCallbacks,
+        GoogleApiClient.OnConnectionFailedListener {
     /** DEBUG */
     @SuppressWarnings( "unused" )
     private static final String TAG = MainActivity.class.getSimpleName();
@@ -94,21 +111,36 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
     private ImageViewTouch mAdvertisingImage;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
+    private ImageButton ibSubscription;
 
     /** Database and current merchant */
     private CouponsDataSource couponsdb;
     private ReceiptsDataSource receiptsdb;
-    private String merchant;
+    private String mMerchant;
 
-    /** The Local Broadcast Manager */
-    private LocalBroadcastManager lbm;
+    /** Provides an entry point for Google Play services. */
+    private GoogleApiClient mGoogleApiClient;
 
-    /** SKS time to dismiss milliseconds */
-    private static final int TIME_TO_DISMISS_SKS = 60000;
+    /** A {@link MessageListener} for processing messages from nearby devices. */
+    private MessageListener mMessageListener;
+
+    /** Sets the time in seconds for a published message or a subscription to live */
+    private Strategy PUB_SUB_STRATEGY;
+    /**
+     * Tracks if we are currently resolving an error related to Nearby permissions. Used to avoid
+     * duplicate Nearby permission dialogs if the user initiates both subscription and publication
+     * actions without having opted into Nearby.
+     */
+    private boolean mResolvingNearbyPermissionError = false;
+
+    /** SKS time to dismiss */
+    private static final int TIME_TO_DISMISS_SKS = 1000 * 60; // 60 seconds
+
+    /** Time between advertisement requests */
+    private static final int DELAY_BETWEEN_REQUESTS = 1000 * 30; // 30 seconds
 
     /** SKS data separator */
-    private static final String SKS_SEP   = "**";
-    //private static final String SKS_REGEX = "\\*\\*";
+    private static final String SKS_SEP = "**";
 
     /** SKS code */
     private String originalCode;
@@ -118,7 +150,6 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
 
     /** Differentiates the same query for different actions */
     private Integer queryType;
-
     private static final int GENERATE_SKS = 0;
     private static final int DELINK       = 1;
 
@@ -128,6 +159,22 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
 
     /** Request codes for the permissions */
     private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
+
+    /** Request code to use when launching the resolution activity. */
+    private static final int REQUEST_RESOLVE_ERROR = 1001;
+
+    // Runnable that takes care of start the scans
+    private Runnable mGetAdvertisement = new Runnable() {
+        @Override
+        public void run() {
+            mRequestManager.requestAdvertising(
+                    hardwareToken,
+                    mMerchant
+            );
+            // Wait some time for the next advertisement request
+            handlerMessages.postDelayed( mGetAdvertisement, DELAY_BETWEEN_REQUESTS );
+        }
+    };
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -146,17 +193,8 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
         AppUtils.saveIsForeground( ac, true );
         // Register listener for requests and  broadcast receivers
         mRequestManager.setListener( this );
-        registerBroadcasts();
         // Open databases
         openDatabases();
-
-        // Starts advertising service if enabled
-        Intent iAdv = new Intent( ac, AdvertisingService.class );
-        if( AppUtils.isMyServiceRunning( ac, AdvertisingService.class.getName() ) )
-            stopService( iAdv );
-
-        if( AppUtils.isAdvertising( ac ) )
-            startService( iAdv );
     }
 
     @Override
@@ -164,30 +202,42 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
         super.onPause();
         // False when the activity is not in foreground
         AppUtils.saveIsForeground( ac, false );
-        // Register broadcast receivers
-        unregisterBroadcasts();
         // Close databases
         closeDatabases();
-
-        // Stops advertising service if running
-        if( AppUtils.isMyServiceRunning( ac, AdvertisingService.class.getName() ) ) {
-            Intent iAdv = new Intent( ac, AdvertisingService.class );
-            stopService( iAdv );
-        }
     }
 
     @Override
     public void onStart() {
         super.onStart();
-        // register to event bus
+        // Register to event bus
         EventBus.getDefault().register( this );
+        // Set listener for preferences
+        AppUtils.registerSPListener( ac, this );
+        // Creates the pub sub strategy for nearby
+        PUB_SUB_STRATEGY = new Strategy.Builder()
+                .setTtlSeconds( AppUtils.getPromotionsTime( ac ) ).build();
+        // Connect to the service
+        mGoogleApiClient = new GoogleApiClient.Builder( this )
+                .addConnectionCallbacks( this )
+                .addOnConnectionFailedListener( this )
+                .addApi( Nearby.MESSAGES_API )
+                .build();
+        mGoogleApiClient.connect();
     }
 
     @Override
     public void onStop() {
-        super.onStop();
-        // unregister from event bus
+        // Unregister from event bus
         EventBus.getDefault().unregister( this );
+        // Unregister listener for preferences
+        AppUtils.unregisterSPListener( ac, this );
+        // Disconnect the api client if there is a connection
+        if( mGoogleApiClient != null && mGoogleApiClient.isConnected() ) {
+            AppUtils.setSubscribing( ac, false );
+            unsubscribe();
+            mGoogleApiClient.disconnect();
+        }
+        super.onStop();
     }
 
     @Override
@@ -265,9 +315,6 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
         handlerMessages = new YodoHandler( MainActivity.this );
         mRequestManager = YodoRequest.getInstance( ac );
 
-        // get local broadcast
-        lbm = LocalBroadcastManager.getInstance( ac );
-
         // Globals GUI Components
         mAccountNumber     = (TextView) findViewById( R.id.accountNumberText );
         mAccountDate       = (TextView) findViewById( R.id.accountDateText );
@@ -275,6 +322,7 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
         mAdvertisingLayout = (RelativeLayout) findViewById( R.id.advertisingLayout );
         mAdvertisingImage  = (ImageViewTouch) findViewById( R.id.advertisingImage );
         mDrawerLayout      = (DrawerLayout) findViewById(R.id.drawerLayout);
+        ibSubscription     = (ImageButton) findViewById( R.id.ibSubscription );
 
         // Images fit parent
         mAdvertisingImage.setDisplayType( ImageViewTouchBase.DisplayType.FIT_TO_SCREEN );
@@ -300,6 +348,9 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
         };
 
         mDrawerLayout.addDrawerListener( mDrawerToggle );
+
+        // Set up the listener for the Nearby messages
+        initializeMessageListener();
 
         couponsdb  = new CouponsDataSource( ac );
         receiptsdb = ReceiptsDataSource.getInstance( ac );
@@ -344,7 +395,7 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
 
                             outStream.flush();
                             outStream.close();
-                            couponsdb.createCoupon( image.getPath(), merchant );
+                            couponsdb.createCoupon( image.getPath(), mMerchant );
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
@@ -366,7 +417,10 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
             AppUtils.saveFirstLogin( ac, false );
         }
 
+        // Show the terms, if the app is updated
         AppEula.show( this );
+        // Upon orientation change, ensure that the state of the UI is maintained.
+        updateUI();
     }
 
     /**
@@ -385,8 +439,180 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
     }
 
     /**
+     * Updates the UI when the state of a subscription or
+     * publication action changes.
+     */
+    private void updateUI() {
+        Boolean subscriptionTask = AppUtils.isSubscribing( ac );
+        ibSubscription.setImageResource(
+                subscriptionTask ? R.drawable.ic_cancel : R.drawable.ic_nearby
+        );
+        if( !subscriptionTask )
+            removeAdvertisement();
+    }
+
+    /**
+     * Stops the advertisement requests
+     */
+    private void removeAdvertisement() {
+        mMerchant = null;
+        handlerMessages.removeCallbacks( mGetAdvertisement );
+        mAdvertisingImage.setImageDrawable( null );
+    }
+
+    /**
+     * Initializes the listener for the nearby API
+     */
+    private void initializeMessageListener() {
+        mMessageListener = new MessageListener() {
+            @Override
+            public void onFound( final Message message ) {
+                mMerchant = new String( message.getContent() );
+                // Called when a message is detectable nearby.
+                AppUtils.Logger( TAG, "Found: " + mMerchant );
+                handlerMessages.post( mGetAdvertisement );
+            }
+
+            @Override
+            public void onLost( final Message message ) {
+                mMerchant = new String( message.getContent() );
+                // Called when a message is no longer detectable nearby.
+                AppUtils.Logger( TAG, "Lost: " + mMerchant );
+                removeAdvertisement();
+            }
+        };
+    }
+
+    /**
+     * Subscribes to messages from nearby devices. If not successful, attempts to resolve any error
+     * related to Nearby permissions by displaying an opt-in dialog. Registers a callback which
+     * updates state when the subscription expires.
+     */
+    private void subscribe() {
+        AppUtils.Logger( TAG, "trying to subscribe" );
+        // Cannot proceed without a connected GoogleApiClient. Reconnect and execute the pending
+        // task in onConnected().
+        if( !mGoogleApiClient.isConnected() ) {
+            if( !mGoogleApiClient.isConnecting() ) {
+                mGoogleApiClient.connect();
+            }
+        } else {
+            SubscribeOptions options = new SubscribeOptions.Builder()
+                    .setStrategy( PUB_SUB_STRATEGY )
+                    .setCallback( new SubscribeCallback() {
+                        @Override
+                        public void onExpired() {
+                            super.onExpired();
+                            AppUtils.Logger( TAG, "no longer subscribing" );
+                            AppUtils.setSubscribing( ac, false );
+                        }
+                    }).build();
+
+            Nearby.Messages.subscribe( mGoogleApiClient, mMessageListener, options )
+                    .setResultCallback( new ResultCallback<Status>() {
+                        @Override
+                        public void onResult( @NonNull Status status ) {
+                            if( status.isSuccess() ) {
+                                AppUtils.Logger( TAG, "subscribed successfully" );
+                                AppUtils.setSubscribing( ac, true );
+                            } else {
+                                AppUtils.Logger( TAG, "could not subscribe" );
+                                AppUtils.setSubscribing( ac, false );
+                                handleUnsuccessfulNearbyResult( status );
+                            }
+                        }
+                    });
+        }
+    }
+
+    /**
+     * Ends the subscription to messages from nearby devices. If successful, resets state. If not
+     * successful, attempts to resolve any error related to Nearby permissions by
+     * displaying an opt-in dialog.
+     */
+    private void unsubscribe() {
+        AppUtils.Logger( TAG, "trying to unsubscribe" );
+        // Cannot proceed without a connected GoogleApiClient. Reconnect and execute the pending
+        // task in onConnected().
+        if( !mGoogleApiClient.isConnected()  ) {
+            if( !mGoogleApiClient.isConnecting() ) {
+                mGoogleApiClient.connect();
+            }
+        } else {
+            Nearby.Messages.unsubscribe( mGoogleApiClient, mMessageListener )
+                    .setResultCallback( new ResultCallback<Status>() {
+                        @Override
+                        public void onResult( @NonNull Status status ) {
+                            if( status.isSuccess() ) {
+                                AppUtils.Logger( TAG, "unsubscribed successfully" );
+                                AppUtils.setSubscribing( ac, false );
+                            } else {
+                                AppUtils.Logger( TAG, "could not unsubscribe" );
+                                AppUtils.setSubscribing( ac, true );
+                                handleUnsuccessfulNearbyResult( status );
+                            }
+                        }
+                    });
+        }
+    }
+
+    /**
+     * Handles errors generated when performing a subscription or publication action. Uses
+     * {@link Status#startResolutionForResult} to display an opt-in dialog to handle the case
+     * where a device is not opted into using Nearby.
+     */
+    private void handleUnsuccessfulNearbyResult( Status status ) {
+        AppUtils.Logger( TAG, "processing error, status = " + status );
+        if( status.getStatusCode() == NearbyMessagesStatusCodes.APP_NOT_OPTED_IN ) {
+            if( !mResolvingNearbyPermissionError ) {
+                try {
+                    mResolvingNearbyPermissionError = true;
+                    status.startResolutionForResult(
+                            this,
+                            REQUEST_RESOLVE_ERROR
+                    );
+                } catch( IntentSender.SendIntentException e ) {
+                    e.printStackTrace();
+                }
+            }
+        } else {
+            if( status.getStatusCode() == ConnectionResult.NETWORK_ERROR ) {
+                Toast.makeText( ac, R.string.message_error_no_connectivity, Toast.LENGTH_LONG ).show();
+            } else {
+                // To keep things simple, pop a toast for all other error messages.
+                Toast.makeText( ac, "Unsuccessful: " + status.getStatusMessage(), Toast.LENGTH_LONG ).show();
+            }
+        }
+    }
+
+    /**
+     * Invokes a pending task based on the subscription state.
+     */
+    private void executePendingSubscriptionTask() {
+        if( AppUtils.isSubscribing( ac ) ) {
+            subscribe();
+        } else {
+            unsubscribe();
+        }
+    }
+
+    /**
+     * Tries to subscribe to close Rocket (POS) devices
+     * for advertisement
+     * @param v The view, used to change the icon
+     */
+    public void getPromotionsClick( View v ) {
+        if( !AppUtils.isSubscribing( ac ) ) {
+            AppUtils.setSubscribing( ac, true );
+        } else {
+            AppUtils.setSubscribing( ac, false );
+        }
+        executePendingSubscriptionTask();
+    }
+
+    /**
      * Asks for the PIP to realize a payment
-     * @param v, not used
+     * @param v The view, not used
      */
     public void paymentClick( View v ) {
         final String title      = getString( R.string.input_pip );
@@ -468,8 +694,6 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
      */
     public void linkAccountsClick(View v) {
         mDrawerLayout.closeDrawers();
-
-        //Snackbar.make( mDrawerLayout, R.string.no_available, Snackbar.LENGTH_SHORT ).show();
 
         final EditText inputBox = new ClearEditText( ac );
         String[] options = getResources().getStringArray( R.array.link_options_array );
@@ -644,35 +868,16 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
     public void alternatePaymentClick( View v ) {
         final ImageView accountImage = (ImageView) v;
         Integer account_type = Integer.parseInt( accountImage.getContentDescription().toString() );
-        //String[] accounts = AppUtils.getLinkedAccount( ac ).split( AppUtils.ACC_SEP );
 
         if( account_type == 0 ) {
             account_type = null;
-        } /*else {
-            if( !Arrays.asList( accounts ).contains( String.valueOf( account_type ) ) ) {
-                ToastMaster.makeText( ac, R.string.no_linked_account, Toast.LENGTH_SHORT ).show();
-                return;
-            }
-        }*/
+        }
 
         showSKSDialog( originalCode, account_type );
         originalCode = null;
 
         alertDialog.dismiss();
         alertDialog = null;
-    }
-
-    /**
-     * Register/Unregister the Broadcast Receivers.
-     */
-    private void registerBroadcasts() {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction( BroadcastMessage.ACTION_NEW_MERCHANT );
-        lbm.registerReceiver(mYodoBroadcastReceiver, filter);
-    }
-
-    private void unregisterBroadcasts() {
-        lbm.unregisterReceiver(mYodoBroadcastReceiver);
     }
 
     /**
@@ -899,7 +1104,7 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
 
                     case ServerResponse.ERROR_NO_BALANCE:
                         mAccountBalance.setText( "" );
-                        Snackbar.make( mDrawerLayout, R.string.error_message_no_balance, Snackbar.LENGTH_SHORT ).show();
+                        Snackbar.make( mDrawerLayout, R.string.message_error_no_balance, Snackbar.LENGTH_SHORT ).show();
                         break;
 
                     default:
@@ -915,17 +1120,24 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
 
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
                     String url = response.getParam( ServerResponse.ADVERTISING ).replaceAll( " ", "%20" );
-                    if( !url.isEmpty() )
-                        ImageLoader.getInstance().DisplayImage( url, mAdvertisingImage );
+                    if( !url.isEmpty() ) {
+                        mRequestManager.getImageLoader().get( url, new ImageLoader.ImageListener() {
+                                @Override
+                                public void onResponse( ImageLoader.ImageContainer response, boolean isImmediate ) {
+                                    if( response.getBitmap() != null ) {
+                                        // load image into ImageView
+                                        mAdvertisingImage.setImageBitmap( response.getBitmap() );
+                                    }
+                                }
+
+                                @Override
+                                public void onErrorResponse( VolleyError error ) {
+                                    AppUtils.Logger( TAG, "Image Load Error: " + error.getMessage() );
+                                }
+                            }
+                        );
+                    }
                 }
-                break;
-
-            case QUERY_RCV_REQUEST:
-                code = response.getCode();
-
-                if( code.equals( ServerResponse.AUTHORIZED ) )
-                    receiptDialog( response.getParams() );
-
                 break;
 
             case QUERY_LNK_REQUEST:
@@ -961,17 +1173,18 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
                 code = response.getCode();
                 String from = response.getParam( ServerResponse.FROM );
 
-                if( queryType == GENERATE_SKS ) {
-                    if( code.equals( ServerResponse.AUTHORIZED ) && !from.isEmpty() ) {
-                        LayoutInflater inflater = (LayoutInflater) getSystemService( LAYOUT_INFLATER_SERVICE );
-                        View layout = inflater.inflate( R.layout.dialog_payment, new LinearLayout( ac ), false );
-                        alertDialog = AlertDialogHelper.showAlertDialog( ac, layout, getString( R.string.linking_menu ) );
-                    } else {
-                        showSKSDialog( originalCode, null );
-                        originalCode = null;
-                    }
-                } else if( queryType == DELINK ){
-                    if( code.equals( ServerResponse.AUTHORIZED ) ) {
+                // This needs an improvement (handling correctly the error codes)
+                if( code.equals( ServerResponse.AUTHORIZED ) ) {
+                    if( queryType == GENERATE_SKS ) {
+                        if( !from.isEmpty() ) {
+                            LayoutInflater inflater = ( LayoutInflater ) getSystemService( LAYOUT_INFLATER_SERVICE );
+                            View layout = inflater.inflate( R.layout.dialog_payment, new LinearLayout( ac ), false );
+                            alertDialog = AlertDialogHelper.showAlertDialog( ac, layout, getString( R.string.linking_menu ) );
+                        } else {
+                            showSKSDialog( originalCode, null );
+                            originalCode = null;
+                        }
+                    } else if( queryType == DELINK ) {
                         String to = response.getParam( ServerResponse.TO );
 
                         Intent i = new Intent( ac, DeLinkActivity.class );
@@ -979,11 +1192,14 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
                         i.putExtra( Intents.LINKED_ACC_FROM, from );
                         i.putExtra( Intents.LINKED_PIP, pipTemp );
                         startActivity( i );
-                    } else {
-                        //message = response.getMessage();
-                        message = getString( R.string.error_message_no_links );
-                        AppUtils.sendMessage( handlerMessages, code, message );
                     }
+                } else if( queryType == DELINK ) {
+                    //message = response.getMessage();
+                    message = getString( R.string.error_message_no_links );
+                    AppUtils.sendMessage( handlerMessages, code, message );
+                } else {
+                    message = response.getMessage();
+                    AppUtils.sendMessage( handlerMessages, code, message );
                 }
 
                 pipTemp   = null;
@@ -994,10 +1210,6 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
                 code = response.getCode();
                 message = response.getMessage();
                 AppUtils.sendMessage( handlerMessages, code, message );
-
-                if( code.equals( ServerResponse.AUTHORIZED ) ) {
-                    AppUtils.saveLinkedAccount( ac, getString( R.string.account_yodo_heart ) );
-                }
                 break;
 
             case CLOSE_ACC_REQUEST:
@@ -1028,29 +1240,59 @@ public class MainActivity extends AppCompatActivity implements YodoRequest.RESTL
         }
     }
 
-    /**
-     * The broadcast receiver.
-     */
-    public BroadcastReceiver mYodoBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context c, Intent i) {
-            String action = i.getAction();
-			/* Broadcast: ACTION_NEW_MERCHANT */
-			/* ****************************************** */
-            if( action.equals( BroadcastMessage.ACTION_NEW_MERCHANT ) ) {
-                merchant = i.getStringExtra( BroadcastMessage.EXTRA_NEW_MERCHANT );
-
-                mRequestManager.requestAdvertising(
-                        hardwareToken,
-                        merchant
-                );
-            }
-        }
-    };
-
     @SuppressWarnings("unused") // receives GCM receipts
     @Subscribe( threadMode = ThreadMode.MAIN )
     public void onResponseEvent( ServerResponse response ) {
         receiptDialog( response.getParams() );
+    }
+
+    @Override
+    public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
+        runOnUiThread( new Runnable() {
+            @Override
+            public void run() {
+                updateUI();
+            }
+        } );
+    }
+
+    @Override
+    public void onConnected( @Nullable Bundle bundle ) {
+        AppUtils.Logger( TAG, "GoogleApiClient connected" );
+        executePendingSubscriptionTask();
+    }
+
+    @Override
+    public void onConnectionSuspended( int cause ) {
+        AppUtils.Logger( TAG, "GoogleApiClient connection suspended: " +  cause );
+    }
+
+    @Override
+    public void onConnectionFailed( @NonNull ConnectionResult connectionResult ) {
+        AppUtils.Logger( TAG, "connection to GoogleApiClient failed" );
+    }
+
+    @Override
+    protected void onActivityResult( int requestCode, int resultCode, Intent data ) {
+        super.onActivityResult( requestCode, resultCode, data );
+        mResolvingNearbyPermissionError = false;
+        if( requestCode == REQUEST_RESOLVE_ERROR ) {
+            // User was presented with the Nearby opt-in dialog and pressed "Allow".
+            if( resultCode == RESULT_OK ) {
+                // We track the pending subscription and publication tasks. Once
+                // a user gives consent to use Nearby, we execute those tasks.
+                executePendingSubscriptionTask();
+            } else if( resultCode == RESULT_CANCELED ) {
+                // User was presented with the Nearby opt-in dialog and pressed "Deny". We cannot
+                // proceed with any pending subscription and publication tasks. Reset state.
+                AppUtils.setSubscribing( ac, false );
+            } else {
+                Toast.makeText(
+                        this,
+                        getString( R.string.message_error_code ) + resultCode,
+                        Toast.LENGTH_LONG
+                ).show();
+            }
+        }
     }
 }

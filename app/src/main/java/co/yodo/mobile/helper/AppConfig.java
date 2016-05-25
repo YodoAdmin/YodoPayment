@@ -8,7 +8,7 @@ import co.yodo.mobile.BuildConfig;
  */
 public class AppConfig {
     /** DEBUG flag */
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     /** ID of the shared preferences file */
     public static final String SHARED_PREF_FILE = "YodoPaymentSharedPref";
@@ -41,24 +41,10 @@ public class AppConfig {
 	 */
     public static final String SPREF_FIRST_LOGIN = "SPFirstLogin";
 
-    /* Advertising status.
-	 * type -- Boolean
-	 *
-	 * __Values__
-	 * true  -- Advertising service enabled
-	 * false -- Advertising service disabled
-	 */
-    public static final String SPREF_ADVERTISING_SERVICE = "SPAdvertisingService";
-
     /* The current language.
 	 * type -- String
 	 */
     public static final String SPREF_CURRENT_LANGUAGE = "SPCurrentLanguage";
-
-    /* The Set of linked accounts
-	 * type -- String
-	 */
-    public static final String SPREF_LINKED_ACCOUNTS = "SPLinkedAccounts";
 
     /* Registration authnumber
 	 * type -- String
@@ -70,10 +56,20 @@ public class AppConfig {
 	 */
     public static final String SPREF_TOKEN_TO_SERVER  = "SPTokenToServer";
 
+    /* Action to be taken
+     * type -- String
+     */
+    public static final String SPREF_SUBSCRIPTION_TASK = "subscription_task";
+
     /* If the main activity is in foreground
 	 * type -- boolean
 	 */
-    public static final String SPREF_FOREGROUND  = "SPForeground";
+    public static final String SPREF_FOREGROUND = "SPForeground";
+
+    /* The strategy time for nearby (promotions)
+	 * type -- Integer
+	 */
+    public static final String SPREF_PROMOTION_TIME = "SPPromotionTime";
 
     /**
      * Default values
@@ -81,29 +77,26 @@ public class AppConfig {
      */
 
     /*
-	 * Default value position for the language
+	 * Default value for the language
 	 *
-	 * Default: position 0 (English)
+	 * Default: en (English)
 	 */
     public static final String DEFAULT_LANGUAGE = "en";
 
     /*
-	 * Default value of scan interval
+	 * Default value for the promotions
 	 *
-	 * Default: 90 seconds
+	 * Default: 300 (5 minutes)
 	 */
-    public static final Integer DEFAULT_SCAN_INTERVAL = 1000 * 90;
+    public static final String DEFAULT_PROMOTION = "300";
 
     /* Biometric Default */
     public static final String YODO_BIOMETRIC = "BiometricTest";
 
-    /* Bluetooth Yodo POS name */
-    public static final String YODO_POS = "Yodo-Merch-";
-
     /* Coupons folder */
     public static final String COUPONS_FOLDER = "Yodo";
 
-    /* Type for gcm (1: Android 2: iOS) */
+    /* Type for gcm (1: Android, 2: iOS) */
     public static final String DEV_TYPE = "1";
 
     /* Minimum length for the PIP */
