@@ -1,4 +1,4 @@
-package co.yodo.mobile.ui.component;
+package co.yodo.mobile.ui.notification;
 
 import android.app.ProgressDialog;
 import android.content.Context;

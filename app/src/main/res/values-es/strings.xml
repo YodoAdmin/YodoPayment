@@ -2,7 +2,6 @@
 <resources>
 
     <!-- Main Strings -->
-    <string name="app_name">Yodo mobile location based services application</string>
     <string name="desc">desc</string>
     <string name="loading">Cargando</string>
     <string name="ok">OK</string>
@@ -80,26 +79,30 @@
     <string name="new_pip_hint">(4–8 caracteres)</string>
     <string name="forgot_pip">Olvido su PIP?</string>
 
-    <!-- Error Messages -->
+    <!-- Error Application Messages -->
     <string name="error">Esto es embarazoso! Ocurrió un error en el proceso</string>
     <string name="error_registration">Algo fue mal con el registro</string>
-    <string name="no_balance">Disculpe, parece que no tiene un balance</string>
     <string name="no_internet">Lo sentimos, parece que no dispone de una conexion a Internet en este momento</string>
     <string name="message.no_hardware">Debe encender su bluetooth primero</string>
     <string name="no_camera">Esta cámara no existe</string>
     <string name="no_available">Aún no disponible</string>
     <string name="no_biometric">Disculpe, parece que no tiene un token biométrico</string>
     <string name="image_saved_failed">Error al salvar el Cupón</string>
-    <string name="error.message.no_balance">Sin saldo registrado</string>
     <string name="error.message.no_links">No existen enlaces</string>
     <string name="error.not_supported">Este dispositivo no es compatible</string>
     <string name="error.play_services">Se requiere los servicios de Google Play</string>
     <string name="error.gcm_registration">Disculpe no pudimos salvar su token, inténtelo más tarde</string>
+
+    <!-- Error Server Messages -->
+    <string name="message.error.code">Fallo al resolver error con código:</string>
+    <string name="message.error.no_connectivity">No hay conectividad, no se puede proceder. Arreglelo en \'Configuración\' e intente de nuevo.</string>
     <string name="message.error.unknown">Esto es embarazoso! Ocurrió un error en el proceso</string>
     <string name="message.error.network">Lo sentimos, parece que no dispone de una conexion a Internet en este momentow</string>
     <string name="message.error.timeout">Lo sentimos, parece que el servidor está muy ocupado. Intente de nuevo luego</string>
     <string name="message.error.server">Lo sentimos, el servidor respondió con un error. Intente de nuevo luegor</string>
     <string name="message.error.transaction">Lo sentimos, el tipo de transacción no es válido. Intente de nuevo luegor</string>
+    <string name="message.error.no_balance">Disculpe, parece que no tiene un balance</string>
+    <string name="message.error.incorrect_pip">PIP incorrecto. Intente de nuevo</string>
 
     <!-- General Messages -->
     <string name="save_image">Salvar el Cupón?</string>
@@ -167,6 +170,15 @@
         <item>Chino</item>
         <item>Japonés</item>
         <item>Francés</item>
+        <item>Ruso</item>
+    </string-array>
+
+    <!-- Promotion -->
+    <string-array name="promotion_array">
+        <item>1 Minuto</item>
+        <item>5 Minutos</item>
+        <item>10 Minutos</item>
+        <item>Sin límite</item>
     </string-array>
 
     <string-array name="link_options_array">

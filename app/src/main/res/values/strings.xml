@@ -2,7 +2,7 @@
 <resources>
 
     <!-- Main Strings -->
-    <string name="app_name">Yodo mobile location based services application</string>
+    <string name="app_name" translatable="false">Yodo mobile location based services application</string>
     <string name="desc">desc</string>
     <string name="loading">Loading</string>
     <string name="ok">OK</string>
@@ -16,7 +16,7 @@
     <string name="drawer_open">open</string>
     <string name="drawer_close">close</string>
     <string name="version.label">Version:</string>
-    <string name="version.value" translatable="false">1.6.0</string>
+    <string name="version.value" translatable="false">1.6.3</string>
 
     <!-- Action Menu -->
     <string name="action_settings">Settings</string>
@@ -81,26 +81,30 @@
     <string name="new_pip_hint">(4–8 characters)</string>
     <string name="forgot_pip">Forgot the PIP?</string>
 
-    <!-- Error Messages -->
+    <!-- Error Application Messages -->
     <string name="error">An error occurred in the process. Try again later</string>
     <string name="error_registration">Something went wrong with the registration</string>
-    <string name="no_balance">Sorry, seems that you don\'t have a balance</string>
     <string name="no_internet">Sorry, weak or no Internet connection</string>
     <string name="message.no_hardware">You must turn on your bluetooth first</string>
     <string name="no_camera">This camera doesn\'t exist</string>
     <string name="no_available">This feature is not available yet</string>
     <string name="no_biometric">Sorry, seems that you don\'t have a biometric token</string>
     <string name="image_saved_failed">Error saving Coupon</string>
-    <string name="error.message.no_balance">No balance recorded</string>
     <string name="error.message.no_links">No links exist</string>
     <string name="error.not_supported">This device is not supported</string>
     <string name="error.play_services">Google Play Services is required</string>
     <string name="error.gcm_registration">Sorry we couldn\'t save your token, try again later</string>
+
+    <!-- Error Server Messages -->
+    <string name="message.error.code">Failed to resolve error with code:</string>
+    <string name="message.error.no_connectivity">No connectivity, cannot proceed. Fix in \'Settings\' and try again.</string>
     <string name="message.error.unknown">This is embarrassing! An error occurred in the process</string>
     <string name="message.error.network">Sorry, seems that you don\'t have an Internet connection right now</string>
     <string name="message.error.timeout">Sorry, seems that the server is too busy. Try again later</string>
     <string name="message.error.server">Sorry, the server responded with an error. Try again later</string>
     <string name="message.error.transaction">Sorry, the type of transaction is not valid. Try again later</string>
+    <string name="message.error.no_balance">Sorry, seems that you don\'t have a balance</string>
+    <string name="message.error.incorrect_pip">Incorrect PIP. Try again</string>
 
     <!-- General Messages -->
     <string name="save_image">Save Coupon?</string>
@@ -119,14 +123,6 @@
     <string name="closing_message">Closing the account</string>
     <string name="farewell_message_tittle">Thank-you for using Yodo</string>
     <string name="farewell_message">Please completely remove the Yodo App using the App Management tools under phone Settings</string>
-
-    <!-- Settings Headers -->
-    <string name="config_pref_services">Services</string>
-
-    <!-- Settings Titles -->
-    <string name="config_pref_advertising">Promotions</string>
-    <string name="config_pref_advertising_summary">Receive promotions from nearby stores</string>
-    <string name="config_pref_languages">Language</string>
 
     <!-- Tutorial -->
     <string name="tutorial_action_bar">Action Bar</string>
@@ -169,6 +165,14 @@
     <string name="title_activity_de_link">Yodo DeLink</string>
     <string name="title_activity_yodo_camera">Yodo Camera</string>
 
+    <!-- Settings Headers -->
+    <string name="config_pref_services">Services</string>
+
+    <!-- Settings Titles -->
+    <string name="config_pref_advertising">Keep promotions service alive for:</string>
+    <string name="config_pref_advertising_summary">Receive promotions from nearby stores</string>
+    <string name="config_pref_languages">Language</string>
+
     <!-- Languages -->
     <string-array name="languages_array">
         <item>English</item>
@@ -176,6 +180,7 @@
         <item>Chinese</item>
         <item>Japanese</item>
         <item>French</item>
+        <item>Russian</item>
     </string-array>
 
     <string-array name="languages_array_values" translatable="false">
@@ -184,6 +189,22 @@
         <item>zh</item>
         <item>ja</item>
         <item>fr</item>
+        <item>ru</item>
+    </string-array>
+
+    <!-- Promotion -->
+    <string-array name="promotion_array">
+        <item>1 Minute</item>
+        <item>5 Minutes</item>
+        <item>10 Minutes</item>
+        <item>Unlimited</item>
+    </string-array>
+
+    <string-array name="promotion_array_values" translatable="false">
+        <item>60</item>
+        <item>300</item>
+        <item>600</item>
+        <item>999</item>
     </string-array>
 
     <string-array name="link_options_array">

@@ -2,7 +2,6 @@
 <resources>
    
     <!--Main Strings -->
-    <string name="app_name">Yodo mobile location based services application</string>
     <string name="desc">desc</string>
     <string name="loading">ローディング</string>
     <string name="ok">OK</string>
@@ -83,23 +82,24 @@
     <!-- Error Messages -->
     <string name="error">エラーが発生しました</string>
     <string name="error_registration">登録中に問題が発生しました</string>
-    <string name="no_balance">残額がありません</string>
     <string name="no_internet">インターネット接続に問題があります</string>
     <string name="message.no_hardware">まずブルートゥースをオンにしてください</string>
     <string name="no_camera">カメラがありません</string>
     <string name="no_available">この機能はまだ利用できません</string>
     <string name="no_biometric">生体認証トークンがありません</string>
     <string name="image_saved_failed">クーポン保存中にエラーが発生しました</string>
-    <string name="error.message.no_balance">残額がありません</string>
     <string name="error.message.no_links">リンクがありません</string>
     <string name="error.not_supported">このデバイスは使用できません</string>
     <string name="error.play_services">グーグルプレイのサービスが必要です</string>
     <string name="error.gcm_registration">トークンを保存できませんでした。後で再度試してください</string>
+
+    <!-- Error Server Messages -->
     <string name="message.error.unknown">This is embarrassing! An error occurred in the process</string>
     <string name="message.error.network">Sorry, seems that you don\'t have an Internet connection right now</string>
     <string name="message.error.timeout">Sorry, seems that the server is too busy. Try again later</string>
     <string name="message.error.server">Sorry, the server responded with an error. Try again later</string>
     <string name="message.error.transaction">Sorry, the type of transaction is not valid. Try again later</string>
+    <string name="message.error.no_balance">残額がありません</string>
 
     <!-- General Messages -->
     <string name="save_image">クーポンを保存しますか？</string>
@@ -167,6 +167,15 @@
         <item>中国語</item>
         <item>日本語</item>
         <item>フランス語</item>
+        <item>ロシア</item>
+    </string-array>
+
+    <!-- Promotion -->
+    <string-array name="promotion_array">
+        <item>1分</item>
+        <item>5分</item>
+        <item>10分</item>
+        <item>無制限の</item>
     </string-array>
 
     <string-array name="link_options_array">
@@ -181,6 +190,9 @@
     <string name="message.permission.write_external_storage">クーポンを保存するために、許可が必要です</string>
 
     <!-- ACRA -->
-    <string name="crash_toast_text">システムエラー。問題解決のために、ディベロッパーにレポートが送信されました！</string>"
+    <string name="crash_toast_text">システムエラー。問題解決のために、ディベロッパーにレポートが送信されました！</string>
+    <string name="message.error.code">コードでエラーを解決できませんでした：</string>
+    <string name="message.error.incorrect_pip">不適切なPIP。 再試行する</string>
+    <string name="message.error.no_connectivity">いいえ、接続、続行することはできません。 「設定」に修正して再試行してください</string>"
     
 </resources>

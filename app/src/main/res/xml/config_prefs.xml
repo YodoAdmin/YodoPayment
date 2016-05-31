@@ -10,10 +10,13 @@
 
     <PreferenceCategory android:title="@string/config_pref_services">
 
-        <CheckBoxPreference
-            android:key="SPAdvertisingService"
+        <ListPreference
+            android:key="SPPromotionTime"
             android:title="@string/config_pref_advertising"
-            android:summary="@string/config_pref_advertising_summary" />
+            android:summary="%s"
+            android:entries="@array/promotion_array"
+            android:entryValues="@array/promotion_array_values"
+            android:defaultValue="300"/>
 
     </PreferenceCategory>
 

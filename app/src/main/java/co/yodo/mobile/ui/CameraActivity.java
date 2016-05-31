@@ -21,7 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.ui.component.ToastMaster;
+import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.helper.AppUtils;
 import co.yodo.mobile.helper.Intents;
 import visidon.Lib.FaceInfo;
