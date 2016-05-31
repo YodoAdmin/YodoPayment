@@ -170,6 +170,14 @@
         <item>俄語</item>
     </string-array>
 
+    <!-- Promotion -->
+    <string-array name="promotion_array">
+        <item>1分鐘</item>
+        <item>5分鐘</item>
+        <item>10分鐘</item>
+        <item>無限</item>
+    </string-array>
+
     <string-array name="link_options_array">
         <item>产生连结代码</item>
         <item>输入连结代码</item>
@@ -183,5 +191,8 @@
 
     <!-- ACRA -->
     <string name="crash_toast_text">系统错误: 报告已经发送给开发人员</string>
+    <string name="message.error.code">無法用代碼來解決錯誤：</string>
+    <string name="message.error.incorrect_pip">PIP不正確。 再試一次</string>
+    <string name="message.error.no_connectivity">無連接，無法進行。修正了“設置”，然後再試一次</string>
 
 </resources>

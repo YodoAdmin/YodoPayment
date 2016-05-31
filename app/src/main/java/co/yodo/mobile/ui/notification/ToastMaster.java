@@ -1,4 +1,4 @@
-package co.yodo.mobile.ui.component;
+package co.yodo.mobile.ui.notification;
 
 import android.content.Context;
 import android.widget.Toast;

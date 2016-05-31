@@ -65,14 +65,14 @@ import java.util.HashMap;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.component.ClearEditText;
-import co.yodo.mobile.ui.component.ProgressDialogHelper;
-import co.yodo.mobile.ui.component.ToastMaster;
-import co.yodo.mobile.ui.component.YodoHandler;
+import co.yodo.mobile.ui.notification.ProgressDialogHelper;
+import co.yodo.mobile.ui.notification.ToastMaster;
+import co.yodo.mobile.ui.notification.YodoHandler;
 import co.yodo.mobile.database.model.Receipt;
 import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.database.CouponsDataSource;
 import co.yodo.mobile.database.ReceiptsDataSource;
-import co.yodo.mobile.ui.component.AlertDialogHelper;
+import co.yodo.mobile.ui.notification.AlertDialogHelper;
 import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.AppEula;
 import co.yodo.mobile.helper.AppUtils;
@@ -126,6 +126,7 @@ public class MainActivity extends AppCompatActivity implements
 
     /** Sets the time in seconds for a published message or a subscription to live */
     private Strategy PUB_SUB_STRATEGY;
+
     /**
      * Tracks if we are currently resolving an error related to Nearby permissions. Used to avoid
      * duplicate Nearby permission dialogs if the user initiates both subscription and publication
@@ -467,18 +468,22 @@ public class MainActivity extends AppCompatActivity implements
         mMessageListener = new MessageListener() {
             @Override
             public void onFound( final Message message ) {
-                mMerchant = new String( message.getContent() );
-                // Called when a message is detectable nearby.
-                AppUtils.Logger( TAG, "Found: " + mMerchant );
-                handlerMessages.post( mGetAdvertisement );
+                if( mMerchant == null ) {
+                    mMerchant = new String( message.getContent() );
+                    // Called when a message is detectable nearby.
+                    AppUtils.Logger( TAG, "Found: " + mMerchant );
+                    handlerMessages.post( mGetAdvertisement );
+                }
             }
 
             @Override
             public void onLost( final Message message ) {
-                mMerchant = new String( message.getContent() );
-                // Called when a message is no longer detectable nearby.
-                AppUtils.Logger( TAG, "Lost: " + mMerchant );
-                removeAdvertisement();
+                String temp = new String( message.getContent() );
+                if( mMerchant.equals( temp ) ) {
+                    // Called when a message is no longer detectable nearby.
+                    AppUtils.Logger( TAG, "Lost: " + mMerchant );
+                    removeAdvertisement();
+                }
             }
         };
     }

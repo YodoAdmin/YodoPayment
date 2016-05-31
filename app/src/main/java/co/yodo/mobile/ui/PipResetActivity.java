@@ -15,9 +15,9 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.ui.component.ProgressDialogHelper;
-import co.yodo.mobile.ui.component.ToastMaster;
-import co.yodo.mobile.ui.component.YodoHandler;
+import co.yodo.mobile.ui.notification.ProgressDialogHelper;
+import co.yodo.mobile.ui.notification.ToastMaster;
+import co.yodo.mobile.ui.notification.YodoHandler;
 import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.AppUtils;

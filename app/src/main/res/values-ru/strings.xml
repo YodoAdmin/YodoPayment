@@ -173,6 +173,14 @@
         <item>русский</item>
     </string-array>
 
+    <!-- Promotion -->
+    <string-array name="promotion_array">
+        <item>1 минута</item>
+        <item>5 минут</item>
+        <item>10 минут</item>
+        <item>неограниченный</item>
+    </string-array>
+
     <string-array name="link_options_array">
         <item>Генерировать ссылочный код</item>
         <item>Введите ссылочный код</item>

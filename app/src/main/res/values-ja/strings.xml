@@ -170,6 +170,14 @@
         <item>ロシア</item>
     </string-array>
 
+    <!-- Promotion -->
+    <string-array name="promotion_array">
+        <item>1分</item>
+        <item>5分</item>
+        <item>10分</item>
+        <item>無制限の</item>
+    </string-array>
+
     <string-array name="link_options_array">
         <item>リンクコード作成</item>
         <item>リンクコード入力</item>
@@ -182,6 +190,9 @@
     <string name="message.permission.write_external_storage">クーポンを保存するために、許可が必要です</string>
 
     <!-- ACRA -->
-    <string name="crash_toast_text">システムエラー。問題解決のために、ディベロッパーにレポートが送信されました！</string>"
+    <string name="crash_toast_text">システムエラー。問題解決のために、ディベロッパーにレポートが送信されました！</string>
+    <string name="message.error.code">コードでエラーを解決できませんでした：</string>
+    <string name="message.error.incorrect_pip">不適切なPIP。 再試行する</string>
+    <string name="message.error.no_connectivity">いいえ、接続、続行することはできません。 「設定」に修正して再試行してください</string>"
     
 </resources>

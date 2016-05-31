@@ -1,17 +1,14 @@
-package co.yodo.mobile.ui.component;
+package co.yodo.mobile.ui.notification;
 
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Handler;
 import android.os.Message;
-import android.widget.Toast;
 
 import java.lang.ref.WeakReference;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.network.model.ServerResponse;
-import co.yodo.mobile.ui.component.AlertDialogHelper;
-import co.yodo.mobile.ui.component.ToastMaster;
 
 /**
  * Created by luis on 15/12/14.

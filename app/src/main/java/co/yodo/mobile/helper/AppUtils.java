@@ -34,7 +34,6 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 import com.google.android.gms.nearby.messages.Strategy;
-import com.google.android.gms.nearby.sharing.AppContentReceivedResult;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -51,9 +50,9 @@ import java.util.TimeZone;
 import java.util.zip.GZIPOutputStream;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.ui.component.ToastMaster;
-import co.yodo.mobile.ui.component.YodoHandler;
-import co.yodo.mobile.ui.component.AlertDialogHelper;
+import co.yodo.mobile.ui.notification.ToastMaster;
+import co.yodo.mobile.ui.notification.YodoHandler;
+import co.yodo.mobile.ui.notification.AlertDialogHelper;
 
 /**
  * Created by luis on 15/12/14.

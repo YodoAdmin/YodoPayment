@@ -51,9 +51,9 @@ public class YodoRequest {
     private static final String TAG = YodoRequest.class.getSimpleName();
 
     /** Switch server IP address */
-    private static final String PROD_IP      = "http://50.56.180.133";  // Production
-    private static final String DEV_IP   	 = "http://198.101.209.120";  // Development
-    private static final String IP           = DEV_IP;
+    private static final String PROD_IP = "http://50.56.180.133";  // Production
+    private static final String DEV_IP  = "http://198.101.209.120";  // Development
+    private static final String IP      = PROD_IP;
 
     /** Two paths used for the requests */
     private static final String YODO_ADDRESS = "/yodo/yodoswitchrequest/getRequest/";

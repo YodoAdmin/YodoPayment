@@ -1,4 +1,4 @@
-package co.yodo.mobile.ui.component;
+package co.yodo.mobile.ui.notification;
 
 import android.support.v7.app.AlertDialog;
 import android.content.Context;

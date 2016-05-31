@@ -170,6 +170,14 @@
         <item>Russe</item>
     </string-array>
 
+    <!-- Promotion -->
+    <string-array name="promotion_array">
+        <item>1 Minute</item>
+        <item>5 Minutes</item>
+        <item>10 Minutes</item>
+        <item>Illimité</item>
+    </string-array>
+
     <string-array name="link_options_array">
         <item>Generate Linking Code</item>
         <item>Input Linking Code</item>
@@ -182,6 +190,10 @@
     <string name="message.permission.write_external_storage">Permission required to store the coupons</string>
 
     <!-- ACRA -->
-    <string name="crash_toast_text">Ooooops ! I crashed, but a report has been sent to my developer to help fix the issue !</string>"
+    <string name="crash_toast_text">Ooooops ! I crashed, but a report has been sent to my developer to help fix the issue !</string>
+    <string name="message.error.code"> Impossible de résoudre l\'erreur avec le code:</string>
+    <string name="message.error.incorrect_pip">PIP incorrect. Réessayer</string>
+    <string name="message.error.no_connectivity"> Aucune connectivité, ne peut pas continuer. Fixer dans «Paramètres» et essayez à nouveau</string>
+    "
 
 </resources>

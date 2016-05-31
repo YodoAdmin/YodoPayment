@@ -173,6 +173,14 @@
         <item>Ruso</item>
     </string-array>
 
+    <!-- Promotion -->
+    <string-array name="promotion_array">
+        <item>1 Minuto</item>
+        <item>5 Minutos</item>
+        <item>10 Minutos</item>
+        <item>Sin límite</item>
+    </string-array>
+
     <string-array name="link_options_array">
         <item>Generar Código de Unión</item>
         <item>Insertar el Código de Unión</item>

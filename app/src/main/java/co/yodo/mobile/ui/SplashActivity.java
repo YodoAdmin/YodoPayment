@@ -14,8 +14,8 @@ import android.widget.Toast;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.broadcastreceiver.BroadcastMessage;
-import co.yodo.mobile.ui.component.ToastMaster;
-import co.yodo.mobile.ui.component.YodoHandler;
+import co.yodo.mobile.ui.notification.ToastMaster;
+import co.yodo.mobile.ui.notification.YodoHandler;
 import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.AppUtils;
@@ -50,6 +50,7 @@ public class SplashActivity extends Activity implements YodoRequest.RESTListener
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         AppUtils.setLanguage( this );
+        setContentView( R.layout.activity_splash );
 
         setupGUI();
         updateData();
