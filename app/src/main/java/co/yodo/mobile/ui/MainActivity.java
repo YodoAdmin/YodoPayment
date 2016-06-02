@@ -1181,14 +1181,17 @@ public class MainActivity extends AppCompatActivity implements
                 // This needs an improvement (handling correctly the error codes)
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
                     if( queryType == GENERATE_SKS ) {
+                        // If we are receiving money, show the options
                         if( !from.isEmpty() ) {
                             LayoutInflater inflater = ( LayoutInflater ) getSystemService( LAYOUT_INFLATER_SERVICE );
                             View layout = inflater.inflate( R.layout.dialog_payment, new LinearLayout( ac ), false );
                             alertDialog = AlertDialogHelper.showAlertDialog( ac, layout, getString( R.string.linking_menu ) );
+                        // We are only acting as donor, so show normal SKS
                         } else {
                             showSKSDialog( originalCode, null );
                             originalCode = null;
                         }
+                    // Show the delink activity
                     } else if( queryType == DELINK ) {
                         String to = response.getParam( ServerResponse.TO );
 
@@ -1198,10 +1201,17 @@ public class MainActivity extends AppCompatActivity implements
                         i.putExtra( Intents.LINKED_PIP, pipTemp );
                         startActivity( i );
                     }
-                } else if( queryType == DELINK ) {
-                    //message = response.getMessage();
-                    message = getString( R.string.error_message_no_links );
-                    AppUtils.sendMessage( handlerMessages, code, message );
+                } else if( code.equals( ServerResponse.ERROR_FAILED )) {
+                    // If the error is for delink, then show an alert dialog
+                    if( queryType == DELINK ) {
+                        message = getString( R.string.error_message_no_links );
+                        AppUtils.sendMessage( handlerMessages, code, message );
+                    // if there are no links, then show the normal SKS
+                    } else if( queryType == GENERATE_SKS ) {
+                        showSKSDialog( originalCode, null );
+                        originalCode = null;
+                    }
+                // If it is something else, show the error
                 } else {
                     message = response.getMessage();
                     AppUtils.sendMessage( handlerMessages, code, message );
