@@ -8,7 +8,7 @@ import co.yodo.mobile.BuildConfig;
  */
 public class AppConfig {
     /** DEBUG flag */
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     /** ID of the shared preferences file */
     public static final String SHARED_PREF_FILE = "YodoPaymentSharedPref";
