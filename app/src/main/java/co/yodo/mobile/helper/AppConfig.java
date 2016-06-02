@@ -1,5 +1,7 @@
 package co.yodo.mobile.helper;
 
+import com.android.volley.VolleyLog;
+
 import co.yodo.mobile.BuildConfig;
 
 /**
@@ -8,7 +10,12 @@ import co.yodo.mobile.BuildConfig;
  */
 public class AppConfig {
     /** DEBUG flag */
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
+
+    /** DEBUG for Volley */
+    static {
+        VolleyLog.DEBUG = DEBUG;
+    }
 
     /** ID of the shared preferences file */
     public static final String SHARED_PREF_FILE = "YodoPaymentSharedPref";
