@@ -119,7 +119,7 @@ public class YodoGCMListenerService extends GcmListenerService {
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri( RingtoneManager.TYPE_NOTIFICATION );
         mBuilder = new NotificationCompat.Builder( this )
-                .setSmallIcon( R.drawable.ic_launcher )
+                .setSmallIcon( getNotificationIcon() )
                 .setContentTitle( getString( R.string.new_recipt ) )
                 .setContentText( getString( R.string.paid ) + " " + text )
                 .setAutoCancel( true )
@@ -128,5 +128,14 @@ public class YodoGCMListenerService extends GcmListenerService {
 
         mNotificationManager = (NotificationManager) getSystemService( Context.NOTIFICATION_SERVICE );
         mNotificationManager.notify( 0, mBuilder.build() );
+    }
+
+    /**
+     * Gets the correct icon for notifications depending on the Android version
+     * @return The drawable with the correct icon
+     */
+    private int getNotificationIcon() {
+        boolean useWhiteIcon = (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP);
+        return useWhiteIcon ? R.drawable.ic_notification : R.drawable.ic_launcher;
     }
 }
