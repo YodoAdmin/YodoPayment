@@ -18,26 +18,26 @@ import co.yodo.mobile.R;
  * Created by luis on 24/01/15.
  * Eula for the YodoPayment
  */
-public class AppEula {
+public class EulaUtils {
     /** DEBUG */
-    private final static String TAG = AppEula.class.getSimpleName();
+    private final static String TAG = EulaUtils.class.getSimpleName();
 
     /** File name */
     private static final String ASSET_EULA = "EULA";
 
-    public static interface OnEulaAgreedTo {
+    public interface OnEulaAgreedTo {
         void onEulaAgreedTo();
     }
 
     public static boolean show( final Activity activity ) {
-        if( !AppUtils.isEulaAccepted( activity ) ) {
+        if( !PrefUtils.isEulaAccepted( activity ) ) {
             final AlertDialog.Builder builder = new AlertDialog.Builder( activity, R.style.AppCompatAlertDialogStyle );
             builder.setTitle( R.string.eula_title );
             builder.setCancelable( false );
 
             builder.setPositiveButton( R.string.eula_accept, new DialogInterface.OnClickListener() {
                 public void onClick( DialogInterface dialog, int which) {
-                    AppUtils.saveEulaAccepted( activity, true );
+                    PrefUtils.saveEulaAccepted( activity, true );
 
                     if( activity instanceof OnEulaAgreedTo ) {
                         ((OnEulaAgreedTo) activity).onEulaAgreedTo();
@@ -86,19 +86,19 @@ public class AppEula {
 
             return buffer;
         } catch( IOException e ) {
-            AppUtils.Logger( TAG, e.getMessage() );
+            SystemUtils.Logger( TAG, e.getMessage() );
             return "";
         } finally {
             closeStream( in );
         }
     }
 
-    private static void closeStream(Closeable stream) {
+    private static void closeStream( Closeable stream ) {
         if( stream != null ) {
             try {
                 stream.close();
-            } catch (IOException e) {
-                AppUtils.Logger( TAG, e.getMessage() );
+            } catch( IOException e ) {
+                e.printStackTrace();
             }
         }
     }

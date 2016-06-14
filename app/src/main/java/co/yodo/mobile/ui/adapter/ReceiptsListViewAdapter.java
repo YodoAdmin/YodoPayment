@@ -25,7 +25,8 @@ import java.util.List;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.database.model.Receipt;
-import co.yodo.mobile.helper.AppUtils;
+import co.yodo.mobile.helper.FormatUtils;
+import co.yodo.mobile.helper.PrefUtils;
 
 public class ReceiptsListViewAdapter extends ArrayAdapter<Receipt> implements Filterable {
     /** Application Context */
@@ -83,12 +84,12 @@ public class ReceiptsListViewAdapter extends ArrayAdapter<Receipt> implements Fi
 
         // Fills the holder with the item data
         Receipt item = filteredData.get( position );
-        holder.created.setText( AppUtils.UTCtoCurrent( context, item.getCreated() ) );
+        holder.created.setText( FormatUtils.UTCtoCurrent( context, item.getCreated() ) );
         holder.description.setText( item.getDescription() );
         holder.total.setText(
                 context.getString( R.string.paid ) + " " +
-                AppUtils.truncateDecimal( item.getTotalAmount() ) + " " +
-                AppUtils.replaceNull( item.getTCurrency() )
+                FormatUtils.truncateDecimal( item.getTotalAmount() ) + " " +
+                FormatUtils.replaceNull( item.getTCurrency() )
         );
 
         // If it is opened, change the text style
@@ -281,7 +282,7 @@ public class ReceiptsListViewAdapter extends ArrayAdapter<Receipt> implements Fi
 
         @Override
         protected void publishResults( CharSequence constraint, FilterResults results ) {
-            filteredData = AppUtils.castList( results.values, Receipt.class );
+            filteredData = FormatUtils.castList( results.values, Receipt.class );
             notifyDataSetChanged();
         }
     };

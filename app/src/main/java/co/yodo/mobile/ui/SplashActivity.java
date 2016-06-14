@@ -2,26 +2,30 @@ package co.yodo.mobile.ui;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
 import android.widget.Toast;
+
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.broadcastreceiver.BroadcastMessage;
+import co.yodo.mobile.component.Intents;
+import co.yodo.mobile.helper.GUIUtils;
+import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.SystemUtils;
+import co.yodo.mobile.network.YodoRequest;
+import co.yodo.mobile.network.model.ServerResponse;
+import co.yodo.mobile.network.request.AuthenticateRequest;
+import co.yodo.mobile.service.RegistrationIntentService;
+import co.yodo.mobile.service.model.GCMResponse;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.notification.YodoHandler;
-import co.yodo.mobile.network.model.ServerResponse;
-import co.yodo.mobile.helper.AppConfig;
-import co.yodo.mobile.helper.AppUtils;
-import co.yodo.mobile.helper.Intents;
-import co.yodo.mobile.network.YodoRequest;
-import co.yodo.mobile.service.RegistrationIntentService;
 
 public class SplashActivity extends Activity implements YodoRequest.RESTListener {
     /** DEBUG */
@@ -35,7 +39,7 @@ public class SplashActivity extends Activity implements YodoRequest.RESTListener
     private String hardwareToken;
 
     /** Messages Handler */
-    private static YodoHandler handlerMessages;
+    private YodoHandler handlerMessages;
 
     /** Manager for the server requests */
     private YodoRequest mRequestManager;
@@ -46,10 +50,13 @@ public class SplashActivity extends Activity implements YodoRequest.RESTListener
     /** Request codes for the permissions */
     private static final int PERMISSIONS_REQUEST_READ_PHONE_STATE = 1;
 
+    /** Response codes for the server requests */
+    private static final int AUTH_REQ = 0x00;
+
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        AppUtils.setLanguage( this );
+        GUIUtils.setLanguage( this );
         setContentView( R.layout.activity_splash );
 
         setupGUI();
@@ -57,20 +64,15 @@ public class SplashActivity extends Activity implements YodoRequest.RESTListener
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        LocalBroadcastManager.getInstance( ac ).registerReceiver(
-                mRegistrationBroadcastReceiver,
-                new IntentFilter( AppConfig.REGISTRATION_COMPLETE )
-        );
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register( this );
     }
 
     @Override
-    protected void onPause() {
-        super.onPause();
-        LocalBroadcastManager.getInstance( ac ).unregisterReceiver(
-                mRegistrationBroadcastReceiver
-        );
+    public void onStop() {
+        EventBus.getDefault().unregister( this );
+        super.onStop();
     }
 
     /**
@@ -89,18 +91,21 @@ public class SplashActivity extends Activity implements YodoRequest.RESTListener
      */
     private void updateData() {
         // Get the main booleans
-        boolean hasServices = AppUtils.isGooglePlayServicesAvailable(
+        boolean hasServices = SystemUtils.isGooglePlayServicesAvailable(
                 SplashActivity.this,
                 REQUEST_CODE_RECOVER_PLAY_SERVICES
         );
 
         // Verify Google Play Services
         if( hasServices ) {
-            hardwareToken = AppUtils.getHardwareToken( ac );
+            hardwareToken = PrefUtils.getHardwareToken( ac );
             if( hardwareToken == null ) {
                 setupPermissions();
             } else {
-                mRequestManager.requestClientAuth( hardwareToken );
+                mRequestManager.invoke( new AuthenticateRequest(
+                        AUTH_REQ,
+                        hardwareToken
+                ) );
             }
         }
     }
@@ -109,7 +114,7 @@ public class SplashActivity extends Activity implements YodoRequest.RESTListener
      * Request the necessary permissions for this activity
      */
     private void setupPermissions() {
-        boolean phoneStatePermission = AppUtils.requestPermission(
+        boolean phoneStatePermission = SystemUtils.requestPermission(
                 SplashActivity.this,
                 R.string.message_permission_read_phone_state,
                 Manifest.permission.READ_PHONE_STATE,
@@ -127,54 +132,64 @@ public class SplashActivity extends Activity implements YodoRequest.RESTListener
      */
     private void authenticateUser() {
         // Gets the hardware token
-        hardwareToken = AppUtils.generateHardwareToken( ac );
+        hardwareToken = PrefUtils.generateHardwareToken( ac );
         if( hardwareToken == null ) {
             // The device doesn't have a hardware token
             ToastMaster.makeText( ac, R.string.message_no_hardware, Toast.LENGTH_LONG ).show();
             finish();
         } else {
             // We have the hardware token, now let's verify if the user exists
-            AppUtils.saveHardwareToken( ac, hardwareToken );
-            mRequestManager.requestClientAuth( hardwareToken );
+            PrefUtils.saveHardwareToken( ac, hardwareToken );
+            mRequestManager.invoke( new AuthenticateRequest(
+                    AUTH_REQ,
+                    hardwareToken
+            ) );
+        }
+    }
+
+    /**
+     * Starts the main window of the YodoPayment
+     * application, or the registration of the biometric token
+     */
+    private void startNextActivity() {
+        final String authNumber = PrefUtils.getAuthNumber( ac );
+        // The authnumber exists, so the biometric token has not been registered
+        if( !authNumber.equals( "" ) ) {
+            Intent intent = new Intent( ac, RegistrationBiometricActivity.class );
+            intent.putExtra( Intents.AUTH_NUMBER, authNumber );
+            startActivity( intent );
+        }
+        // The token biometric had already been sent, we can continue
+        else {
+            Intent intent = new Intent( ac, MainActivity.class );
+            startActivity( intent );
         }
     }
 
     @Override
-    public void onResponse( YodoRequest.RequestType type, ServerResponse response ) {
+    public void onResponse( int responseCode, ServerResponse response ) {
         String code, message;
 
         // Verify the type of the request
-        switch( type ) {
-            case AUTH_REQUEST:
+        switch( responseCode ) {
+            case AUTH_REQ:
                 code = response.getCode();
 
                 // Verify the response code
                 switch( code ) {
                     // The user exists, let's verify the rest of the registration
                     case ServerResponse.AUTHORIZED:
-                        final String authNumber   = AppUtils.getAuthNumber( ac );
-                        final boolean isTokenSent = AppUtils.getIsTokenSent( ac );
-
-                        // The authnumber exists, so the biometric token has not been registered
-                        if( !authNumber.equals( "" ) ) {
-                            Intent intent = new Intent( SplashActivity.this, RegistrationBiometricActivity.class );
-                            intent.putExtra( Intents.AUTH_NUMBER, authNumber );
-                            startActivity( intent );
-                            finish();
-                        }
+                        final boolean isTokenSent = PrefUtils.isGCMTokenSent( ac );
                         // There is no token for GCM, let's try to register
-                        else if( !isTokenSent ) {
-                            // Start IntentService to register this application with GCM.
+                        if( !isTokenSent ) {
                             Intent intent = new Intent( this, RegistrationIntentService.class );
                             intent.putExtra( BroadcastMessage.EXTRA_HARDWARE_TOKEN, hardwareToken );
                             startService( intent );
-                        }
-                        // The token for GCM and biometric have been sent, we can continue
-                        else {
-                            Intent intent = new Intent( SplashActivity.this, MainActivity.class );
-                            startActivity( intent );
+                        } else {
                             finish();
+                            startNextActivity();
                         }
+
                         break;
 
                     // Let's try to register
@@ -187,7 +202,7 @@ public class SplashActivity extends Activity implements YodoRequest.RESTListener
                     // There was an error during the process
                     default:
                         message = response.getMessage();
-                        AppUtils.sendMessage( YodoHandler.INIT_ERROR, handlerMessages, code, message );
+                        YodoHandler.sendMessage( YodoHandler.INIT_ERROR, handlerMessages, code, message );
                         break;
                 }
                 break;
@@ -200,7 +215,7 @@ public class SplashActivity extends Activity implements YodoRequest.RESTListener
             case REQUEST_CODE_RECOVER_PLAY_SERVICES:
                 finish();
                 if( resultCode == RESULT_OK ) {
-                    Intent iSplash = new Intent( this, SplashActivity.class );
+                    Intent iSplash = new Intent( ac, SplashActivity.class );
                     startActivity( iSplash );
                 } else if( resultCode == RESULT_CANCELED ) {
                     Toast.makeText( ac, R.string.error_play_services, Toast.LENGTH_SHORT ).show();
@@ -231,17 +246,16 @@ public class SplashActivity extends Activity implements YodoRequest.RESTListener
     /**
      * Message received from the service that registers the gcm token
      */
-    private BroadcastReceiver mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive( Context context, Intent intent ) {
-            boolean sentToken = AppUtils.getIsTokenSent( context );
-            finish();
-            if( sentToken ) {
-                intent = new Intent( SplashActivity.this, MainActivity.class );
-                startActivity( intent );
-            } else {
-                Toast.makeText( ac, R.string.error_gcm_registration, Toast.LENGTH_SHORT ).show();
-            }
+    @SuppressWarnings("unused") // receives GCM receipts
+    @Subscribe( sticky = true, threadMode = ThreadMode.MAIN )
+    public void onResponseEvent( GCMResponse response ) {
+        EventBus.getDefault().removeStickyEvent( response );
+        boolean sentToken = PrefUtils.isGCMTokenSent( ac );
+        finish();
+        if( sentToken ) {
+            startNextActivity();
+        } else {
+            Toast.makeText( ac, R.string.error_gcm_registration, Toast.LENGTH_SHORT ).show();
         }
-    };
+    }
 }

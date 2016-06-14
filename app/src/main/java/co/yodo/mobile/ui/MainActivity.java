@@ -64,7 +64,14 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.component.ClearEditText;
+import co.yodo.mobile.network.request.AuthenticateRequest;
+import co.yodo.mobile.network.request.CloseRequest;
+import co.yodo.mobile.network.request.LinkRequest;
+import co.yodo.mobile.network.request.QueryRequest;
+import co.yodo.mobile.ui.components.ClearEditText;
+import co.yodo.mobile.helper.FormatUtils;
+import co.yodo.mobile.helper.GUIUtils;
+import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.ui.notification.ProgressDialogHelper;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.notification.YodoHandler;
@@ -74,9 +81,9 @@ import co.yodo.mobile.database.CouponsDataSource;
 import co.yodo.mobile.database.ReceiptsDataSource;
 import co.yodo.mobile.ui.notification.AlertDialogHelper;
 import co.yodo.mobile.helper.AppConfig;
-import co.yodo.mobile.helper.AppEula;
-import co.yodo.mobile.helper.AppUtils;
-import co.yodo.mobile.helper.Intents;
+import co.yodo.mobile.helper.EulaUtils;
+import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.component.Intents;
 import co.yodo.mobile.network.YodoRequest;
 import co.yodo.mobile.component.SKSCreater;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
@@ -98,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements
     private String hardwareToken;
 
     /** Messages Handler */
-    private static YodoHandler handlerMessages;
+    private YodoHandler handlerMessages;
 
     /** Manager for the server requests */
     private YodoRequest mRequestManager;
@@ -164,14 +171,25 @@ public class MainActivity extends AppCompatActivity implements
     /** Request code to use when launching the resolution activity. */
     private static final int REQUEST_RESOLVE_ERROR = 1001;
 
+    /** Response codes for the server requests */
+    private static final int AUTH_REQ          = 0x00;
+    private static final int QUERY_BAL_REQ     = 0x01;
+    private static final int QUERY_ADV_REQ     = 0x02;
+    private static final int QUERY_LNK_REQ     = 0x03;
+    private static final int QUERY_LNK_ACC_REQ = 0x04;
+    private static final int CLOSE_REQ         = 0x06;
+    private static final int LINK_REQ          = 0x07;
+
     // Runnable that takes care of start the scans
     private Runnable mGetAdvertisement = new Runnable() {
         @Override
         public void run() {
-            mRequestManager.requestAdvertising(
+            mRequestManager.invoke( new QueryRequest(
+                    QUERY_ADV_REQ,
                     hardwareToken,
-                    mMerchant
-            );
+                    mMerchant,
+                    QueryRequest.Record.ADVERTISING
+            ) );
             // Wait some time for the next advertisement request
             handlerMessages.postDelayed( mGetAdvertisement, DELAY_BETWEEN_REQUESTS );
         }
@@ -180,7 +198,7 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate( savedInstanceState );
-        AppUtils.setLanguage( MainActivity.this );
+        GUIUtils.setLanguage( MainActivity.this );
         setContentView( R.layout.activity_main );
 
         setupGUI();
@@ -191,7 +209,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onResume() {
         super.onResume();
         // True when the activity is in foreground
-        AppUtils.saveIsForeground( ac, true );
+        PrefUtils.saveIsForeground( ac, true );
         // Register listener for requests and  broadcast receivers
         mRequestManager.setListener( this );
         // Open databases
@@ -202,7 +220,7 @@ public class MainActivity extends AppCompatActivity implements
     public void onPause() {
         super.onPause();
         // False when the activity is not in foreground
-        AppUtils.saveIsForeground( ac, false );
+        PrefUtils.saveIsForeground( ac, false );
         // Close databases
         closeDatabases();
     }
@@ -213,10 +231,10 @@ public class MainActivity extends AppCompatActivity implements
         // Register to event bus
         EventBus.getDefault().register( this );
         // Set listener for preferences
-        AppUtils.registerSPListener( ac, this );
+        PrefUtils.registerSPListener( ac, this );
         // Creates the pub sub strategy for nearby
         PUB_SUB_STRATEGY = new Strategy.Builder()
-                .setTtlSeconds( AppUtils.getPromotionsTime( ac ) ).build();
+                .setTtlSeconds( PrefUtils.getPromotionsTime( ac ) ).build();
         // Connect to the service
         mGoogleApiClient = new GoogleApiClient.Builder( this )
                 .addConnectionCallbacks( this )
@@ -231,10 +249,10 @@ public class MainActivity extends AppCompatActivity implements
         // Unregister from event bus
         EventBus.getDefault().unregister( this );
         // Unregister listener for preferences
-        AppUtils.unregisterSPListener( ac, this );
+        PrefUtils.unregisterSPListener( ac, this );
         // Disconnect the api client if there is a connection
         if( mGoogleApiClient != null && mGoogleApiClient.isConnected() ) {
-            AppUtils.setSubscribing( ac, false );
+            PrefUtils.setSubscribing( ac, false );
             unsubscribe();
             mGoogleApiClient.disconnect();
         }
@@ -360,7 +378,7 @@ public class MainActivity extends AppCompatActivity implements
         mAdvertisingImage.setOnLongClickListener( new View.OnLongClickListener() {
             @Override
             public boolean onLongClick(View v) {
-                boolean writePermission = AppUtils.requestPermission(
+                boolean writePermission = SystemUtils.requestPermission(
                         MainActivity.this,
                         R.string.message_permission_write_external_storage,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
@@ -374,7 +392,7 @@ public class MainActivity extends AppCompatActivity implements
 
                 DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int item) {
-                        Bitmap bitmap = AppUtils.drawableToBitmap( drawable );
+                        Bitmap bitmap = GUIUtils.drawableToBitmap( drawable );
                         File directory = new File( Environment.getExternalStorageDirectory(), AppConfig.COUPONS_FOLDER );
                         boolean success = true;
 
@@ -413,13 +431,13 @@ public class MainActivity extends AppCompatActivity implements
             }
         });
 
-        if( AppUtils.isFirstLogin( ac ) ) {
+        if( PrefUtils.isFirstLogin( ac ) ) {
             mDrawerLayout.openDrawer( GravityCompat.START );
-            AppUtils.saveFirstLogin( ac, false );
+            PrefUtils.saveFirstLogin( ac, false );
         }
 
         // Show the terms, if the app is updated
-        AppEula.show( this );
+        EulaUtils.show( this );
         // Upon orientation change, ensure that the state of the UI is maintained.
         updateUI();
     }
@@ -429,14 +447,14 @@ public class MainActivity extends AppCompatActivity implements
      */
     private void updateData() {
         // Gets the hardware token - account identifier
-        hardwareToken = AppUtils.getHardwareToken( ac );
+        hardwareToken = PrefUtils.getHardwareToken( ac );
         if( hardwareToken == null ) {
             ToastMaster.makeText( ac, R.string.message_no_hardware, Toast.LENGTH_LONG ).show();
             finish();
         }
         // Set the account number and current date
         mAccountNumber.setText( hardwareToken );
-        mAccountDate.setText( AppUtils.getCurrentDate() );
+        mAccountDate.setText( FormatUtils.getCurrentDate() );
     }
 
     /**
@@ -444,7 +462,7 @@ public class MainActivity extends AppCompatActivity implements
      * publication action changes.
      */
     private void updateUI() {
-        Boolean subscriptionTask = AppUtils.isSubscribing( ac );
+        Boolean subscriptionTask = PrefUtils.isSubscribing( ac );
         ibSubscription.setImageResource(
                 subscriptionTask ? R.drawable.ic_cancel : R.drawable.ic_nearby
         );
@@ -471,7 +489,7 @@ public class MainActivity extends AppCompatActivity implements
                 if( mMerchant == null ) {
                     mMerchant = new String( message.getContent() );
                     // Called when a message is detectable nearby.
-                    AppUtils.Logger( TAG, "Found: " + mMerchant );
+                    SystemUtils.Logger( TAG, "Found: " + mMerchant );
                     handlerMessages.post( mGetAdvertisement );
                 }
             }
@@ -481,7 +499,7 @@ public class MainActivity extends AppCompatActivity implements
                 String temp = new String( message.getContent() );
                 if( mMerchant.equals( temp ) ) {
                     // Called when a message is no longer detectable nearby.
-                    AppUtils.Logger( TAG, "Lost: " + mMerchant );
+                    SystemUtils.Logger( TAG, "Lost: " + mMerchant );
                     removeAdvertisement();
                 }
             }
@@ -494,7 +512,7 @@ public class MainActivity extends AppCompatActivity implements
      * updates state when the subscription expires.
      */
     private void subscribe() {
-        AppUtils.Logger( TAG, "trying to subscribe" );
+        SystemUtils.Logger( TAG, "trying to subscribe" );
         // Cannot proceed without a connected GoogleApiClient. Reconnect and execute the pending
         // task in onConnected().
         if( !mGoogleApiClient.isConnected() ) {
@@ -508,8 +526,8 @@ public class MainActivity extends AppCompatActivity implements
                         @Override
                         public void onExpired() {
                             super.onExpired();
-                            AppUtils.Logger( TAG, "no longer subscribing" );
-                            AppUtils.setSubscribing( ac, false );
+                            SystemUtils.Logger( TAG, "no longer subscribing" );
+                            PrefUtils.setSubscribing( ac, false );
                         }
                     }).build();
 
@@ -518,11 +536,11 @@ public class MainActivity extends AppCompatActivity implements
                         @Override
                         public void onResult( @NonNull Status status ) {
                             if( status.isSuccess() ) {
-                                AppUtils.Logger( TAG, "subscribed successfully" );
-                                AppUtils.setSubscribing( ac, true );
+                                SystemUtils.Logger( TAG, "subscribed successfully" );
+                                PrefUtils.setSubscribing( ac, true );
                             } else {
-                                AppUtils.Logger( TAG, "could not subscribe" );
-                                AppUtils.setSubscribing( ac, false );
+                                SystemUtils.Logger( TAG, "could not subscribe" );
+                                PrefUtils.setSubscribing( ac, false );
                                 handleUnsuccessfulNearbyResult( status );
                             }
                         }
@@ -536,7 +554,7 @@ public class MainActivity extends AppCompatActivity implements
      * displaying an opt-in dialog.
      */
     private void unsubscribe() {
-        AppUtils.Logger( TAG, "trying to unsubscribe" );
+        SystemUtils.Logger( TAG, "trying to unsubscribe" );
         // Cannot proceed without a connected GoogleApiClient. Reconnect and execute the pending
         // task in onConnected().
         if( !mGoogleApiClient.isConnected()  ) {
@@ -549,11 +567,11 @@ public class MainActivity extends AppCompatActivity implements
                         @Override
                         public void onResult( @NonNull Status status ) {
                             if( status.isSuccess() ) {
-                                AppUtils.Logger( TAG, "unsubscribed successfully" );
-                                AppUtils.setSubscribing( ac, false );
+                                SystemUtils.Logger( TAG, "unsubscribed successfully" );
+                                PrefUtils.setSubscribing( ac, false );
                             } else {
-                                AppUtils.Logger( TAG, "could not unsubscribe" );
-                                AppUtils.setSubscribing( ac, true );
+                                SystemUtils.Logger( TAG, "could not unsubscribe" );
+                                PrefUtils.setSubscribing( ac, true );
                                 handleUnsuccessfulNearbyResult( status );
                             }
                         }
@@ -567,7 +585,7 @@ public class MainActivity extends AppCompatActivity implements
      * where a device is not opted into using Nearby.
      */
     private void handleUnsuccessfulNearbyResult( Status status ) {
-        AppUtils.Logger( TAG, "processing error, status = " + status );
+        SystemUtils.Logger( TAG, "processing error, status = " + status );
         if( status.getStatusCode() == NearbyMessagesStatusCodes.APP_NOT_OPTED_IN ) {
             if( !mResolvingNearbyPermissionError ) {
                 try {
@@ -594,7 +612,7 @@ public class MainActivity extends AppCompatActivity implements
      * Invokes a pending task based on the subscription state.
      */
     private void executePendingSubscriptionTask() {
-        if( AppUtils.isSubscribing( ac ) ) {
+        if( PrefUtils.isSubscribing( ac ) ) {
             subscribe();
         } else {
             unsubscribe();
@@ -607,10 +625,10 @@ public class MainActivity extends AppCompatActivity implements
      * @param v The view, used to change the icon
      */
     public void getPromotionsClick( View v ) {
-        if( !AppUtils.isSubscribing( ac ) ) {
-            AppUtils.setSubscribing( ac, true );
+        if( !PrefUtils.isSubscribing( ac ) ) {
+            PrefUtils.setSubscribing( ac, true );
         } else {
-            AppUtils.setSubscribing( ac, false );
+            PrefUtils.setSubscribing( ac, false );
         }
         executePendingSubscriptionTask();
     }
@@ -626,7 +644,7 @@ public class MainActivity extends AppCompatActivity implements
         DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
                 String pip = inputBox.getText().toString();
-                AppUtils.hideSoftKeyboard( MainActivity.this );
+                GUIUtils.hideSoftKeyboard( MainActivity.this );
 
                 if( pip.length() < AppConfig.MIN_PIP_LENGTH ) {
                     ToastMaster.makeText( MainActivity.this, R.string.pip_short, Toast.LENGTH_SHORT ).show();
@@ -637,10 +655,14 @@ public class MainActivity extends AppCompatActivity implements
                     queryType = GENERATE_SKS;
 
                     ProgressDialogHelper.getInstance().createProgressDialog( ac );
-
-                    YodoRequest.getInstance( ac ).requestClientAuth(
+                    mRequestManager.invoke( new AuthenticateRequest(
+                            AUTH_REQ,
+                            hardwareToken,
+                            pip
+                    ) );
+                    /*YodoRequest.getInstance( ac ).requestClientAuth(
                             hardwareToken, pip
-                    );
+                    );*/
                 }
             }
         };
@@ -710,16 +732,18 @@ public class MainActivity extends AppCompatActivity implements
                         DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int item1) {
                                 String pip = inputBox.getText().toString();
-                                AppUtils.hideSoftKeyboard( MainActivity.this );
+                                GUIUtils.hideSoftKeyboard( MainActivity.this );
 
                                 if( pip.length() < AppConfig.MIN_PIP_LENGTH ) {
                                     ToastMaster.makeText( MainActivity.this, R.string.pip_short, Toast.LENGTH_SHORT ).show();
                                 } else {
                                     ProgressDialogHelper.getInstance().createProgressDialog( ac );
-                                    mRequestManager.requestLinkingCode(
+                                    mRequestManager.invoke( new QueryRequest(
+                                            QUERY_LNK_REQ,
                                             hardwareToken,
-                                            pip
-                                    );
+                                            pip,
+                                            QueryRequest.Record.LINKING_CODE
+                                    ) );
                                 }
                             }
                         };
@@ -741,10 +765,15 @@ public class MainActivity extends AppCompatActivity implements
                                 String linkingCode = inputBox.getText().toString();
 
                                 ProgressDialogHelper.getInstance().createProgressDialog( ac );
-                                mRequestManager.requestLinkAccount(
+                                mRequestManager.invoke( new LinkRequest(
+                                        LINK_REQ,
                                         hardwareToken,
                                         linkingCode
-                                );
+                                ) );
+                                /*mRequestManager.requestLinkAccount(
+                                        hardwareToken,
+                                        linkingCode
+                                );*/
                             }
                         };
 
@@ -764,7 +793,7 @@ public class MainActivity extends AppCompatActivity implements
                         onClick = new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog, int item1) {
                                 String pip = inputBox.getText().toString();
-                                AppUtils.hideSoftKeyboard( MainActivity.this );
+                                GUIUtils.hideSoftKeyboard( MainActivity.this );
 
                                 if( pip.length() < AppConfig.MIN_PIP_LENGTH ) {
                                     ToastMaster.makeText( MainActivity.this, R.string.pip_short, Toast.LENGTH_SHORT ).show();
@@ -773,10 +802,12 @@ public class MainActivity extends AppCompatActivity implements
                                     queryType = DELINK;
 
                                     ProgressDialogHelper.getInstance().createProgressDialog( ac );
-                                    mRequestManager.requestLinkedAccounts(
+                                    mRequestManager.invoke( new QueryRequest(
+                                            QUERY_LNK_ACC_REQ,
                                             hardwareToken,
-                                            pip
-                                    );
+                                            pip,
+                                            QueryRequest.Record.LINKED_ACCOUNTS
+                                    ) );
                                 }
                             }
                         };
@@ -810,16 +841,17 @@ public class MainActivity extends AppCompatActivity implements
         DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
                 String pip = inputBox.getText().toString();
-                AppUtils.hideSoftKeyboard( MainActivity.this );
+                GUIUtils.hideSoftKeyboard( MainActivity.this );
 
                 if( pip.length() < AppConfig.MIN_PIP_LENGTH ) {
                     ToastMaster.makeText( ac, R.string.pip_short, Toast.LENGTH_SHORT ).show();
                 } else {
                     ProgressDialogHelper.getInstance().createProgressDialog( ac );
-                    mRequestManager.requestBalance(
+                    mRequestManager.invoke( new QueryRequest(
+                            QUERY_BAL_REQ,
                             hardwareToken,
                             pip
-                    );
+                    ) );
                 }
             }
         };
@@ -847,16 +879,17 @@ public class MainActivity extends AppCompatActivity implements
         DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int item) {
                 String pip = inputBox.getText().toString();
-                AppUtils.hideSoftKeyboard( MainActivity.this );
+                GUIUtils.hideSoftKeyboard( MainActivity.this );
 
                 if( pip.length() < AppConfig.MIN_PIP_LENGTH ) {
                     ToastMaster.makeText( MainActivity.this, R.string.pip_short, Toast.LENGTH_SHORT ).show();
                 } else {
                     ProgressDialogHelper.getInstance().createProgressDialog( ac );
-                    mRequestManager.requestCloseAccount(
+                    mRequestManager.invoke( new CloseRequest(
+                            CLOSE_REQ,
                             hardwareToken,
                             pip
-                    );
+                    ) );
                 }
             }
         };
@@ -994,10 +1027,10 @@ public class MainActivity extends AppCompatActivity implements
         final String tCurrency      = params.get( ServerResponse.TCURRENCY ); // Merchant currency
         final String exchRate       = params.get( ServerResponse.EXCH_RATE );
         final String dCurrency      = params.get( ServerResponse.DCURRENCY ); // Tender currency
-        final String totalAmount    = AppUtils.truncateDecimal( params.get( ServerResponse.AMOUNT ) );
-        final String tenderAmount   = AppUtils.truncateDecimal( params.get( ServerResponse.TAMOUNT ) );
-        final String cashBackAmount = AppUtils.truncateDecimal( params.get( ServerResponse.CASHBACK ) );
-        final String balance        = AppUtils.truncateDecimal( params.get( ServerResponse.BALANCE ) );
+        final String totalAmount    = FormatUtils.truncateDecimal( params.get( ServerResponse.AMOUNT ) );
+        final String tenderAmount   = FormatUtils.truncateDecimal( params.get( ServerResponse.TAMOUNT ) );
+        final String cashBackAmount = FormatUtils.truncateDecimal( params.get( ServerResponse.CASHBACK ) );
+        final String balance        = FormatUtils.truncateDecimal( params.get( ServerResponse.BALANCE ) );
         final String currency       = params.get( ServerResponse.CURRENCY ); // Account currency
         final String donor          = params.get( ServerResponse.DONOR );
         final String receiver       = params.get( ServerResponse.RECEIVER );
@@ -1005,7 +1038,7 @@ public class MainActivity extends AppCompatActivity implements
 
         descriptionText.setText( description );
         authNumberText.setText( authNumber );
-        createdText.setText( AppUtils.UTCtoCurrent( ac, created ) );
+        createdText.setText( FormatUtils.UTCtoCurrent( ac, created ) );
         currencyText.setText( dCurrency );
         totalAmountText.setText( String.format( "%s %s", totalAmount, tCurrency ) );
         tenderAmountText.setText( tenderAmount );
@@ -1069,39 +1102,40 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onResponse( YodoRequest.RequestType type, ServerResponse response ) {
-        if( type != YodoRequest.RequestType.QUERY_ADV_REQUEST )
+    public void onResponse( int responseCode, ServerResponse response ) {
+        if( responseCode != QUERY_ADV_REQ )
             ProgressDialogHelper.getInstance().destroyProgressDialog();
         String code, message;
 
-        switch( type ) {
-            case AUTH_PIP_REQUEST:
+        switch( responseCode ) {
+            case AUTH_REQ:
                 code = response.getCode();
 
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
                     originalCode += response.getRTime();
 
                     ProgressDialogHelper.getInstance().createProgressDialog( ac );
-
-                    mRequestManager.requestLinkedAccounts(
+                    mRequestManager.invoke( new QueryRequest(
+                            QUERY_LNK_ACC_REQ,
                             hardwareToken,
-                            pipTemp
-                    );
+                            pipTemp,
+                            QueryRequest.Record.LINKED_ACCOUNTS
+                    ) );
                 } else {
                     mAdvertisingLayout.setVisibility( View.VISIBLE );
                     message = response.getMessage();
-                    AppUtils.sendMessage( handlerMessages, code, message );
+                    YodoHandler.sendMessage( handlerMessages, code, message );
                 }
 
                 break;
 
-            case QUERY_BAL_REQUEST:
+            case QUERY_BAL_REQ:
                 code = response.getCode();
 
                 switch( code ) {
                     case ServerResponse.AUTHORIZED_BALANCE:
                         final String tvBalance =
-                                AppUtils.truncateDecimal( response.getParam( ServerResponse.BALANCE ) ) + " " +
+                                FormatUtils.truncateDecimal( response.getParam( ServerResponse.BALANCE ) ) + " " +
                                 response.getParam( ServerResponse.CURRENCY );
                         // Trim the balance
                         mAccountBalance.setText( tvBalance );
@@ -1115,12 +1149,12 @@ public class MainActivity extends AppCompatActivity implements
                     default:
                         mAccountBalance.setText( "" );
                         message = response.getMessage();
-                        AppUtils.sendMessage( handlerMessages, code, message );
+                        YodoHandler.sendMessage( handlerMessages, code, message );
                         break;
                 }
                 break;
 
-            case QUERY_ADV_REQUEST:
+            case QUERY_ADV_REQ:
                 code = response.getCode();
 
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
@@ -1137,7 +1171,7 @@ public class MainActivity extends AppCompatActivity implements
 
                                 @Override
                                 public void onErrorResponse( VolleyError error ) {
-                                    AppUtils.Logger( TAG, "Image Load Error: " + error.getMessage() );
+                                    SystemUtils.Logger( TAG, "Image Load Error: " + error.getMessage() );
                                 }
                             }
                         );
@@ -1145,7 +1179,7 @@ public class MainActivity extends AppCompatActivity implements
                 }
                 break;
 
-            case QUERY_LNK_REQUEST:
+            case QUERY_LNK_REQ:
                 code = response.getCode();
 
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
@@ -1162,7 +1196,7 @@ public class MainActivity extends AppCompatActivity implements
                     codeImage.setOnClickListener( new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            AppUtils.copyCode( ac, codeText.getText().toString() );
+                            GUIUtils.copyCode( ac, codeText.getText().toString() );
                             ToastMaster.makeText( ac, R.string.copied_text, Toast.LENGTH_SHORT ).show();
                         }
                     });
@@ -1170,68 +1204,72 @@ public class MainActivity extends AppCompatActivity implements
                     dialog.show();
                 } else {
                     message = response.getMessage();
-                    AppUtils.sendMessage( handlerMessages, code, message );
+                    YodoHandler.sendMessage( handlerMessages, code, message );
                 }
                 break;
 
-            case QUERY_LNK_ACC_REQUEST:
+            case QUERY_LNK_ACC_REQ:
                 code = response.getCode();
                 String from = response.getParam( ServerResponse.FROM );
 
                 // This needs an improvement (handling correctly the error codes)
-                if( code.equals( ServerResponse.AUTHORIZED ) ) {
-                    if( queryType == GENERATE_SKS ) {
-                        // If we are receiving money, show the options
-                        if( !from.isEmpty() ) {
-                            LayoutInflater inflater = ( LayoutInflater ) getSystemService( LAYOUT_INFLATER_SERVICE );
-                            View layout = inflater.inflate( R.layout.dialog_payment, new LinearLayout( ac ), false );
-                            alertDialog = AlertDialogHelper.showAlertDialog( ac, layout, getString( R.string.linking_menu ) );
-                        // We are only acting as donor, so show normal SKS
-                        } else {
+                switch( code ) {
+                    case ServerResponse.AUTHORIZED:
+                        if( queryType == GENERATE_SKS ) {
+                            // If we are receiving money, show the options
+                            if( !from.isEmpty() ) {
+                                LayoutInflater inflater = ( LayoutInflater ) getSystemService( LAYOUT_INFLATER_SERVICE );
+                                View layout = inflater.inflate( R.layout.dialog_payment, new LinearLayout( ac ), false );
+                                alertDialog = AlertDialogHelper.showAlertDialog( ac, layout, getString( R.string.linking_menu ) );
+                                // We are only acting as donor, so show normal SKS
+                            } else {
+                                showSKSDialog( originalCode, null );
+                                originalCode = null;
+                            }
+                            // Show the delink activity
+                        } else if( queryType == DELINK ) {
+                            String to = response.getParam( ServerResponse.TO );
+
+                            Intent i = new Intent( ac, DeLinkActivity.class );
+                            i.putExtra( Intents.LINKED_ACC_TO, to );
+                            i.putExtra( Intents.LINKED_ACC_FROM, from );
+                            i.putExtra( Intents.LINKED_PIP, pipTemp );
+                            startActivity( i );
+                        }
+                        break;
+                    case ServerResponse.ERROR_FAILED:
+                        // If the error is for delink, then show an alert dialog
+                        if( queryType == DELINK ) {
+                            message = getString( R.string.error_message_no_links );
+                            YodoHandler.sendMessage( handlerMessages, code, message );
+                            // if there are no links, then show the normal SKS
+                        } else if( queryType == GENERATE_SKS ) {
                             showSKSDialog( originalCode, null );
                             originalCode = null;
                         }
-                    // Show the delink activity
-                    } else if( queryType == DELINK ) {
-                        String to = response.getParam( ServerResponse.TO );
-
-                        Intent i = new Intent( ac, DeLinkActivity.class );
-                        i.putExtra( Intents.LINKED_ACC_TO, to );
-                        i.putExtra( Intents.LINKED_ACC_FROM, from );
-                        i.putExtra( Intents.LINKED_PIP, pipTemp );
-                        startActivity( i );
-                    }
-                } else if( code.equals( ServerResponse.ERROR_FAILED )) {
-                    // If the error is for delink, then show an alert dialog
-                    if( queryType == DELINK ) {
-                        message = getString( R.string.error_message_no_links );
-                        AppUtils.sendMessage( handlerMessages, code, message );
-                    // if there are no links, then show the normal SKS
-                    } else if( queryType == GENERATE_SKS ) {
-                        showSKSDialog( originalCode, null );
-                        originalCode = null;
-                    }
-                // If it is something else, show the error
-                } else {
-                    message = response.getMessage();
-                    AppUtils.sendMessage( handlerMessages, code, message );
+                        // If it is something else, show the error
+                        break;
+                    default:
+                        message = response.getMessage();
+                        YodoHandler.sendMessage( handlerMessages, code, message );
+                        break;
                 }
 
                 pipTemp   = null;
                 queryType = null;
                 break;
 
-            case LINK_ACC_REQUEST:
+            case LINK_REQ:
                 code = response.getCode();
                 message = response.getMessage();
-                AppUtils.sendMessage( handlerMessages, code, message );
+                YodoHandler.sendMessage( handlerMessages, code, message );
                 break;
 
-            case CLOSE_ACC_REQUEST:
+            case CLOSE_REQ:
                 code = response.getCode();
 
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
-                    AppUtils.clearPrefConfig( ac );
+                    PrefUtils.clearPrefConfig( ac );
 
                     couponsdb.delete();
 
@@ -1249,7 +1287,7 @@ public class MainActivity extends AppCompatActivity implements
                     );
                 } else {
                     message  = response.getMessage();
-                    AppUtils.sendMessage( handlerMessages, code, message );
+                    YodoHandler.sendMessage( handlerMessages, code, message );
                 }
                 break;
         }
@@ -1273,18 +1311,18 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onConnected( @Nullable Bundle bundle ) {
-        AppUtils.Logger( TAG, "GoogleApiClient connected" );
+        SystemUtils.Logger( TAG, "GoogleApiClient connected" );
         executePendingSubscriptionTask();
     }
 
     @Override
     public void onConnectionSuspended( int cause ) {
-        AppUtils.Logger( TAG, "GoogleApiClient connection suspended: " +  cause );
+        SystemUtils.Logger( TAG, "GoogleApiClient connection suspended: " +  cause );
     }
 
     @Override
     public void onConnectionFailed( @NonNull ConnectionResult connectionResult ) {
-        AppUtils.Logger( TAG, "connection to GoogleApiClient failed" );
+        SystemUtils.Logger( TAG, "connection to GoogleApiClient failed" );
     }
 
     @Override
@@ -1300,7 +1338,7 @@ public class MainActivity extends AppCompatActivity implements
             } else if( resultCode == RESULT_CANCELED ) {
                 // User was presented with the Nearby opt-in dialog and pressed "Deny". We cannot
                 // proceed with any pending subscription and publication tasks. Reset state.
-                AppUtils.setSubscribing( ac, false );
+                PrefUtils.setSubscribing( ac, false );
             } else {
                 Toast.makeText(
                         this,

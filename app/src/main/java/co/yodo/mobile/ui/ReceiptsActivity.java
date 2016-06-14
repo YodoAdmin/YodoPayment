@@ -31,10 +31,13 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.List;
 
 import co.yodo.mobile.R;
+import co.yodo.mobile.helper.FormatUtils;
+import co.yodo.mobile.helper.GUIUtils;
+import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.ui.adapter.ReceiptsListViewAdapter;
 import co.yodo.mobile.database.model.Receipt;
 import co.yodo.mobile.database.ReceiptsDataSource;
-import co.yodo.mobile.helper.AppUtils;
+import co.yodo.mobile.helper.PrefUtils;
 
 public class ReceiptsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,
         AdapterView.OnItemLongClickListener, ActionMode.Callback {
@@ -59,7 +62,7 @@ public class ReceiptsActivity extends AppCompatActivity implements AdapterView.O
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        AppUtils.setLanguage( ReceiptsActivity.this );
+        GUIUtils.setLanguage( ReceiptsActivity.this );
         setContentView(R.layout.activity_receipts);
 
         setupGUI();
@@ -183,7 +186,7 @@ public class ReceiptsActivity extends AppCompatActivity implements AdapterView.O
     }
 
     private void receiptDialog( Receipt params ) {
-        AppUtils.Logger( TAG, params.toString() );
+        SystemUtils.Logger( TAG, params.toString() );
 
         final Dialog receipt = new Dialog( ReceiptsActivity.this );
         receipt.requestWindowFeature( Window.FEATURE_NO_TITLE );
@@ -207,12 +210,12 @@ public class ReceiptsActivity extends AppCompatActivity implements AdapterView.O
         descriptionText.setText( params.getDescription() );
         authNumberText.setText( params.getAuthNumber() );
         currencyText.setText( params.getDCurrency() );
-        createdText.setText( AppUtils.UTCtoCurrent( ac, params.getCreated() ) );
+        createdText.setText( FormatUtils.UTCtoCurrent( ac, params.getCreated() ) );
         totalAmountText.setText(
-                AppUtils.truncateDecimal( params.getTotalAmount() ) + " " +
-                AppUtils.replaceNull( params.getTCurrency() ) );
-        tenderAmountText.setText( AppUtils.truncateDecimal( params.getTenderAmount() ) );
-        cashBackAmountText.setText( AppUtils.truncateDecimal( params.getCashBackAmount() ) );
+                FormatUtils.truncateDecimal( params.getTotalAmount() ) + " " +
+                        FormatUtils.replaceNull( params.getTCurrency() ) );
+        tenderAmountText.setText( FormatUtils.truncateDecimal( params.getTenderAmount() ) );
+        cashBackAmountText.setText( FormatUtils.truncateDecimal( params.getCashBackAmount() ) );
 
         final String donor = params.getDonorAccount();
         if( donor != null ) {

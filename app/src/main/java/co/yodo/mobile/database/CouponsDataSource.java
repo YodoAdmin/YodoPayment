@@ -14,7 +14,7 @@ import java.util.Date;
 import java.util.List;
 
 import co.yodo.mobile.database.model.Coupon;
-import co.yodo.mobile.helper.AppUtils;
+import co.yodo.mobile.helper.SystemUtils;
 
 public class CouponsDataSource {
 	/** DEBUG */
@@ -67,13 +67,13 @@ public class CouponsDataSource {
 
 	public void deleteCoupon(Coupon coupon) {
 	    long id = coupon.getId();
-	    AppUtils.Logger( TAG, "Coupon deleted with id: " + id );
+		SystemUtils.Logger( TAG, "Coupon deleted with id: " + id );
 	    database.delete( CouponsSQLiteHelper.TABLE_COUPONS, CouponsSQLiteHelper.COLUMN_ID
 				+ " = " + id, null );
 	}
 
 	public void delete() {
-        AppUtils.Logger( TAG, "Coupons database deleted" );
+		SystemUtils.Logger( TAG, "Coupons database deleted" );
 		database.delete( CouponsSQLiteHelper.TABLE_COUPONS, null, null );
 		database.close();
 	}

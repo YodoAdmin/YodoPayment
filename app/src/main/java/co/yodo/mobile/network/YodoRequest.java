@@ -26,7 +26,6 @@ import org.xml.sax.XMLReader;
 
 import java.io.IOException;
 import java.io.StringReader;
-import java.util.HashMap;
 import java.util.Map;
 
 import javax.xml.parsers.ParserConfigurationException;
@@ -35,15 +34,14 @@ import javax.xml.parsers.SAXParserFactory;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.component.Encrypter;
+import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.network.model.ServerResponse;
-import co.yodo.mobile.helper.AppConfig;
-import co.yodo.mobile.helper.AppUtils;
-import co.yodo.mobile.network.builder.ServerRequest;
 import co.yodo.mobile.network.handler.XMLHandler;
+import co.yodo.mobile.network.contract.IRequest;
 
 /**
  * Created by luis on 15/12/14.
- * Request to the Yodo Server
+ * Generates a request to the Yodo Server
  */
 @SuppressLint( "ParcelCreator" )
 public class YodoRequest {
@@ -60,73 +58,37 @@ public class YodoRequest {
 
     /** Timeout for the requests */
     private final static int TIMEOUT = 1000 * 10; // 10 seconds
+    private final static int RETRIES = 0;
 
     private RetryPolicy retryPolicy = new DefaultRetryPolicy(
             TIMEOUT,
-            DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+            RETRIES,
             DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
     );
 
-    /** Object used to encrypt information */
-    private Encrypter oEncrypter;
+    /** Context of the application */
+    private Context mCtx;
 
     /** Global request queue for Volley and Image Loader */
     private RequestQueue mRequestQueue = null;
     private ImageLoader mImageLoader = null;
 
-    /** Singleton instance */
-    private static YodoRequest instance = null;
+    /** Object used to encrypt information */
+    private Encrypter oEncrypter;
 
     /** The external listener to the service */
     private RESTListener listener;
 
-    /** Context of the application */
-    private static Context mCtx;
-
-    /** User's data separator */
-    private static final String	USR_SEP     = "**";
-    private static final String	REQ_SEP     = ",";
-    private static final String	PCLIENT_SEP = "/";
+    /** Singleton instance */
+    private static YodoRequest instance = null;
 
     public interface RESTListener {
         /**
          * Listener for the server responses
-         * @param type Type of the request
+         * @param responseCode Code of the request
          * @param response POJO for the response
          */
-        void onResponse( RequestType type, ServerResponse response );
-    }
-
-    /** ID for each request */
-    public enum RequestType {
-        ERROR_NO_INTERNET     ( "-1" ), // ERROR NO INTERNET
-        ERROR_GENERAL         ( "00" ), // ERROR GENERAL
-        AUTH_REQUEST          ( "01" ), // RT=0, ST=1
-        AUTH_PIP_REQUEST      ( "02" ), // RT=0, ST=2
-        RESET_PIP_REQUEST     ( "03" ), // RT=3, ST=1
-        RESET_BIO_PIP_REQUEST ( "04" ), // RT=3, ST=2
-        QUERY_BAL_REQUEST     ( "05" ), // RT=4, ST=1
-        QUERY_BIO_REQUEST     ( "06" ), // RT=4, ST=3
-        QUERY_ADV_REQUEST     ( "07" ), // RT=4, ST=3
-        QUERY_RCV_REQUEST     ( "08" ), // RT=4, ST=3
-        QUERY_LNK_REQUEST     ( "09" ), // RT=4, ST=3
-        QUERY_LNK_ACC_REQUEST ( "10" ), // RT=4, ST=3
-        CLOSE_ACC_REQUEST     ( "11" ), // RT=8, ST=1
-        REG_CLIENT_REQUEST    ( "12 "), // RT=9, ST=0
-        REG_BIO_REQUEST       ( "13 "), // RT=9, ST=3
-        REG_GCM_REQUEST       ( "14 "), // RT=9, ST=4
-        LINK_ACC_REQUEST      ( "15 "), // RT=10, ST=0
-        DELINK_ACC_REQUEST    ( "16 "); // RT=11
-
-        private final String name;
-
-        RequestType( String s ) {
-            name = s;
-        }
-
-        public String toString() {
-            return name;
-        }
+        void onResponse( int responseCode, ServerResponse response );
     }
 
     /**
@@ -134,9 +96,11 @@ public class YodoRequest {
      * @param context The application context
      */
     private YodoRequest( Context context )  {
+        // getApplicationContext() is key, it keeps you from leaking the
+        // Activity or BroadcastReceiver if someone passes one in.
         mCtx = context.getApplicationContext();
         mRequestQueue = getRequestQueue();
-        oEncrypter = new Encrypter();
+        oEncrypter = Encrypter.getInstance( mCtx );
 
         mImageLoader = new ImageLoader( mRequestQueue,
                 new ImageLoader.ImageCache() {
@@ -171,8 +135,6 @@ public class YodoRequest {
      */
     public RequestQueue getRequestQueue() {
         if( mRequestQueue == null ) {
-            // getApplicationContext() is key, it keeps you from leaking the
-            // Activity or BroadcastReceiver if someone passes one in.
             mRequestQueue = Volley.newRequestQueue( mCtx );
         }
         return mRequestQueue;
@@ -203,11 +165,16 @@ public class YodoRequest {
         return ( IP.equals( PROD_IP ) ) ? "P" : "D";
     }
 
-    private void sendXMLRequest( final String pRequest, final RequestType responseCode ) {
+    /**
+     * Sends a XML request to the server
+     * @param request The request body
+     * @param responseCode The response code
+     */
+    public void sendXMLRequest( final String request, final int responseCode ) {
         if( listener == null )
             throw new NullPointerException( "Listener not defined" );
 
-        final StringRequest httpRequest = new StringRequest( Request.Method.GET, IP + YODO_ADDRESS + pRequest,
+        final StringRequest httpRequest = new StringRequest( Request.Method.GET, IP + YODO_ADDRESS + request,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse( String xml ) {
@@ -222,7 +189,7 @@ public class YodoRequest {
                             xr.parse( new InputSource( new StringReader( xml ) ) );
 
                             // Sends the response to the listener
-                            AppUtils.Logger( TAG, XMLHandler.response.toString() );
+                            SystemUtils.Logger( TAG, XMLHandler.response.toString() );
                             listener.onResponse( responseCode, XMLHandler.response );
                         } catch( ParserConfigurationException | SAXException | IOException e ) {
                             e.printStackTrace();
@@ -232,338 +199,25 @@ public class YodoRequest {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse( VolleyError error ) {
-                        error.printStackTrace();
-                        // depending on the error, return an alert to the activity
-                        ServerResponse response = new ServerResponse();
-                        if( error instanceof TimeoutError  ) {
-                            response.setCode( ServerResponse.ERROR_TIMEOUT );
-                            response.setMessage( mCtx.getString( R.string.message_error_timeout ) );
-                        } else if( error instanceof NetworkError ) {
-                            response.setCode( ServerResponse.ERROR_NETWORK );
-                            response.setMessage( mCtx.getString( R.string.message_error_network ) );
-                        } else if( error instanceof ServerError ) {
-                            response.setCode( ServerResponse.ERROR_SERVER );
-                            response.setMessage( mCtx.getString( R.string.message_error_server ) );
-                        } else {
-                            response.setCode( ServerResponse.ERROR_UNKOWN );
-                            response.setMessage( mCtx.getString( R.string.message_error_unknown ) );
-                        }
-                        listener.onResponse( responseCode, response );
+                        handleVolleyException( error, responseCode );
                     }
                 }
         );
+
         httpRequest.setTag( "GET" );
         httpRequest.setRetryPolicy( retryPolicy );
         getRequestQueue().add( httpRequest );
     }
 
     /**
-     * Queries directed to the server
-     * {{ ======================================================================
+     * Sends a JSON request to the server
+     * @param responseCode The response code
      */
+    public void sendJSONRequest( final Map<String, String> params, final int responseCode ) {
+        if( listener == null )
+            throw new NullPointerException( "Listener not defined" );
 
-    /**
-     * Authenticates the client using the hardware token
-     * @param hardwareToken The hardware token - client identifier
-     */
-    public void requestClientAuth( String hardwareToken ) {
-        String sEncryptedClientData, pRequest;
-
-        // Encrypting to create request
-        oEncrypter.setsUnEncryptedString( hardwareToken );
-        oEncrypter.rsaEncrypt( mCtx );
-        sEncryptedClientData = oEncrypter.bytesToHex();
-
-        pRequest = ServerRequest.createAuthenticationRequest(
-                sEncryptedClientData,
-                ServerRequest.AUTH_HW_ST
-        );
-
-        sendXMLRequest( pRequest, RequestType.AUTH_REQUEST );
-    }
-
-    /**
-     * Authenticates the client using the hardware token and PIP
-     * @param hardwareToken The hardware token - client identifier
-     * @param pip The PIP (password) used to authenticate the client
-     */
-    public void requestClientAuth( String hardwareToken, String pip ) {
-        String sEncryptedClientData, pRequest;
-
-        // Encrypting to create request
-        oEncrypter.setsUnEncryptedString(
-                hardwareToken + PCLIENT_SEP +
-                pip + PCLIENT_SEP +
-                System.currentTimeMillis() / 1000L
-        );
-        oEncrypter.rsaEncrypt( mCtx );
-        sEncryptedClientData = oEncrypter.bytesToHex();
-
-        pRequest = ServerRequest.createAuthenticationRequest(
-                sEncryptedClientData,
-                ServerRequest.AUTH_HW_PIP_ST
-        );
-
-        sendXMLRequest( pRequest, RequestType.AUTH_PIP_REQUEST );
-    }
-
-    /**
-     * Changes the user PIP for a new one
-     * @param hardwareToken The hardware token - client identifier
-     * @param pip The PIP (password) used to authenticate the client
-     * @param newPip The new PIP which will be set
-     */
-    public void requestPIPReset( String hardwareToken, String pip, String newPip ) {
-        String sEncryptedClientData, sEncryptedPIP, sEncryptedNewPIP, pRequest;
-        StringBuilder sClientData = new StringBuilder();
-
-        // Encrypting to create request
-        oEncrypter.setsUnEncryptedString( hardwareToken );
-        oEncrypter.rsaEncrypt( mCtx );
-        sEncryptedClientData = oEncrypter.bytesToHex();
-
-        oEncrypter.setsUnEncryptedString( pip );
-        oEncrypter.rsaEncrypt( mCtx );
-        sEncryptedPIP = oEncrypter.bytesToHex();
-
-        oEncrypter.setsUnEncryptedString( newPip );
-        oEncrypter.rsaEncrypt( mCtx );
-        sEncryptedNewPIP = oEncrypter.bytesToHex();
-
-        sClientData.append( sEncryptedClientData ).append( REQ_SEP );
-        sClientData.append( sEncryptedPIP ).append( REQ_SEP );
-        sClientData.append( sEncryptedNewPIP );
-
-        pRequest = ServerRequest.createResetRequest(
-                sClientData.toString(),
-                ServerRequest.RESET_PIP_ST
-        );
-
-        sendXMLRequest( pRequest, RequestType.RESET_PIP_REQUEST );
-    }
-
-    /**
-     * Change the PIP with an authnumber used in the biometric
-     * authentication
-     * @param authNumber The authentication number of the biometric query
-     * @param hardwareToken The hardware token - client identifier
-     * @param newPip The new PIP which will be set
-     */
-    public void requestBiometricPIPReset( String authNumber, String hardwareToken, String newPip ) {
-        String sEncryptedClientData, pRequest;
-
-        // Encrypting to create request
-        oEncrypter.setsUnEncryptedString(
-                authNumber + REQ_SEP +
-                hardwareToken + REQ_SEP +
-                newPip
-        );
-        oEncrypter.rsaEncrypt( mCtx );
-        sEncryptedClientData = oEncrypter.bytesToHex();
-
-        pRequest = ServerRequest.createResetRequest(
-                sEncryptedClientData,
-                ServerRequest.RESET_BIO_PIP_ST
-        );
-
-        sendXMLRequest( pRequest, RequestType.RESET_BIO_PIP_REQUEST );
-    }
-
-    /**
-     * Request the user balance
-     * @param hardwareToken The hardware token - client identifier
-     * @param pip The PIP (password) used to authenticate the client
-     */
-    public void requestBalance( String hardwareToken, String pip ) {
-        String sEncryptedClientData, pRequest;
-
-        // Encrypting to create request
-        oEncrypter.setsUnEncryptedString(
-                hardwareToken + PCLIENT_SEP +
-                pip + PCLIENT_SEP +
-                System.currentTimeMillis() / 1000L );
-        oEncrypter.rsaEncrypt( mCtx );
-        sEncryptedClientData = oEncrypter.bytesToHex();
-
-        pRequest = ServerRequest.createQueryRequest(
-                sEncryptedClientData,
-                ServerRequest.QUERY_BAL_ST
-        );
-
-        sendXMLRequest( pRequest, RequestType.QUERY_BAL_REQUEST );
-    }
-
-    /**
-     * Requests an advertisement image for a respective merchant
-     * @param hardwareToken The hardware token - client identifier
-     * @param merchant The name of the merchant (username)
-     */
-    public void requestAdvertising( String hardwareToken, String merchant ) {
-        String sEncryptedClientData, pRequest;
-
-        // Encrypting to create request
-        oEncrypter.setsUnEncryptedString(
-                hardwareToken + REQ_SEP +
-                merchant + REQ_SEP +
-                ServerRequest.QueryRecord.ADVERTISING.getValue()
-        );
-        oEncrypter.rsaEncrypt( mCtx );
-        sEncryptedClientData = oEncrypter.bytesToHex();
-
-        pRequest = ServerRequest.createQueryRequest(
-                sEncryptedClientData,
-                ServerRequest.QUERY_ACC_ST
-        );
-
-        sendXMLRequest( pRequest, RequestType.QUERY_ADV_REQUEST );
-    }
-
-    /**
-     * Request Biometric token from the server
-     * @param hardwareToken The hardware token - client identifier
-     */
-    public void requestBiometricToken( String hardwareToken ) {
-        String sEncryptedClientData, pRequest;
-
-        // Encrypting to create request
-        oEncrypter.setsUnEncryptedString(
-                hardwareToken + REQ_SEP +
-                ServerRequest.QueryRecord.BIOMETRIC.getValue()
-        );
-        oEncrypter.rsaEncrypt( mCtx );
-        sEncryptedClientData = oEncrypter.bytesToHex();
-
-        pRequest = ServerRequest.createQueryRequest(
-                sEncryptedClientData,
-                ServerRequest.QUERY_ACC_ST
-        );
-
-        sendXMLRequest( pRequest, RequestType.QUERY_BIO_REQUEST );
-    }
-
-    /**
-     * Requests a new linking code
-     * @param hardwareToken The hardware token - client identifier
-     * @param pip The PIP (password) used to authenticate the client
-     */
-    public void requestLinkingCode( String hardwareToken, String pip ) {
-        String sEncryptedClientData, pRequest;
-
-        // Encrypting to create request
-        oEncrypter.setsUnEncryptedString(
-                hardwareToken + REQ_SEP +
-                pip + REQ_SEP +
-                ServerRequest.QueryRecord.LINKING_CODE.getValue()
-        );
-        oEncrypter.rsaEncrypt( mCtx );
-        sEncryptedClientData = oEncrypter.bytesToHex();
-
-        pRequest = ServerRequest.createQueryRequest(
-                sEncryptedClientData,
-                ServerRequest.QUERY_ACC_ST
-        );
-
-        sendXMLRequest( pRequest, RequestType.QUERY_LNK_REQUEST );
-    }
-
-    /**
-     * Requests the current linked accounts
-     * @param hardwareToken The hardware token - client identifier
-     * @param pip The PIP (password) used to authenticate the client
-     */
-    public void requestLinkedAccounts( String hardwareToken, String pip ) {
-        String sEncryptedClientData, pRequest;
-
-        // Encrypting to create request
-        oEncrypter.setsUnEncryptedString(
-                hardwareToken + REQ_SEP +
-                pip + REQ_SEP +
-                ServerRequest.QueryRecord.LINKED_ACCOUNTS.getValue()
-        );
-        oEncrypter.rsaEncrypt( mCtx );
-        sEncryptedClientData = oEncrypter.bytesToHex();
-
-        pRequest = ServerRequest.createQueryRequest(
-                sEncryptedClientData,
-                ServerRequest.QUERY_ACC_ST
-        );
-
-        sendXMLRequest( pRequest, RequestType.QUERY_LNK_ACC_REQUEST );
-    }
-
-    /**
-     * Closes a secondary client account
-     * @param hardwareToken The hardware token - client identifier
-     * @param pip The PIP (password) used to authenticate the client
-     */
-    public void requestCloseAccount( String hardwareToken, String pip ) {
-        String sEncryptedClientData, pRequest;
-
-        // Encrypting to create request
-        oEncrypter.setsUnEncryptedString(
-                pip + USR_SEP +
-                hardwareToken + USR_SEP +
-                System.currentTimeMillis() / 1000L + REQ_SEP +
-                "0" + REQ_SEP +
-                "0"
-        );
-        oEncrypter.rsaEncrypt( mCtx );
-        sEncryptedClientData = oEncrypter.bytesToHex();
-
-        pRequest = ServerRequest.createCloseRequest(
-                sEncryptedClientData
-        );
-
-        sendXMLRequest( pRequest, RequestType.CLOSE_ACC_REQUEST );
-    }
-
-    /**
-     * Registers a new client
-     * @param hardwareToken The hardware token - client identifier
-     * @param pip The PIP which will be set
-     */
-    public void requestRegistration( String hardwareToken, String pip ) {
-        String sEncryptedClientData, pRequest;
-
-        // Encrypting to create request
-        oEncrypter.setsUnEncryptedString(
-                AppConfig.YODO_BIOMETRIC + USR_SEP +
-                pip + USR_SEP +
-                hardwareToken + USR_SEP +
-                System.currentTimeMillis() / 1000L
-        );
-        oEncrypter.rsaEncrypt( mCtx );
-        sEncryptedClientData = oEncrypter.bytesToHex();
-
-        pRequest = ServerRequest.createRegistrationRequest(
-                sEncryptedClientData,
-                ServerRequest.REG_CLIENT_ST
-        );
-
-        sendXMLRequest( pRequest, RequestType.REG_CLIENT_REQUEST );
-    }
-
-    /**
-     * Registers the biometric token
-     * @param authNumber The authnumber of the registration
-     * @param token The biometric token
-     */
-    public void requestBiometricRegistration( String authNumber, String token ) {
-        String pRequest = ServerRequest.createRegistrationRequest(
-                authNumber + REQ_SEP + token,
-                ServerRequest.REG_BIOMETRIC_ST
-        );
-
-        sendXMLRequest( pRequest, RequestType.REG_BIO_REQUEST );
-    }
-
-    public void requestGCMRegistration( Context activity, final String hardwareToken, final String token ) throws IOException {
-        // Encrypting to create request
-        oEncrypter.setsUnEncryptedString( hardwareToken );
-        oEncrypter.rsaEncrypt( activity );
-        final String sEncryptedClientData = oEncrypter.bytesToHex();
-
-        StringRequest postRequest = new StringRequest( Request.Method.POST, IP + ":8081/yodo",
+        final StringRequest httpRequest = new StringRequest( Request.Method.POST, IP + ":8081/yodo",
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse( String json ) {
@@ -571,13 +225,15 @@ public class YodoRequest {
                             ServerResponse response = new ServerResponse();
                             JSONObject jsonResponse = new JSONObject( json );
 
+                            // Parse the attributes of the ServerResponse
                             response.setCode( jsonResponse.getString( "respCode" ) );
                             response.setAuthNumber( jsonResponse.getString( "authCode" ) );
                             response.setMessage( jsonResponse.getString( "msg" ) );
                             response.setRTime( jsonResponse.getLong( "respTime" ) );
 
-                            listener.onResponse( RequestType.REG_GCM_REQUEST, response );
-                            AppUtils.Logger( TAG, response.toString() );
+                            // Sends the response to the listener
+                            listener.onResponse( responseCode, response );
+                            SystemUtils.Logger( TAG, response.toString() );
                         } catch( JSONException e ) {
                             e.printStackTrace();
                         }
@@ -586,67 +242,51 @@ public class YodoRequest {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse( VolleyError error ) {
-                        error.printStackTrace();
-                        listener.onResponse( RequestType.ERROR_GENERAL, null );
+                        handleVolleyException( error, responseCode );
                     }
                 }
         ) {
             @Override
             protected Map<String, String> getParams() {
-                Map<String, String> params = new HashMap<>();
-                // the POST parameters:
-                params.put( "prt", "1.1.2" );
-                params.put( "req", "9,4" );
-                params.put( "par", sEncryptedClientData + REQ_SEP + token + REQ_SEP + AppConfig.DEV_TYPE );
                 return params;
             }
         };
-        postRequest.setTag( "POST" );
-        Volley.newRequestQueue( activity ).add( postRequest );
+
+        httpRequest.setTag( "POST" );
+        httpRequest.setRetryPolicy( retryPolicy );
+        getRequestQueue().add( httpRequest );
     }
 
     /**
-     * Requests a linking of accounts using a link code
-     * @param hardwareToken The hardware token - client identifier
-     * @param linkCode A code used to link two accounts
+     * Handles the error response from volley
+     * @param error The Volley error (e.g. timeout, network, server)
+     * @param responseCode The response code for the activity
      */
-    public void requestLinkAccount( String hardwareToken, String linkCode ) {
-        String sEncryptedClientData, pRequest;
-
-        // Encrypting to create request
-        oEncrypter.setsUnEncryptedString(
-                hardwareToken + REQ_SEP +
-                linkCode + REQ_SEP +
-                System.currentTimeMillis() / 1000L
-        );
-        oEncrypter.rsaEncrypt( mCtx );
-        sEncryptedClientData = oEncrypter.bytesToHex();
-
-        pRequest = ServerRequest.createLinkingRequest(
-                sEncryptedClientData,
-                ServerRequest.LINK_ACC_ST
-        );
-
-        sendXMLRequest( pRequest, RequestType.LINK_ACC_REQUEST );
+    private void handleVolleyException( VolleyError error, int responseCode ) {
+        error.printStackTrace();
+        // depending on the error, return an alert to the activity
+        ServerResponse response = new ServerResponse();
+        if( error instanceof TimeoutError  ) {
+            response.setCode( ServerResponse.ERROR_TIMEOUT );
+            response.setMessage( mCtx.getString( R.string.message_error_timeout ) );
+        } else if( error instanceof NetworkError ) {
+            response.setCode( ServerResponse.ERROR_NETWORK );
+            response.setMessage( mCtx.getString( R.string.message_error_network ) );
+        } else if( error instanceof ServerError ) {
+            response.setCode( ServerResponse.ERROR_SERVER );
+            response.setMessage( mCtx.getString( R.string.message_error_server ) );
+        } else {
+            response.setCode( ServerResponse.ERROR_UNKOWN );
+            response.setMessage( mCtx.getString( R.string.message_error_unknown ) );
+        }
+        listener.onResponse( responseCode, response );
     }
 
-    public void requestDeLinkAccount( String hardwareToken, String pip, String linkedAccount, String accountType ) {
-        String sEncryptedClientData, pRequest;
-
-        // Encrypting to create request
-        oEncrypter.setsUnEncryptedString(
-                hardwareToken + REQ_SEP +
-                pip + REQ_SEP +
-                linkedAccount
-        );
-        oEncrypter.rsaEncrypt( mCtx );
-        sEncryptedClientData = oEncrypter.bytesToHex();
-
-        pRequest = ServerRequest.createDeLinkRequest(
-                sEncryptedClientData,
-                accountType
-        );
-
-        sendXMLRequest( pRequest, RequestType.DELINK_ACC_REQUEST );
+    /**
+     * Executes a request (extends IRequest class)
+     * @param request The request to be executed
+     */
+    public void invoke( IRequest request) {
+        request.execute( oEncrypter, this );
     }
 }

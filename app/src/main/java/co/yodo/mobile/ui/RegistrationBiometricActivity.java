@@ -1,14 +1,11 @@
 package co.yodo.mobile.ui;
 
 import android.Manifest;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.content.LocalBroadcastManager;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -20,16 +17,16 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.broadcastreceiver.BroadcastMessage;
+import co.yodo.mobile.component.Intents;
+import co.yodo.mobile.helper.GUIUtils;
+import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.SystemUtils;
+import co.yodo.mobile.network.YodoRequest;
+import co.yodo.mobile.network.model.ServerResponse;
+import co.yodo.mobile.network.request.RegisterRequest;
 import co.yodo.mobile.ui.notification.ProgressDialogHelper;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.notification.YodoHandler;
-import co.yodo.mobile.network.model.ServerResponse;
-import co.yodo.mobile.helper.AppConfig;
-import co.yodo.mobile.helper.AppUtils;
-import co.yodo.mobile.helper.Intents;
-import co.yodo.mobile.network.YodoRequest;
-import co.yodo.mobile.service.RegistrationIntentService;
 
 public class RegistrationBiometricActivity extends AppCompatActivity implements YodoRequest.RESTListener {
     /** The context object */
@@ -40,7 +37,7 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
     private String biometricToken;
 
     /** Messages Handler */
-    private static YodoHandler handlerMessages;
+    private YodoHandler handlerMessages;
 
     /** Manager for the server requests */
     private YodoRequest mRequestManager;
@@ -52,37 +49,22 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
     private Animation aShake;
 
     /** Result Activities Identifiers */
-    private static final int CAMERA_ACTIVITY = 1;
+    private static final int RESULT_CAMERA_ACTIVITY = 1;
 
     /** Request codes for the permissions */
     private static final int PERMISSIONS_REQUEST_CAMERA = 1;
 
+    /** Response codes for the server requests */
+    private static final int REG_REQ = 0x00;
+
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        AppUtils.setLanguage( RegistrationBiometricActivity.this );
+        GUIUtils.setLanguage( RegistrationBiometricActivity.this );
         setContentView( R.layout.activity_registration_biometric );
 
         setupGUI();
         updateData();
-    }
-
-    @Override
-    public void onResume() {
-        super.onResume();
-        mRequestManager.setListener( this );
-        LocalBroadcastManager.getInstance( this ).registerReceiver(
-                mRegistrationBroadcastReceiver,
-                new IntentFilter( AppConfig.REGISTRATION_COMPLETE )
-        );
-    }
-
-    @Override
-    protected void onPause() {
-        super.onPause();
-        LocalBroadcastManager.getInstance( this ).unregisterReceiver(
-                mRegistrationBroadcastReceiver
-        );
     }
 
     @Override
@@ -102,8 +84,11 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
     private void setupGUI() {
         // Get the context
         ac = RegistrationBiometricActivity.this;
+
+        // Sets the messages handler and the request manager
         handlerMessages = new YodoHandler( RegistrationBiometricActivity.this );
         mRequestManager = YodoRequest.getInstance( ac );
+        mRequestManager.setListener( this );
 
         // GUI Global components
         imFaceBiometric = (ImageView) findViewById( R.id.faceView );
@@ -141,7 +126,7 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
      * @param v View of the button, not used
      */
     public void faceBiometricClicked( View v ) {
-        boolean cameraPermission = AppUtils.requestPermission(
+        boolean cameraPermission = SystemUtils.requestPermission(
                 RegistrationBiometricActivity.this,
                 R.string.message_permission_camera,
                 Manifest.permission.CAMERA,
@@ -153,14 +138,6 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
     }
 
     /**
-     * Starts the face recognition activity
-     */
-    private void showCamera() {
-        Intent intent = new Intent( RegistrationBiometricActivity.this, CameraActivity.class );
-        startActivityForResult( intent, CAMERA_ACTIVITY );
-    }
-
-    /**
      * Realize a registration request
      * @param v View of the button, not used
      */
@@ -168,10 +145,12 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
         // We have a biometric token, we can proceed
         if( biometricToken != null ) {
             ProgressDialogHelper.getInstance().createProgressDialog( ac );
-            mRequestManager.requestBiometricRegistration(
+            mRequestManager.invoke( new RegisterRequest(
+                    REG_REQ,
                     authNumber,
-                    biometricToken
-            );
+                    biometricToken,
+                    RegisterRequest.RegST.BIOMETRIC
+            ) );
         // The user needs to capture a biometric token first
         } else {
             ToastMaster.makeText( ac, R.string.face_required , Toast.LENGTH_SHORT ).show();
@@ -179,28 +158,35 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
         }
     }
 
+    /**
+     * Starts the face recognition activity
+     */
+    private void showCamera() {
+        Intent intent = new Intent( ac, CameraActivity.class );
+        startActivityForResult( intent, RESULT_CAMERA_ACTIVITY );
+    }
+
     @Override
-    public void onResponse( YodoRequest.RequestType type, ServerResponse response ) {
+    public void onResponse( int requestCode, ServerResponse response ) {
         ProgressDialogHelper.getInstance().destroyProgressDialog();
         String code, message;
 
-        switch( type ) {
-            case REG_BIO_REQUEST:
+        switch( requestCode ) {
+            case REG_REQ:
                 code = response.getCode();
 
                 // Successfully register the biometric token
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
-                    AppUtils.saveAuthNumber( ac, "" );
-                    String hardwareToken = AppUtils.getHardwareToken( ac );
+                    PrefUtils.saveAuthNumber( ac, "" );
 
-                    // Start IntentService to register this application with GCM.
-                    Intent intent = new Intent( this, RegistrationIntentService.class );
-                    intent.putExtra( BroadcastMessage.EXTRA_HARDWARE_TOKEN, hardwareToken );
-                    startService( intent );
+                    Intent intent = new Intent( ac, MainActivity.class );
+                    startActivity( intent );
+                    finish();
+                }
                 // There was an error during the process
-                } else {
+                else {
                     message  = response.getMessage();
-                    AppUtils.sendMessage( handlerMessages, code, message );
+                    YodoHandler.sendMessage( handlerMessages, code, message );
                 }
 
                 break;
@@ -211,7 +197,7 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
     public void onActivityResult( int requestCode, int resultCode, Intent data ) {
         super.onActivityResult( requestCode, resultCode, data );
         switch( requestCode ) {
-            case( CAMERA_ACTIVITY ) :
+            case( RESULT_CAMERA_ACTIVITY ) :
                 // Just trained the biometric recognition, let's save the token
                 if( resultCode == RESULT_OK ) {
                     biometricToken = data.getStringExtra( Intents.RESULT_FACE );
@@ -237,21 +223,4 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
                 super.onRequestPermissionsResult( requestCode, permissions, grantResults );
         }
     }
-
-    /**
-     * Message received from the service that registers the gcm token
-     */
-    private BroadcastReceiver mRegistrationBroadcastReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive( Context context, Intent intent ) {
-            boolean sentToken = AppUtils.getIsTokenSent( context );
-            finish();
-            if( sentToken ) {
-                intent = new Intent( RegistrationBiometricActivity.this, MainActivity.class );
-                startActivity( intent );
-            } else {
-                Toast.makeText( ac, R.string.error_gcm_registration, Toast.LENGTH_SHORT ).show();
-            }
-        }
-    };
 }

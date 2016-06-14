@@ -15,10 +15,11 @@ import java.io.File;
 import java.util.List;
 
 import co.yodo.mobile.R;
+import co.yodo.mobile.helper.GUIUtils;
+import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.ui.adapter.CouponsGridViewAdapter;
 import co.yodo.mobile.database.model.Coupon;
 import co.yodo.mobile.database.CouponsDataSource;
-import co.yodo.mobile.helper.AppUtils;
 
 public class CouponsActivity extends AppCompatActivity {
     /** DEBUG */
@@ -36,7 +37,7 @@ public class CouponsActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        AppUtils.setLanguage( CouponsActivity.this );
+        GUIUtils.setLanguage( CouponsActivity.this );
         setContentView(R.layout.activity_coupons);
 
         setupGUI();
@@ -93,7 +94,7 @@ public class CouponsActivity extends AppCompatActivity {
                 boolean delete = file.delete();
 
                 if( !delete )
-                    AppUtils.Logger( TAG, "File not found" );
+                    SystemUtils.Logger( TAG, "File not found" );
 
                 couponsdb.deleteCoupon( coupon );
                 values.remove( info.position );

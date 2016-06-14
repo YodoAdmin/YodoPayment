@@ -2,6 +2,7 @@ package co.yodo.mobile.ui.notification;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
@@ -66,5 +67,33 @@ public class YodoHandler extends Handler {
             default:
                 AlertDialogHelper.showAlertDialog( main, code, response, clickListener );
         }
+    }
+
+    /**
+     * Sends a message to the handler
+     * @param handlerMessages The Handler for the app
+     * @param title The title for the alert
+     * @param message The message for the alert
+     */
+    public static void sendMessage( int messageType, YodoHandler handlerMessages, String title, String message ) {
+        Message msg = new Message();
+        msg.what = messageType;
+
+        Bundle bundle = new Bundle();
+        bundle.putString( YodoHandler.CODE, title );
+        bundle.putString( YodoHandler.MESSAGE, message );
+        msg.setData( bundle );
+
+        handlerMessages.sendMessage( msg );
+    }
+
+    /**
+     * Sends a message to the handler
+     * @param handlerMessages The Handler for the app
+     * @param title The title for the alert
+     * @param message The message for the alert
+     */
+    public static void sendMessage( YodoHandler handlerMessages, String title, String message ) {
+        sendMessage( SERVER_ERROR, handlerMessages, title, message );
     }
 }

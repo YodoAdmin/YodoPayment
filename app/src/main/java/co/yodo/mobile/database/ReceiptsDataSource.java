@@ -11,7 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.yodo.mobile.database.model.Receipt;
-import co.yodo.mobile.helper.AppUtils;
+import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.SystemUtils;
 
 /**
  * Created by luis on 1/02/15.
@@ -141,7 +142,7 @@ public class ReceiptsDataSource {
 
         try {
             long id = database.insert( ReceiptsSQLiteHelper.TABLE_RECEIPTS, null, values );
-            AppUtils.Logger( TAG, "Receipt deleted with id: " + id );
+            SystemUtils.Logger( TAG, "Receipt deleted with id: " + id );
             database.setTransactionSuccessful();
         } finally {
             database.endTransaction();
@@ -180,7 +181,7 @@ public class ReceiptsDataSource {
             database.delete(
                 ReceiptsSQLiteHelper.TABLE_RECEIPTS,
                 ReceiptsSQLiteHelper.COLUMN_ID + " = " + id, null );
-            AppUtils.Logger( TAG, "Receipt deleted with id: " + id );
+            SystemUtils.Logger( TAG, "Receipt deleted with id: " + id );
             database.setTransactionSuccessful();
         } finally {
             database.endTransaction();
@@ -188,7 +189,7 @@ public class ReceiptsDataSource {
     }
 
     public void delete() {
-        AppUtils.Logger( TAG, "Receipts database deleted" );
+        SystemUtils.Logger( TAG, "Receipts database deleted" );
         database.delete( ReceiptsSQLiteHelper.TABLE_RECEIPTS, null, null );
         database.close();
     }
