@@ -49,9 +49,10 @@ public class YodoRequest {
     private static final String TAG = YodoRequest.class.getSimpleName();
 
     /** Switch server IP address */
-    private static final String PROD_IP = "http://50.56.180.133";  // Production
-    private static final String DEV_IP  = "http://198.101.209.120";  // Development
-    private static final String IP      = DEV_IP;
+    private static final String PROD_IP = "http://50.56.180.133";   // Production
+    private static final String DEMO_IP = "http://198.101.209.120"; // Demo
+    private static final String DEV_IP  = "http://162.244.228.78";  // Development
+    private static final String IP      = DEMO_IP;
 
     /** Two paths used for the requests */
     private static final String YODO_ADDRESS = "/yodo/yodoswitchrequest/getRequest/";
@@ -158,11 +159,13 @@ public class YodoRequest {
 
     /**
      * Returns an string that represents the server of the IP
-     * @return P - production
-     *         D - development
+     * @return P  - production
+     *         De - demo
+     *         D  - development
      */
     public static String getSwitch() {
-        return ( IP.equals( PROD_IP ) ) ? "P" : "D";
+        return ( IP.equals( PROD_IP ) ) ? "P" :
+                ( IP.equals( DEMO_IP ) ) ? "De" : "D";
     }
 
     /**

@@ -34,10 +34,10 @@ public class Encrypter {
     private static String PUBLIC_KEY;
 
     static {
-        if( YodoRequest.getSwitch().equals( "D" ) )
-            PUBLIC_KEY = "YodoKey/Dev/12.public.der";
-        else
+        if( YodoRequest.getSwitch().equals( "P" ) )
             PUBLIC_KEY = "YodoKey/Prod/12.public.der";
+        else
+            PUBLIC_KEY = "YodoKey/Dev/12.public.der";
     }
 
 	/** Cipher instance used for encryption */

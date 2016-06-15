@@ -61,7 +61,6 @@ import java.io.UnsupportedEncodingException;
 import java.util.HashMap;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.component.Intents;
 import co.yodo.mobile.component.SKSCreater;
 import co.yodo.mobile.database.CouponsDataSource;
 import co.yodo.mobile.database.ReceiptsDataSource;
@@ -74,8 +73,6 @@ import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.network.YodoRequest;
 import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.request.AuthenticateRequest;
-import co.yodo.mobile.network.request.CloseRequest;
-import co.yodo.mobile.network.request.LinkRequest;
 import co.yodo.mobile.network.request.QueryRequest;
 import co.yodo.mobile.ui.extension.AboutOption;
 import co.yodo.mobile.ui.extension.BalanceOption;
@@ -108,7 +105,7 @@ public class MainActivity extends AppCompatActivity implements
     private String hardwareToken;
 
     /** Messages Handler */
-    private YodoHandler handlerMessages;
+    private YodoHandler mHandlerMessages;
 
     /** Manager for the server requests */
     private YodoRequest mRequestManager;
@@ -183,13 +180,8 @@ public class MainActivity extends AppCompatActivity implements
 
     /** Response codes for the server requests */
     private static final int AUTH_REQ              = 0x00;
-    private static final int QUERY_BAL_REQ         = 0x01;
-    private static final int QUERY_ADV_REQ         = 0x02;
-    private static final int QUERY_LNK_REQ         = 0x03;
-    private static final int QUERY_LNK_ACC_SKS_REQ = 0x04;
-    private static final int QUERY_LNK_ACC_DEL_REQ = 0x05;
-    private static final int CLOSE_REQ             = 0x06;
-    private static final int LINK_REQ              = 0x07;
+    private static final int QUERY_ADV_REQ         = 0x01;
+    private static final int QUERY_LNK_ACC_SKS_REQ = 0x02;
 
     // Runnable that takes care of start the scans
     private Runnable mGetAdvertisement = new Runnable() {
@@ -202,7 +194,7 @@ public class MainActivity extends AppCompatActivity implements
                     QueryRequest.Record.ADVERTISING
             ) );
             // Wait some time for the next advertisement request
-            handlerMessages.postDelayed( mGetAdvertisement, DELAY_BETWEEN_REQUESTS );
+            mHandlerMessages.postDelayed( mGetAdvertisement, DELAY_BETWEEN_REQUESTS );
         }
     };
 
@@ -307,7 +299,7 @@ public class MainActivity extends AppCompatActivity implements
     private void setupGUI() {
         // get the context
         ac = MainActivity.this;
-        handlerMessages = new YodoHandler( MainActivity.this );
+        mHandlerMessages = new YodoHandler( MainActivity.this );
         mRequestManager = YodoRequest.getInstance( ac );
 
         // Global GUI Components
@@ -320,16 +312,16 @@ public class MainActivity extends AppCompatActivity implements
         ibSubscription     = (ImageButton) findViewById( R.id.ibSubscription );
 
         // Global Options (main window)
-        mPaymentOption       = new PaymentOption( this );
-        mSaveCouponOption    = new SaveCouponOption( this );
-        mAboutOption         = new AboutOption( this );
+        mPaymentOption    = new PaymentOption( this );
+        mSaveCouponOption = new SaveCouponOption( this );
+        mAboutOption      = new AboutOption( this );
 
         // Global options (navigation window)
-        mBalanceOption       = new BalanceOption( this );
-        mLinkCodeOption      = new LinkCodeOption( this );
-        mLinkAccountOption   = new LinkAccountOption( this );
-        mDeLinkAccountOption = new DeLinkAccountOption( this );
-        mCloseAccountOption  = new CloseAccountOption( this );
+        mBalanceOption       = new BalanceOption( this, mRequestManager, mHandlerMessages );
+        mLinkCodeOption      = new LinkCodeOption( this, mRequestManager, mHandlerMessages );
+        mLinkAccountOption   = new LinkAccountOption( this, mRequestManager, mHandlerMessages );
+        mDeLinkAccountOption = new DeLinkAccountOption( this, mRequestManager, mHandlerMessages );
+        mCloseAccountOption  = new CloseAccountOption( this, mRequestManager, mHandlerMessages );
 
         // Images fit parent
         mAdvertisingImage.setDisplayType( ImageViewTouchBase.DisplayType.FIT_TO_SCREEN );
@@ -343,20 +335,8 @@ public class MainActivity extends AppCompatActivity implements
         if( actionBar != null )
             actionBar.setDisplayHomeAsUpEnabled( true );
 
-        mDrawerToggle = new ActionBarDrawerToggle( this, mDrawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close ) {
-            @Override
-            public void onDrawerClosed(View drawerView) {
-                super.onDrawerClosed( drawerView );
-            }
-            @Override
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened( drawerView );
-            }
-        };
-
-        mDrawerLayout.addDrawerListener( mDrawerToggle );
-
-        // Set up the listener for the Nearby messages
+        // Set up the listeners for the drawable and Nearby messages
+        initializeDrawableListener( toolbar );
         initializeMessageListener();
 
         couponsdb  = new CouponsDataSource( ac );
@@ -389,6 +369,7 @@ public class MainActivity extends AppCompatActivity implements
 
         // Show the terms, if the app is updated
         EulaUtils.show( this );
+
         // Upon orientation change, ensure that the state of the UI is maintained.
         updateUI();
     }
@@ -436,6 +417,7 @@ public class MainActivity extends AppCompatActivity implements
             ToastMaster.makeText( ac, R.string.message_no_hardware, Toast.LENGTH_LONG ).show();
             finish();
         }
+
         // Set the account number and current date
         mAccountNumber.setText( hardwareToken );
         mAccountDate.setText( FormatUtils.getCurrentDate() );
@@ -450,8 +432,26 @@ public class MainActivity extends AppCompatActivity implements
      */
     private void removeAdvertisement() {
         mMerchant = null;
-        handlerMessages.removeCallbacks( mGetAdvertisement );
+        mHandlerMessages.removeCallbacks( mGetAdvertisement );
         mAdvertisingImage.setImageDrawable( null );
+    }
+
+    /**
+     * Initializes the drawable for the nearby API
+     */
+    private void initializeDrawableListener( Toolbar toolbar ) {
+        mDrawerToggle = new ActionBarDrawerToggle( this, mDrawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close ) {
+            @Override
+            public void onDrawerClosed(View drawerView) {
+                super.onDrawerClosed( drawerView );
+            }
+            @Override
+            public void onDrawerOpened(View drawerView) {
+                super.onDrawerOpened( drawerView );
+            }
+        };
+
+        mDrawerLayout.addDrawerListener( mDrawerToggle );
     }
 
     /**
@@ -465,7 +465,7 @@ public class MainActivity extends AppCompatActivity implements
                     mMerchant = new String( message.getContent() );
                     // Called when a message is detectable nearby.
                     SystemUtils.Logger( TAG, "Found: " + mMerchant );
-                    handlerMessages.post( mGetAdvertisement );
+                    mHandlerMessages.post( mGetAdvertisement );
                 }
             }
 
@@ -713,53 +713,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * Implements the behavior of the LinkCodeOption
-     * @param inputBox The TextView with the PIP
-     */
-    public void linkCode( EditText inputBox ) {
-        final String pip = inputBox.getText().toString();
-
-        ProgressDialogHelper.getInstance().createProgressDialog( ac );
-        mRequestManager.invoke( new QueryRequest(
-                QUERY_LNK_REQ,
-                hardwareToken,
-                pip,
-                QueryRequest.Record.LINKING_CODE
-        ) );
-    }
-
-    /**
-     * Implements the behavior of the LinkAccountOption
-     * @param inputBox The TextView with the linking code
-     */
-    public void linkAccount( EditText inputBox ) {
-        final String linkingCode = inputBox.getText().toString();
-
-        ProgressDialogHelper.getInstance().createProgressDialog( ac );
-        mRequestManager.invoke( new LinkRequest(
-                LINK_REQ,
-                hardwareToken,
-                linkingCode
-        ) );
-    }
-
-    /**
-     * Implements the behavior of the DeLinkAccountOption
-     * @param inputBox  The TextView with the PIP
-     */
-    public void deLinkAccount( EditText inputBox ) {
-        setTempPIP( inputBox.getText().toString() );
-
-        ProgressDialogHelper.getInstance().createProgressDialog( ac );
-        mRequestManager.invoke( new QueryRequest(
-                QUERY_LNK_ACC_DEL_REQ,
-                hardwareToken,
-                tempPIP,
-                QueryRequest.Record.LINKED_ACCOUNTS
-        ) );
-    }
-
-    /**
      * Get the user balance
      * @param v, The button view, not used
      */
@@ -769,18 +722,11 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * Implements the behavior of the BalanceOption
-     * @param inputBox The TextView with the PIP
+     * Sets the balance TextView
+     * @param balance The balance to display
      */
-    public void balance( EditText inputBox ) {
-        final String pip = inputBox.getText().toString();
-
-        ProgressDialogHelper.getInstance().createProgressDialog( ac );
-        mRequestManager.invoke( new QueryRequest(
-                QUERY_BAL_REQ,
-                hardwareToken,
-                pip
-        ) );
+    public void setBalance( String balance ) {
+        this.mAccountBalance.setText( balance );
     }
 
     /**
@@ -793,18 +739,12 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
-     * Implements the behavior of the CloseAccountOption
-     * @param inputBox The TextView with the PIP
+     * Clears the saved data after a close
+     * account request
      */
-    public void closeAccount( EditText inputBox ) {
-        final String pip = inputBox.getText().toString();
-
-        ProgressDialogHelper.getInstance().createProgressDialog( ac );
-        mRequestManager.invoke( new CloseRequest(
-                CLOSE_REQ,
-                hardwareToken,
-                pip
-        ) );
+    public void clearSavedData() {
+        PrefUtils.clearPrefConfig( ac );
+        couponsdb.delete();
     }
 
     /**
@@ -1010,12 +950,13 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onResponse( int responseCode, ServerResponse response ) {
+        SystemUtils.Logger( TAG, "entro" );
         if( responseCode != QUERY_ADV_REQ )
             ProgressDialogHelper.getInstance().destroyProgressDialog();
 
         String code = response.getCode();
         String message = response.getMessage();
-        String to, from;
+        String from;
 
         switch( responseCode ) {
             case AUTH_REQ:
@@ -1031,31 +972,9 @@ public class MainActivity extends AppCompatActivity implements
                     ) );
                 } else {
                     mAdvertisingLayout.setVisibility( View.VISIBLE );
-                    YodoHandler.sendMessage( handlerMessages, code, message );
+                    YodoHandler.sendMessage( mHandlerMessages, code, message );
                 }
 
-                break;
-
-            case QUERY_BAL_REQ:
-                switch( code ) {
-                    case ServerResponse.AUTHORIZED_BALANCE:
-                        final String tvBalance =
-                                FormatUtils.truncateDecimal( response.getParam( ServerResponse.BALANCE ) ) + " " +
-                                response.getParam( ServerResponse.CURRENCY );
-                        // Trim the balance
-                        mAccountBalance.setText( tvBalance );
-                        break;
-
-                    case ServerResponse.ERROR_NO_BALANCE:
-                        mAccountBalance.setText( "" );
-                        Snackbar.make( mDrawerLayout, R.string.message_error_no_balance, Snackbar.LENGTH_SHORT ).show();
-                        break;
-
-                    default:
-                        mAccountBalance.setText( "" );
-                        YodoHandler.sendMessage( handlerMessages, code, message );
-                        break;
-                }
                 break;
 
             case QUERY_ADV_REQ:
@@ -1079,61 +998,6 @@ public class MainActivity extends AppCompatActivity implements
                         );
                     }
                 }
-                break;
-
-            case QUERY_LNK_REQ:
-                if( code.equals( ServerResponse.AUTHORIZED ) ) {
-                    String linking_code = response.getParam( ServerResponse.LINKING_CODE );
-
-                    Dialog dialog = new Dialog( ac );
-                    dialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
-                    dialog.setContentView( R.layout.dialog_linking_code );
-
-                    final TextView codeText   = (TextView) dialog.findViewById( R.id.codeText );
-                    ImageView codeImage = (ImageView) dialog.findViewById( R.id.copyCodeImage );
-                    codeText.setText( linking_code );
-
-                    codeImage.setOnClickListener( new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            GUIUtils.copyCode( ac, codeText.getText().toString() );
-                            ToastMaster.makeText( ac, R.string.copied_text, Toast.LENGTH_SHORT ).show();
-                        }
-                    });
-
-                    dialog.show();
-                } else {
-                    YodoHandler.sendMessage( handlerMessages, code, message );
-                }
-                break;
-
-            case QUERY_LNK_ACC_DEL_REQ:
-                switch( code ) {
-                    case ServerResponse.AUTHORIZED:
-                        from = response.getParam( ServerResponse.FROM );
-                        to = response.getParam( ServerResponse.TO );
-
-                        Intent i = new Intent( ac, DeLinkActivity.class );
-                        i.putExtra( Intents.LINKED_ACC_TO, to );
-                        i.putExtra( Intents.LINKED_ACC_FROM, from );
-                        i.putExtra( Intents.LINKED_PIP, this.tempPIP );
-                        startActivity( i );
-                        break;
-
-                    // We don't have links
-                    case ServerResponse.ERROR_FAILED:
-                        message = getString( R.string.error_message_no_links );
-                        YodoHandler.sendMessage( handlerMessages, code, message );
-                        break;
-
-                    // If it is something else, show the error
-                    default:
-                        message = response.getMessage();
-                        YodoHandler.sendMessage( handlerMessages, code, message );
-                        break;
-                }
-
-                setTempPIP( null );
                 break;
 
             case QUERY_LNK_ACC_SKS_REQ:
@@ -1162,38 +1026,11 @@ public class MainActivity extends AppCompatActivity implements
 
                     // If it is something else, show the error
                     default:
-                        YodoHandler.sendMessage( handlerMessages, code, message );
+                        YodoHandler.sendMessage( mHandlerMessages, code, message );
                         break;
                 }
 
                 setTempPIP( null );
-                break;
-
-            case LINK_REQ:
-                YodoHandler.sendMessage( handlerMessages, code, message );
-                break;
-
-            case CLOSE_REQ:
-                if( code.equals( ServerResponse.AUTHORIZED ) ) {
-                    PrefUtils.clearPrefConfig( ac );
-
-                    couponsdb.delete();
-
-                    DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            finish();
-                        }
-                    };
-
-                    AlertDialogHelper.showAlertDialog(
-                            ac,
-                            getString( R.string.farewell_message_tittle ),
-                            getString( R.string.farewell_message ),
-                            onClick
-                    );
-                } else {
-                    YodoHandler.sendMessage( handlerMessages, code, message );
-                }
                 break;
         }
     }

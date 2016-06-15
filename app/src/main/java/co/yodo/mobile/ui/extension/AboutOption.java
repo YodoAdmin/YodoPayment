@@ -24,60 +24,72 @@ public class AboutOption extends IOption {
     /** Data of the about */
     private final String mHardwareToken;
 
+    /** Elements for the AlertDialog */
+    private final String mTitle;
+    private final String mMessage;
+    private final String mEmail;
+    private final View mLayout;
+
     /**
      * Sets up the main elements of the options
      * @param activity The Activity to handle
      */
     public AboutOption( Activity activity ) {
         super( activity );
-        mHardwareToken = PrefUtils.getHardwareToken( this.mActivity );
-    }
+        // Data
+        this.mHardwareToken = PrefUtils.getHardwareToken( this.mActivity );
 
-    @Override
-    public void execute() {
-        // AlertDialog texts
-        final String title   = this.mActivity.getString( R.string.action_about );
-        final String message =
+        // AlertDialog
+        this.mTitle = this.mActivity.getString( R.string.action_about );
+        this.mMessage =
                 this.mActivity.getString( R.string.version_label ) + " " +
                 this.mActivity.getString( R.string.version_value ) + "/" +
                 YodoRequest.getSwitch() + "\n\n" +
                 this.mActivity.getString( R.string.about_message );
+        this.mEmail = this.mActivity.getString( R.string.about_email );
 
-        // Layout texts
-        final String email = this.mActivity.getString( R.string.about_email );
-
-        // Gets the dialog layout
+        // Gets and sets the dialog layout
         LayoutInflater inflater = (LayoutInflater) this.mActivity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-        View layout = inflater.inflate( R.layout.dialog_about, new LinearLayout( this.mActivity ), false );
+        this.mLayout = inflater.inflate( R.layout.dialog_about, new LinearLayout( this.mActivity ), false );
+        setupLayout( this.mLayout );
+    }
 
+    /**
+     * Prepares a layout for the About dialog
+     * @param layout The layout to be prepared
+     */
+    private void setupLayout( View layout ) {
         // GUI controllers of the dialog
         TextView emailView = (TextView) layout.findViewById( R.id.emailView );
         TextView messageView = (TextView) layout.findViewById( R.id.messageView );
-        SpannableString ssEmail = new SpannableString( email );
+        SpannableString ssEmail = new SpannableString( this.mEmail );
 
         // Set text to the controllers
         ssEmail.setSpan( new UnderlineSpan(), 0, ssEmail.length(), 0 );
         emailView.setText( ssEmail );
-        messageView.setText( message );
+        messageView.setText( this.mMessage  );
 
         // Create the onClick listener
         emailView.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent( Intent.ACTION_SEND );
-                String[] recipients = { email };
+                String[] recipients = { mEmail };
                 intent.putExtra( Intent.EXTRA_EMAIL, recipients ) ;
                 intent.putExtra( Intent.EXTRA_SUBJECT, mHardwareToken );
                 intent.setType( "text/html" );
                 mActivity.startActivity( Intent.createChooser( intent, "Send Email" ) );
             }
         });
+    }
 
+    @Override
+    public void execute() {
         // Generate the AlertDialog
         AlertDialogHelper.showAlertDialog(
                 this.mActivity,
-                title,
-                layout
+                this.mTitle,
+                this.mLayout
         );
     }
 }
