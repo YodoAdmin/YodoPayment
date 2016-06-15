@@ -26,12 +26,11 @@ import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.component.Intents;
 import co.yodo.mobile.network.YodoRequest;
 import co.yodo.mobile.ui.validator.PIPValidator;
-import co.yodo.mobile.ui.validator.ValidatorFactory;
 
-public class PipResetActivity extends AppCompatActivity implements YodoRequest.RESTListener {
+public class ResetPIPActivity extends AppCompatActivity implements YodoRequest.RESTListener {
     /** DEBUG */
     @SuppressWarnings( "unused" )
-    private static final String TAG = PipResetActivity.class.getSimpleName();
+    private static final String TAG = ResetPIPActivity.class.getSimpleName();
 
     /** The context object */
     private Context ac;
@@ -50,6 +49,10 @@ public class PipResetActivity extends AppCompatActivity implements YodoRequest.R
     private EditText etCurrentPip;
     private EditText etNewPip;
     private EditText etConfirmPip;
+
+    /** PIP validators */
+    private PIPValidator pipValidator;
+    private PIPValidator newPipValidator;
 
     /** Activity Result */
     private static final int REQUEST_FACE_ACTIVITY = 0;
@@ -110,14 +113,18 @@ public class PipResetActivity extends AppCompatActivity implements YodoRequest.R
      */
     private void setupGUI() {
         // Get the context
-        ac = PipResetActivity.this;
-        handlerMessages = new YodoHandler( PipResetActivity.this );
+        ac = ResetPIPActivity.this;
+        handlerMessages = new YodoHandler( ResetPIPActivity.this );
         mRequestManager = YodoRequest.getInstance( ac );
 
         // GUI Global components
         etCurrentPip = (EditText) findViewById( R.id.currentPipText );
         etNewPip     = (EditText) findViewById( R.id.newPipText );
         etConfirmPip = (EditText) findViewById( R.id.confirmPipText );
+
+        // PIP validators
+        pipValidator    = new PIPValidator( etCurrentPip );
+        newPipValidator = new PIPValidator( etNewPip, etConfirmPip );
 
         // Only used at creation
         Toolbar toolbar = (Toolbar) findViewById( R.id.actionBar );
@@ -160,11 +167,9 @@ public class PipResetActivity extends AppCompatActivity implements YodoRequest.R
         GUIUtils.hideSoftKeyboard( this );
 
         // Validates the current PIP format
-        PIPValidator validator = ValidatorFactory.getValidator( etCurrentPip );
-        if( validator.validate() ) {
+        if( pipValidator.validate() ) {
             // Validates the new PIP and its confirmation
-            validator = ValidatorFactory.getValidator( etNewPip, etConfirmPip );
-            if( validator.validate() ) {
+            if( newPipValidator.validate() ) {
                 // Request an authentication
                 final String currentPip = etCurrentPip.getText().toString();
 
@@ -187,8 +192,7 @@ public class PipResetActivity extends AppCompatActivity implements YodoRequest.R
         GUIUtils.hideSoftKeyboard( this );
 
         // Validates the new PIP and its confirmation
-        PIPValidator validator = ValidatorFactory.getValidator( etNewPip, etConfirmPip );
-        if( validator.validate() ) {
+        if( newPipValidator.validate() ) {
             // Request the biometric token
             ProgressDialogHelper.getInstance().createProgressDialog( ac );
             mRequestManager.invoke( new QueryRequest(

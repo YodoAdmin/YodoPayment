@@ -106,7 +106,7 @@
 >
         </activity>
         <activity
-            android:name=".ui.PipResetActivity"
+            android:name=".ui.ResetPIPActivity"
             android:label="@string/title_activity_pip_reset" >
         </activity>
         <activity

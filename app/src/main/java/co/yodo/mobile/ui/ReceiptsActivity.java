@@ -31,17 +31,18 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.util.List;
 
 import co.yodo.mobile.R;
+import co.yodo.mobile.database.ReceiptsDataSource;
+import co.yodo.mobile.database.model.Receipt;
 import co.yodo.mobile.helper.FormatUtils;
 import co.yodo.mobile.helper.GUIUtils;
 import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.ui.adapter.ReceiptsListViewAdapter;
-import co.yodo.mobile.database.model.Receipt;
-import co.yodo.mobile.database.ReceiptsDataSource;
-import co.yodo.mobile.helper.PrefUtils;
 
-public class ReceiptsActivity extends AppCompatActivity implements AdapterView.OnItemClickListener,
+public class ReceiptsActivity extends AppCompatActivity implements
+        AdapterView.OnItemClickListener,
         AdapterView.OnItemLongClickListener, ActionMode.Callback {
     /** DEBUG */
+    @SuppressWarnings( "unused" )
     private final static String TAG = ReceiptsActivity.class.getSimpleName();
 
     /** The context object */
@@ -163,18 +164,22 @@ public class ReceiptsActivity extends AppCompatActivity implements AdapterView.O
     private void setupGUI() {
         // get the context
         ac = ReceiptsActivity.this;
-        // Get controllers
-        receiptsListView = (ListView) findViewById( R.id.receiptsList );
-        // Only used at creation
-        Toolbar actionBarToolbar = (Toolbar) findViewById( R.id.actionBar );
+
         // Bootstrap
-        //receiptsdb = new ReceiptsDataSource( ac );
         receiptsdb = ReceiptsDataSource.getInstance( ac );
         receiptsdb.open();
-        setSupportActionBar( actionBarToolbar );
-        ActionBar temp = getSupportActionBar();
-        if( temp != null )
-            temp.setDisplayHomeAsUpEnabled( true );
+
+        // Get controllers
+        receiptsListView = (ListView) findViewById( R.id.receiptsList );
+
+        // Only used at creation
+        Toolbar toolbar = (Toolbar) findViewById( R.id.actionBar );
+
+        // Setup the toolbar
+        setSupportActionBar( toolbar );
+        ActionBar actionBar = getSupportActionBar();
+        if( actionBar != null )
+            actionBar.setDisplayHomeAsUpEnabled( true );
     }
 
     private void updateData() {
@@ -207,13 +212,15 @@ public class ReceiptsActivity extends AppCompatActivity implements AdapterView.O
         ImageView saveButton        = (ImageView) layout.findViewById( R.id.saveButton );
         LinearLayout donorLayout    = (LinearLayout) layout.findViewById( R.id.donorAccountLayout );
 
+        final String total =
+                FormatUtils.truncateDecimal( params.getTotalAmount() ) + " " +
+                FormatUtils.replaceNull( params.getTCurrency() );
+
         descriptionText.setText( params.getDescription() );
         authNumberText.setText( params.getAuthNumber() );
         currencyText.setText( params.getDCurrency() );
         createdText.setText( FormatUtils.UTCtoCurrent( ac, params.getCreated() ) );
-        totalAmountText.setText(
-                FormatUtils.truncateDecimal( params.getTotalAmount() ) + " " +
-                        FormatUtils.replaceNull( params.getTCurrency() ) );
+        totalAmountText.setText( total );
         tenderAmountText.setText( FormatUtils.truncateDecimal( params.getTenderAmount() ) );
         cashBackAmountText.setText( FormatUtils.truncateDecimal( params.getCashBackAmount() ) );
 

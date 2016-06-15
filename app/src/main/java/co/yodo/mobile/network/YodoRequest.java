@@ -37,7 +37,7 @@ import co.yodo.mobile.component.Encrypter;
 import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.handler.XMLHandler;
-import co.yodo.mobile.network.contract.IRequest;
+import co.yodo.mobile.network.request.contract.IRequest;
 
 /**
  * Created by luis on 15/12/14.

@@ -30,7 +30,7 @@ public class PIPValidator {
      * @param tvPIP The TextView with the PIP
      */
     public PIPValidator( TextView tvPIP ) {
-        this.ac = tvPIP.getContext();
+        this.ac = tvPIP.getContext().getApplicationContext();
         this.tvPIP = tvPIP;
         this.aShake = AnimationUtils.loadAnimation( ac, R.anim.shake );
     }

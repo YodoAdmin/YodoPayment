@@ -1,4 +1,4 @@
-package co.yodo.mobile.network.contract;
+package co.yodo.mobile.network.request.contract;
 
 import co.yodo.mobile.component.Encrypter;
 import co.yodo.mobile.network.YodoRequest;
@@ -12,7 +12,7 @@ public abstract class IRequest {
     protected String mFormattedUsrData;
 
     /** The code for the response */
-    protected int responseCode;
+    protected final int responseCode;
 
     /** Protocol version used in the requests */
     protected static final String PROTOCOL_VERSION = "1.1.5";
@@ -33,7 +33,7 @@ public abstract class IRequest {
      * @param pUserData Encrypted user's data
      * @return The request string that is send to the server
      */
-    public static String buildRequest( String pRequestType, String pSubType, String pUserData ) {
+    protected static String buildRequest( String pRequestType, String pSubType, String pUserData ) {
         return PROTOCOL_VERSION + REQ_SEP +
                pRequestType     + REQ_SEP +
                pSubType         + REQ_SEP +

@@ -1,8 +1,9 @@
 package co.yodo.mobile.network.request;
 
 import co.yodo.mobile.component.Encrypter;
+import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.network.YodoRequest;
-import co.yodo.mobile.network.contract.IRequest;
+import co.yodo.mobile.network.request.contract.IRequest;
 
 /**
  * Created by hei on 12/06/16.
@@ -51,7 +52,7 @@ public class QueryRequest extends IRequest {
     }
 
     /** Sub-type of the request */
-    private QueryST mRequestST;
+    private final QueryST mRequestST;
 
     /**
      * Request the user's balance
@@ -112,6 +113,7 @@ public class QueryRequest extends IRequest {
                 sEncryptedClientData
         );
 
+        SystemUtils.Logger( TAG, pRequest );
         manager.sendXMLRequest( pRequest, responseCode );
     }
 }

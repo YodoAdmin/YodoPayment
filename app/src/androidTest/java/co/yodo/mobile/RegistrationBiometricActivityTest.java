@@ -1,6 +1,5 @@
 package co.yodo.mobile;
 
-import android.content.ComponentName;
 import android.support.test.espresso.intent.Intents;
 import android.support.test.runner.AndroidJUnit4;
 import android.test.suitebuilder.annotation.LargeTest;
@@ -12,14 +11,17 @@ import org.junit.runner.RunWith;
 import co.yodo.mobile.rule.RegistrationBiometricTestRule;
 import co.yodo.mobile.ui.CameraActivity;
 import co.yodo.mobile.ui.RegistrationBiometricActivity;
-import co.yodo.mobile.ui.notification.ProgressDialogHelper;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
+import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.intent.Intents.intended;
 import static android.support.test.espresso.intent.matcher.IntentMatchers.hasComponent;
+import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static org.junit.Assert.assertEquals;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
+import static org.hamcrest.core.IsNot.not;
 
 /**
  * Created by hei on 13/06/16.
@@ -31,14 +33,25 @@ public class RegistrationBiometricActivityTest {
     @Rule
     public RegistrationBiometricTestRule mActivityRule = new RegistrationBiometricTestRule<>( RegistrationBiometricActivity.class );
 
+    /**
+     * Tests when the biometric token is not yet set
+     * @throws Exception
+     */
     @Test
     public void testNoBiometric() throws Exception {
         onView( withId( R.id.registerPipButton ) )
                 .perform( click() );
 
-        assertEquals( ProgressDialogHelper.getInstance().isProgressDialogShowing(), false );
+        onView( withText( R.string.face_required ) )
+                .inRoot( withDecorView( not( mActivityRule.getActivity().getWindow().getDecorView() ) ) )
+                .check( matches( isDisplayed() ) );
     }
 
+    /**
+     * Tests that the CameraActivity is started after the user
+     * pressed the Biometric Token button
+     * @throws Exception
+     */
     @Test
     public void testStartBiometric() throws Exception {
         Intents.init();

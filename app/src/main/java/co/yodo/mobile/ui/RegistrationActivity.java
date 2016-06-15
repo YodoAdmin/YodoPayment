@@ -31,7 +31,6 @@ import co.yodo.mobile.ui.notification.ProgressDialogHelper;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.notification.YodoHandler;
 import co.yodo.mobile.ui.validator.PIPValidator;
-import co.yodo.mobile.ui.validator.ValidatorFactory;
 
 public class RegistrationActivity extends AppCompatActivity implements EulaUtils.OnEulaAgreedTo, YodoRequest.RESTListener {
     /** DEBUG */
@@ -54,6 +53,9 @@ public class RegistrationActivity extends AppCompatActivity implements EulaUtils
     private EditText etPip;
     private EditText etConfirmPip;
     private RelativeLayout rlRegistration;
+
+    /** PIP validator */
+    private PIPValidator pipValidator;
 
     /** Response codes for the server requests */
     private static final int REG_REQ = 0x00;
@@ -106,6 +108,9 @@ public class RegistrationActivity extends AppCompatActivity implements EulaUtils
         etConfirmPip   = (EditText) findViewById( R.id.confirmationPipText );
         rlRegistration = (RelativeLayout) findViewById( R.id.registration_layout );
 
+        // PIP Validator
+        pipValidator = new PIPValidator( etPip, etConfirmPip );
+
         // Only used at creation
         Toolbar mActionBarToolbar = (Toolbar) findViewById( R.id.actionBar );
 
@@ -148,8 +153,7 @@ public class RegistrationActivity extends AppCompatActivity implements EulaUtils
         GUIUtils.hideSoftKeyboard( this );
 
         // Validates the PIP and its confirmation
-        PIPValidator validator = ValidatorFactory.getValidator( etPip, etConfirmPip );
-        if( validator.validate() ) {
+        if( pipValidator.validate() ) {
             // Request an authentication
             final String pip = etPip.getText().toString();
 

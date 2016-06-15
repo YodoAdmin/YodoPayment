@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="co.yodo.mobile.ui.PipResetActivity">
+    tools:context=".ui.ResetPIPActivity">
 
     <include layout="@layout/toolbar" />
 
@@ -15,7 +15,7 @@
         android:paddingRight="@dimen/activity_horizontal_margin"
         android:paddingTop="@dimen/activity_vertical_margin"
         android:paddingBottom="@dimen/activity_vertical_margin"
-        tools:context="co.yodo.mobile.ui.PipResetActivity">
+        tools:context=".ui.ResetPIPActivity">
 
         <LinearLayout
             android:id="@+id/updatePipButtons"
@@ -34,6 +34,7 @@
                 android:onClick="resetPipClick" />
 
             <Button
+                android:id="@+id/bForgotPip"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
@@ -103,7 +104,7 @@
                     android:hint="@string/new_pip_hint"/>
 
                 <CheckBox
-                    android:id="@+id/showPasswordCheckBox1"
+                    android:id="@+id/cbShowPassword"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="@string/show_pass"

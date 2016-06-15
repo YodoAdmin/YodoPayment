@@ -2,6 +2,7 @@ package co.yodo.mobile.ui;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
@@ -23,6 +24,7 @@ import co.yodo.mobile.database.CouponsDataSource;
 
 public class CouponsActivity extends AppCompatActivity {
     /** DEBUG */
+    @SuppressWarnings( "unused" )
     private final static String TAG = CouponsActivity.class.getSimpleName();
 
     /** The context object */
@@ -108,16 +110,22 @@ public class CouponsActivity extends AppCompatActivity {
     private void setupGUI() {
         // get the context
         ac = CouponsActivity.this;
-        // Controllers
-        couponsGridView = (GridView) findViewById( R.id.couponsGrid );
-        // Only used at creation
-        Toolbar actionBarToolbar = (Toolbar) findViewById( R.id.actionBar );
+
         // Bootstrap
         couponsdb = new CouponsDataSource( ac );
         couponsdb.open();
-        setSupportActionBar( actionBarToolbar );
-        if( getSupportActionBar() != null )
-            getSupportActionBar().setDisplayHomeAsUpEnabled( true );
+
+        // GUI Controllers
+        couponsGridView = (GridView) findViewById( R.id.couponsGrid );
+
+        // Only used at creation
+        Toolbar toolbar = (Toolbar) findViewById( R.id.actionBar );
+
+        // Setup the toolbar
+        setSupportActionBar( toolbar );
+        ActionBar actionbar = getSupportActionBar();
+        if( actionbar != null )
+            actionbar.setDisplayHomeAsUpEnabled( true );
     }
 
     private void updateData() {

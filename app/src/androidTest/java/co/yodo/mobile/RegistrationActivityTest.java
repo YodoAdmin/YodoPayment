@@ -10,18 +10,19 @@ import org.junit.runner.RunWith;
 
 import co.yodo.mobile.rule.RegistrationTestRule;
 import co.yodo.mobile.ui.RegistrationActivity;
-import co.yodo.mobile.ui.notification.ProgressDialogHelper;
 
 import static android.support.test.espresso.Espresso.onView;
 import static android.support.test.espresso.action.ViewActions.click;
 import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
 import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
+import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
 import static android.support.test.espresso.matcher.ViewMatchers.withInputType;
+import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.IsNot.not;
-import static org.junit.Assert.assertEquals;
 
 /**
  * Created by hei on 13/06/16.
@@ -33,11 +34,15 @@ public class RegistrationActivityTest  {
     /** Test strings */
     private static final String shortPIP = "abc";
     private static final String newPIP   = "aaaa";
-    private static final String wrongPIP = "abcd";
+    private static final String wrongPIP = "----";
 
     @Rule
     public RegistrationTestRule mActivityRule = new RegistrationTestRule<>( RegistrationActivity.class );
 
+    /**
+     * Tests when the user inserts a short PIP
+     * @throws Exception
+     */
     @Test
     public void testPIPInput() throws Exception {
         onView( withId( R.id.pipText ) )
@@ -46,22 +51,35 @@ public class RegistrationActivityTest  {
         onView( withId( R.id.registerPipButton ) )
                 .perform( click() );
 
-        assertEquals( ProgressDialogHelper.getInstance().isProgressDialogShowing(), false );
+        onView( withText( R.string.pip_short ) )
+                .inRoot( withDecorView( not( mActivityRule.getActivity().getWindow().getDecorView() ) ) )
+                .check( matches( isDisplayed() ) );
     }
 
+    /**
+     * Tests when the PIP is not present
+     * @throws Exception
+     */
     @Test
-    public void testConfPIPInput() throws Exception {
+    public void testNoPIP() throws Exception {
         onView( withId( R.id.confirmationPipText ) )
-                .perform( typeText( shortPIP ), closeSoftKeyboard() );
+                .perform( typeText( newPIP ), closeSoftKeyboard() );
 
         onView( withId( R.id.registerPipButton ) )
                 .perform( click() );
 
-        assertEquals( ProgressDialogHelper.getInstance().isProgressDialogShowing(), false );
+        onView( withText( R.string.pip_short ) )
+                .inRoot( withDecorView( not( mActivityRule.getActivity().getWindow().getDecorView() ) ) )
+                .check( matches( isDisplayed() ) );
     }
 
+    /**
+     * Tests when the confirmation PIP is different than the
+     * PIP
+     * @throws Exception
+     */
     @Test
-    public void testMatchPIP() throws Exception {
+    public void testConfirmationPIPInput() throws Exception {
         onView( withId( R.id.pipText ) )
                 .perform( typeText( newPIP ), closeSoftKeyboard() );
 
@@ -71,9 +89,16 @@ public class RegistrationActivityTest  {
         onView( withId( R.id.registerPipButton ) )
                 .perform( click() );
 
-        assertEquals( ProgressDialogHelper.getInstance().isProgressDialogShowing(), false );
+        onView( withText( R.string.pip_different ) )
+                .inRoot( withDecorView( not( mActivityRule.getActivity().getWindow().getDecorView() ) ) )
+                .check( matches( isDisplayed() ) );
     }
 
+    /**
+     * Tests that all the TextViews are being showed not as
+     * password input types
+     * @throws Exception
+     */
     @Test
     public void testShowPassword() throws Exception {
         onView( withId( R.id.cbShowPassword ) )

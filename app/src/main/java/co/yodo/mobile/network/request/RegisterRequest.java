@@ -8,7 +8,7 @@ import co.yodo.mobile.component.Encrypter;
 import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.network.YodoRequest;
-import co.yodo.mobile.network.contract.IRequest;
+import co.yodo.mobile.network.request.contract.IRequest;
 
 /**
  * Created by hei on 12/06/16.
@@ -43,11 +43,11 @@ public class RegisterRequest extends IRequest {
     private static final String DEV_TYPE = "1";
 
     /** Data for the request */
-    private String mUserIdentifier;
-    private String mToken;
+    private final String mUserIdentifier;
+    private final String mToken;
 
     /** Sub-type of the request */
-    private RegST mRequestST;
+    private final RegST mRequestST;
 
     /**
      * Registers a new user with his/her pip

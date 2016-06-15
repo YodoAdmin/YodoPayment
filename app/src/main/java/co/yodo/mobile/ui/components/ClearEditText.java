@@ -20,17 +20,17 @@ public class ClearEditText extends EditText {
     //The image we are going to use for the Clear button
     private Drawable imgCloseButton = ResourcesCompat.getDrawable( getResources(), R.drawable.clear_button_image, null );
 
-    public ClearEditText(Context context) {
+    public ClearEditText( Context context ) {
         super( context );
         init();
     }
 
-    public ClearEditText(Context context, AttributeSet attrs, int defStyle) {
+    public ClearEditText( Context context, AttributeSet attrs, int defStyle ) {
         super( context, attrs, defStyle );
         init();
     }
 
-    public ClearEditText(Context context, AttributeSet attrs) {
+    public ClearEditText( Context context, AttributeSet attrs ) {
         super( context, attrs );
         init();
     }

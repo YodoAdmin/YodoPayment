@@ -1,0 +1,83 @@
+package co.yodo.mobile.ui.extension;
+
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.text.SpannableString;
+import android.text.style.UnderlineSpan;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+
+import co.yodo.mobile.R;
+import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.network.YodoRequest;
+import co.yodo.mobile.ui.extension.contract.IOption;
+import co.yodo.mobile.ui.notification.AlertDialogHelper;
+
+/**
+ * Created by hei on 14/06/16.
+ * Implements the DeLink Account Option of the MainActivity
+ */
+public class AboutOption extends IOption {
+    /** Data of the about */
+    private final String mHardwareToken;
+
+    /**
+     * Sets up the main elements of the options
+     * @param activity The Activity to handle
+     */
+    public AboutOption( Activity activity ) {
+        super( activity );
+        mHardwareToken = PrefUtils.getHardwareToken( this.mActivity );
+    }
+
+    @Override
+    public void execute() {
+        // AlertDialog texts
+        final String title   = this.mActivity.getString( R.string.action_about );
+        final String message =
+                this.mActivity.getString( R.string.version_label ) + " " +
+                this.mActivity.getString( R.string.version_value ) + "/" +
+                YodoRequest.getSwitch() + "\n\n" +
+                this.mActivity.getString( R.string.about_message );
+
+        // Layout texts
+        final String email = this.mActivity.getString( R.string.about_email );
+
+        // Gets the dialog layout
+        LayoutInflater inflater = (LayoutInflater) this.mActivity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        View layout = inflater.inflate( R.layout.dialog_about, new LinearLayout( this.mActivity ), false );
+
+        // GUI controllers of the dialog
+        TextView emailView = (TextView) layout.findViewById( R.id.emailView );
+        TextView messageView = (TextView) layout.findViewById( R.id.messageView );
+        SpannableString ssEmail = new SpannableString( email );
+
+        // Set text to the controllers
+        ssEmail.setSpan( new UnderlineSpan(), 0, ssEmail.length(), 0 );
+        emailView.setText( ssEmail );
+        messageView.setText( message );
+
+        // Create the onClick listener
+        emailView.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent intent = new Intent( Intent.ACTION_SEND );
+                String[] recipients = { email };
+                intent.putExtra( Intent.EXTRA_EMAIL, recipients ) ;
+                intent.putExtra( Intent.EXTRA_SUBJECT, mHardwareToken );
+                intent.setType( "text/html" );
+                mActivity.startActivity( Intent.createChooser( intent, "Send Email" ) );
+            }
+        });
+
+        // Generate the AlertDialog
+        AlertDialogHelper.showAlertDialog(
+                this.mActivity,
+                title,
+                layout
+        );
+    }
+}
