@@ -1,6 +1,5 @@
 package co.yodo.mobile.ui;
 
-import android.app.Dialog;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
@@ -12,17 +11,12 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
 import android.view.ActionMode;
 import android.view.ContextMenu;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.AdapterView;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -33,10 +27,9 @@ import java.util.List;
 import co.yodo.mobile.R;
 import co.yodo.mobile.database.ReceiptsDataSource;
 import co.yodo.mobile.database.model.Receipt;
-import co.yodo.mobile.helper.FormatUtils;
 import co.yodo.mobile.helper.GUIUtils;
-import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.ui.adapter.ReceiptsListViewAdapter;
+import co.yodo.mobile.ui.dialog.ReceiptDialog;
 
 public class ReceiptsActivity extends AppCompatActivity implements
         AdapterView.OnItemClickListener,
@@ -191,51 +184,18 @@ public class ReceiptsActivity extends AppCompatActivity implements
     }
 
     private void receiptDialog( Receipt params ) {
-        SystemUtils.Logger( TAG, params.toString() );
-
-        final Dialog receipt = new Dialog( ReceiptsActivity.this );
-        receipt.requestWindowFeature( Window.FEATURE_NO_TITLE );
-
-        LayoutInflater inflater = (LayoutInflater) getSystemService( LAYOUT_INFLATER_SERVICE );
-        View layout = inflater.inflate(R.layout.dialog_receipt, new LinearLayout( this ), false);
-
-        TextView descriptionText    = (TextView)  layout.findViewById( R.id.descriptionText );
-        TextView authNumberText     = (TextView)  layout.findViewById( R.id.authNumberText );
-        TextView createdText        = (TextView)  layout.findViewById( R.id.createdText );
-        TextView currencyText       = (TextView)  layout.findViewById( R.id.currencyText );
-        TextView totalAmountText    = (TextView)  layout.findViewById( R.id.paidText );
-        TextView tenderAmountText   = (TextView)  layout.findViewById( R.id.cashTenderText );
-        TextView cashBackAmountText = (TextView)  layout.findViewById( R.id.cashBackText );
-        TextView tvDonorText        = (TextView)  layout.findViewById( R.id.tvDonorText );
-        TextView tvReceiverText     = (TextView)  layout.findViewById( R.id.tvReceiverText );
-        ImageView deleteButton      = (ImageView) layout.findViewById( R.id.deleteButton );
-        ImageView saveButton        = (ImageView) layout.findViewById( R.id.saveButton );
-        LinearLayout donorLayout    = (LinearLayout) layout.findViewById( R.id.donorAccountLayout );
-
-        final String total =
-                FormatUtils.truncateDecimal( params.getTotalAmount() ) + " " +
-                FormatUtils.replaceNull( params.getTCurrency() );
-
-        descriptionText.setText( params.getDescription() );
-        authNumberText.setText( params.getAuthNumber() );
-        currencyText.setText( params.getDCurrency() );
-        createdText.setText( FormatUtils.UTCtoCurrent( ac, params.getCreated() ) );
-        totalAmountText.setText( total );
-        tenderAmountText.setText( FormatUtils.truncateDecimal( params.getTenderAmount() ) );
-        cashBackAmountText.setText( FormatUtils.truncateDecimal( params.getCashBackAmount() ) );
-
-        final String donor = params.getDonorAccount();
-        if( donor != null ) {
-            donorLayout.setVisibility( View.VISIBLE );
-            tvDonorText.setText( donor );
-        }
-        tvReceiverText.setText( params.getReceiverAccount() );
-
-        deleteButton.setVisibility( View.GONE );
-        saveButton.setVisibility( View.GONE );
-
-        receipt.setContentView( layout );
-        receipt.show();
+        // The receipt dialog formats the values
+        new ReceiptDialog.Builder( ac )
+                .cancelable( true )
+                .description( params.getDescription() )
+                .created( params.getCreated() )
+                .total( params.getTotalAmount(), params.getTCurrency() )
+                .authnumber( params.getAuthnumber() )
+                .donor( params.getDonorAccount() )
+                .recipient( params.getRecipientAccount() )
+                .tender( params.getTenderAmount(), params.getDCurrency())
+                .cashback( params.getCashbackAmount() )
+                .build();
     }
 
     @Override

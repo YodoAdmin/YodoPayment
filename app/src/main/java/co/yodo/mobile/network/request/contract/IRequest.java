@@ -22,7 +22,7 @@ public abstract class IRequest {
     protected static final String REQ_SEP     = ",";
     protected static final String PCLIENT_SEP = "/";
 
-    public IRequest( int responseCode ) {
+    protected IRequest( int responseCode ) {
         this.responseCode = responseCode;
     }
 

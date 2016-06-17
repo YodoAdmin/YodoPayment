@@ -39,7 +39,7 @@ public class SKSCreater {
 	private final static String TAG = SKSCreater.class.getSimpleName();
 
     public static final int SKS_CODE = 1;
-    //public static final int QR_CODE  = 0;
+    public static final int QR_CODE  = 0;
 
 	private static final int WHITE = 0xFFFFFFFF;
 	private static final int BLACK = 0xFF000000;
@@ -52,12 +52,16 @@ public class SKSCreater {
 	*/
     private static String PUBLIC_KEY;
 
-    static {
-        if( YodoRequest.getSwitch().equals( "D" ) )
-            PUBLIC_KEY = "YodoKey/Dev/12.public.der";
-        else
-            PUBLIC_KEY = "YodoKey/Prod/12.public.der";
-    }
+	/**
+	 * If you change this section, also update the
+	 * Encrypter.java
+	 */
+	static {
+		if( YodoRequest.getSwitch().equals( "P" ) )
+			PUBLIC_KEY = "YodoKey/Prod/12.public.der";
+		else
+			PUBLIC_KEY = "YodoKey/Dev/12.public.der";
+	}
 
 	public static Bitmap createSKS( String original, Activity parent, int type, Integer account_type ) throws UnsupportedEncodingException{
 		int width, height, pixels [];
@@ -80,9 +84,9 @@ public class SKSCreater {
 			SystemUtils.Logger( TAG, response + " - " + response.length() );
 			
 			Hashtable<Object, String> hint = new Hashtable<>();
-			hint.put(EncodeHintType.CHARACTER_SET, encoding);
+			hint.put( EncodeHintType.CHARACTER_SET, encoding );
 			
-			if(type == 0) { /// qr
+			if( type == 0 ) { /// qr
 				qrMatrix = writer.encode( original, QR, QR_SIZE, QR_SIZE, hint );
 			} else { /// sks
 				qrMatrix = writer.encode( parent.getResources().getString( R.string.SKS_HEADER ) + response , QR, QR_SIZE, QR_SIZE, hint);
@@ -101,7 +105,6 @@ public class SKSCreater {
 			
 			bitmap = Bitmap.createBitmap( width, height, Bitmap.Config.ARGB_8888 );
 			bitmap.setPixels( pixels, 0, width, 0, 0, width, height );
-			
 		} catch( Exception e ) {
 			e.printStackTrace();
 		}

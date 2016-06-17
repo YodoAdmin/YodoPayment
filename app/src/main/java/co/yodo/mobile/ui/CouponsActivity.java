@@ -112,7 +112,7 @@ public class CouponsActivity extends AppCompatActivity {
         ac = CouponsActivity.this;
 
         // Bootstrap
-        couponsdb = new CouponsDataSource( ac );
+        couponsdb = CouponsDataSource.getInstance( ac );
         couponsdb.open();
 
         // GUI Controllers

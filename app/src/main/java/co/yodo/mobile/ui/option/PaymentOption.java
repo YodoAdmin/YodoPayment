@@ -1,11 +1,11 @@
-package co.yodo.mobile.ui.extension;
+package co.yodo.mobile.ui.option;
 
 import android.view.View;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.helper.GUIUtils;
 import co.yodo.mobile.ui.MainActivity;
-import co.yodo.mobile.ui.extension.contract.IOption;
+import co.yodo.mobile.ui.option.contract.IOption;
 import co.yodo.mobile.ui.notification.AlertDialogHelper;
 import co.yodo.mobile.ui.validator.PIPValidator;
 

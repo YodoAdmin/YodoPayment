@@ -11,7 +11,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.yodo.mobile.database.model.Receipt;
-import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.helper.SystemUtils;
 
 /**
@@ -48,7 +47,7 @@ public class ReceiptsDataSource {
     /** Receipts instance */
     private static ReceiptsDataSource instance = null;
 
-    public ReceiptsDataSource( Context context ) {
+    private ReceiptsDataSource( Context context ) {
         dbHelper = ReceiptsSQLiteHelper.getInstance( context );
     }
 
@@ -109,7 +108,6 @@ public class ReceiptsDataSource {
             cursor.moveToFirst();
             Receipt newReceipt = cursorToReceipt( cursor );
             cursor.close();
-
             return newReceipt;
         } finally {
             database.endTransaction();
@@ -122,27 +120,30 @@ public class ReceiptsDataSource {
      */
     public void addReceipt( Receipt receipt ) {
         ContentValues values = new ContentValues();
-        values.put( ReceiptsSQLiteHelper.COLUMN_ID,          receipt.getId() );
-        values.put( ReceiptsSQLiteHelper.COLUMN_AUTHNUMBER,  receipt.getAuthNumber() );
+        Long id = receipt.getId();
+        if( id != null )
+            values.put( ReceiptsSQLiteHelper.COLUMN_ID, id );
+
+        values.put( ReceiptsSQLiteHelper.COLUMN_AUTHNUMBER,  receipt.getAuthnumber() );
         values.put( ReceiptsSQLiteHelper.COLUMN_DESCRIPTION, receipt.getDescription() );
         values.put( ReceiptsSQLiteHelper.COLUMN_TCURRENCY,   receipt.getTCurrency() );
         values.put( ReceiptsSQLiteHelper.COLUMN_EXCH_RATE,   receipt.getExchRate() );
         values.put( ReceiptsSQLiteHelper.COLUMN_DCURRENCY,   receipt.getDCurrency() );
         values.put( ReceiptsSQLiteHelper.COLUMN_AMOUNT,      receipt.getTotalAmount() );
         values.put( ReceiptsSQLiteHelper.COLUMN_TAMOUNT,     receipt.getTenderAmount() );
-        values.put( ReceiptsSQLiteHelper.COLUMN_CASHBACK,    receipt.getCashBackAmount() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_CASHBACK,    receipt.getCashbackAmount() );
         values.put( ReceiptsSQLiteHelper.COLUMN_BALANCE,     receipt.getBalanceAmount() );
         values.put( ReceiptsSQLiteHelper.COLUMN_CURRENCY,    receipt.getCurrency() );
         values.put( ReceiptsSQLiteHelper.COLUMN_DONOR,       receipt.getDonorAccount() );
-        values.put( ReceiptsSQLiteHelper.COLUMN_RECEIVER,    receipt.getReceiverAccount() );
+        values.put( ReceiptsSQLiteHelper.COLUMN_RECEIVER,    receipt.getRecipientAccount() );
         values.put( ReceiptsSQLiteHelper.COLUMN_CREATED,     receipt.getCreated() );
         values.put( ReceiptsSQLiteHelper.COLUMN_OPENED,      receipt.isOpened() );
 
         database.beginTransactionNonExclusive();
-
         try {
-            long id = database.insert( ReceiptsSQLiteHelper.TABLE_RECEIPTS, null, values );
-            SystemUtils.Logger( TAG, "Receipt deleted with id: " + id );
+            id = database.insert( ReceiptsSQLiteHelper.TABLE_RECEIPTS, null, values );
+            receipt.setId( id );
+            SystemUtils.Logger( TAG, "Receipt inserted with id: " + id );
             database.setTransactionSuccessful();
         } finally {
             database.endTransaction();
@@ -212,35 +213,30 @@ public class ReceiptsDataSource {
         return receipts;
     }
 
-    public long getAmount() {
+    /**
+     * Gets the number of receipts
+     * @return The number of receipts
+     */
+    @SuppressWarnings( "unused" )
+    public long getCount() {
         SQLiteStatement statement = database.compileStatement( "SELECT COUNT(*) FROM " + ReceiptsSQLiteHelper.TABLE_RECEIPTS );
         return statement.simpleQueryForLong();
     }
 
     private Receipt cursorToReceipt( Cursor cursor ) {
-        Receipt receipt = new Receipt();
-        receipt.setId( cursor.getLong( 0 ) );
-        receipt.setAuthNumber( cursor.getString( 1 ) );
-        receipt.setDescription( cursor.getString( 2 ) );
-        receipt.setTCurrency( cursor.getString( 3 ) );
-        receipt.setExchRate( cursor.getString( 4 ) );
-        receipt.setDCurrency( cursor.getString( 5 ) );
-        receipt.setTotalAmount( cursor.getString( 6 ) );
-        receipt.setTenderAmount( cursor.getString( 7 ) );
-        receipt.setCashBackAmount( cursor.getString( 8 ) );
-        receipt.setBalanceAmount( cursor.getString( 9 ) );
-        receipt.setCurrency( cursor.getString( 10 ) );
-
-        // It only has donor and receiver for a heart transaction
-        if( !cursor.isNull( 11 ) )
-            receipt.setDonorAccount( cursor.getString( 11 ) );
-
-        if( !cursor.isNull( 12 ) )
-            receipt.setReceiverAccount( cursor.getString( 12 ) );
-
-        receipt.setCreated( cursor.getString( 13 ) );
-        receipt.setOpened( ( cursor.getInt( 14 ) != 0 ) );
-
-        return receipt;
+        return new Receipt.Builder()
+                .id( cursor.getLong( 0 ) )
+                .authnumber( cursor.getString( 1 ) )
+                .description( cursor.getString( 2 ) )
+                .exchRate( cursor.getString( 4 ) )
+                .total( cursor.getString( 6 ), cursor.getString( 3 ) )
+                .tender( cursor.getString( 7 ), cursor.getString( 5 ) )
+                .cashback( cursor.getString( 8 ) )
+                .balance( cursor.getString( 9 ), cursor.getString( 10 ) )
+                .donor( cursor.getString( 11 ) )
+                .recipient( cursor.getString( 12 ) )
+                .created( cursor.getString( 13 ) )
+                .opened( ( cursor.getInt( 14 ) != 0 ) )
+                .build();
     }
 }

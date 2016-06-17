@@ -1,31 +1,26 @@
-package co.yodo.mobile.ui.extension;
+package co.yodo.mobile.ui.option;
 
-import android.app.Dialog;
+import android.content.DialogInterface;
 import android.view.View;
-import android.view.Window;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.helper.GUIUtils;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.network.YodoRequest;
 import co.yodo.mobile.network.model.ServerResponse;
-import co.yodo.mobile.network.request.QueryRequest;
+import co.yodo.mobile.network.request.CloseRequest;
 import co.yodo.mobile.ui.MainActivity;
-import co.yodo.mobile.ui.extension.contract.IOption;
+import co.yodo.mobile.ui.option.contract.IOption;
 import co.yodo.mobile.ui.notification.AlertDialogHelper;
 import co.yodo.mobile.ui.notification.ProgressDialogHelper;
-import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.notification.YodoHandler;
 import co.yodo.mobile.ui.validator.PIPValidator;
 
 /**
  * Created by hei on 14/06/16.
- * Implements the Generate Link Code Option of the MainActivity
+ * Implements the Clouse Account Option for the MainActivity
  */
-public class LinkCodeOption extends IOption implements YodoRequest.RESTListener {
+public class CloseAccountOption extends IOption implements YodoRequest.RESTListener {
     /** Elements for the request */
     private final YodoRequest mRequestManager;
     private final YodoHandler mHandlerMessages;
@@ -33,16 +28,17 @@ public class LinkCodeOption extends IOption implements YodoRequest.RESTListener 
 
     /** Elements for the AlertDialog */
     private final String mTitle;
+    private final String mMessage;
     private final PIPValidator mValidator;
 
     /** Response codes for the server requests */
-    private static final int QUERY_LNK_REQ = 0x04;
+    private static final int CLOSE_REQ = 0x08;
 
     /**
      * Sets up the main elements of the options
      * @param activity The Activity to handle
      */
-    public LinkCodeOption( MainActivity activity, YodoRequest requestManager, YodoHandler handlerMessages ) {
+    public CloseAccountOption( MainActivity activity, YodoRequest requestManager, YodoHandler handlerMessages ) {
         super( activity );
         // Request
         this.mRequestManager  = requestManager;
@@ -51,6 +47,7 @@ public class LinkCodeOption extends IOption implements YodoRequest.RESTListener 
 
         // AlertDialog
         this.mTitle     = this.mActivity.getString( R.string.input_pip );
+        this.mMessage   = this.mActivity.getString( R.string.close_message );
         this.mValidator = new PIPValidator( this.etInput );
     }
 
@@ -66,12 +63,11 @@ public class LinkCodeOption extends IOption implements YodoRequest.RESTListener 
                     final String pip = etInput.getText().toString();
 
                     ProgressDialogHelper.getInstance().createProgressDialog( mActivity );
-                    mRequestManager.setListener( LinkCodeOption.this );
-                    mRequestManager.invoke( new QueryRequest(
-                            QUERY_LNK_REQ,
+                    mRequestManager.setListener( CloseAccountOption.this );
+                    mRequestManager.invoke( new CloseRequest(
+                            CLOSE_REQ,
                             mHardwareToken,
-                            pip,
-                            QueryRequest.Record.LINKING_CODE
+                            pip
                     ) );
                 }
             }
@@ -80,6 +76,7 @@ public class LinkCodeOption extends IOption implements YodoRequest.RESTListener 
         AlertDialogHelper.showAlertDialog(
                 this.mActivity,
                 this.mTitle,
+                this.mMessage,
                 this.etInput,
                 buildOnClick( positiveClick )
         );
@@ -95,33 +92,27 @@ public class LinkCodeOption extends IOption implements YodoRequest.RESTListener 
         String code = response.getCode();
 
         switch( responseCode ) {
-            case QUERY_LNK_REQ:
+            case CLOSE_REQ:
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
-                    // Get the linking code
-                    final String linking_code = response.getParam( ServerResponse.LINKING_CODE );
+                    // Clears the saved data
+                    ( (MainActivity) this.mActivity).clearSavedData();
 
-                    // Create the dialog for the code
-                    Dialog dialog = new Dialog( this.mActivity );
-                    dialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
-                    dialog.setContentView( R.layout.dialog_linking_code );
-
-                    // Setup the elements
-                    TextView codeText = (TextView) dialog.findViewById( R.id.codeText );
-                    ImageView codeImage = (ImageView) dialog.findViewById( R.id.copyCodeImage );
-                    codeText.setText( linking_code );
-
-                    codeImage.setOnClickListener( new View.OnClickListener() {
-                        @Override
-                        public void onClick(View v) {
-                            GUIUtils.copyCode( mActivity, linking_code );
-                            ToastMaster.makeText( mActivity, R.string.copied_text, Toast.LENGTH_SHORT ).show();
+                    // Setups the AlertDialog
+                    DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
+                        public void onClick( DialogInterface dialog, int which ) {
+                            mActivity.finish();
                         }
-                    });
+                    };
 
-                    dialog.show();
+                    AlertDialogHelper.showAlertDialog(
+                            mActivity,
+                            mActivity.getString( R.string.farewell_message_tittle ),
+                            mActivity.getString( R.string.farewell_message ),
+                            onClick
+                    );
                 } else {
                     String message = response.getMessage();
-                    YodoHandler.sendMessage( this.mHandlerMessages, code, message );
+                    YodoHandler.sendMessage( mHandlerMessages, code, message );
                 }
                 break;
         }

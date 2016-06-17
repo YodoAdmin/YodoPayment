@@ -1,4 +1,4 @@
-package co.yodo.mobile.ui.extension;
+package co.yodo.mobile.ui.option;
 
 import android.app.Activity;
 import android.content.Context;
@@ -13,7 +13,7 @@ import android.widget.TextView;
 import co.yodo.mobile.R;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.network.YodoRequest;
-import co.yodo.mobile.ui.extension.contract.IOption;
+import co.yodo.mobile.ui.option.contract.IOption;
 import co.yodo.mobile.ui.notification.AlertDialogHelper;
 
 /**

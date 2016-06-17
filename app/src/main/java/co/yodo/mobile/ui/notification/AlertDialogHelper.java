@@ -21,7 +21,7 @@ import co.yodo.mobile.helper.GUIUtils;
  */
 public class AlertDialogHelper {
     /**
-     * Shows an alert dialog for a list
+     * Shows an alert dialog for a list (linking options)
      * @param c The context of the application
      * @param title The title of the dialog
      * @param values Values to be shown
@@ -37,12 +37,11 @@ public class AlertDialogHelper {
         builder.setItems( values, clickListener );
         builder.setNegativeButton( c.getString( R.string.cancel ), null );
 
-        final AlertDialog alertDialog = builder.create();
-        alertDialog.show();
+        builder.show();
     }
 
     /**
-     * Shows an alert dialog with an EditText
+     * Shows an alert dialog with an EditText with two buttons (permission)
      * @param c The context of the application
      * @param message The message of the dialog
      * @param clickListener Action for the selection
@@ -53,7 +52,6 @@ public class AlertDialogHelper {
         builder.setIcon( R.drawable.ic_launcher );
         builder.setMessage( message );
         builder.setCancelable( false );
-
         builder.setPositiveButton( c.getString(R.string.ok ), clickListener );
         builder.setNegativeButton( c.getString( R.string.cancel ), null );
 
@@ -111,7 +109,7 @@ public class AlertDialogHelper {
     }
 
     /**
-     * Builds an AlertDialog from a view
+     * Builds an AlertDialog from a view (select correct method payment)
      * @param c The application context
      * @param layout The view/layout of the AlertDialog
      * @param message The AlertDialog Message

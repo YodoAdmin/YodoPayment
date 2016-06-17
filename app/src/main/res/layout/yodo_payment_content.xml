@@ -105,18 +105,21 @@
 
         <ImageView
             style="@style/MainButton"
+            android:id="@+id/ivPayment"
             android:src="@drawable/golden_coins"
             android:contentDescription="@string/desc"
             android:onClick="paymentClick"/>
 
         <ImageView
             style="@style/MainButton"
+            android:id="@+id/ivCoupon"
             android:src="@drawable/coupon_icon"
             android:contentDescription="@string/desc"
             android:onClick="couponsClick"/>
 
         <ImageView
             style="@style/MainButton"
+            android:id="@+id/ivNetwork"
             android:src="@drawable/sns_icon"
             android:contentDescription="@string/desc"
             android:onClick="networkClick"/>

@@ -76,7 +76,6 @@ public class YodoGCMListenerService extends GcmListenerService {
     private synchronized void sendNotification( ServerResponse response ) {
         try {
             // Database
-            //ReceiptsDataSource receiptsdb = new ReceiptsDataSource( ac );
             ReceiptsDataSource receiptsdb = ReceiptsDataSource.getInstance( ac );
             final boolean isOpen = receiptsdb.isOpen();
             if( !isOpen )
@@ -88,10 +87,10 @@ public class YodoGCMListenerService extends GcmListenerService {
                     response.getParam( ServerResponse.TCURRENCY ),
                     response.getParam( ServerResponse.EXCH_RATE ),
                     response.getParam( ServerResponse.DCURRENCY ),
-                    FormatUtils.truncateDecimal( response.getParam( ServerResponse.AMOUNT ) ),
-                    FormatUtils.truncateDecimal( response.getParam( ServerResponse.TAMOUNT ) ),
-                    FormatUtils.truncateDecimal( response.getParam( ServerResponse.CASHBACK ) ),
-                    FormatUtils.truncateDecimal( response.getParam( ServerResponse.BALANCE ) ),
+                    response.getParam( ServerResponse.AMOUNT ),
+                    response.getParam( ServerResponse.TAMOUNT ),
+                    response.getParam( ServerResponse.CASHBACK ),
+                    response.getParam( ServerResponse.BALANCE ),
                     response.getParam( ServerResponse.CURRENCY ),
                     response.getParam( ServerResponse.DONOR ),
                     response.getParam( ServerResponse.RECEIVER ),

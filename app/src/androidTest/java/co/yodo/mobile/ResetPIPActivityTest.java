@@ -18,6 +18,7 @@ import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard
 import static android.support.test.espresso.action.ViewActions.scrollTo;
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
+import static android.support.test.espresso.matcher.RootMatchers.isDialog;
 import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
@@ -165,6 +166,7 @@ public class ResetPIPActivityTest {
                 .perform( click() );
 
         onView( withText( ServerResponse.ERROR_INCORRECT_PIP ) )
+                .inRoot( isDialog() )
                 .check( matches( isDisplayed() ) );
     }
 
@@ -225,7 +227,7 @@ public class ResetPIPActivityTest {
         onView( withId( R.id.bForgotPip ) )
                 .perform( click() );
 
-        onView( withText( ServerResponse.ERROR_SERVER ) )
+        onView( withText( ServerResponse.ERROR_FAILED ) )
                 .check( matches( isDisplayed() ) );
     }
 

@@ -1,4 +1,4 @@
-package co.yodo.mobile.ui.extension.contract;
+package co.yodo.mobile.ui.option.contract;
 
 import android.app.Activity;
 import android.content.DialogInterface;
@@ -24,7 +24,7 @@ public abstract class IOption {
      * Sets up the main elements of the options
      * @param activity The Activity to handle
      */
-    public IOption( Activity activity ) {
+    protected IOption( Activity activity ) {
         this.mActivity = activity;
         this.etInput = new ClearEditText( this.mActivity );
     }

@@ -33,6 +33,10 @@ public class Encrypter {
 	*/
     private static String PUBLIC_KEY;
 
+	/**
+	 * If you change this section, also update the
+	 * Encrypter.java
+	 */
     static {
         if( YodoRequest.getSwitch().equals( "P" ) )
             PUBLIC_KEY = "YodoKey/Prod/12.public.der";

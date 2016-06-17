@@ -37,6 +37,7 @@ dependencies {
     compile 'it.sephiroth.android.library.imagezoom:imagezoom:2.2.4'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'ch.acra:acra:4.8.5'
 
     // Required -- JUnit 4 framework
     testCompile 'junit:junit:4.12'
@@ -51,6 +52,12 @@ dependencies {
     // Optional -- UI testing with Espresso
     androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
     androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.1'
+    androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.2.1') {
+        exclude group: 'com.android.support', module: 'appcompat'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude module: 'support-annotations'
+        exclude module: 'recyclerview-v7'
+    }
 }
 
 apply plugin: 'com.google.gms.google-services'

@@ -33,20 +33,40 @@ public class CouponsDataSource {
             CouponsSQLiteHelper.COLUMN_CREATED
     };
 
-	public CouponsDataSource(Context context) {
+	private boolean open = false;
+
+	/** Receipts instance */
+	private static CouponsDataSource instance = null;
+
+	private CouponsDataSource( Context context ) {
 		dbHelper = new CouponsSQLiteHelper( context );
 	}
 
+	public static CouponsDataSource getInstance( Context context ) {
+		if( instance == null )
+			instance = new CouponsDataSource( context );
+		return instance;
+	}
+
 	public void open() throws SQLException {
-		database = dbHelper.getWritableDatabase();
+		if( !open ) {
+			database = dbHelper.getWritableDatabase();
+			open = true;
+		}
 	}
 
 	public void close() {
-		if( dbHelper != null )
+		if( dbHelper != null && open ) {
 			dbHelper.close();
+			open = false;
+		}
 	}
 
-	public Coupon createCoupon(String url, String description) {
+	public boolean isOpen() {
+		return open;
+	}
+
+	public Coupon createCoupon( String url, String description ) {
 		SimpleDateFormat date = new SimpleDateFormat( date_format, java.util.Locale.getDefault() );
 
 		ContentValues values = new ContentValues();

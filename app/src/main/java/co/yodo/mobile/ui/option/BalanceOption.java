@@ -1,4 +1,4 @@
-package co.yodo.mobile.ui.extension;
+package co.yodo.mobile.ui.option;
 
 import android.support.design.widget.Snackbar;
 import android.support.v4.widget.DrawerLayout;
@@ -12,7 +12,7 @@ import co.yodo.mobile.network.YodoRequest;
 import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.request.QueryRequest;
 import co.yodo.mobile.ui.MainActivity;
-import co.yodo.mobile.ui.extension.contract.IOption;
+import co.yodo.mobile.ui.option.contract.IOption;
 import co.yodo.mobile.ui.notification.AlertDialogHelper;
 import co.yodo.mobile.ui.notification.ProgressDialogHelper;
 import co.yodo.mobile.ui.notification.YodoHandler;
