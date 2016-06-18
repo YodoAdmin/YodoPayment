@@ -156,7 +156,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final int QUERY_LNK_ACC_SKS_REQ = 0x02;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         GUIUtils.setLanguage( MainActivity.this );
         setContentView( R.layout.activity_main );

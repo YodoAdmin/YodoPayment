@@ -111,9 +111,9 @@ public class PrefUtils {
      * @param c The Context of the Android system
      * @return String It returns the language
      */
-    public static String getLanguage(Context c) {
+    public static String getLanguage( Context c ) {
         SharedPreferences config = getSPrefConfig( c );
-        return config.getString( AppConfig.SPREF_CURRENT_LANGUAGE, AppConfig.DEFAULT_LANGUAGE );
+        return config.getString( AppConfig.SPREF_CURRENT_LANGUAGE, null );
     }
 
     /**

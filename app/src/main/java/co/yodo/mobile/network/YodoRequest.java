@@ -181,6 +181,7 @@ public class YodoRequest {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse( String xml ) {
+                        ServerResponse response = new ServerResponse();
                         try {
                             // Handling XML
                             SAXParserFactory spf = SAXParserFactory.newInstance();
@@ -191,12 +192,15 @@ public class YodoRequest {
                             xr.setContentHandler( new XMLHandler() );
                             xr.parse( new InputSource( new StringReader( xml ) ) );
 
-                            // Sends the response to the listener
-                            SystemUtils.Logger( TAG, XMLHandler.response.toString() );
-                            listener.onResponse( responseCode, XMLHandler.response );
+                            // Get the response from the handler
+                            response = XMLHandler.response;
+                            SystemUtils.Logger( TAG, response.toString() );
                         } catch( ParserConfigurationException | SAXException | IOException e ) {
                             e.printStackTrace();
+                            response.setCode( ServerResponse.ERROR_SERVER );
+                            response.setMessage( mCtx.getString( R.string.message_error_server ) );
                         }
+                        listener.onResponse( responseCode, response );
                     }
                 },
                 new Response.ErrorListener() {
@@ -224,8 +228,8 @@ public class YodoRequest {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse( String json ) {
+                        ServerResponse response = new ServerResponse();
                         try {
-                            ServerResponse response = new ServerResponse();
                             JSONObject jsonResponse = new JSONObject( json );
 
                             // Parse the attributes of the ServerResponse
@@ -235,11 +239,14 @@ public class YodoRequest {
                             response.setRTime( jsonResponse.getLong( "respTime" ) );
 
                             // Sends the response to the listener
-                            listener.onResponse( responseCode, response );
+
                             SystemUtils.Logger( TAG, response.toString() );
                         } catch( JSONException e ) {
                             e.printStackTrace();
+                            response.setCode( ServerResponse.ERROR_SERVER );
+                            response.setMessage( mCtx.getString( R.string.message_error_server ) );
                         }
+                        listener.onResponse( responseCode, response );
                     }
                 },
                 new Response.ErrorListener() {

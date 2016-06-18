@@ -10,6 +10,8 @@ import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
+import co.yodo.mobile.helper.GUIUtils;
+
 @ReportsCrashes(formUri = "http://198.101.209.120/MAB-LAB/report/report.php",
                 formUriBasicAuthLogin = "yodo",
                 formUriBasicAuthPassword = "letryodo",
@@ -21,7 +23,7 @@ import org.acra.annotation.ReportsCrashes;
 public class YodoApplication extends Application {
     @Override
     protected void attachBaseContext( Context base ) {
-        super.attachBaseContext(base);
+        super.attachBaseContext( base );
         ACRA.init( this );
     }
 

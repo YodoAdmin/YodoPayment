@@ -66,16 +66,19 @@ public class GUIUtils {
      * @param ac The Context of the Android system.
      */
     public static void setLanguage( Context ac ) {
-        Locale appLoc = new Locale( PrefUtils.getLanguage( ac ) );
+        final String language = PrefUtils.getLanguage( ac );
+        if( language != null ) {
+            Locale appLoc = new Locale( language );
+            Locale.setDefault( appLoc );
 
-        Resources res = ac.getResources();
-        DisplayMetrics dm = res.getDisplayMetrics();
+            Resources res = ac.getResources();
+            DisplayMetrics dm = res.getDisplayMetrics();
 
-        Locale.setDefault( appLoc );
-        Configuration config = new Configuration( res.getConfiguration() );
-        config.locale = appLoc;
+            Configuration config = new Configuration( res.getConfiguration() );
+            config.locale = appLoc;
 
-        res.updateConfiguration( config, dm );
+            res.updateConfiguration( config, dm );
+        }
     }
 
     /**
