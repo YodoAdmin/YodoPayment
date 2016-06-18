@@ -5,6 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
@@ -17,6 +20,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -33,7 +37,9 @@ import co.yodo.mobile.ui.dialog.ReceiptDialog;
 
 public class ReceiptsActivity extends AppCompatActivity implements
         AdapterView.OnItemClickListener,
-        AdapterView.OnItemLongClickListener, ActionMode.Callback {
+        AdapterView.OnItemLongClickListener,
+        ActionMode.Callback,
+        LoaderManager.LoaderCallbacks<List<Receipt>> {
     /** DEBUG */
     @SuppressWarnings( "unused" )
     private final static String TAG = ReceiptsActivity.class.getSimpleName();
@@ -46,12 +52,16 @@ public class ReceiptsActivity extends AppCompatActivity implements
 
     /** GUI Controllers */
     private SearchView searchView;
-    private ListView receiptsListView;
-    private ReceiptsListViewAdapter customListAdapter;
+    private ProgressBar pbLoading;
+    private ListView lvReceipts;
+    private ReceiptsListViewAdapter rlvAdapter;
 
     /** Action Mode (Action bar) */
     private ActionMode mActionMode;
     private boolean isActionModeShowing = false;
+
+    /** Identifier for the loader */
+    private static final int THE_LOADER = 0x01;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -64,16 +74,23 @@ public class ReceiptsActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onDestroy() {
+        super.onDestroy();
+        pbLoading.setVisibility( View.VISIBLE );
+        lvReceipts.setVisibility( View.GONE );
+    }
+
+    @Override
     public void onResume() {
         super.onResume();
 
         if( receiptsdb != null ) {
             receiptsdb.open();
 
-            customListAdapter.clear();
+            /*rlvAdapter.clear();
             List<Receipt> values = receiptsdb.getAllReceipts();
-            customListAdapter.addAll( values );
-            customListAdapter.notifyDataSetChanged();
+            rlvAdapter.addAll( values );
+            rlvAdapter.notifyDataSetChanged();*/
         }
     }
 
@@ -119,12 +136,12 @@ public class ReceiptsActivity extends AppCompatActivity implements
         searchView.setOnQueryTextListener( new SearchView.OnQueryTextListener() {
             @Override
             public boolean onQueryTextChange( String newText ) {
-                customListAdapter.getFilter().filter( newText );
+                rlvAdapter.getFilter().filter( newText );
                 return true;
             }
             @Override
             public boolean onQueryTextSubmit( String query ) {
-                customListAdapter.getFilter().filter( query );
+                rlvAdapter.getFilter().filter( query );
                 searchView.clearFocus();
                 return true;
             }
@@ -163,7 +180,8 @@ public class ReceiptsActivity extends AppCompatActivity implements
         receiptsdb.open();
 
         // Get controllers
-        receiptsListView = (ListView) findViewById( R.id.receiptsList );
+        pbLoading = (ProgressBar ) findViewById( R.id.pbLoading );
+        lvReceipts = (ListView) findViewById( R.id.receiptsList );
 
         // Only used at creation
         Toolbar toolbar = (Toolbar) findViewById( R.id.actionBar );
@@ -176,14 +194,16 @@ public class ReceiptsActivity extends AppCompatActivity implements
     }
 
     private void updateData() {
-        List<Receipt> values = receiptsdb.getAllReceipts();
-        customListAdapter = new ReceiptsListViewAdapter( ac, R.layout.row_list_receipts, values );
-        receiptsListView.setAdapter( customListAdapter );
-        receiptsListView.setOnItemClickListener( this );
-        receiptsListView.setOnItemLongClickListener( this );
+        lvReceipts.setOnItemClickListener( this );
+        lvReceipts.setOnItemLongClickListener( this );
+        getSupportLoaderManager().initLoader( THE_LOADER, null, this ).forceLoad();
     }
 
-    private void receiptDialog( Receipt params ) {
+    /**
+     * Builds the dialog for the receipt
+     * @param params The receipt data
+     */
+    private void buildReceiptDialog( Receipt params ) {
         // The receipt dialog formats the values
         new ReceiptDialog.Builder( ac )
                 .cancelable( true )
@@ -200,30 +220,30 @@ public class ReceiptsActivity extends AppCompatActivity implements
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        ReceiptsListViewAdapter adapter = (ReceiptsListViewAdapter) receiptsListView.getAdapter();
-        Receipt receipt = adapter.getItem( position );
+        //ReceiptsListViewAdapter adapter = (ReceiptsListViewAdapter) lvReceipts.getAdapter();
+        Receipt receipt = rlvAdapter.getItem( position );
 
         if( !receipt.isOpened() ) {
             receipt.setOpened( true );
             receiptsdb.updateReceipt( receipt );
         }
 
-        receiptDialog( receipt );
-        adapter.notifyDataSetChanged();
+        buildReceiptDialog( receipt );
+        rlvAdapter.notifyDataSetChanged();
     }
 
     @Override
     public boolean onItemLongClick( AdapterView<?> parent, View view, int position, long id ) {
-        ReceiptsListViewAdapter adapter = (ReceiptsListViewAdapter) receiptsListView.getAdapter();
-        Receipt receipt = adapter.getItem( position );
+        //ReceiptsListViewAdapter adapter = (ReceiptsListViewAdapter) lvReceipts.getAdapter();
+        Receipt receipt = rlvAdapter.getItem( position );
 
         ReceiptsListViewAdapter.ViewHolder holder = (ReceiptsListViewAdapter.ViewHolder) view.getTag();
         receipt.setChecked( !receipt.isChecked );
-        adapter.toggleSelection( position );
-        adapter.updateCheckedState( holder, receipt );
+        rlvAdapter.toggleSelection( position );
+        rlvAdapter.updateCheckedState( holder, receipt );
 
         // Look for items to delete
-        int selectedCount = adapter.getDeleteCount();
+        int selectedCount = rlvAdapter.getDeleteCount();
         if( selectedCount > 0 ) {
             if( !isActionModeShowing ) {
                 mActionMode = ReceiptsActivity.this.startActionMode( ReceiptsActivity.this );
@@ -258,20 +278,21 @@ public class ReceiptsActivity extends AppCompatActivity implements
     public boolean onActionItemClicked( ActionMode mode, MenuItem item ) {
         switch( item.getItemId() ) {
             case R.id.delete:
-                final List<Receipt> removed = customListAdapter.removeSelected();
+                final List<Receipt> removed = rlvAdapter.removeSelected();
                 for( Receipt receipt : removed )
                     receiptsdb.deleteReceipt( receipt );
+                rlvAdapter.notifyDataSetChanged();
 
                 // Show a notification which can reverse the delete
                 String message = removed.size() + " " + getString( R.string.message_deleted );
-                Snackbar.make( receiptsListView, message, Snackbar.LENGTH_LONG )
+                Snackbar.make( lvReceipts, message, Snackbar.LENGTH_LONG )
                         .setAction( R.string.message_undo, new View.OnClickListener() {
                             @Override
                             public void onClick( View v ) {
                                 v.setEnabled( false );
 
-                                customListAdapter.addAll( removed );
-                                customListAdapter.sort( ReceiptsListViewAdapter.ReceiptsComparator );
+                                rlvAdapter.addAll( removed );
+                                rlvAdapter.sort( ReceiptsListViewAdapter.ReceiptsComparator );
 
                                 for( Receipt receipt : removed )
                                     receiptsdb.addReceipt( receipt );
@@ -289,8 +310,8 @@ public class ReceiptsActivity extends AppCompatActivity implements
     @Override
     public void onDestroyActionMode( ActionMode mode ) {
         isActionModeShowing = false;
-
-        ReceiptsListViewAdapter adapter = (ReceiptsListViewAdapter) receiptsListView.getAdapter();
+        // Clears the deleted list, delete aborted
+        ReceiptsListViewAdapter adapter = (ReceiptsListViewAdapter) lvReceipts.getAdapter();
         adapter.clearDeleteList();
         adapter.notifyDataSetChanged();
     }
@@ -298,10 +319,51 @@ public class ReceiptsActivity extends AppCompatActivity implements
     @SuppressWarnings("unused") // receives GCM receipts
     @Subscribe( threadMode = ThreadMode.MAIN )
     public void onReceiptEvent( Receipt receipt ) {
-        ReceiptsListViewAdapter adapter = (ReceiptsListViewAdapter) receiptsListView.getAdapter();
+        ReceiptsListViewAdapter adapter = (ReceiptsListViewAdapter) lvReceipts.getAdapter();
         //adapter.addReceipt( receipt );
         adapter.add( receipt );
         adapter.sort( ReceiptsListViewAdapter.ReceiptsComparator );
         adapter.notifyDataSetChanged();
+    }
+
+    @Override
+    public Loader<List<Receipt>> onCreateLoader( int id, Bundle args ) {
+        return new LoadTask( this, receiptsdb );
+    }
+
+    @Override
+    public void onLoadFinished( Loader<List<Receipt>> loader, List<Receipt> data ) {
+        rlvAdapter = new ReceiptsListViewAdapter( ac, R.layout.row_list_receipts, data );
+        lvReceipts.setAdapter( rlvAdapter );
+        pbLoading.setVisibility( View.GONE );
+        lvReceipts.setVisibility( View.VISIBLE );
+    }
+
+    @Override
+    public void onLoaderReset( Loader<List<Receipt>> loader ) {
+        lvReceipts.setAdapter( null );
+    }
+
+    /**
+     * Loads the receipts from the database
+     */
+    private static class LoadTask extends AsyncTaskLoader<List<Receipt>> {
+        /** Receipts database */
+        private ReceiptsDataSource mReceiptsdb;
+
+        /**
+         * Sets the receipts from the caller
+         * @param context The activity context
+         * @param receiptsdb The receipts database
+         */
+        public LoadTask( Context context, ReceiptsDataSource receiptsdb ) {
+            super( context );
+            this.mReceiptsdb = receiptsdb;
+        }
+
+        @Override
+        public List<Receipt> loadInBackground() {
+            return mReceiptsdb.getAllReceipts();
+        }
     }
 }
