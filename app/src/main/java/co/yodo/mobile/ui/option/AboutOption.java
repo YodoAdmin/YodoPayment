@@ -18,7 +18,7 @@ import co.yodo.mobile.ui.notification.AlertDialogHelper;
 
 /**
  * Created by hei on 14/06/16.
- * Implements the DeLink Account Option of the MainActivity
+ * Implements the About Option of the MainActivity
  */
 public class AboutOption extends IOption {
     /** Data of the about */

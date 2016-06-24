@@ -461,7 +461,7 @@ public class MainActivity extends AppCompatActivity implements
         mAdvertisingImage.setImageDrawable( null );
     }
 
-    // Runnable that takes care of start the scans
+    // Runnable that takes care of request the advertisement
     private Runnable mGetAdvertisement = new Runnable() {
         @Override
         public void run() {

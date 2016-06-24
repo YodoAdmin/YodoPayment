@@ -69,6 +69,10 @@ public class AlertDialogHelper {
     public static void showAlertDialog( final Context c, final String title,
                                         final String message, final View layout,
                                         final DialogInterface.OnClickListener clickListener ) {
+        // Remove the parent if already has one
+        if( layout != null && layout.getParent() != null )
+            ( (ViewGroup ) layout.getParent() ).removeView( layout );
+
         // Builds the Alert Dialog
         AlertDialog.Builder builder = new AlertDialog.Builder( c, R.style.AppCompatAlertDialogStyle );
         builder.setIcon( R.drawable.ic_launcher );
