@@ -53,14 +53,14 @@ public class YodoRequest {
     private static final String DEMO_IP  = "http://198.101.209.120"; // Demo
     private static final String DEV_IP   = "http://162.244.228.78";  // Development
     private static final String LOCAL_IP = "http://192.168.1.33";    // Local
-    private static final String IP      = DEMO_IP;
+    private static final String IP = DEMO_IP;
 
     /** Two paths used for the requests */
     private static final String YODO_ADDRESS = "/yodo/yodoswitchrequest/getRequest/";
 
     /** Timeout for the requests */
     private final static int TIMEOUT = 1000 * 10; // 10 seconds
-    private final static int RETRIES = 0;
+    private final static int RETRIES = -1; // To avoid retries
 
     private RetryPolicy retryPolicy = new DefaultRetryPolicy(
             TIMEOUT,

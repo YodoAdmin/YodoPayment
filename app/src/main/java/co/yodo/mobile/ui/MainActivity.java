@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements
     private static final int TIME_TO_DISMISS_SKS = 1000 * 60; // 60 seconds
 
     /** Time between advertisement requests */
-    private static final int DELAY_BETWEEN_REQUESTS = 1000 * 30; // 30 seconds
+    private static final int DELAY_BETWEEN_REQUESTS = 1000 * 25; // 25 seconds
 
     /** SKS data separator */
     private static final String SKS_SEP = "**";
@@ -170,8 +170,6 @@ public class MainActivity extends AppCompatActivity implements
         super.onResume();
         // True when the activity is in foreground
         PrefUtils.saveIsForeground( ac, true );
-        // Register listener for requests and  broadcast receivers
-        mRequestManager.setListener( this );
         // Open databases
         openDatabases();
     }
@@ -192,6 +190,8 @@ public class MainActivity extends AppCompatActivity implements
         EventBus.getDefault().register( this );
         // Set listener for preferences
         PrefUtils.registerSPListener( ac, this );
+        // Register listener for requests and  broadcast receivers
+        mRequestManager.setListener( this );
         // Connect to the advertise service
         this.mPromotionManager.startService();
     }
@@ -367,6 +367,7 @@ public class MainActivity extends AppCompatActivity implements
         ibSubscription.setImageResource(
                 subscriptionTask ? R.drawable.ic_cancel : R.drawable.ic_nearby
         );
+
         if( !subscriptionTask )
             removeAdvertisement();
     }
@@ -442,7 +443,7 @@ public class MainActivity extends AppCompatActivity implements
 
             @Override
             public void onLost( final Message message ) {
-                String temp = new String( message.getContent() );
+                final String temp = new String( message.getContent() );
                 if( mMerchant.equals( temp ) ) {
                     // Called when a message is no longer detectable nearby.
                     SystemUtils.Logger( TAG, "Lost: " + mMerchant );
@@ -465,14 +466,18 @@ public class MainActivity extends AppCompatActivity implements
     private Runnable mGetAdvertisement = new Runnable() {
         @Override
         public void run() {
-            mRequestManager.invoke( new QueryRequest(
-                    QUERY_ADV_REQ,
-                    hardwareToken,
-                    mMerchant,
-                    QueryRequest.Record.ADVERTISING
-            ) );
-            // Wait some time for the next advertisement request
-            mHandlerMessages.postDelayed( mGetAdvertisement, DELAY_BETWEEN_REQUESTS );
+            if( mMerchant != null ) {
+                mRequestManager.invoke( new QueryRequest(
+                        QUERY_ADV_REQ,
+                        hardwareToken,
+                        mMerchant,
+                        QueryRequest.Record.ADVERTISING
+                ) );
+
+
+                // Wait some time for the next advertisement request
+                mHandlerMessages.postDelayed( mGetAdvertisement, DELAY_BETWEEN_REQUESTS );
+            }
         }
     };
 

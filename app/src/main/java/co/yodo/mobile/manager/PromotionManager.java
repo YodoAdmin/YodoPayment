@@ -39,7 +39,8 @@ public class PromotionManager {
     private GoogleApiClient mGoogleApiClient;
 
     /** Sets the time in seconds for a published message or a subscription to live */
-    private Strategy PUB_SUB_STRATEGY;
+    private static final Strategy PUB_SUB_STRATEGY = new Strategy.Builder()
+            .setTtlSeconds( Strategy.TTL_SECONDS_INFINITE ).build();
 
     /** A {@link MessageListener} for processing messages from nearby devices. */
     private MessageListener mMessageListener;
@@ -75,8 +76,8 @@ public class PromotionManager {
 
     public void startService() {
         // Creates the pub sub strategy for nearby
-        PUB_SUB_STRATEGY = new Strategy.Builder()
-                .setTtlSeconds( PrefUtils.getPromotionsTime( ac ) ).build();
+        /*PUB_SUB_STRATEGY = new Strategy.Builder()
+                .setTtlSeconds( PrefUtils.getPromotionsTime( ac ) ).build();*/
         // Connect to the service
         mGoogleApiClient = new GoogleApiClient.Builder( ac )
                 .addConnectionCallbacks( mActivity )

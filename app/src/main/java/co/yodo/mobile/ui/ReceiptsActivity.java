@@ -209,11 +209,11 @@ public class ReceiptsActivity extends AppCompatActivity implements
                 .cancelable( true )
                 .description( params.getDescription() )
                 .created( params.getCreated() )
-                .total( params.getTotalAmount(), params.getDCurrency() )
+                .total( params.getTotalAmount(), params.getTCurrency() )
                 .authnumber( params.getAuthnumber() )
                 .donor( params.getDonorAccount() )
                 .recipient( params.getRecipientAccount() )
-                .tender( params.getTenderAmount(), params.getTCurrency())
+                .tender( params.getTenderAmount(), params.getDCurrency())
                 .cashback( params.getCashbackAmount() )
                 .build();
     }
