@@ -16,7 +16,7 @@
     <string name="drawer_open">open</string>
     <string name="drawer_close">close</string>
     <string name="version.label">Version:</string>
-    <string name="version.value" translatable="false">1.7.3</string>
+    <string name="version.value" translatable="false">1.7.4</string>
 
     <!-- Action Menu -->
     <string name="action_settings">Settings</string>
