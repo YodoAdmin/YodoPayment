@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.support.v4.content.ContextCompat;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,7 +26,7 @@ import java.util.List;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.database.model.Receipt;
-import co.yodo.mobile.helper.AppUtils;
+import co.yodo.mobile.helper.FormatUtils;
 
 public class ReceiptsListViewAdapter extends ArrayAdapter<Receipt> implements Filterable {
     /** Application Context */
@@ -83,13 +84,16 @@ public class ReceiptsListViewAdapter extends ArrayAdapter<Receipt> implements Fi
 
         // Fills the holder with the item data
         Receipt item = filteredData.get( position );
-        holder.created.setText( AppUtils.UTCtoCurrent( context, item.getCreated() ) );
-        holder.description.setText( item.getDescription() );
-        holder.total.setText(
-                context.getString( R.string.paid ) + " " +
-                AppUtils.truncateDecimal( item.getTotalAmount() ) + " " +
-                AppUtils.replaceNull( item.getTCurrency() )
+
+        final String total = String.format( "%s %s %s",
+                context.getString( R.string.paid ),
+                FormatUtils.truncateDecimal( item.getTotalAmount() ),
+                FormatUtils.replaceNull( item.getTCurrency() )
         );
+
+        holder.created.setText( FormatUtils.UTCtoCurrent( context, item.getCreated() ) );
+        holder.description.setText( item.getDescription() );
+        holder.total.setText( total );
 
         // If it is opened, change the text style
         if( item.isOpened() ) {
@@ -103,7 +107,7 @@ public class ReceiptsListViewAdapter extends ArrayAdapter<Receipt> implements Fi
         // If it is selected choose a check image, else the default
         if( item.isChecked ) {
             holder.descIcon.setImageDrawable( mDrawableBuilder.build( " ", 0xff616161 ) );
-            holder.view.setBackgroundColor( context.getResources().getColor( R.color.colorGreySoft ) );
+            holder.view.setBackgroundColor( ContextCompat.getColor( context, R.color.colorGreySoft ) );
             holder.checkIcon.setVisibility( View.VISIBLE );
         }
         else {
@@ -194,11 +198,11 @@ public class ReceiptsListViewAdapter extends ArrayAdapter<Receipt> implements Fi
         return removed;
     }
 
-    public void addReceipt( Receipt receipt ) {
+    /*public void addReceipt( Receipt receipt ) {
         originalData.add( receipt );
         filteredData.add( receipt );
         add( receipt );
-    }
+    }*/
 
     /**
      * Change the state of an item (selected or not)
@@ -281,7 +285,7 @@ public class ReceiptsListViewAdapter extends ArrayAdapter<Receipt> implements Fi
 
         @Override
         protected void publishResults( CharSequence constraint, FilterResults results ) {
-            filteredData = AppUtils.castList( results.values, Receipt.class );
+            filteredData = FormatUtils.castList( results.values, Receipt.class );
             notifyDataSetChanged();
         }
     };

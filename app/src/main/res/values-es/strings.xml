@@ -95,12 +95,12 @@
 
     <!-- Error Server Messages -->
     <string name="message.error.code">Fallo al resolver error con código:</string>
-    <string name="message.error.no_connectivity">No hay conectividad, no se puede proceder. Arreglelo en \'Configuración\' e intente de nuevo.</string>
+    <string name="message.error.no_connectivity">No hay conectividad, no se puede proceder. Arreglelo en \'Configuración\' e intente de nuevo</string>
     <string name="message.error.unknown">Esto es embarazoso! Ocurrió un error en el proceso</string>
-    <string name="message.error.network">Lo sentimos, parece que no dispone de una conexion a Internet en este momentow</string>
+    <string name="message.error.network">Lo sentimos, parece que no dispone de una conexion a Internet en este momento</string>
     <string name="message.error.timeout">Lo sentimos, parece que el servidor está muy ocupado. Intente de nuevo luego</string>
-    <string name="message.error.server">Lo sentimos, el servidor respondió con un error. Intente de nuevo luegor</string>
-    <string name="message.error.transaction">Lo sentimos, el tipo de transacción no es válido. Intente de nuevo luegor</string>
+    <string name="message.error.server">Lo sentimos, el servidor respondió con un error. Intente de nuevo luego</string>
+    <string name="message.error.transaction">Lo sentimos, el tipo de transacción no es válido. Intente de nuevo luego</string>
     <string name="message.error.no_balance">Disculpe, parece que no tiene un balance</string>
     <string name="message.error.incorrect_pip">PIP incorrecto. Intente de nuevo</string>
 

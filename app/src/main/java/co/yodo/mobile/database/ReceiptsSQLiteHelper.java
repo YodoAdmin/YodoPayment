@@ -5,7 +5,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
-import co.yodo.mobile.helper.AppUtils;
+import co.yodo.mobile.helper.SystemUtils;
 
 /**
  * Created by luis on 1/02/15.
@@ -73,35 +73,35 @@ public class ReceiptsSQLiteHelper extends SQLiteOpenHelper {
             try {
                 db.execSQL( "ALTER TABLE " + TABLE_RECEIPTS + " ADD COLUMN " + COLUMN_OPENED + " INTEGER DEFAULT 0" );
             } catch( SQLException e ) {
-                AppUtils.Logger( TAG, textToError( COLUMN_OPENED ) );
+                SystemUtils.Logger( TAG, textToError( COLUMN_OPENED ) );
             }
 
             try {
                 db.execSQL( "ALTER TABLE " + TABLE_RECEIPTS + " ADD COLUMN " + COLUMN_DONOR + " TEXT" );
                 db.execSQL( "ALTER TABLE " + TABLE_RECEIPTS + " ADD COLUMN " + COLUMN_RECEIVER + " TEXT" );
             } catch( SQLException e ) {
-                AppUtils.Logger( TAG,
+                SystemUtils.Logger( TAG,
                         "Failed to create columns " + COLUMN_DONOR + ", " + COLUMN_RECEIVER + ". Most likely it already exists, which is fine." );
             }
 
             try {
                 db.execSQL( "ALTER TABLE " + TABLE_RECEIPTS + " ADD COLUMN " + COLUMN_EXCH_RATE + " REAL" );
             } catch( SQLException e ) {
-                AppUtils.Logger( TAG,
+                SystemUtils.Logger( TAG,
                         "Failed to create " + COLUMN_EXCH_RATE + " column. Most likely it already exists, which is fine." );
             }
 
             try {
                 db.execSQL( "ALTER TABLE " + TABLE_RECEIPTS + " ADD COLUMN " + COLUMN_TCURRENCY + " TEXT" );
             } catch( SQLException e ) {
-                AppUtils.Logger( TAG,
+                SystemUtils.Logger( TAG,
                         "Failed to create " + COLUMN_TCURRENCY + " column. Most likely it already exists, which is fine." );
             }
 
             try {
                 db.execSQL( "ALTER TABLE " + TABLE_RECEIPTS + " ADD COLUMN " + COLUMN_CURRENCY + " TEXT" );
             } catch( SQLException e ) {
-                AppUtils.Logger( TAG, textToError( COLUMN_CURRENCY ) );
+                SystemUtils.Logger( TAG, textToError( COLUMN_CURRENCY ) );
             }
         }
 

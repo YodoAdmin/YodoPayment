@@ -116,10 +116,6 @@
                 style="@style/ReceiptInfo"
                 android:id="@+id/cashTenderText" />
 
-            <TextView
-                style="@style/ReceiptInfo"
-                android:id="@+id/currencyText" />
-
         </LinearLayout>
 
         <LinearLayout
@@ -151,7 +147,8 @@
             android:layout_height="wrap_content"
             android:src="@drawable/save_file"
             android:layout_weight="1"
-            android:contentDescription="@string/desc" />
+            android:contentDescription="@string/desc"
+            android:visibility="gone"/>
 
         <ImageView
             android:id="@+id/deleteButton"
@@ -159,7 +156,8 @@
             android:layout_height="wrap_content"
             android:src="@drawable/trash_can"
             android:layout_weight="1"
-            android:contentDescription="@string/desc" />
+            android:contentDescription="@string/desc"
+            android:visibility="gone"/>
     </LinearLayout>
 
 </LinearLayout>

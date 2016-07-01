@@ -7,25 +7,32 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import org.greenrobot.eventbus.EventBus;
+import org.greenrobot.eventbus.Subscribe;
+import org.greenrobot.eventbus.ThreadMode;
+
 import co.yodo.mobile.R;
+import co.yodo.mobile.broadcastreceiver.BroadcastMessage;
+import co.yodo.mobile.component.Intents;
+import co.yodo.mobile.helper.EulaUtils;
+import co.yodo.mobile.helper.GUIUtils;
+import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.network.YodoRequest;
+import co.yodo.mobile.network.model.ServerResponse;
+import co.yodo.mobile.network.request.RegisterRequest;
+import co.yodo.mobile.service.RegistrationIntentService;
+import co.yodo.mobile.service.model.GCMResponse;
 import co.yodo.mobile.ui.notification.ProgressDialogHelper;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.notification.YodoHandler;
-import co.yodo.mobile.network.model.ServerResponse;
-import co.yodo.mobile.helper.AppConfig;
-import co.yodo.mobile.helper.AppEula;
-import co.yodo.mobile.helper.AppUtils;
-import co.yodo.mobile.helper.Intents;
-import co.yodo.mobile.network.YodoRequest;
+import co.yodo.mobile.ui.validator.PIPValidator;
 
-public class RegistrationActivity extends AppCompatActivity implements AppEula.OnEulaAgreedTo, YodoRequest.RESTListener {
+public class RegistrationActivity extends AppCompatActivity implements EulaUtils.OnEulaAgreedTo, YodoRequest.RESTListener {
     /** DEBUG */
     @SuppressWarnings( "unused" )
     private static final String TAG = RegistrationActivity.class.getSimpleName();
@@ -37,7 +44,7 @@ public class RegistrationActivity extends AppCompatActivity implements AppEula.O
     private String hardwareToken;
 
     /** Messages Handler */
-    private static YodoHandler handlerMessages;
+    private YodoHandler handlerMessages;
 
     /** Manager for the server requests */
     private YodoRequest mRequestManager;
@@ -47,23 +54,32 @@ public class RegistrationActivity extends AppCompatActivity implements AppEula.O
     private EditText etConfirmPip;
     private RelativeLayout rlRegistration;
 
-    /** The shake animation for wrong inputs */
-    private Animation aShake;
+    /** PIP validator */
+    private PIPValidator pipValidator;
+
+    /** Response codes for the server requests */
+    private static final int REG_REQ = 0x00;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        AppUtils.setLanguage( RegistrationActivity.this );
-        setContentView(R.layout.activity_registration);
+        GUIUtils.setLanguage( RegistrationActivity.this );
+        setContentView( R.layout.activity_registration );
 
         setupGUI();
         updateData();
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mRequestManager.setListener( this );
+    public void onStart() {
+        super.onStart();
+        EventBus.getDefault().register( this );
+    }
+
+    @Override
+    public void onStop() {
+        EventBus.getDefault().unregister( this );
+        super.onStop();
     }
 
     @Override
@@ -85,14 +101,15 @@ public class RegistrationActivity extends AppCompatActivity implements AppEula.O
         ac = RegistrationActivity.this;
         handlerMessages = new YodoHandler( RegistrationActivity.this );
         mRequestManager = YodoRequest.getInstance( ac );
+        mRequestManager.setListener( this );
 
         // GUI global components
         etPip          = (EditText) findViewById( R.id.pipText );
         etConfirmPip   = (EditText) findViewById( R.id.confirmationPipText );
         rlRegistration = (RelativeLayout) findViewById( R.id.registration_layout );
 
-        // Load the animation
-        aShake = AnimationUtils.loadAnimation( this, R.anim.shake );
+        // PIP Validator
+        pipValidator = new PIPValidator( etPip, etConfirmPip );
 
         // Only used at creation
         Toolbar mActionBarToolbar = (Toolbar) findViewById( R.id.actionBar );
@@ -103,7 +120,7 @@ public class RegistrationActivity extends AppCompatActivity implements AppEula.O
             getSupportActionBar().setDisplayHomeAsUpEnabled( true );
 
         // Show the terms to the user
-        if( AppEula.show( this ) )
+        if( EulaUtils.show( this ) )
             rlRegistration.setVisibility( View.GONE );
     }
 
@@ -112,7 +129,7 @@ public class RegistrationActivity extends AppCompatActivity implements AppEula.O
      */
     private void updateData() {
         // Gets the hardware token - account identifier
-        hardwareToken = AppUtils.getHardwareToken( ac );
+        hardwareToken = PrefUtils.getHardwareToken( ac );
         if( hardwareToken == null ) {
             ToastMaster.makeText( ac, R.string.message_no_hardware, Toast.LENGTH_LONG ).show();
             finish();
@@ -124,8 +141,8 @@ public class RegistrationActivity extends AppCompatActivity implements AppEula.O
      * @param v, the view of the checkbox
      */
     public void showPasswordClick( View v ) {
-        AppUtils.showPassword( (CheckBox) v, etPip );
-        AppUtils.showPassword( (CheckBox) v, etConfirmPip );
+        GUIUtils.showPassword( (CheckBox) v, etPip );
+        GUIUtils.showPassword( (CheckBox) v, etConfirmPip );
     }
 
     /**
@@ -133,24 +150,19 @@ public class RegistrationActivity extends AppCompatActivity implements AppEula.O
      * @param v View of the button, not used
      */
     public void registrationClick( View v ) {
-        final String pip        = etPip.getText().toString();
-        final String confirmPip = etConfirmPip.getText().toString();
+        GUIUtils.hideSoftKeyboard( this );
 
-        if( pip.length() < AppConfig.MIN_PIP_LENGTH ) {
-            ToastMaster.makeText( ac, R.string.pip_short, Toast.LENGTH_SHORT ).show();
-            etPip.startAnimation( aShake );
-        }
-        else if( !pip.equals( confirmPip ) ) {
-            ToastMaster.makeText( ac, R.string.pip_different, Toast.LENGTH_SHORT ).show();
-            etConfirmPip.startAnimation( aShake );
-        } else {
-            AppUtils.hideSoftKeyboard( this );
+        // Validates the PIP and its confirmation
+        if( pipValidator.validate() ) {
+            // Request an authentication
+            final String pip = etPip.getText().toString();
 
             ProgressDialogHelper.getInstance().createProgressDialog( ac );
-            mRequestManager.requestRegistration(
+            mRequestManager.invoke( new RegisterRequest(
+                    REG_REQ,
                     hardwareToken,
                     pip
-            );
+            ) );
         }
     }
 
@@ -160,29 +172,54 @@ public class RegistrationActivity extends AppCompatActivity implements AppEula.O
     }
 
     @Override
-    public void onResponse( YodoRequest.RequestType type, ServerResponse response ) {
+    public void onResponse( int responseCode, ServerResponse response ) {
         ProgressDialogHelper.getInstance().destroyProgressDialog();
         String code, message;
 
-        switch( type ) {
-            case REG_CLIENT_REQUEST:
+        switch( responseCode ) {
+            case REG_REQ:
                 code = response.getCode();
 
                 // If the auth is correct, let's continue with the registration
                 if( code.equals( ServerResponse.AUTHORIZED_REGISTRATION ) ) {
-                    AppUtils.saveAuthNumber( ac, response.getAuthNumber() );
+                    // Save the authnumber for later use (i.e. biometric registration)
+                    PrefUtils.saveAuthNumber( ac, response.getAuthNumber() );
 
-                    Intent intent = new Intent( RegistrationActivity.this, RegistrationBiometricActivity.class );
-                    intent.putExtra( Intents.AUTH_NUMBER, response.getAuthNumber() );
-                    startActivity( intent );
-                    finish();
+                    // let's register the gcm id
+                    Intent intent = new Intent( ac, RegistrationIntentService.class );
+                    intent.putExtra( BroadcastMessage.EXTRA_HARDWARE_TOKEN, hardwareToken );
+                    startService( intent );
+                }
                 // There was an error during the process
-                } else {
-                    message  = response.getMessage();
-                    AppUtils.sendMessage( handlerMessages, code, message );
+                else {
+                    message = response.getMessage();
+                    YodoHandler.sendMessage( handlerMessages, code, message );
                 }
 
                 break;
+        }
+    }
+
+    /**
+     * Message received from the service that registers the gcm token
+     */
+    @SuppressWarnings("unused")
+    @Subscribe( sticky = true, threadMode = ThreadMode.MAIN )
+    public void onResponseEvent( GCMResponse response ) {
+        EventBus.getDefault().removeStickyEvent( response );
+        boolean sentToken = PrefUtils.isGCMTokenSent( ac );
+        finish();
+        // The gcm token has been sent
+        if( sentToken ) {
+            // Now we have to register the biometric token
+            final String authNumber = PrefUtils.getAuthNumber( ac );
+            Intent intent = new Intent( ac, RegistrationBiometricActivity.class );
+            intent.putExtra( Intents.AUTH_NUMBER, authNumber );
+            startActivity( intent );
+        }
+        // Something failed
+        else {
+            Toast.makeText( ac, R.string.error_gcm_registration, Toast.LENGTH_SHORT ).show();
         }
     }
 }

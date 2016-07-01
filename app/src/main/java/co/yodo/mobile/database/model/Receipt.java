@@ -6,139 +6,109 @@ package co.yodo.mobile.database.model;
  */
 public class Receipt {
     /** Main Attributes */
-    private long id;
-    private String authNumber;
+    private Long id;
+    private String authnumber;
     private String description;
     private String tCurrency;
     private String exchRate; // Exchange rate
     private String dCurrency;
     private String totalAmount;
     private String tenderAmount;
-    private String cashBackAmount;
+    private String cashbackAmount;
     private String balanceAmount;
     private String currency;
     private String donorAccount;
-    private String receiverAccount;
+    private String recipientAccount;
     private String created;
     private boolean opened;
+
+    private Receipt( Builder builder ) {
+        this.id = builder.id;
+        this.authnumber = builder.authnumber;
+        this.description = builder.description;
+        this.tCurrency = builder.tCurrency;
+        this.exchRate = builder.exchRate;
+        this.dCurrency = builder.dCurrency;
+        this.totalAmount = builder.totalAmount;
+        this.tenderAmount = builder.tenderAmount;
+        this.cashbackAmount = builder.cashbackAmount;
+        this.balanceAmount = builder.balanceAmount;
+        this.currency = builder.currency;
+        this.donorAccount = builder.donorAccount;
+        this.recipientAccount = builder.recipientAccount;
+        this.created = builder.created;
+        this.opened = builder.opened;
+    }
 
     /** Handles the animation in the ListView */
     public boolean isChecked;
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(long id) {
-        this.id = id;
-    }
-
-    public String getAuthNumber() {
-        return authNumber;
-    }
-
-    public void setAuthNumber(String authNumber) {
-        this.authNumber = authNumber;
+    public String getAuthnumber() {
+        return authnumber;
     }
 
     public String getDescription() {
         return description;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
     public String getTCurrency() {
         return tCurrency;
-    }
-
-    public void setTCurrency( String tCurrency ) {
-        this.tCurrency = tCurrency;
     }
 
     public String getExchRate() {
         return exchRate;
     }
 
-    public void setExchRate( String exchRate ) {
-        this.exchRate = exchRate;
-    }
-
     public String getDCurrency() {
         return dCurrency;
-    }
-
-    public void setDCurrency( String dCurrency ) {
-        this.dCurrency = dCurrency;
     }
 
     public String getTotalAmount() {
         return totalAmount.replaceAll( ",", "." );
     }
 
-    public void setTotalAmount(String totalAmount) {
-        this.totalAmount = totalAmount;
-    }
-
     public String getTenderAmount() {
         return tenderAmount.replaceAll( ",", "." );
     }
 
-    public void setTenderAmount( String tenderAmount ) {
-        this.tenderAmount = tenderAmount;
-    }
-
-    public String getCashBackAmount() {
-        return cashBackAmount.replaceAll( ",", "." );
-    }
-
-    public void setCashBackAmount( String cashBackAmount ) {
-        this.cashBackAmount = cashBackAmount;
+    public String getCashbackAmount() {
+        return cashbackAmount.replaceAll( ",", "." );
     }
 
     public String getBalanceAmount() {
         return balanceAmount.replaceAll( ",", "." );
     }
 
-    public void setBalanceAmount( String balanceAmount ) {
-        this.balanceAmount = balanceAmount;
-    }
-
     public String getCurrency() {
         return currency;
-    }
-
-    public void setCurrency(String currency) {
-        this.currency = currency;
     }
 
     public String getDonorAccount() {
         return donorAccount;
     }
 
-    public void setDonorAccount( String donorAccount ) {
-        this.donorAccount = donorAccount;
-    }
-
-    public String getReceiverAccount() {
-        return receiverAccount;
-    }
-
-    public void setReceiverAccount( String receiverAccount ) {
-        this.receiverAccount = receiverAccount;
+    public String getRecipientAccount() {
+        return recipientAccount;
     }
 
     public String getCreated() {
         return created;
     }
 
-    public void setCreated( String created ) {
-        this.created = created;
-    }
-
     public boolean isOpened() {
         return opened;
+    }
+
+    /**
+     * Setters
+     * {{ ==============================================
+     */
+    public void setId( Long id ) {
+        this.id = id;
     }
 
     public void setOpened( boolean opened ) {
@@ -151,10 +121,99 @@ public class Receipt {
 
     @Override
     public String toString() {
-        return "\nID: "         + id             + "\n" + "AuthNumber: "    + authNumber   + "\n" +
+        return "\nID: "         + id             + "\n" + "AuthNumber: "    + authnumber   + "\n" +
                "Balance: "      + balanceAmount  + "\n" + "Currency: "      + currency     + "\n" +
                "Total Amount: " + totalAmount    + "\n" + "Tender Amount: " + tenderAmount + "\n" +
-               "CashBack: "     + cashBackAmount + "\n" + "Created: "       + created      + "\n" +
+               "CashBack: "     + cashbackAmount + "\n" + "Created: "       + created      + "\n" +
                "Opened: "       + opened         + "\n" + "Checked: "       + isChecked;
+    }
+
+    /**
+     * Receipt Builder
+     */
+    public static class Builder {
+        /** Main Attributes */
+        private Long id;
+        private String authnumber;
+        private String description;
+        private String tCurrency;
+        private String exchRate; // Exchange rate
+        private String dCurrency;
+        private String totalAmount;
+        private String tenderAmount;
+        private String cashbackAmount;
+        private String balanceAmount;
+        private String currency;
+        private String donorAccount;
+        private String recipientAccount;
+        private String created;
+        private boolean opened = false;
+
+        public Builder id( Long id ) {
+            this.id = id;
+            return this;
+        }
+
+        public Builder authnumber( String authnumber ) {
+            this.authnumber = authnumber;
+            return this;
+        }
+
+        public Builder description( String description ) {
+            this.description = description;
+            return this;
+        }
+
+        public Builder total( String total, String currency ) {
+            this.totalAmount = total;
+            this.tCurrency = currency;
+            return this;
+        }
+
+        public Builder tender( String tender, String currency ) {
+            this.tenderAmount = tender;
+            this.dCurrency = currency;
+            return this;
+        }
+
+        public Builder cashback( String cashback ) {
+            this.cashbackAmount = cashback;
+            return this;
+        }
+
+        public Builder exchRate( String exchRate ) {
+            this.exchRate = exchRate;
+            return this;
+        }
+
+        public Builder donor( String donor ) {
+            this.donorAccount = donor;
+            return this;
+        }
+
+        public Builder recipient( String recipient ) {
+            this.recipientAccount = recipient;
+            return this;
+        }
+
+        public Builder created( String created ) {
+            this.created = created;
+            return this;
+        }
+
+        public Builder opened( boolean opened ) {
+            this.opened = opened;
+            return this;
+        }
+
+        public Builder balance( String balance, String currency ) {
+            this.balanceAmount = balance;
+            this.currency = currency;
+            return this;
+        }
+
+        public Receipt build() {
+            return new Receipt( this );
+        }
     }
 }

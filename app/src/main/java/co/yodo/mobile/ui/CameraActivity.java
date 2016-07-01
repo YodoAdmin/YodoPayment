@@ -21,9 +21,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.yodo.mobile.R;
+import co.yodo.mobile.helper.CryptUtils;
+import co.yodo.mobile.helper.GUIUtils;
+import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.ui.notification.ToastMaster;
-import co.yodo.mobile.helper.AppUtils;
-import co.yodo.mobile.helper.Intents;
+import co.yodo.mobile.component.Intents;
 import visidon.Lib.FaceInfo;
 import visidon.Lib.VerificationAPI;
 
@@ -47,7 +49,7 @@ public class CameraActivity extends Activity {
         super.onCreate(savedInstanceState);
         requestWindowFeature( Window.FEATURE_NO_TITLE );
         getWindow().setFlags( WindowManager.LayoutParams.FLAG_FULLSCREEN, WindowManager.LayoutParams.FLAG_FULLSCREEN );
-        AppUtils.setLanguage( CameraActivity.this );
+        GUIUtils.setLanguage( CameraActivity.this );
         setContentView(R.layout.activity_camera);
 
         setupGUI();
@@ -75,7 +77,7 @@ public class CameraActivity extends Activity {
                 try {
                     Thread.sleep( 10 );
                 } catch(InterruptedException e) {
-                    AppUtils.Logger( TAG, e.getMessage() );
+                    SystemUtils.Logger( TAG, e.getMessage() );
                 }
             }
 
@@ -232,7 +234,7 @@ class FrameCallback implements Camera.PreviewCallback {
 
         }
         catch(InterruptedException e) {
-            AppUtils.Logger( TAG, e.getMessage() );
+            SystemUtils.Logger( TAG, e.getMessage() );
         }
     }
 }
@@ -329,7 +331,7 @@ class CameraFrameAnalyzer implements Runnable {
                 }
             }
         } catch(InterruptedException e) {
-            AppUtils.Logger( TAG, e.getMessage() );
+            SystemUtils.Logger( TAG, e.getMessage() );
         }
         input.mStopRequest = 2;
     }
@@ -350,7 +352,7 @@ class CameraFrameAnalyzer implements Runnable {
                 currentFreq = Integer.parseInt( line );
             }
         } catch(IOException e) {
-            AppUtils.Logger(TAG, e.getMessage());
+            SystemUtils.Logger(TAG, e.getMessage());
         }
 
         return currentFreq;
@@ -372,7 +374,7 @@ class CameraFrameAnalyzer implements Runnable {
                 currentFreq = Integer.parseInt( line );
             }
         } catch(IOException e) {
-            AppUtils.Logger( TAG, e.getMessage() );
+            SystemUtils.Logger( TAG, e.getMessage() );
         }
 
         return currentFreq;
@@ -388,7 +390,7 @@ class CameraFrameAnalyzer implements Runnable {
         if( input.mResetFlag ){
             // Reset face database.
             VerificationAPI.ResetState state = VerificationAPI.resetDatabase();
-            AppUtils.Logger( TAG, "ResetState: " + state );
+            SystemUtils.Logger( TAG, "ResetState: " + state );
 
             input.mResetFlag = false;
             input.mNbrOfItems = VerificationAPI.getNbrOfDBItems();
@@ -409,26 +411,26 @@ class CameraFrameAnalyzer implements Runnable {
                 input.mNbrOfItems = VerificationAPI.getNbrOfDBItems();
                 byte [] faceTemplate = VerificationAPI.getEnrolledFaceTemplate();
                 // save template somewhere
-                String image_str = AppUtils.bytesToHex( faceTemplate );
+                String image_str = CryptUtils.bytesToHex( faceTemplate );
 
-                AppUtils.Logger( TAG, image_str );
+                SystemUtils.Logger( TAG, image_str );
 
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra( Intents.RESULT_FACE, image_str );
                 ((Activity)ctx).setResult( Activity.RESULT_OK, resultIntent );
                 ((Activity)ctx).finish();
 
-                AppUtils.Logger( TAG, "face template obtained, size = " + faceTemplate.length );
-                AppUtils.Logger( TAG, "deleting face database" );
+                SystemUtils.Logger( TAG, "face template obtained, size = " + faceTemplate.length );
+                SystemUtils.Logger( TAG, "deleting face database" );
 
                 // delete recently enrolled face
                 VerificationAPI.ResetState resState = VerificationAPI.resetDatabase();
 
-                AppUtils.Logger( TAG, "reset state = " + resState );
+                SystemUtils.Logger( TAG, "reset state = " + resState );
 
                 // load template
                 VerificationAPI.LoadState lstate = VerificationAPI.loadFaceTemplate( faceTemplate );
-                AppUtils.Logger( TAG, "load face template state = " + lstate );
+                SystemUtils.Logger( TAG, "load face template state = " + lstate );
                 input.mNbrOfItems = VerificationAPI.getNbrOfDBItems();
             }
         } else { // Otherwise apply verification

@@ -10,8 +10,9 @@ import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
-@ReportsCrashes(formKey = "", 
-                formUri = "http://198.101.209.120/MAB-LAB/report/report.php",
+import co.yodo.mobile.helper.GUIUtils;
+
+@ReportsCrashes(formUri = "http://198.101.209.120/MAB-LAB/report/report.php",
                 formUriBasicAuthLogin = "yodo",
                 formUriBasicAuthPassword = "letryodo",
                 httpMethod = org.acra.sender.HttpSender.Method.POST,
@@ -20,10 +21,15 @@ import org.acra.annotation.ReportsCrashes;
                 resToastText = R.string.crash_toast_text)
 
 public class YodoApplication extends Application {
+    @Override
+    protected void attachBaseContext( Context base ) {
+        super.attachBaseContext( base );
+        ACRA.init( this );
+    }
+
 	@Override
     public void onCreate() {
         super.onCreate();
-        ACRA.init( this );
 
         registerActivityLifecycleCallbacks( new ActivityLifecycleCallbacks() {
             @Override

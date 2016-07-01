@@ -1,7 +1,13 @@
 package co.yodo.mobile.ui;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.support.v4.app.LoaderManager;
+import android.support.v4.content.AsyncTaskLoader;
+import android.support.v4.content.Loader;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
@@ -10,18 +16,27 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 
 import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.ui.adapter.CouponsGridViewAdapter;
-import co.yodo.mobile.database.model.Coupon;
 import co.yodo.mobile.database.CouponsDataSource;
-import co.yodo.mobile.helper.AppUtils;
+import co.yodo.mobile.database.model.Coupon;
+import co.yodo.mobile.helper.GUIUtils;
+import co.yodo.mobile.helper.SystemUtils;
+import co.yodo.mobile.ui.adapter.CouponsGridViewAdapter;
+import co.yodo.mobile.ui.dialog.CouponDialog;
 
-public class CouponsActivity extends AppCompatActivity {
+public class CouponsActivity extends AppCompatActivity implements
+        AdapterView.OnItemClickListener,
+        LoaderManager.LoaderCallbacks<List<Coupon>>{
     /** DEBUG */
+    @SuppressWarnings( "unused" )
     private final static String TAG = CouponsActivity.class.getSimpleName();
 
     /** The context object */
@@ -31,13 +46,18 @@ public class CouponsActivity extends AppCompatActivity {
     private CouponsDataSource couponsdb;
 
     /** GUI Controllers */
-    private GridView couponsGridView;
+    private ProgressBar pbLoading;
+    private GridView gvCoupons;
+    private CouponsGridViewAdapter cgvAdapter;
+
+    /** Identifier for the loader */
+    private static final int THE_LOADER = 0x01;
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        AppUtils.setLanguage( CouponsActivity.this );
-        setContentView(R.layout.activity_coupons);
+    protected void onCreate( Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
+        GUIUtils.setLanguage( CouponsActivity.this );
+        setContentView( R.layout.activity_coupons );
 
         setupGUI();
         updateData();
@@ -85,20 +105,20 @@ public class CouponsActivity extends AppCompatActivity {
         AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
         switch( item.getItemId() ) {
             case R.id.delete:
-                CouponsGridViewAdapter adapter = (CouponsGridViewAdapter) couponsGridView.getAdapter();
-                Coupon coupon           = adapter.getItem( info.position );
-                List<Coupon> values     = adapter.getValues();
+                Coupon coupon = cgvAdapter.getItem( info.position );
+                List<Coupon> values = cgvAdapter.getValues();
 
                 File file = new File( coupon.getUrl() );
                 boolean delete = file.delete();
 
                 if( !delete )
-                    AppUtils.Logger( TAG, "File not found" );
+                    SystemUtils.Logger( TAG, "File not found" );
 
                 couponsdb.deleteCoupon( coupon );
                 values.remove( info.position );
-                adapter.notifyDataSetChanged();
+                cgvAdapter.notifyDataSetChanged();
                 return true;
+
             default:
                 return super.onContextItemSelected(item);
         }
@@ -107,22 +127,85 @@ public class CouponsActivity extends AppCompatActivity {
     private void setupGUI() {
         // get the context
         ac = CouponsActivity.this;
-        // Controllers
-        couponsGridView = (GridView) findViewById( R.id.couponsGrid );
-        // Only used at creation
-        Toolbar actionBarToolbar = (Toolbar) findViewById( R.id.actionBar );
+
         // Bootstrap
-        couponsdb = new CouponsDataSource( ac );
+        couponsdb = CouponsDataSource.getInstance( ac );
         couponsdb.open();
-        setSupportActionBar( actionBarToolbar );
-        if( getSupportActionBar() != null )
-            getSupportActionBar().setDisplayHomeAsUpEnabled( true );
+
+        // GUI Controllers
+        pbLoading = (ProgressBar ) findViewById( R.id.pbLoading );
+        gvCoupons = (GridView) findViewById( R.id.couponsGrid );
+
+        // Only used at creation
+        Toolbar toolbar = (Toolbar) findViewById( R.id.actionBar );
+
+        // Setup the toolbar
+        setSupportActionBar( toolbar );
+        ActionBar actionbar = getSupportActionBar();
+        if( actionbar != null )
+            actionbar.setDisplayHomeAsUpEnabled( true );
     }
 
     private void updateData() {
-        List<Coupon> values = couponsdb.getAllCoupons();
-        CouponsGridViewAdapter customGridAdapter = new CouponsGridViewAdapter( ac, R.layout.row_grid_coupons, values );
-        couponsGridView.setAdapter( customGridAdapter );
-        registerForContextMenu( couponsGridView );
+        gvCoupons.setOnItemClickListener( this );
+        cgvAdapter = new CouponsGridViewAdapter( ac, R.layout.row_grid_coupons, new ArrayList<Coupon>() );
+        getSupportLoaderManager().initLoader( THE_LOADER, null, this ).forceLoad();
+    }
+
+    @Override
+    public void onItemClick( AdapterView<?> parent, View view, int position, long id ) {
+        Coupon coupon = cgvAdapter.getItem( position );
+        Bitmap image = BitmapFactory.decodeFile( coupon.getUrl() );
+
+        new CouponDialog.Builder( ac )
+                .cancelable( true )
+                .image( image )
+                .build();
+    }
+
+    @Override
+    public Loader<List<Coupon>> onCreateLoader( int id, Bundle args ) {
+        return new LoadTask( this, couponsdb );
+    }
+
+    @Override
+    public void onLoadFinished( Loader<List<Coupon>> loader, List<Coupon> data ) {
+        SystemUtils.Logger( TAG, Collections.singletonList( data ).toString() );
+        cgvAdapter.addAll( data );
+        gvCoupons.setAdapter( cgvAdapter );
+        registerForContextMenu( gvCoupons );
+
+        pbLoading.setVisibility( View.GONE );
+        gvCoupons.setVisibility( View.VISIBLE );
+
+        getSupportLoaderManager().destroyLoader( THE_LOADER );
+    }
+
+    @Override
+    public void onLoaderReset( Loader<List<Coupon>> loader ) {
+        gvCoupons.setAdapter( null );
+    }
+
+    /**
+     * Loads the receipts from the database
+     */
+    private static class LoadTask extends AsyncTaskLoader<List<Coupon>> {
+        /** Receipts database */
+        private CouponsDataSource mCouponsdb;
+
+        /**
+         * Sets the receipts from the caller
+         * @param context The activity context
+         * @param coupondb The coupons database
+         */
+        public LoadTask( Context context, CouponsDataSource coupondb ) {
+            super( context );
+            this.mCouponsdb = coupondb;
+        }
+
+        @Override
+        public List<Coupon> loadInBackground() {
+            return mCouponsdb.getAllCoupons();
+        }
     }
 }

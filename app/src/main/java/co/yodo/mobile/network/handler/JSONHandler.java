@@ -15,21 +15,8 @@ public class JSONHandler {
     @SuppressWarnings( "unused" )
     private static final String TAG = JSONHandler.class.getSimpleName();
 
-    /** JSON Elements */
-    private static final String CODE_ELEM     = "code";
-    private static final String AUTH_NUM_ELEM = "authNumber";
-    private static final String MESSAGE_ELEM  = "message";
-    private static final String TIME_ELEM     = "rtime";
-
     /** Param elements */
-    private static final String LOGO_ELEM         = "logo_url";
-    private static final String BALANCE_ELEM      = "balance";
-    private static final String CURRENCY_ELEM     = "currency"; // It also belongs to the receipt
-    private static final String BIOMETRIC_ELEM    = "BiometricToken";
-    private static final String ADVERTISING_ELEM  = "url";
-    private static final String LINKING_CODE_ELEM = "linking_code";
-    private static final String TRANSACTION_ELEM  = "LastSuccessfulTransaction";
-    private static final String LINKED_ACC_ELEM   = "linked_accounts";
+    private static final String CURRENCY_ELEM = "currency"; // It also belongs to the receipt
 
     /** Transaction Elements */
     public static final String YI = "yi";
@@ -50,10 +37,6 @@ public class JSONHandler {
     private static final String EXCH_DON_ELEM  = "account"; // donor
     private static final String EXCH_BAL_ELEM  = "account_bal";
     private static final String EXCH_CUR_ELEM  = "account_cur";
-
-    /** Linked Account elements */
-    private static final String TO_ELEM   = "to";
-    private static final String FROM_ELEM = "from";
 
     public static ServerResponse parseReceipt( String message ) {
         ServerResponse response = new ServerResponse();

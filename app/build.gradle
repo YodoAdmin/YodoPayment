@@ -1,15 +1,17 @@
 apply plugin: 'com.android.application'
 
 android {
-    compileSdkVersion 23
+    compileSdkVersion 24
     buildToolsVersion "24.0.0 rc3"
 
     defaultConfig {
         applicationId "co.yodo"
         minSdkVersion 15
-        targetSdkVersion 23
+        targetSdkVersion 24
         versionCode 12
         versionName "1.10"
+
+        testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
     }
     buildTypes {
         release {
@@ -21,20 +23,45 @@ android {
         maxProcessCount 4
         javaMaxHeapSize "2g"
     }
+
+    useLibrary 'org.apache.http.legacy'
 }
 
 dependencies {
     compile fileTree(dir: 'libs', include: ['*.jar'])
-    compile 'com.android.support:appcompat-v7:23.4.0'
-    compile 'com.android.support:design:23.4.0'
-    compile 'com.android.support:support-v4:23.4.0'
+    compile 'com.android.support:appcompat-v7:24.0.0'
+    compile 'com.android.support:design:24.0.0'
+    compile 'com.android.support:support-v4:24.0.0'
+    compile 'com.squareup.okhttp3:okhttp:3.3.1'
     compile 'com.android.volley:volley:1.0.0'
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.google.android.gms:play-services-gcm:8.4.0'
     compile 'com.google.android.gms:play-services-nearby:8.4.0'
     compile 'it.sephiroth.android.library.imagezoom:imagezoom:2.2.4'
+    compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'
     compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
     compile 'org.greenrobot:eventbus:3.0.0'
+    compile 'ch.acra:acra:4.8.5'
+
+    // Required -- JUnit 4 framework
+    testCompile 'junit:junit:4.12'
+    // Optional -- Mockito framework
+    testCompile 'org.mockito:mockito-core:1.10.19'
+    // Android testing
+    androidTestCompile 'com.android.support:support-annotations:24.0.0'
+    androidTestCompile 'com.android.support.test:runner:0.4.1'
+    androidTestCompile 'com.android.support.test:rules:0.4.1'
+    // Optional -- Hamcrest library
+    androidTestCompile 'org.hamcrest:hamcrest-library:1.3'
+    // Optional -- UI testing with Espresso
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.1'
+    androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.2.1') {
+        exclude group: 'com.android.support', module: 'appcompat'
+        exclude group: 'com.android.support', module: 'support-v4'
+        exclude module: 'support-annotations'
+        exclude module: 'recyclerview-v7'
+    }
 }
 
 apply plugin: 'com.google.gms.google-services'
