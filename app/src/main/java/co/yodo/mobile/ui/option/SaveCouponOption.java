@@ -6,6 +6,7 @@ import android.os.Environment;
 import android.widget.Toast;
 
 import java.io.File;
+import java.util.UUID;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.helper.AppConfig;
@@ -46,8 +47,7 @@ public class SaveCouponOption extends IOption {
                 }
 
                 // Get the number of files and add one to the add
-                int files = directory.listFiles().length;
-                File image = new File( directory, "ad" + (files + 1) + ".png" );
+                File image = new File( directory, UUID.randomUUID().toString() + ".png" );
                 ( ( MainActivity) mActivity ).saveCoupon( image );
             }
         };

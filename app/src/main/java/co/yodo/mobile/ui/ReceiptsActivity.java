@@ -26,6 +26,7 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import co.yodo.mobile.R;
@@ -74,23 +75,11 @@ public class ReceiptsActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        pbLoading.setVisibility( View.VISIBLE );
-        lvReceipts.setVisibility( View.GONE );
-    }
-
-    @Override
     public void onResume() {
         super.onResume();
 
         if( receiptsdb != null ) {
             receiptsdb.open();
-
-            /*rlvAdapter.clear();
-            List<Receipt> values = receiptsdb.getAllReceipts();
-            rlvAdapter.addAll( values );
-            rlvAdapter.notifyDataSetChanged();*/
         }
     }
 
@@ -151,7 +140,7 @@ public class ReceiptsActivity extends AppCompatActivity implements
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected( MenuItem item ) {
         int itemId = item.getItemId();
         switch( itemId ) {
             case android.R.id.home:
@@ -196,6 +185,7 @@ public class ReceiptsActivity extends AppCompatActivity implements
     private void updateData() {
         lvReceipts.setOnItemClickListener( this );
         lvReceipts.setOnItemLongClickListener( this );
+        rlvAdapter = new ReceiptsListViewAdapter( ac, R.layout.row_list_receipts, new ArrayList<Receipt>() );
         getSupportLoaderManager().initLoader( THE_LOADER, null, this ).forceLoad();
     }
 
@@ -214,13 +204,12 @@ public class ReceiptsActivity extends AppCompatActivity implements
                 .donor( params.getDonorAccount() )
                 .recipient( params.getRecipientAccount() )
                 .tender( params.getTenderAmount(), params.getDCurrency())
-                .cashback( params.getCashbackAmount() )
+                .cashback( params.getCashbackAmount(), params.getTCurrency() )
                 .build();
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        //ReceiptsListViewAdapter adapter = (ReceiptsListViewAdapter) lvReceipts.getAdapter();
         Receipt receipt = rlvAdapter.getItem( position );
 
         if( !receipt.isOpened() ) {
@@ -311,19 +300,17 @@ public class ReceiptsActivity extends AppCompatActivity implements
     public void onDestroyActionMode( ActionMode mode ) {
         isActionModeShowing = false;
         // Clears the deleted list, delete aborted
-        ReceiptsListViewAdapter adapter = (ReceiptsListViewAdapter) lvReceipts.getAdapter();
-        adapter.clearDeleteList();
-        adapter.notifyDataSetChanged();
+        rlvAdapter.clearDeleteList();
+        rlvAdapter.notifyDataSetChanged();
     }
 
     @SuppressWarnings("unused") // receives GCM receipts
     @Subscribe( threadMode = ThreadMode.MAIN )
     public void onReceiptEvent( Receipt receipt ) {
-        ReceiptsListViewAdapter adapter = (ReceiptsListViewAdapter) lvReceipts.getAdapter();
         //adapter.addReceipt( receipt );
-        adapter.add( receipt );
-        adapter.sort( ReceiptsListViewAdapter.ReceiptsComparator );
-        adapter.notifyDataSetChanged();
+        rlvAdapter.add( receipt );
+        rlvAdapter.sort( ReceiptsListViewAdapter.ReceiptsComparator );
+        rlvAdapter.notifyDataSetChanged();
     }
 
     @Override
@@ -333,10 +320,12 @@ public class ReceiptsActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished( Loader<List<Receipt>> loader, List<Receipt> data ) {
-        rlvAdapter = new ReceiptsListViewAdapter( ac, R.layout.row_list_receipts, data );
+        rlvAdapter.addAll( data );
         lvReceipts.setAdapter( rlvAdapter );
         pbLoading.setVisibility( View.GONE );
         lvReceipts.setVisibility( View.VISIBLE );
+
+        getSupportLoaderManager().destroyLoader( THE_LOADER );
     }
 
     @Override

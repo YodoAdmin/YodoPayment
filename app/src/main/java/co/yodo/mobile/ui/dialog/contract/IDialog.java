@@ -20,6 +20,7 @@ public abstract class IDialog {
     protected IDialog( DialogBuilder builder ) {
         this.mDialog = builder.mDialog;
         this.mDialog.setCancelable( builder.mCancelable );
+        this.mDialog.setCanceledOnTouchOutside( builder.mCancelable );
         this.mDialog.show();
     }
 

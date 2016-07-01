@@ -8,6 +8,7 @@ import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -24,7 +25,6 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,6 +48,7 @@ import co.yodo.mobile.component.SKSCreater;
 import co.yodo.mobile.database.CouponsDataSource;
 import co.yodo.mobile.database.ReceiptsDataSource;
 import co.yodo.mobile.database.model.Receipt;
+import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.EulaUtils;
 import co.yodo.mobile.helper.FormatUtils;
 import co.yodo.mobile.helper.GUIUtils;
@@ -88,7 +89,7 @@ public class MainActivity extends AppCompatActivity implements
     private Context ac;
 
     /** Account identifier */
-    private String hardwareToken;
+    private String mHardwareToken;
 
     /** Messages Handler */
     private YodoHandler mHandlerMessages;
@@ -100,7 +101,6 @@ public class MainActivity extends AppCompatActivity implements
     private TextView mAccountNumber;
     private TextView mAccountDate;
     private TextView mAccountBalance;
-    private RelativeLayout mAdvertisingLayout;
     private ImageViewTouch mAdvertisingImage;
     private DrawerLayout mDrawerLayout;
     private ActionBarDrawerToggle mDrawerToggle;
@@ -270,7 +270,6 @@ public class MainActivity extends AppCompatActivity implements
         mAccountNumber     = (TextView) findViewById( R.id.accountNumberText );
         mAccountDate       = (TextView) findViewById( R.id.accountDateText );
         mAccountBalance    = (TextView) findViewById( R.id.accountBalanceText );
-        mAdvertisingLayout = (RelativeLayout) findViewById( R.id.advertisingLayout );
         mAdvertisingImage  = (ImageViewTouch) findViewById( R.id.advertisingImage );
         mDrawerLayout      = (DrawerLayout) findViewById(R.id.drawerLayout);
         ibSubscription     = (ImageButton) findViewById( R.id.ibSubscription );
@@ -347,14 +346,14 @@ public class MainActivity extends AppCompatActivity implements
      */
     private void updateData() {
         // Gets the hardware token - account identifier
-        hardwareToken = PrefUtils.getHardwareToken( ac );
-        if( hardwareToken == null ) {
+        mHardwareToken = PrefUtils.getHardwareToken( ac );
+        if( mHardwareToken == null ) {
             ToastMaster.makeText( ac, R.string.message_no_hardware, Toast.LENGTH_LONG ).show();
             finish();
         }
 
         // Set the account number and current date
-        mAccountNumber.setText( hardwareToken );
+        mAccountNumber.setText( mHardwareToken );
         mAccountDate.setText( FormatUtils.getCurrentDate() );
     }
 
@@ -378,16 +377,17 @@ public class MainActivity extends AppCompatActivity implements
      */
     public void saveCoupon( File image ) {
         final Drawable drawable = mAdvertisingImage.getDrawable();
+        final CharSequence description = mAdvertisingImage.getContentDescription();
         Bitmap bitmap = GUIUtils.drawableToBitmap( drawable );
 
         try {
             FileOutputStream outStream = new FileOutputStream( image );
-            bitmap.compress( Bitmap.CompressFormat.PNG, 90, outStream );
+            bitmap.compress( Bitmap.CompressFormat.PNG, 80, outStream );
 
             outStream.flush();
             outStream.close();
-            couponsdb.createCoupon( image.getPath(), mMerchant );
-        } catch (IOException e) {
+            couponsdb.createCoupon( image.getPath(), description.toString() );
+        } catch( IOException e ) {
             e.printStackTrace();
         }
     }
@@ -469,11 +469,11 @@ public class MainActivity extends AppCompatActivity implements
             if( mMerchant != null ) {
                 mRequestManager.invoke( new QueryRequest(
                         QUERY_ADV_REQ,
-                        hardwareToken,
+                        mHardwareToken,
                         mMerchant,
                         QueryRequest.Record.ADVERTISING
                 ) );
-
+                mAdvertisingImage.setContentDescription( mMerchant );
 
                 // Wait some time for the next advertisement request
                 mHandlerMessages.postDelayed( mGetAdvertisement, DELAY_BETWEEN_REQUESTS );
@@ -521,10 +521,8 @@ public class MainActivity extends AppCompatActivity implements
 
     public void payment( EditText inputBox ) {
         // Stop promotions
-        if( PrefUtils.isSubscribing( ac ) ) {
-            PrefUtils.setSubscribing( ac, false );
-            executePendingSubscriptionTask();
-        }
+        if( PrefUtils.isSubscribing( ac ) )
+            mPromotionManager.unsubscribe();
 
         // Set a temporary PIP and Code
         setTempPIP( inputBox.getText().toString() );
@@ -533,7 +531,7 @@ public class MainActivity extends AppCompatActivity implements
         ProgressDialogHelper.getInstance().createProgressDialog( ac );
         mRequestManager.invoke( new AuthenticateRequest(
                 AUTH_REQ,
-                hardwareToken,
+                mHardwareToken,
                 tempPIP
         ) );
     }
@@ -640,6 +638,10 @@ public class MainActivity extends AppCompatActivity implements
     public void clearSavedData() {
         PrefUtils.clearPrefConfig( ac );
         couponsdb.delete();
+        receiptsdb.delete();
+        SystemUtils.deleteDir(
+                new File( Environment.getExternalStorageDirectory(), AppConfig.COUPONS_FOLDER )
+        );
     }
 
     /**
@@ -655,6 +657,10 @@ public class MainActivity extends AppCompatActivity implements
                     .dismissKey( KeyEvent.KEYCODE_BACK )
                     .build()
             );
+
+            // It should fix the problem with the delay in the receipts
+            ac.sendBroadcast( new Intent( "com.google.android.intent.action.GTALK_HEARTBEAT" ) );
+            ac.sendBroadcast( new Intent( "com.google.android.intent.action.MCS_HEARTBEAT" ) );
         } catch( UnsupportedEncodingException e ) {
             e.printStackTrace();
         }
@@ -670,7 +676,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onClick( View v ) {
                 // Dismiss SKS and receipt
-                if( tempSKS != null && receipt.getDonorAccount() == null ) {
+                if( tempSKS != null && mHardwareToken.equals( receipt.getRecipientAccount() ) ) {
                     tempSKS.dismiss();
                     setTempSKS( null );
                 }
@@ -694,7 +700,7 @@ public class MainActivity extends AppCompatActivity implements
             @Override
             public void onClick( View v ) {
                 // Dismiss SKS and receipt
-                if( tempSKS != null && receipt.getDonorAccount() == null ) {
+                if( tempSKS != null && mHardwareToken.equals( receipt.getRecipientAccount() ) ) {
                     tempSKS.dismiss();
                     setTempSKS( null );
                 }
@@ -719,7 +725,7 @@ public class MainActivity extends AppCompatActivity implements
                 .donor( receipt.getDonorAccount() )
                 .recipient( receipt.getRecipientAccount() )
                 .tender( receipt.getTenderAmount(), receipt.getDCurrency() )
-                .cashback( receipt.getCashbackAmount() )
+                .cashback( receipt.getCashbackAmount(), receipt.getTCurrency() )
                 .save( saveClick )
                 .delete( deleteClick )
                 .build();
@@ -747,12 +753,11 @@ public class MainActivity extends AppCompatActivity implements
                     ProgressDialogHelper.getInstance().createProgressDialog( ac );
                     mRequestManager.invoke( new QueryRequest(
                             QUERY_LNK_ACC_SKS_REQ,
-                            hardwareToken,
+                            mHardwareToken,
                             this.tempPIP,
                             QueryRequest.Record.LINKED_ACCOUNTS
                     ) );
                 } else {
-                    mAdvertisingLayout.setVisibility( View.VISIBLE );
                     YodoHandler.sendMessage( mHandlerMessages, code, message );
                 }
 
@@ -784,7 +789,7 @@ public class MainActivity extends AppCompatActivity implements
             case QUERY_LNK_ACC_SKS_REQ:
                 final String originalCode =
                         tempPIP + SKS_SEP +
-                        hardwareToken + SKS_SEP +
+                                mHardwareToken + SKS_SEP +
                         response.getRTime();
 
                 switch( code ) {

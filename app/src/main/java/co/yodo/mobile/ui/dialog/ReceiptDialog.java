@@ -118,8 +118,13 @@ public class ReceiptDialog extends IDialog {
             return this;
         }
 
-        public Builder cashback( String cashback ) {
-            tvCashbackAmount.setText( FormatUtils.truncateDecimal( cashback ) );
+        public Builder cashback( String cashback, String currency ) {
+            tvCashbackAmount.setText(
+                    String.format( "%s %s",
+                        FormatUtils.truncateDecimal( cashback ),
+                        currency
+                    )
+            );
             return this;
         }
 

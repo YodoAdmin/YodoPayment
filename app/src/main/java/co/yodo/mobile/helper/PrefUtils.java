@@ -107,6 +107,20 @@ public class PrefUtils {
     }
 
     /**
+     * It savesthe current language
+     * @param c The Context of the Android system.
+     * @param language It is the language used by the app
+     * @return true  The flag was saved successfully.
+     *         false The flag was not saved successfully.
+     */
+    public static boolean saveLanguage( Context c, String language ) {
+        SharedPreferences config = getSPrefConfig( c );
+        SharedPreferences.Editor writer = config.edit();
+        writer.putString( AppConfig.SPREF_CURRENT_LANGUAGE, language );
+        return writer.commit();
+    }
+
+    /**
      * It gets the language
      * @param c The Context of the Android system
      * @return String It returns the language

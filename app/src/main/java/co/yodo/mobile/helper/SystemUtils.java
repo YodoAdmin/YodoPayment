@@ -11,6 +11,8 @@ import android.widget.Toast;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.GoogleApiAvailability;
 
+import java.io.File;
+
 import co.yodo.mobile.R;
 import co.yodo.mobile.ui.notification.AlertDialogHelper;
 import co.yodo.mobile.ui.notification.ToastMaster;
@@ -77,6 +79,25 @@ public class SystemUtils {
             return false;
         }
         return true;
+    }
+
+    /**
+     * For to Delete the directory inside list of files and inner Directory
+     * @param dir The directory
+     * @return True if it was success or false if not
+     */
+    public static boolean deleteDir( File dir ) {
+        if( dir.isDirectory() ) {
+            String[] children = dir.list();
+            for( String aChildren : children ) {
+                boolean success = deleteDir( new File( dir, aChildren ) );
+                if( !success )
+                    return false;
+            }
+        }
+
+        // The directory is now empty so delete it
+        return dir.delete();
     }
 
     /**

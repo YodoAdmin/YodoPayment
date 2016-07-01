@@ -78,6 +78,9 @@ public class GUIUtils {
             config.locale = appLoc;
 
             res.updateConfiguration( config, dm );
+        } else {
+            final String appLang = ac.getResources().getConfiguration().locale.getLanguage();
+            PrefUtils.saveLanguage( ac, appLang );
         }
     }
 

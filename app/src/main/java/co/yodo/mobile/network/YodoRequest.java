@@ -14,6 +14,7 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -35,8 +36,8 @@ import javax.xml.parsers.SAXParserFactory;
 import co.yodo.mobile.R;
 import co.yodo.mobile.component.Encrypter;
 import co.yodo.mobile.helper.SystemUtils;
-import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.handler.XMLHandler;
+import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.request.contract.IRequest;
 
 /**
@@ -59,7 +60,7 @@ public class YodoRequest {
     private static final String YODO_ADDRESS = "/yodo/yodoswitchrequest/getRequest/";
 
     /** Timeout for the requests */
-    private final static int TIMEOUT = 1000 * 10; // 10 seconds
+    private final static int TIMEOUT = 1000 * 20; // 20 seconds
     private final static int RETRIES = -1; // To avoid retries
 
     private RetryPolicy retryPolicy = new DefaultRetryPolicy(

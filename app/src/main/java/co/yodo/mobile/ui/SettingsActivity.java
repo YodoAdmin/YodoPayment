@@ -53,7 +53,6 @@ public class SettingsActivity extends AppCompatActivity {
     }
 
     public static class PrefsFragmentInner extends PreferenceFragment implements SharedPreferences.OnSharedPreferenceChangeListener {
-
         @Override
         public void onCreate( final Bundle savedInstanceState ) {
             super.onCreate( savedInstanceState );
