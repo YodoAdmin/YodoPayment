@@ -131,18 +131,21 @@ public class OkHttp3Stack implements HttpStack {
     }
 
     private static ProtocolVersion parseProtocol( final Protocol protocol ) {
-        switch (protocol) {
+        switch( protocol ) {
             case HTTP_1_0:
-                return new ProtocolVersion("HTTP", 1, 0);
+                return new ProtocolVersion( "HTTP", 1, 0 );
+
             case HTTP_1_1:
-                return new ProtocolVersion("HTTP", 1, 1);
+                return new ProtocolVersion( "HTTP", 1, 1 );
+
             case SPDY_3:
-                return new ProtocolVersion("SPDY", 3, 1);
+                return new ProtocolVersion( "SPDY", 3, 1 );
+
             case HTTP_2:
-                return new ProtocolVersion("HTTP", 2, 0);
+                return new ProtocolVersion( "HTTP", 2, 0 );
         }
 
-        throw new IllegalAccessError("Unkwown protocol");
+        throw new IllegalAccessError( "Unkwown protocol" );
     }
 
     @Override
@@ -157,25 +160,24 @@ public class OkHttp3Stack implements HttpStack {
 
         okhttp3.Request.Builder okHttpRequestBuilder = new okhttp3.Request.Builder();
         Map<String, String> headers = request.getHeaders();
-        for (final String name : headers.keySet()) {
-            okHttpRequestBuilder.addHeader(name, headers.get(name));
+        for( final String name : headers.keySet() ) {
+            okHttpRequestBuilder.addHeader( name, headers.get( name ) );
         }
 
-        for (final String name : additionalHeaders.keySet()) {
-            okHttpRequestBuilder.addHeader(name, additionalHeaders.get(name));
+        for( final String name : additionalHeaders.keySet() ) {
+            okHttpRequestBuilder.addHeader( name, additionalHeaders.get( name ) );
         }
 
-        setConnectionParametersForRequest(okHttpRequestBuilder, request);
+        setConnectionParametersForRequest( okHttpRequestBuilder, request );
 
-        okhttp3.Request okhttp3Request = okHttpRequestBuilder.url(request.getUrl()).build();
-        Response okHttpResponse = client.newCall(okhttp3Request).execute();
+        okhttp3.Request okhttp3Request = okHttpRequestBuilder.url( request.getUrl() ).build();
+        Response okHttpResponse = client.newCall( okhttp3Request ).execute();
 
-        StatusLine responseStatus = new BasicStatusLine
-                (
-                        parseProtocol(okHttpResponse.protocol()),
+        StatusLine responseStatus = new BasicStatusLine (
+                        parseProtocol( okHttpResponse.protocol() ),
                         okHttpResponse.code(),
                         okHttpResponse.message()
-                );
+        );
 
         BasicHttpResponse response = new BasicHttpResponse( responseStatus );
         response.setEntity( entityFromOkHttpResponse( okHttpResponse ) );
