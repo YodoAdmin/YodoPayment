@@ -61,8 +61,6 @@ public class FormatUtils {
         }
 
         return DateUtils. getRelativeTimeSpanString( ac, c.getTimeInMillis(), true ).toString();
-        //return DateUtils.getRelativeTimeSpanString( c.getTimeInMillis(), System.currentTimeMillis(), DateUtils.FORMAT_ABBREV_ALL ).toString();
-        //return sdf.format( c.getTime() );
     }
 
     /**

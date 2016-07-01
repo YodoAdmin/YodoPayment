@@ -4,6 +4,7 @@ import android.annotation.SuppressLint;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.support.v4.util.LruCache;
+import android.text.TextUtils;
 
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
@@ -218,9 +219,7 @@ public class YodoRequest {
                 }
         );
 
-        httpRequest.setTag( "GET" );
-        httpRequest.setRetryPolicy( retryPolicy );
-        getRequestQueue().add( httpRequest );
+        addToRequestQueue( httpRequest );
     }
 
     /**
@@ -269,7 +268,11 @@ public class YodoRequest {
             }
         };
 
-        httpRequest.setTag( "POST" );
+        addToRequestQueue( httpRequest );
+    }
+
+    public <T> void addToRequestQueue( Request<T> httpRequest ) {
+        httpRequest.setTag( TAG );
         httpRequest.setRetryPolicy( retryPolicy );
         getRequestQueue().add( httpRequest );
     }
@@ -297,6 +300,12 @@ public class YodoRequest {
             response.setMessage( mCtx.getString( R.string.message_error_unknown ) );
         }
         listener.onResponse( responseCode, response );
+    }
+
+    @SuppressWarnings( "unused" )
+    public void cancelPendingRequests( Object tag ) {
+        if( mRequestQueue != null )
+            mRequestQueue.cancelAll( tag );
     }
 
     /**

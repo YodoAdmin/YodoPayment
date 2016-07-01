@@ -199,13 +199,13 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onStop() {
-        // Unregister from event bus
-        EventBus.getDefault().unregister( this );
-        // Unregister listener for preferences
-        PrefUtils.unregisterSPListener( ac, this );
+        super.onStop();
         // Disconnect the advertise service
         this.mPromotionManager.stopService();
-        super.onStop();
+        // Unregister listener for preferences
+        PrefUtils.unregisterSPListener( ac, this );
+        // Unregister from event bus
+        EventBus.getDefault().unregister( this );
     }
 
     @Override
@@ -770,7 +770,7 @@ public class MainActivity extends AppCompatActivity implements
                         mRequestManager.getImageLoader().get( url, new ImageLoader.ImageListener() {
                                 @Override
                                 public void onResponse( ImageLoader.ImageContainer response, boolean isImmediate ) {
-                                    if( response.getBitmap() != null ) {
+                                    if( response.getBitmap() != null && mMerchant != null ) {
                                         // load image into ImageView
                                         mAdvertisingImage.setImageBitmap( response.getBitmap() );
                                     }

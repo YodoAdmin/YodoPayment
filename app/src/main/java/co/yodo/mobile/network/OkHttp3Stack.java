@@ -74,15 +74,15 @@ public class OkHttp3Stack implements HttpStack {
     }
 
     @SuppressWarnings("deprecation")
-    private static void setConnectionParametersForRequest
-            (okhttp3.Request.Builder builder, Request<?> request)
+    private static void setConnectionParametersForRequest( okhttp3.Request.Builder builder, Request<?> request )
             throws IOException, AuthFailureError {
-        switch (request.getMethod()) {
+        switch( request.getMethod() ) {
             case Request.Method.DEPRECATED_GET_OR_POST:
                 byte[] postBody = request.getPostBody();
-                if (postBody != null) {
-                    builder.post(RequestBody.create
-                            (MediaType.parse(request.getPostBodyContentType()), postBody));
+                if( postBody != null ) {
+                    builder.post( RequestBody.create(
+                            MediaType.parse( request.getPostBodyContentType() ), postBody )
+                    );
                 }
                 break;
 
@@ -95,11 +95,11 @@ public class OkHttp3Stack implements HttpStack {
                 break;
 
             case Request.Method.POST:
-                builder.post(createRequestBody(request));
+                builder.post( createRequestBody( request ) );
                 break;
 
             case Request.Method.PUT:
-                builder.put(createRequestBody(request));
+                builder.put( createRequestBody( request ) );
                 break;
 
             case Request.Method.HEAD:
@@ -107,15 +107,15 @@ public class OkHttp3Stack implements HttpStack {
                 break;
 
             case Request.Method.OPTIONS:
-                builder.method("OPTIONS", null);
+                builder.method( "OPTIONS", null );
                 break;
 
             case Request.Method.TRACE:
-                builder.method("TRACE", null);
+                builder.method( "TRACE", null );
                 break;
 
             case Request.Method.PATCH:
-                builder.patch(createRequestBody(request));
+                builder.patch( createRequestBody( request ) );
                 break;
 
             default:
