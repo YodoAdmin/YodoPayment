@@ -44,6 +44,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
 import co.yodo.mobile.R;
+import co.yodo.mobile.broadcastreceiver.HeartbeatReceiver;
 import co.yodo.mobile.component.SKSCreater;
 import co.yodo.mobile.database.CouponsDataSource;
 import co.yodo.mobile.database.ReceiptsDataSource;
@@ -659,8 +660,7 @@ public class MainActivity extends AppCompatActivity implements
             );
 
             // It should fix the problem with the delay in the receipts
-            ac.sendBroadcast( new Intent( "com.google.android.intent.action.GTALK_HEARTBEAT" ) );
-            ac.sendBroadcast( new Intent( "com.google.android.intent.action.MCS_HEARTBEAT" ) );
+            ac.sendBroadcast( new Intent( ac, HeartbeatReceiver.class ) );
         } catch( UnsupportedEncodingException e ) {
             e.printStackTrace();
         }

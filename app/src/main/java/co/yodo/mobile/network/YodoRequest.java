@@ -14,7 +14,6 @@ import com.android.volley.RetryPolicy;
 import com.android.volley.ServerError;
 import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.HurlStack;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
@@ -39,6 +38,7 @@ import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.network.handler.XMLHandler;
 import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.request.contract.IRequest;
+import okhttp3.OkHttpClient;
 
 /**
  * Created by luis on 15/12/14.
@@ -138,7 +138,10 @@ public class YodoRequest {
      */
     public RequestQueue getRequestQueue() {
         if( mRequestQueue == null ) {
-            mRequestQueue = Volley.newRequestQueue( mCtx );
+            mRequestQueue = Volley.newRequestQueue(
+                    mCtx,
+                    new OkHttp3Stack( new OkHttpClient() )
+            );
         }
         return mRequestQueue;
     }
