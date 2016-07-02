@@ -8,6 +8,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.support.v4.app.TaskStackBuilder;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
@@ -20,6 +21,7 @@ import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.database.ReceiptsDataSource;
 import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.ui.MainActivity;
 import co.yodo.mobile.ui.ReceiptsActivity;
 import co.yodo.mobile.network.handler.JSONHandler;
 
@@ -105,8 +107,11 @@ public class YodoGCMListenerService extends GcmListenerService {
         }
 
         Intent intent = new Intent( this, ReceiptsActivity.class );
-        intent.addFlags( Intent.FLAG_ACTIVITY_CLEAR_TOP );
-        PendingIntent pendingIntent = PendingIntent.getActivity( this, 0, intent, PendingIntent.FLAG_ONE_SHOT );
+
+        // Use TaskStackBuilder to build the back stack and get the PendingIntent
+        PendingIntent pendingIntent = TaskStackBuilder.create( this )
+                        .addNextIntentWithParentStack( intent )
+                        .getPendingIntent( 0, PendingIntent.FLAG_UPDATE_CURRENT );
 
         String text =
                 FormatUtils.truncateDecimal( response.getParam( ServerResponse.AMOUNT ) ) + " " +
