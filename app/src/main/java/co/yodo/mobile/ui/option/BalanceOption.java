@@ -88,6 +88,11 @@ public class BalanceOption extends IOption implements YodoRequest.RESTListener {
     }
 
     @Override
+    public void onPrepare() {
+        PrefUtils.setSubscribing( this.mActivity, false );
+    }
+
+    @Override
     public void onResponse( int responseCode, ServerResponse response ) {
         // Set listener to the principal activity
         ProgressDialogHelper.getInstance().destroyProgressDialog();

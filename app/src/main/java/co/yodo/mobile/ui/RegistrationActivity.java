@@ -172,6 +172,10 @@ public class RegistrationActivity extends AppCompatActivity implements EulaUtils
     }
 
     @Override
+    public void onPrepare() {
+    }
+
+    @Override
     public void onResponse( int responseCode, ServerResponse response ) {
         ProgressDialogHelper.getInstance().destroyProgressDialog();
         String code, message;

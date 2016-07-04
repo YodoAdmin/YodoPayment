@@ -75,9 +75,6 @@ public class PromotionManager {
     }
 
     public void startService() {
-        // Creates the pub sub strategy for nearby
-        /*PUB_SUB_STRATEGY = new Strategy.Builder()
-                .setTtlSeconds( PrefUtils.getPromotionsTime( ac ) ).build();*/
         // Connect to the service
         mGoogleApiClient = new GoogleApiClient.Builder( ac )
                 .addConnectionCallbacks( mActivity )

@@ -167,6 +167,10 @@ public class SplashActivity extends Activity implements YodoRequest.RESTListener
     }
 
     @Override
+    public void onPrepare() {
+    }
+
+    @Override
     public void onResponse( int responseCode, ServerResponse response ) {
         String code, message;
 

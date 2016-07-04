@@ -498,7 +498,6 @@ public class MainActivity extends AppCompatActivity implements
         } else {
             PrefUtils.setSubscribing( ac, false );
         }
-        executePendingSubscriptionTask();
     }
 
     /**
@@ -521,10 +520,6 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void payment( EditText inputBox ) {
-        // Stop promotions
-        if( PrefUtils.isSubscribing( ac ) )
-            mPromotionManager.unsubscribe();
-
         // Set a temporary PIP and Code
         setTempPIP( inputBox.getText().toString() );
 
@@ -740,6 +735,11 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     @Override
+    public void onPrepare() {
+        PrefUtils.setSubscribing( ac, false );
+    }
+
+    @Override
     public void onResponse( int responseCode, ServerResponse response ) {
         if( responseCode != QUERY_ADV_REQ )
             ProgressDialogHelper.getInstance().destroyProgressDialog();
@@ -863,6 +863,7 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
+        executePendingSubscriptionTask();
         runOnUiThread( new Runnable() {
             @Override
             public void run() {

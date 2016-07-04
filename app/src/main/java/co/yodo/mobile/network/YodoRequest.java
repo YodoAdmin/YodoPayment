@@ -88,6 +88,11 @@ public class YodoRequest {
 
     public interface RESTListener {
         /**
+         * Listener for the preparation of the request
+         */
+        void onPrepare();
+
+        /**
          * Listener for the server responses
          * @param responseCode Code of the request
          * @param response POJO for the response
@@ -272,6 +277,9 @@ public class YodoRequest {
     }
 
     public <T> void addToRequestQueue( Request<T> httpRequest ) {
+        // Setups any configuration before the request is added to the queue
+        listener.onPrepare();
+
         httpRequest.setTag( TAG );
         httpRequest.setRetryPolicy( retryPolicy );
         getRequestQueue().add( httpRequest );

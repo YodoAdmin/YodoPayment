@@ -194,6 +194,10 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
     }
 
     @Override
+    public void onPrepare() {
+    }
+
+    @Override
     public void onResponse( int responseCode, ServerResponse response ) {
         ProgressDialogHelper.getInstance().destroyProgressDialog();
         String code, message;

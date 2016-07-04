@@ -167,6 +167,10 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
     }
 
     @Override
+    public void onPrepare() {
+    }
+
+    @Override
     public void onResponse( int requestCode, ServerResponse response ) {
         ProgressDialogHelper.getInstance().destroyProgressDialog();
         String code, message;

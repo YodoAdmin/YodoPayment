@@ -25,7 +25,8 @@ import co.yodo.mobile.service.model.GCMResponse;
  * TODO: Customize class - update intent actions, extra parameters and static
  * helper methods.
  */
-public class RegistrationIntentService extends IntentService implements YodoRequest.RESTListener {
+public
+class RegistrationIntentService extends IntentService implements YodoRequest.RESTListener {
     /** DEBUG */
     @SuppressWarnings( "unused" )
     private static final String TAG = RegistrationIntentService.class.getSimpleName();
@@ -74,6 +75,10 @@ public class RegistrationIntentService extends IntentService implements YodoRequ
             GCMResponse notify = new GCMResponse( e );
             EventBus.getDefault().postSticky( notify );
         }
+    }
+
+    @Override
+    public void onPrepare() {
     }
 
     @Override
