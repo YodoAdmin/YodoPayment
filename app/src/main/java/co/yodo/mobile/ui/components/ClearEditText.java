@@ -1,7 +1,8 @@
-package co.yodo.mobile.component;
+package co.yodo.mobile.ui.components;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.v4.content.res.ResourcesCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
@@ -17,19 +18,19 @@ import co.yodo.mobile.R;
  */
 public class ClearEditText extends EditText {
     //The image we are going to use for the Clear button
-    private Drawable imgCloseButton = getResources().getDrawable( R.drawable.clear_button_image );
+    private Drawable imgCloseButton = ResourcesCompat.getDrawable( getResources(), R.drawable.clear_button_image, null );
 
-    public ClearEditText(Context context) {
+    public ClearEditText( Context context ) {
         super( context );
         init();
     }
 
-    public ClearEditText(Context context, AttributeSet attrs, int defStyle) {
+    public ClearEditText( Context context, AttributeSet attrs, int defStyle ) {
         super( context, attrs, defStyle );
         init();
     }
 
-    public ClearEditText(Context context, AttributeSet attrs) {
+    public ClearEditText( Context context, AttributeSet attrs ) {
         super( context, attrs );
         init();
     }

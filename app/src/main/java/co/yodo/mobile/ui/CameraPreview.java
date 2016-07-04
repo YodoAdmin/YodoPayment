@@ -26,7 +26,9 @@ package co.yodo.mobile.ui;
 import java.io.IOException;
 import java.util.List;
 
-import co.yodo.mobile.helper.AppUtils;
+import co.yodo.mobile.helper.CryptUtils;
+import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.SystemUtils;
 import visidon.Lib.Parameters;
 import visidon.Lib.VerificationAPI;
 import visidon.Lib.VerificationAPI.InitState;
@@ -163,7 +165,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 				mCamera.setPreviewDisplay( holder );
 			}
 		} catch (IOException exception) {
-            AppUtils.Logger( TAG, "IOException caused by setPreviewDisplay() : " + exception.getMessage() );
+			SystemUtils.Logger( TAG, "IOException caused by setPreviewDisplay() : " + exception.getMessage() );
 		}
 	}
 
@@ -175,7 +177,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 
 		// Release FaceAPI resources
 		ReleaseState state = VerificationAPI.release();
-        AppUtils.Logger( TAG, "ReleaseState: " + state );
+		SystemUtils.Logger( TAG, "ReleaseState: " + state );
 	} 
 
 	private Size getOptimalPreviewSize(List<Size> sizes, int w, int h) {
@@ -229,14 +231,14 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 		params.securityLevel = VerificationAPI.SecurityLevel.MEDIUM;
 		params.livenessDetection = VerificationAPI.LivenessDetection.LOW;
 
-        AppUtils.Logger( TAG, "Initializing... " );
-        AppUtils.Logger( TAG, "Preview size: width = " + params.imageWidth + " height = " + params.imageHeight );
+		SystemUtils.Logger( TAG, "Initializing... " );
+		SystemUtils.Logger( TAG, "Preview size: width = " + params.imageWidth + " height = " + params.imageHeight );
 
 		//4. Initialize API 
 		InitState state = VerificationAPI.initialize( params );
 
-        AppUtils.Logger( TAG, "InitState: " + state );
-        AppUtils.Logger( TAG, "Version string: " + VerificationAPI.getVersion() );
+		SystemUtils.Logger( TAG, "InitState: " + state );
+		SystemUtils.Logger( TAG, "Version string: " + VerificationAPI.getVersion() );
 		
 		// Create frame callback object and setup it with a camera
 		// In this example UI components that are updated with face analysis information
@@ -281,7 +283,7 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 		// Start camera preview
 		mCamera.startPreview();
 
-        AppUtils.Logger( TAG, "Preview started" );
+		SystemUtils.Logger( TAG, "Preview started" );
 	}
 	
 	public void setFace(String token) {
@@ -292,19 +294,19 @@ public class CameraPreview extends ViewGroup implements SurfaceHolder.Callback {
 	
 	private void updateDB() {
 		mFrameCallback.input.mEnrollFlag = false;
-		mFrameCallback.input.mNbrOfItems = VerificationAPI.getNbrOfDBItems();	
-		byte[] faceTemplate = AppUtils.hexToBytes( token );
+		mFrameCallback.input.mNbrOfItems = VerificationAPI.getNbrOfDBItems();
+		byte[] faceTemplate = CryptUtils.hexToBytes( token );
 
-        AppUtils.Logger( TAG, "face template obtained, size = " + faceTemplate.length );
+		SystemUtils.Logger( TAG, "face template obtained, size = " + faceTemplate.length );
 		// save template somewhere
-        AppUtils.Logger( TAG, "deleting face database" );
+		SystemUtils.Logger( TAG, "deleting face database" );
 		// delete recently enrolled face
 		ResetState resState = VerificationAPI.resetDatabase();
-        AppUtils.Logger( TAG, "reset state = " + resState );
+		SystemUtils.Logger( TAG, "reset state = " + resState );
 		
 		// load template
 		LoadState lstate = VerificationAPI.loadFaceTemplate(faceTemplate);
-        AppUtils.Logger( TAG, "load face template state = " + lstate );
+		SystemUtils.Logger( TAG, "load face template state = " + lstate );
 		mFrameCallback.input.mNbrOfItems = VerificationAPI.getNbrOfDBItems();	 
 	}
 }

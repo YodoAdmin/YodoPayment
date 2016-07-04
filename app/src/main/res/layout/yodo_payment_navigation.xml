@@ -22,6 +22,7 @@
 
         <Button
             style="@style/MenuButton"
+            android:id="@+id/bResetPip"
             android:drawableLeft="@drawable/settings"
             android:drawableStart="@drawable/settings"
             android:text="@string/reset_pip"
@@ -29,12 +30,14 @@
 
         <Button
             style="@style/MenuButton"
+            android:id="@+id/bReceipts"
             android:drawableLeft="@drawable/saved_receipts"
             android:drawableStart="@drawable/saved_receipts"
             android:text="@string/saved_receipts"
             android:onClick="savedReceiptsClick" />
 
         <Button
+            android:id="@+id/bLinks"
             style="@style/MenuButton"
             android:drawableLeft="@drawable/link_accounts"
             android:drawableStart="@drawable/link_accounts"
@@ -49,6 +52,7 @@
 
         <Button
             style="@style/MenuButton"
+            android:id="@+id/bBalance"
             android:drawableLeft="@drawable/get_balance"
             android:drawableStart="@drawable/get_balance"
             android:text="@string/get_balance"
@@ -56,6 +60,7 @@
 
         <Button
             style="@style/MenuButton"
+            android:id="@+id/bClose"
             android:drawableLeft="@drawable/close_account"
             android:drawableStart="@drawable/close_account"
             android:text="@string/close_account"

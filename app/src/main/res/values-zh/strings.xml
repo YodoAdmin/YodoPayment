@@ -82,7 +82,6 @@
     <!-- Error Messages -->
     <string name="error">在此過程中發生錯誤。稍後再試</string>
     <string name="error_registration">出了毛病，登記</string>
-    <string name="no_internet">对不起，网络连接不成功。</string>
     <string name="message.no_hardware">您必须先打开Bluetooth</string>
     <string name="no_camera">没有可用的摄像头</string>
     <string name="no_available">对不起，此功能尚不可用</string>

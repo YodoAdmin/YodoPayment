@@ -7,7 +7,7 @@
         android:entries="@array/languages_array"
         android:entryValues="@array/languages_array_values"
         android:defaultValue="en"/>
-
+<!--
     <PreferenceCategory android:title="@string/config_pref_services">
 
         <ListPreference
@@ -19,5 +19,5 @@
             android:defaultValue="300"/>
 
     </PreferenceCategory>
-
+-->
 </PreferenceScreen>

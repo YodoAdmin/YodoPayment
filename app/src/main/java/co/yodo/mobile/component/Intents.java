@@ -1,4 +1,4 @@
-package co.yodo.mobile.helper;
+package co.yodo.mobile.component;
 
 /**
  * Created by luis on 23/01/15.

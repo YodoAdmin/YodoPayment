@@ -50,7 +50,7 @@
                 android:textStyle="bold"
                 android:text="@string/register_pip"/>
 
-            <co.yodo.mobile.component.ClearEditText
+            <co.yodo.mobile.ui.components.ClearEditText
                 android:id="@+id/pipText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -60,7 +60,7 @@
                 android:hint="@string/pip_hint"
                 android:maxLength="8" />
 
-            <co.yodo.mobile.component.ClearEditText
+            <co.yodo.mobile.ui.components.ClearEditText
                 android:id="@+id/confirmationPipText"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -71,6 +71,7 @@
                 android:maxLength="8" />
 
             <CheckBox
+                android:id="@+id/cbShowPassword"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="@string/show_pass"

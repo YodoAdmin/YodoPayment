@@ -14,14 +14,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import co.yodo.mobile.R;
+import co.yodo.mobile.helper.GUIUtils;
+import co.yodo.mobile.network.request.DeLinkRequest;
 import co.yodo.mobile.ui.notification.ProgressDialogHelper;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.notification.YodoHandler;
 import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.helper.AppConfig;
-import co.yodo.mobile.helper.AppUtils;
-import co.yodo.mobile.helper.Intents;
-import co.yodo.mobile.network.builder.ServerRequest;
+import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.component.Intents;
 import co.yodo.mobile.network.YodoRequest;
 
 /**
@@ -41,7 +42,7 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
     private String pip;
 
     /** Messages Handler */
-    private static YodoHandler handlerMessages;
+    private YodoHandler handlerMessages;
 
     /** Manager for the server requests */
     private YodoRequest mRequestManager;
@@ -51,10 +52,13 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
     private LinearLayout llFrom;
     private View vCurrentDeLink;
 
+    /** Response codes for the server requests */
+    private static final int DELINK_REQ = 0x00;
+
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        AppUtils.setLanguage( DeLinkActivity.this );
+        GUIUtils.setLanguage( DeLinkActivity.this );
         setContentView( R.layout.activity_delink );
 
         setupGUI();
@@ -114,6 +118,7 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
         Toolbar toolbar = (Toolbar) findViewById( R.id.actionBar );
 
         // Setup the toolbar
+        setTitle( R.string.title_activity_de_link );
         setSupportActionBar( toolbar );
         ActionBar actionBar = getSupportActionBar();
         if( actionBar != null )
@@ -125,7 +130,7 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
      */
     private void updateData() {
         // Gets the hardware token - account identifier
-        hardwareToken = AppUtils.getHardwareToken( ac );
+        hardwareToken = PrefUtils.getHardwareToken( ac );
         if( hardwareToken == null ) {
             ToastMaster.makeText( ac, R.string.message_no_hardware, Toast.LENGTH_LONG ).show();
             finish();
@@ -144,23 +149,23 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
         String[] temp = toAccounts.split( "-" );
         for( String account : temp ) {
             if( account != null && account.length() > 0 )
-                llTo.addView( getAccountCheckBox( account, ServerRequest.DELINK_TO_ST ) );
+                llTo.addView( getAccountCheckBox( account, DeLinkRequest.DeLinkST.TO ) );
         }
 
         temp = fromAccounts.split( "-" );
         for( String account : temp ) {
             if( account != null && account.length() > 0 )
-                llFrom.addView( getAccountCheckBox( account, ServerRequest.DELINK_FROM_ST ) );
+                llFrom.addView( getAccountCheckBox( account, DeLinkRequest.DeLinkST.FROM ) );
         }
     }
 
     /**
      * Creates checkbox for each one of the linked accounts
      * @param text The identifier of the account
-     * @param accountType The account type (giving -- to, or receiving -- from)
+     * @param requestST The account/request type (giving -- to, or receiving -- from)
      * @return A TextView behaving as a CheckBox
      */
-    private TextView getAccountCheckBox( final String text, final String accountType ) {
+    private TextView getAccountCheckBox( final String text, final DeLinkRequest.DeLinkST requestST ) {
         final String linkedAccount = "..." + text.substring( text.length() - 5 );
 
         final TextView account = new TextView( ac );
@@ -168,7 +173,7 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
         account.setTypeface( Typeface.DEFAULT_BOLD );
         account.setText( linkedAccount );
         account.setCompoundDrawablesWithIntrinsicBounds( R.drawable.yodo_heart, 0, 0, 0 );
-        account.setContentDescription( accountType );
+        account.setContentDescription( requestST.getValue() );
 
         account.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -176,12 +181,13 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
                 vCurrentDeLink = account;
 
                 ProgressDialogHelper.getInstance().createProgressDialog( ac );
-                mRequestManager.requestDeLinkAccount(
+                mRequestManager.invoke( new DeLinkRequest(
+                        DELINK_REQ,
                         hardwareToken,
                         pip,
                         text,
-                        accountType
-                );
+                        requestST
+                ) );
             }
         });
 
@@ -189,12 +195,16 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
     }
 
     @Override
-    public void onResponse( YodoRequest.RequestType type, ServerResponse response ) {
+    public void onPrepare() {
+    }
+
+    @Override
+    public void onResponse( int responseCode, ServerResponse response ) {
         ProgressDialogHelper.getInstance().destroyProgressDialog();
         String code, message;
 
-        switch( type ) {
-            case DELINK_ACC_REQUEST:
+        switch( responseCode ) {
+            case DELINK_REQ:
                 code = response.getCode();
 
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
@@ -202,7 +212,7 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
                 }
 
                 message = response.getMessage();
-                AppUtils.sendMessage( handlerMessages, code, message );
+                YodoHandler.sendMessage( handlerMessages, code, message );
                 break;
         }
     }

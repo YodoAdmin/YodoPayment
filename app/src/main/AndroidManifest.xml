@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="co.yodo.mobile" >
+          xmlns:tools="http://schemas.android.com/tools"
+          package="co.yodo.mobile" >
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -56,6 +57,10 @@
                 <category android:name="co.yodo.mobile" />
             </intent-filter>
         </receiver>
+
+        <receiver
+            android:name=".broadcastreceiver.HeartbeatReceiver"
+            android:exported="false" />
         <!-- END BroadcastReceivers -->
 
         <!-- Start Services -->
@@ -84,39 +89,48 @@
             android:label="@string/title_activity_registration"
             android:screenOrientation="sensorPortrait" >
         </activity>
+
         <activity
             android:name=".ui.RegistrationBiometricActivity"
             android:label="@string/title_activity_registration_biometric"
             android:screenOrientation="sensorPortrait" >
         </activity>
+
         <activity
             android:name=".ui.CameraActivity"
             android:label="@string/title_activity_camera"
             android:screenOrientation="sensorLandscape" >
         </activity>
+
         <activity
             android:name=".ui.MainActivity"
             android:label="@string/title_activity_main"
             android:screenOrientation="sensorPortrait" >
         </activity>
+
         <activity
             android:name=".ui.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:theme="@style/AppTheme.Settings" >
 >
         </activity>
+
         <activity
-            android:name=".ui.PipResetActivity"
+            android:name=".ui.ResetPIPActivity"
             android:label="@string/title_activity_pip_reset" >
         </activity>
+
         <activity
             android:name=".ui.CouponsActivity"
             android:label="@string/title_activity_coupons" >
         </activity>
+
         <activity
             android:name=".ui.ReceiptsActivity"
             android:label="@string/title_activity_receipts"
-            android:launchMode="singleTop" >
+            android:parentActivityName=".ui.MainActivity"
+            android:launchMode="singleTop">
+
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH" />
             </intent-filter>
@@ -124,7 +138,14 @@
             <meta-data
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable" />
+
+            <!-- The meta-data element is needed for versions lower than 4.1 -->
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".ui.MainActivity" />
+
         </activity>
+
         <activity
             android:name=".ui.DeLinkActivity"
             android:label="@string/title_activity_de_link" >
