@@ -10,7 +10,7 @@ import co.yodo.mobile.BuildConfig;
  */
 public class AppConfig {
     /** DEBUG flag */
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     /** DEBUG for Volley */
     static {

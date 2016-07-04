@@ -68,7 +68,7 @@ public class ReceiptsActivity extends AppCompatActivity implements
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         GUIUtils.setLanguage( ReceiptsActivity.this );
-        setContentView(R.layout.activity_receipts);
+        setContentView( R.layout.activity_receipts );
 
         setupGUI();
         updateData();
@@ -169,13 +169,14 @@ public class ReceiptsActivity extends AppCompatActivity implements
         receiptsdb.open();
 
         // Get controllers
-        pbLoading = (ProgressBar ) findViewById( R.id.pbLoading );
+        pbLoading = (ProgressBar) findViewById( R.id.pbLoading );
         lvReceipts = (ListView) findViewById( R.id.receiptsList );
 
         // Only used at creation
         Toolbar toolbar = (Toolbar) findViewById( R.id.actionBar );
 
         // Setup the toolbar
+        setTitle( R.string.title_activity_receipts );
         setSupportActionBar( toolbar );
         ActionBar actionBar = getSupportActionBar();
         if( actionBar != null )

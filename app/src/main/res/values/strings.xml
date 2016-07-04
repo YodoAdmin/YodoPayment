@@ -16,7 +16,7 @@
     <string name="drawer_open">open</string>
     <string name="drawer_close">close</string>
     <string name="version.label">Version:</string>
-    <string name="version.value" translatable="false">1.7.4</string>
+    <string name="version.value" translatable="false">1.7.5</string>
 
     <!-- Action Menu -->
     <string name="action_settings">Settings</string>
@@ -84,7 +84,6 @@
     <!-- Error Application Messages -->
     <string name="error">An error occurred in the process. Try again later</string>
     <string name="error_registration">Something went wrong with the registration</string>
-    <string name="no_internet">Sorry, weak or no Internet connection</string>
     <string name="message.no_hardware">You must turn on your bluetooth first</string>
     <string name="no_camera">This camera doesn\'t exist</string>
     <string name="no_available">This feature is not available yet</string>
@@ -99,7 +98,7 @@
     <string name="message.error.code">Failed to resolve error with code:</string>
     <string name="message.error.no_connectivity">No connectivity, cannot proceed. Fix in \'Settings\' and try again.</string>
     <string name="message.error.unknown">This is embarrassing! An error occurred in the process</string>
-    <string name="message.error.network">Sorry, seems that you don\'t have an Internet connection right now</string>
+    <string name="message.error.network">Sorry, weak or no Internet connection. Try again later</string>
     <string name="message.error.timeout">Sorry, seems that the server is too busy. Try again later</string>
     <string name="message.error.server">Sorry, the server responded with an error. Try again later</string>
     <string name="message.error.transaction">Sorry, the type of transaction is not valid. Try again later</string>

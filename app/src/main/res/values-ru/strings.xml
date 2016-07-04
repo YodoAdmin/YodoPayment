@@ -82,7 +82,6 @@
     <!-- Error Messages -->
     <string name="error">Произошла ошибка в процессе! Пожалуйста, попробуйте позже.</string>
     <string name="error_registration">Что-то не так с регистрацией</string>
-    <string name="no_internet">Извините, у Вас сейчас нет доступа к сети интернет</string>
     <string name="message.no_hardware">Вы должны включить Bluetooth</string>
     <string name="no_camera">Камера не обнаружена</string>
     <string name="no_available">Эта функция пока недоступна</string>
@@ -97,7 +96,7 @@
     <string name="message.error.code">Не удалось найти решение ошибки с кодом:</string>
     <string name="message.error.no_connectivity">Нет связи, не можем продолжить. Исправьте в Настройках и попробуйте еще раз</string>
     <string name="message.error.unknown">В процессе выполнения возникла ошибка</string>
-    <string name="message.error.network">Похоже у вас отсутствует соединение с интернетом</string>
+    <string name="message.error.network">К сожалению, слабый или отсутствует подключение к Интернету. Попробуйте позже</string>
     <string name="message.error.timeout">Сервер перегружен. Попробуйте еще раз позже</string>
     <string name="message.error.server">Сервер ответил с ошибкой. Попробуйте еще раз позже</string>
     <string name="message.error.transaction">Неверный тип транзакции. Попробуйте еще раз позже</string>

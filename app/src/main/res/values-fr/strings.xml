@@ -82,7 +82,6 @@
     <!-- Error Messages -->
     <string name="error">This is embarrassing! An error occurred in the process</string>
     <string name="error_registration">Something went wrong with the registration</string>
-    <string name="no_internet">Sorry, seems that you don\'t have an Internet connection right now</string>
     <string name="message.no_hardware">You must turn on your bluetooth first</string>
     <string name="no_camera">This camera doesn\'t exist</string>
     <string name="no_available">This feature is not available yet</string>
@@ -92,8 +91,13 @@
     <string name="error.not_supported">This device is not supported</string>
     <string name="error.play_services">Google Play Services is required</string>
     <string name="error.gcm_registration">Sorry we couldn\'t save your token, try again later</string>
+
+    <!-- Error Server Messages -->
+    <string name="message.error.code"> Impossible de résoudre l\'erreur avec le code:</string>
+    <string name="message.error.incorrect_pip">PIP incorrect. Réessayer</string>
+    <string name="message.error.no_connectivity"> Aucune connectivité, ne peut pas continuer. Fixer dans «Paramètres» et essayez à nouveau</string>
     <string name="message.error.unknown">This is embarrassing! An error occurred in the process</string>
-    <string name="message.error.network">Sorry, seems that you don\'t have an Internet connection right now</string>
+    <string name="message.error.network">Sorry, weak or no Internet connection. Try again later</string>
     <string name="message.error.timeout">Sorry, seems that the server is too busy. Try again later</string>
     <string name="message.error.server">Sorry, the server responded with an error. Try again later</string>
     <string name="message.error.transaction">Sorry, the type of transaction is not valid. Try again later</string>
@@ -191,9 +195,5 @@
 
     <!-- ACRA -->
     <string name="crash_toast_text">Ooooops ! I crashed, but a report has been sent to my developer to help fix the issue !</string>
-    <string name="message.error.code"> Impossible de résoudre l\'erreur avec le code:</string>
-    <string name="message.error.incorrect_pip">PIP incorrect. Réessayer</string>
-    <string name="message.error.no_connectivity"> Aucune connectivité, ne peut pas continuer. Fixer dans «Paramètres» et essayez à nouveau</string>
-    "
 
 </resources>

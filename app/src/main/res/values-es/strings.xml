@@ -82,7 +82,6 @@
     <!-- Error Application Messages -->
     <string name="error">Esto es embarazoso! Ocurrió un error en el proceso</string>
     <string name="error_registration">Algo fue mal con el registro</string>
-    <string name="no_internet">Lo sentimos, parece que no dispone de una conexion a Internet en este momento</string>
     <string name="message.no_hardware">Debe encender su bluetooth primero</string>
     <string name="no_camera">Esta cámara no existe</string>
     <string name="no_available">Aún no disponible</string>
@@ -97,7 +96,7 @@
     <string name="message.error.code">Fallo al resolver error con código:</string>
     <string name="message.error.no_connectivity">No hay conectividad, no se puede proceder. Arreglelo en \'Configuración\' e intente de nuevo</string>
     <string name="message.error.unknown">Esto es embarazoso! Ocurrió un error en el proceso</string>
-    <string name="message.error.network">Lo sentimos, parece que no dispone de una conexion a Internet en este momento</string>
+    <string name="message.error.network">Lo sentimos, conexión a Internet débil o no existente. Inténtelo más tarde</string>
     <string name="message.error.timeout">Lo sentimos, parece que el servidor está muy ocupado. Intente de nuevo luego</string>
     <string name="message.error.server">Lo sentimos, el servidor respondió con un error. Intente de nuevo luego</string>
     <string name="message.error.transaction">Lo sentimos, el tipo de transacción no es válido. Intente de nuevo luego</string>

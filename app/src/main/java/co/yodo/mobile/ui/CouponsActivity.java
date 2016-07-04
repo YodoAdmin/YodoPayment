@@ -140,6 +140,7 @@ public class CouponsActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById( R.id.actionBar );
 
         // Setup the toolbar
+        setTitle( R.string.title_activity_coupons );
         setSupportActionBar( toolbar );
         ActionBar actionbar = getSupportActionBar();
         if( actionbar != null )

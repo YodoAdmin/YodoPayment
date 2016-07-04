@@ -130,6 +130,7 @@ public class ResetPIPActivity extends AppCompatActivity implements YodoRequest.R
         Toolbar toolbar = (Toolbar) findViewById( R.id.actionBar );
 
         // Setup the toolbar
+        setTitle( R.string.title_activity_pip_reset );
         setSupportActionBar( toolbar );
         ActionBar actionBar = getSupportActionBar();
         if( actionBar != null )

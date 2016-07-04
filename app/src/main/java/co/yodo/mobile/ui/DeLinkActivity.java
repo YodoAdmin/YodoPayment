@@ -118,6 +118,7 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
         Toolbar toolbar = (Toolbar) findViewById( R.id.actionBar );
 
         // Setup the toolbar
+        setTitle( R.string.title_activity_de_link );
         setSupportActionBar( toolbar );
         ActionBar actionBar = getSupportActionBar();
         if( actionBar != null )

@@ -291,6 +291,7 @@ public class MainActivity extends AppCompatActivity implements
         Toolbar toolbar = (Toolbar) findViewById( R.id.actionBar );
 
         // Setup the toolbar
+        setTitle( R.string.title_activity_main );
         setSupportActionBar( toolbar );
         ActionBar actionBar = getSupportActionBar();
         if( actionBar != null )
