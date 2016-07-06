@@ -860,13 +860,15 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
-        executePendingSubscriptionTask();
-        runOnUiThread( new Runnable() {
-            @Override
-            public void run() {
-                updateUI();
-            }
-        } );
+        if( key.equals( AppConfig.SPREF_SUBSCRIPTION_TASK ) ) {
+            executePendingSubscriptionTask();
+            runOnUiThread( new Runnable() {
+                @Override
+                public void run() {
+                    updateUI();
+                }
+            } );
+        }
     }
 
     @Override

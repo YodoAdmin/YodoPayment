@@ -1,7 +1,5 @@
 package co.yodo.mobile.helper;
 
-import com.android.volley.VolleyLog;
-
 import co.yodo.mobile.BuildConfig;
 
 /**

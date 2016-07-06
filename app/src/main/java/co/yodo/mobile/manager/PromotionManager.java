@@ -75,7 +75,7 @@ public class PromotionManager {
      */
     public void subscribe() {
         // If not connected, ignore
-        if( !mGoogleApiClient.isConnected() )
+        if( mGoogleApiClient == null || !mGoogleApiClient.isConnected() )
             return;
 
         SystemUtils.Logger( TAG, "trying to subscribe" );
@@ -112,7 +112,7 @@ public class PromotionManager {
      */
     public void unsubscribe() {
         // If not connected, ignore
-        if( !mGoogleApiClient.isConnected() )
+        if( mGoogleApiClient == null || !mGoogleApiClient.isConnected() )
             return;
 
         SystemUtils.Logger( TAG, "trying to unsubscribe" );
