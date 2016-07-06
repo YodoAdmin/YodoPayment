@@ -6,10 +6,13 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Bundle;
 
+import com.android.volley.VolleyLog;
+
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
+import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.GUIUtils;
 
 @ReportsCrashes(formUri = "http://198.101.209.120/MAB-LAB/report/report.php",
@@ -25,6 +28,9 @@ public class YodoApplication extends Application {
     protected void attachBaseContext( Context base ) {
         super.attachBaseContext( base );
         ACRA.init( this );
+
+        // Set DEBUG for Volley
+        VolleyLog.DEBUG = AppConfig.DEBUG;
     }
 
 	@Override

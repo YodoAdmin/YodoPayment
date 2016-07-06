@@ -10,6 +10,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import co.yodo.mobile.BuildConfig;
 import co.yodo.mobile.R;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.network.YodoRequest;
@@ -43,7 +44,7 @@ public class AboutOption extends IOption {
         this.mTitle = this.mActivity.getString( R.string.action_about );
         this.mMessage =
                 this.mActivity.getString( R.string.version_label ) + " " +
-                this.mActivity.getString( R.string.version_value ) + "/" +
+                BuildConfig.VERSION_NAME + "/" +
                 YodoRequest.getSwitch() + "\n\n" +
                 this.mActivity.getString( R.string.about_message );
         this.mEmail = this.mActivity.getString( R.string.about_email );

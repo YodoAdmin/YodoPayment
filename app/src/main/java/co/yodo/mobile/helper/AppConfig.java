@@ -10,12 +10,7 @@ import co.yodo.mobile.BuildConfig;
  */
 public class AppConfig {
     /** DEBUG flag */
-    public static final boolean DEBUG = true;
-
-    /** DEBUG for Volley */
-    static {
-        VolleyLog.DEBUG = DEBUG;
-    }
+    public static final boolean DEBUG = false;
 
     /** ID of the shared preferences file */
     public static final String SHARED_PREF_FILE = "YodoPaymentSharedPref";
