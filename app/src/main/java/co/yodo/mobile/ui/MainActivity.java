@@ -148,9 +148,6 @@ public class MainActivity extends AppCompatActivity implements
     /** Request codes for the permissions */
     private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
 
-    /** Request code to use when launching the resolution activity. */
-    private static final int REQUEST_RESOLVE_ERROR = 1001;
-
     /** Response codes for the server requests */
     private static final int AUTH_REQ              = 0x00;
     private static final int QUERY_ADV_REQ         = 0x01;
@@ -193,19 +190,17 @@ public class MainActivity extends AppCompatActivity implements
         PrefUtils.registerSPListener( ac, this );
         // Register listener for requests and  broadcast receivers
         mRequestManager.setListener( this );
-        // Connect to the advertise service
-        this.mPromotionManager.startService();
     }
 
     @Override
     public void onStop() {
-        super.onStop();
-        // Disconnect the advertise service
-        this.mPromotionManager.stopService();
+        // unsubscribe to the promotions
+        PrefUtils.setSubscribing( ac, false );
         // Unregister listener for preferences
         PrefUtils.unregisterSPListener( ac, this );
         // Unregister from event bus
         EventBus.getDefault().unregister( this );
+        super.onStop();
     }
 
     @Override
@@ -301,8 +296,9 @@ public class MainActivity extends AppCompatActivity implements
         initializeDrawableListener( toolbar );
         initializeMessageListener();
 
-        // Setup promotion manager
-        mPromotionManager = new PromotionManager( this, mMessageListener, REQUEST_RESOLVE_ERROR );
+        // Setup promotion manager and starts it
+        mPromotionManager = new PromotionManager( this, mMessageListener );
+        mPromotionManager.startService();
 
         // Get database objects
         couponsdb  = CouponsDataSource.getInstance( ac );
@@ -887,30 +883,5 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onConnectionFailed( @NonNull ConnectionResult connectionResult ) {
         SystemUtils.Logger( TAG, "connection to GoogleApiClient failed" );
-    }
-
-    @Override
-    protected void onActivityResult( int requestCode, int resultCode, Intent data ) {
-        super.onActivityResult( requestCode, resultCode, data );
-        // Let the manager knows about the result
-        this.mPromotionManager.onResolutionResult();
-        if( requestCode == REQUEST_RESOLVE_ERROR ) {
-            // User was presented with the Nearby opt-in dialog and pressed "Allow".
-            if( resultCode == RESULT_OK ) {
-                // We track the pending subscription and publication tasks. Once
-                // a user gives consent to use Nearby, we execute those tasks.
-                executePendingSubscriptionTask();
-            } else if( resultCode == RESULT_CANCELED ) {
-                // User was presented with the Nearby opt-in dialog and pressed "Deny". We cannot
-                // proceed with any pending subscription and publication tasks. Reset state.
-                PrefUtils.setSubscribing( ac, false );
-            } else {
-                Toast.makeText(
-                        this,
-                        getString( R.string.message_error_code ) + resultCode,
-                        Toast.LENGTH_LONG
-                ).show();
-            }
-        }
     }
 }
