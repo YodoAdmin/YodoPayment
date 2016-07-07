@@ -150,8 +150,8 @@ public class MainActivity extends AppCompatActivity implements
 
     /** Response codes for the server requests */
     private static final int AUTH_REQ              = 0x00;
-    private static final int QUERY_ADV_REQ         = 0x01;
-    private static final int QUERY_LNK_ACC_SKS_REQ = 0x02;
+    private static final int QUERY_LNK_ACC_SKS_REQ = 0x01;
+    private static final int QUERY_ADV_REQ         = 0x02;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -436,6 +436,7 @@ public class MainActivity extends AppCompatActivity implements
                     // Called when a message is detectable nearby.
                     SystemUtils.Logger( TAG, "Found: " + mMerchant );
                     mHandlerMessages.post( mGetAdvertisement );
+                    mPromotionManager.unsubscribe();
                 }
             }
 
@@ -517,6 +518,9 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     public void payment( EditText inputBox ) {
+        // Stop advertising
+        PrefUtils.setSubscribing( ac, false );
+
         // Set a temporary PIP and Code
         setTempPIP( inputBox.getText().toString() );
 
@@ -733,7 +737,6 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onPrepare() {
-        PrefUtils.setSubscribing( ac, false );
     }
 
     @Override

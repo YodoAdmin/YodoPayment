@@ -75,7 +75,7 @@ public class PromotionManager {
      */
     public void subscribe() {
         // If not connected, ignore
-        if( mGoogleApiClient == null || !mGoogleApiClient.isConnected() )
+        if( isNotAvailable() )
             return;
 
         SystemUtils.Logger( TAG, "trying to subscribe" );
@@ -86,7 +86,6 @@ public class PromotionManager {
                     public void onExpired() {
                         super.onExpired();
                         SystemUtils.Logger( TAG, "no longer subscribing" );
-                        PrefUtils.setSubscribing( ac, false );
                     }
                 }).build();
 
@@ -96,7 +95,6 @@ public class PromotionManager {
                     public void onResult( @NonNull Status status ) {
                         if( status.isSuccess() ) {
                             SystemUtils.Logger( TAG, "subscribed successfully" );
-                            PrefUtils.setSubscribing( ac, true );
                         } else {
                             SystemUtils.Logger( TAG, "could not subscribe" );
                             PrefUtils.setSubscribing( ac, false );
@@ -112,7 +110,7 @@ public class PromotionManager {
      */
     public void unsubscribe() {
         // If not connected, ignore
-        if( mGoogleApiClient == null || !mGoogleApiClient.isConnected() )
+        if( isNotAvailable() )
             return;
 
         SystemUtils.Logger( TAG, "trying to unsubscribe" );
@@ -122,13 +120,19 @@ public class PromotionManager {
                     public void onResult( @NonNull Status status ) {
                         if( status.isSuccess() ) {
                             SystemUtils.Logger( TAG, "unsubscribed successfully" );
-                            PrefUtils.setSubscribing( ac, false );
                         } else {
                             SystemUtils.Logger( TAG, "could not unsubscribe" );
                             PrefUtils.setSubscribing( ac, true );
                         }
                     }
                 });
+    }
 
+    /**
+     * Verifies that the GoogleApiClient is ready
+     * @return true if it is ready, otherwise false
+     */
+    private boolean isNotAvailable() {
+        return mGoogleApiClient == null || !mGoogleApiClient.isConnected() || mGoogleApiClient.isConnecting();
     }
 }
