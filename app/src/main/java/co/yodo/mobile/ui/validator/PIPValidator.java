@@ -1,6 +1,8 @@
 package co.yodo.mobile.ui.validator;
 
 import android.content.Context;
+import android.text.InputFilter;
+import android.text.Spanned;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.TextView;
@@ -25,6 +27,18 @@ public class PIPValidator {
     /** The shake animation for wrong inputs */
     private Animation aShake;
 
+    /** PIP characters filter */
+    private static final InputFilter filter = new InputFilter() {
+        public CharSequence filter( CharSequence source, int start, int end, Spanned s, int ds, int de ) {
+            for( int i = start; i < end; i++ ) {
+                if( !Character.isLetterOrDigit( source.charAt( i ) ) ) {
+                    return "";
+                }
+            }
+            return null;
+        }
+    };
+
     /**
      * Validates the pip
      * @param tvPIP The TextView with the PIP
@@ -33,6 +47,7 @@ public class PIPValidator {
         this.ac = tvPIP.getContext().getApplicationContext();
         this.tvPIP = tvPIP;
         this.aShake = AnimationUtils.loadAnimation( ac, R.anim.shake );
+        this.tvPIP.setFilters( new InputFilter[]{filter} );
     }
 
     /**
@@ -43,6 +58,7 @@ public class PIPValidator {
     public PIPValidator( TextView tvPIP, TextView tvConfirmPIP ) {
         this( tvPIP );
         this.tvConfirmPIP = tvConfirmPIP;
+        this.tvConfirmPIP.setFilters( new InputFilter[]{filter} );
     }
 
     /**
