@@ -31,18 +31,7 @@ public class Encrypter {
 	 * Public key generated with: openssl rsa -in 11.private.pem -pubout -outform DER -out 11.public.der
 	 * This key is created using the private key generated using openssl in unix environments
 	*/
-    private static String PUBLIC_KEY;
-
-	/**
-	 * If you change this section, also update the
-	 * Encrypter.java
-	 */
-    static {
-        if( YodoRequest.getSwitch().equals( "P" ) )
-            PUBLIC_KEY = "YodoKey/Prod/12.public.der";
-        else
-            PUBLIC_KEY = "YodoKey/Dev/12.public.der";
-    }
+    private static final String PUBLIC_KEY = CryptUtils.getPublicKey();
 
 	/** Cipher instance used for encryption */
 	private static final String CIPHER_INSTANCE = "RSA/ECB/PKCS1Padding";

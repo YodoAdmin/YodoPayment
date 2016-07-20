@@ -24,10 +24,9 @@ import javax.crypto.IllegalBlockSizeException;
 import javax.crypto.NoSuchPaddingException;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.helper.GUIUtils;
 import co.yodo.mobile.helper.CryptUtils;
+import co.yodo.mobile.helper.GUIUtils;
 import co.yodo.mobile.helper.SystemUtils;
-import co.yodo.mobile.network.YodoRequest;
 
 /**
  * This class is used for create Yodo SKS by using 
@@ -50,18 +49,7 @@ public class SKSCreater {
 	 * Public key generated with: openssl rsa -in 11.private.pem -pubout -outform DER -out 11.public.der
 	 * This key is created using the private key generated using openssl in unix environments
 	*/
-    private static String PUBLIC_KEY;
-
-	/**
-	 * If you change this section, also update the
-	 * Encrypter.java
-	 */
-	static {
-		if( YodoRequest.getSwitch().equals( "P" ) )
-			PUBLIC_KEY = "YodoKey/Prod/12.public.der";
-		else
-			PUBLIC_KEY = "YodoKey/Dev/12.public.der";
-	}
+    private static final String PUBLIC_KEY = CryptUtils.getPublicKey();
 
 	public static Bitmap createSKS( String original, Activity parent, int type, Integer account_type ) throws UnsupportedEncodingException{
 		int width, height, pixels [];
