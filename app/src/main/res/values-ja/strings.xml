@@ -41,7 +41,7 @@
     <string name="pip_different">PIPが合致しません</string>
     <string name="pip_hint">個人識別フレーズ</string>
     <string name="face_recognition">顔認識</string>
-    <string name="face_required">最初に生体認証トークンを選択してください</string>
+    <string name="face_required">第1のバイオメトリックのトークンを選択</string>
     <string name="next">次へ</string>
     <string name="register">PIP登録中</string>
     <string name="face_explanation">Yodoは顔画像を収集しません。匿名を維持しながら、忘れたPIPをリセットできるように生体認証トークンを収集します。上のアイコンを押してスタートしてください</string>
@@ -74,8 +74,8 @@
     
     <!-- Reset PIP Messages  -->
     <string name="current_pip">現在のPIP:</string>
-    <string name="new_pip">新しいPIP:</string>
-    <string name="confirm_pip">新しいPIPを確認してください:</string>
+    <string name="new_pip">新しいPIP</string>
+    <string name="confirm_pip">新しいPIPを確認してください</string>
     <string name="new_pip_hint">新しいPIP (4–8 文字)</string>
     <string name="forgot_pip">PIPを忘れましたか?</string> 
     

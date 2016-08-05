@@ -70,6 +70,7 @@
                 <action android:name="com.google.android.c2dm.intent.RECEIVE" />
             </intent-filter>
         </service>
+
         <service
             android:name=".service.YodoIDListenerService"
             android:exported="false" >
@@ -77,6 +78,7 @@
                 <action android:name="com.google.android.gms.iid.InstanceID" />
             </intent-filter>
         </service>
+
         <service
             android:name=".service.RegistrationIntentService"
             android:exported="false" >
@@ -111,12 +113,12 @@
             android:name=".ui.SettingsActivity"
             android:label="@string/title_activity_settings"
             android:theme="@style/AppTheme.Settings" >
->
         </activity>
 
         <activity
             android:name=".ui.ResetPIPActivity"
-            android:label="@string/title_activity_pip_reset" >
+            android:label="@string/title_activity_pip_reset"
+            android:screenOrientation="sensorPortrait" >
         </activity>
 
         <activity
@@ -149,6 +151,16 @@
             android:name=".ui.DeLinkActivity"
             android:label="@string/title_activity_de_link" >
         </activity>
+
+        <!-- Providers -->
+        <!--
+        <provider
+            android:name=".database.provider.YodoProvider"
+            android:authorities="${applicationId}.provider"
+            android:exported="false"
+            android:syncable="true" >
+        </provider>
+        -->
 
     </application>
 

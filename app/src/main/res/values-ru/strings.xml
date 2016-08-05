@@ -41,7 +41,7 @@
     <string name="pip_different">Пароли не совпадают</string>
     <string name="pip_hint">Кодовая фраза</string>
     <string name="face_recognition">Распознавание лица</string>
-    <string name="face_required">Сперва Вы должны выбрать местоположение</string>
+    <string name="face_required">Выберите биометрический маркер первой</string>
     <string name="next">Далее</string>
     <string name="register">Регистрация</string>
     <string name="face_explanation">Yodo не собирает изображения Вашего лица, только числовой символ, представляющий лицо. Это позволяет сбрасывать пароль, если Вы его забыли, оставаясь абсолютно анонимным. Нажмите на значок, который находится сверху, чтобы начать.</string>
@@ -74,8 +74,8 @@
 
     <!-- Reset PIP Messages -->
     <string name="current_pip">Текущая кодовая фраза:</string>
-    <string name="new_pip">Новая кодовая фраза:</string>
-    <string name="confirm_pip">Подтвердить кодовую фразу:</string>
+    <string name="new_pip">Новая кодовая фраза</string>
+    <string name="confirm_pip">Подтвердить кодовую фразу</string>
     <string name="new_pip_hint">(4вЂ“8 characters)</string>
     <string name="forgot_pip">Забыли кодовую фразу?</string>
 

@@ -1,31 +1,16 @@
 package co.yodo.mobile.component;
 
 import android.app.Activity;
-import android.content.res.AssetManager;
+import android.content.res.Configuration;
 import android.graphics.Bitmap;
+import android.graphics.Rect;
+import android.view.Window;
 
 import com.google.zxing.BarcodeFormat;
-import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
-import com.google.zxing.qrcode.QRCodeWriter;
-
-import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.security.InvalidKeyException;
-import java.security.KeyFactory;
-import java.security.NoSuchAlgorithmException;
-import java.security.PublicKey;
-import java.security.spec.X509EncodedKeySpec;
-import java.util.Hashtable;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.helper.CryptUtils;
-import co.yodo.mobile.helper.GUIUtils;
 import co.yodo.mobile.helper.SystemUtils;
 
 /**
@@ -35,60 +20,46 @@ import co.yodo.mobile.helper.SystemUtils;
  */
 public class SKSCreater {
 	/** DEBUG */
+	@SuppressWarnings( "unused" )
 	private final static String TAG = SKSCreater.class.getSimpleName();
 
-    public static final int SKS_CODE = 1;
-    public static final int QR_CODE  = 0;
-
+	/** Codes for black and white */
 	private static final int WHITE = 0xFFFFFFFF;
 	private static final int BLACK = 0xFF000000;
 
-	private static final BarcodeFormat QR = BarcodeFormat.QR_CODE;
-	
 	/**
-	 * Public key generated with: openssl rsa -in 11.private.pem -pubout -outform DER -out 11.public.der
-	 * This key is created using the private key generated using openssl in unix environments
-	*/
-    private static final String PUBLIC_KEY = CryptUtils.getPublicKey();
-
-	public static Bitmap createSKS( String original, Activity parent, int type, Integer account_type ) throws UnsupportedEncodingException{
-		int width, height, pixels [];
-		QRCodeWriter writer = new QRCodeWriter();
-		BitMatrix qrMatrix;
-		String encoding, response;
+	 * Encodes the user data as a SKS to build a Bitmap
+	 * @param parent The activity that is creating the SKS
+	 * @param code The user encrypted data
+	 * @param account_type The account type
+	 * @return A bitmap with the SKS code (QR)
+	 */
+	public static Bitmap createSKS( Activity parent, String code, Integer account_type ) {
 		Bitmap bitmap = null;
 
-        Integer QR_SIZE = GUIUtils.getSKSSize( parent );
-		
-		//String text2Encrypt = "**renato123**1204122156";
-		encoding = parent.getResources().getString( R.string.SC_LETTER_TYPE );
 		try {
-			byte encrypted []= rsaEncrypt( original.getBytes( "UTF-8" ), parent );
-			response = CryptUtils.bytesToHex( encrypted );
-			
 			if( account_type != null )
-				response += account_type;
+				code += account_type;
 
-			SystemUtils.Logger( TAG, response + " - " + response.length() );
-			
-			Hashtable<Object, String> hint = new Hashtable<>();
-			hint.put( EncodeHintType.CHARACTER_SET, encoding );
-			
-			if( type == 0 ) { /// qr
-				qrMatrix = writer.encode( original, QR, QR_SIZE, QR_SIZE, hint );
-			} else { /// sks
-				qrMatrix = writer.encode( parent.getResources().getString( R.string.SKS_HEADER ) + response , QR, QR_SIZE, QR_SIZE, hint);
-			}
-			
-			width = qrMatrix.getWidth();
-			height = qrMatrix.getHeight();
-			pixels = new int[width * height];
+			SystemUtils.Logger( TAG, code + " - " + code.length() );
+
+			Integer QR_SIZE = getSKSSize( parent );
+			BitMatrix qrMatrix = new MultiFormatWriter().encode(
+					parent.getResources().getString( R.string.SKS_HEADER ) + code,
+					BarcodeFormat.QR_CODE,
+					QR_SIZE, QR_SIZE,
+					null
+			);
+
+			int width = qrMatrix.getWidth();
+			int height = qrMatrix.getHeight();
+			int[] pixels = new int[width * height];
+
 			// All are 0, or black, by default
 			for( int y = 0; y < height; y++ ) {
 				int offset = y * width;
-				for (int x = 0; x < width; x++) {
+				for( int x = 0; x < width; x++ )
 					pixels[offset + x] = qrMatrix.get( x, y ) ? BLACK : WHITE;
-				}
 			}
 			
 			bitmap = Bitmap.createBitmap( width, height, Bitmap.Config.ARGB_8888 );
@@ -96,58 +67,44 @@ public class SKSCreater {
 		} catch( Exception e ) {
 			e.printStackTrace();
 		}
+
 		return bitmap;
 	}
-	
+
 	/**
-	 * Function that opens the public key and returns the java object that contains it
-	 * @param parent		Parent activity of SKSCreater
-	 * @return				The public key specified in $keyFileName
+	 * Gets the SKS size for the screen
+	 * @param activity The Context of the Android system (as activity)
+	 * @return int The size
 	 */
-	@SuppressWarnings( "ResultOfMethodCallIgnored" )
-	static PublicKey readKeyFromFile( Activity parent) {
-		AssetManager as;
-		InputStream inFile;
-		byte[] encodedKey;
-		PublicKey pkPublic = null;
-		
-		try{
-			as = parent.getResources().getAssets();   
-			inFile = as.open( PUBLIC_KEY );
-			encodedKey = new byte[inFile.available()];
-			inFile.read( encodedKey );
-			inFile.close();
-			
-			X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec( encodedKey );
-			KeyFactory kf = KeyFactory.getInstance( "RSA" );
-			pkPublic = kf.generatePublic( publicKeySpec );
-		} catch( Exception e ) {
-			e.printStackTrace();
+	private static int getSKSSize( Activity activity ) {
+		int screenLayout = activity.getResources().getConfiguration().screenLayout;
+		screenLayout &= Configuration.SCREENLAYOUT_SIZE_MASK;
+
+		Rect displayRectangle = new Rect();
+		Window window = activity.getWindow();
+		window.getDecorView().getWindowVisibleDisplayFrame( displayRectangle );
+		int size, currentOrientation = activity.getResources().getConfiguration().orientation;
+
+		if( currentOrientation == Configuration.ORIENTATION_LANDSCAPE )
+			size = displayRectangle.height();
+		else
+			size = displayRectangle.width();
+
+		switch( screenLayout ) {
+			case Configuration.SCREENLAYOUT_SIZE_SMALL:
+				return (int)( size * 0.7f );
+
+			case Configuration.SCREENLAYOUT_SIZE_NORMAL:
+				return (int)( size * 0.7f );
+
+			case Configuration.SCREENLAYOUT_SIZE_LARGE:
+				return (int)( size * 0.4f );
+
+			case Configuration.SCREENLAYOUT_SIZE_XLARGE:
+				return (int)( size * 0.3f );
+
+			default:
+				return 300;
 		}
-		return pkPublic;
-	}
-	
-	/**
-	 * Encrypts a string and returns a byte array containing the encrypted string
-	 * @param data		Text to encrypt
-	 * @param parent	Activity that uses the SKSCreater
-	 * @return			Byte array containing the encrypted string
-	 */
-	public static byte[] rsaEncrypt( byte[] data, Activity parent ) {
-		PublicKey pubKey = readKeyFromFile(parent);
-		Cipher cipher;
-		byte[] cipherData = null;
-		String cipherString = "";
-		try {
-			cipher = Cipher.getInstance( "RSA/ECB/PKCS1Padding" );
-			cipher.init( Cipher.ENCRYPT_MODE, pubKey );
-			cipherData = cipher.doFinal( data );
-			cipherString = new String( cipherData );
-			  
-		} catch( NoSuchAlgorithmException | IllegalBlockSizeException | BadPaddingException | NoSuchPaddingException | InvalidKeyException e ) {
-			e.printStackTrace();
-		}
-		SystemUtils.Logger( TAG, cipherString );
-		return cipherData;
 	}
 }

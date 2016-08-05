@@ -41,7 +41,7 @@
     <string name="pip_different">PIP的不匹配</string>
     <string name="pip_hint">PIP</string>
     <string name="face_recognition">人臉識別</string>
-    <string name="face_required">您需要先選擇一個生物識別令牌</string>
+    <string name="face_required">首先选择一个生物识别令牌</string>
     <string name="next">下一步</string>
     <string name="register">注册PIP</string>
     <string name="face_explanation">淀不會收集你的臉的圖像，只有一個生物標記，讓您可以在匿名的重置遺忘的點子。按上述上手的圖標。 </string>
@@ -74,8 +74,8 @@
 
     <!-- Reset PIP Messages -->
     <string name="current_pip">请输入你的PIP:</string>
-    <string name="new_pip">新PIP:</string>
-    <string name="confirm_pip">确认新PIP:</string>
+    <string name="new_pip">新PIP</string>
+    <string name="confirm_pip">确认新PIP</string>
     <string name="new_pip_hint">新的PIP（4–8个字符）</string>
     <string name="forgot_pip">忘记 PIP?</string>
        

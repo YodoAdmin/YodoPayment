@@ -4,10 +4,10 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
-import co.yodo.mobile.component.Encrypter;
+import co.yodo.mobile.component.cipher.RSACrypt;
 import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.SystemUtils;
-import co.yodo.mobile.network.YodoRequest;
+import co.yodo.mobile.network.ApiClient;
 import co.yodo.mobile.network.request.contract.IRequest;
 
 /**
@@ -90,7 +90,7 @@ public class RegisterRequest extends IRequest {
     }
 
     @Override
-    public void execute( Encrypter oEncrypter, YodoRequest manager ) {
+    public void execute( RSACrypt oEncrypter, ApiClient manager ) {
         String sEncryptedClientData, pRequest;
 
         switch( this.mRequestST ) {
@@ -101,9 +101,7 @@ public class RegisterRequest extends IRequest {
                         this.mUserIdentifier + USR_SEP +
                         System.currentTimeMillis() / 1000L;
 
-                oEncrypter.setsUnEncryptedString( this.mFormattedUsrData );
-                oEncrypter.rsaEncrypt();
-                sEncryptedClientData = oEncrypter.bytesToHex();
+                sEncryptedClientData = oEncrypter.encrypt( mFormattedUsrData );
 
                 pRequest = buildRequest( REG_RT,
                         this.mRequestST.getValue(),
@@ -129,9 +127,7 @@ public class RegisterRequest extends IRequest {
                 break;
 
             case GCM:
-                oEncrypter.setsUnEncryptedString( this.mUserIdentifier );
-                oEncrypter.rsaEncrypt();
-                sEncryptedClientData = oEncrypter.bytesToHex();
+                sEncryptedClientData = oEncrypter.encrypt( mUserIdentifier );
 
                 this.mFormattedUsrData =
                         sEncryptedClientData + REQ_SEP +

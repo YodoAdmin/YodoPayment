@@ -10,40 +10,21 @@ import co.yodo.mobile.R;
  * Handles a progress dialog
  */
 public class ProgressDialogHelper {
-    /** Singleton instance */
-    private static ProgressDialogHelper instance = null;
-
     /** Progress dialog */
-    private ProgressDialog progressDialog;
-
-    /**
-     * Private constructor needed for the singleton
-     */
-    private ProgressDialogHelper() {
-    }
-
-    /**
-     * The initializer for the singleton
-     * @return The instance
-     */
-    public static synchronized ProgressDialogHelper getInstance() {
-        if( instance == null )
-            instance = new ProgressDialogHelper();
-        return instance;
-    }
+    private ProgressDialog mProgressDialog = null;
 
     /**
      * Creates a new progress dialog on a respective activity
      * @param context This context must be an activity (e.g. MainActivity.this)
      */
     public void createProgressDialog( Context context ) {
-        if( progressDialog != null )
+        if( mProgressDialog != null )
             throw new ExceptionInInitializerError( "There is already a progress dialog in front" );
 
-        progressDialog = new ProgressDialog( context, R.style.TransparentProgressDialog );
-        progressDialog.setCancelable( false );
-        progressDialog.show();
-        progressDialog.setContentView( R.layout.custom_progressdialog );
+        mProgressDialog = new ProgressDialog( context, R.style.TransparentProgressDialog );
+        mProgressDialog.setCancelable( false );
+        mProgressDialog.show();
+        mProgressDialog.setContentView( R.layout.custom_progressdialog );
     }
 
     /**
@@ -51,16 +32,16 @@ public class ProgressDialogHelper {
      * @return A boolean that shows if the progress dialog is showing
      */
     public boolean isProgressDialogShowing() {
-        return progressDialog != null && progressDialog.isShowing();
+        return mProgressDialog != null && mProgressDialog.isShowing();
     }
 
     /**
      * Destroys the current progress dialog
      */
     public void destroyProgressDialog() {
-        if( progressDialog != null && progressDialog.isShowing() ) {
-            progressDialog.dismiss();
-            progressDialog = null;
+        if( mProgressDialog != null && mProgressDialog.isShowing() ) {
+            mProgressDialog.dismiss();
+            mProgressDialog = null;
         }
     }
 }

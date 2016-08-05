@@ -8,6 +8,7 @@
     <style name="AppTheme.Base" parent="Theme.AppCompat.Light.NoActionBar">
         <item name="colorPrimary">@color/colorPrimaryRed</item>
         <item name="colorPrimaryDark">@color/colorPrimaryRedDark</item>
+        <item name="textColorError">@color/colorGreyDark</item>
         <item name="windowNoTitle">true</item>
         <item name="windowActionBar">false</item>
         <item name="colorAccent">@color/accent</item>
@@ -90,27 +91,34 @@
         <item name="android:gravity">center</item>
     </style>
 
-    <!-- Receipt Layout -->
-    <style name="ReceiptLayout">
+    <!-- General Layout -->
+    <style name="GeneralLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:paddingBottom">@dimen/activity_vertical_margin</item>
+        <item name="android:paddingLeft">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingRight">@dimen/activity_horizontal_margin</item>
+        <item name="android:paddingTop">@dimen/activity_vertical_margin</item>
+    </style>
+
+    <!-- PIP Input -->
+    <style name="PIPInput">
         <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:gravity">center</item>
-        <item name="android:layout_margin">5dp</item>
+        <item name="android:drawableLeft">@android:drawable/ic_lock_lock</item>
+        <item name="android:inputType">textPassword</item>
+        <item name="android:maxLength">8</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:hint">@string/pip_hint</item>
+        <item name="android:digits">0123456789abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ</item>
     </style>
 
-    <!-- Receipt Label -->
-    <style name="ReceiptLabel">
-        <item name="android:layout_width">wrap_content</item>
+    <!-- Linking Code Input -->
+    <style name="LinkingCodeInput">
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
-    </style>
-
-    <!-- Receipt Info -->
-    <style name="ReceiptInfo">
-        <item name="android:layout_width">wrap_content</item>
-        <item name="android:layout_height">wrap_content</item>
-        <item name="android:layout_marginLeft">5dp</item>
-        <item name="android:textAppearance">?android:attr/textAppearanceSmall</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:hint">@string/input_linking_code</item>
     </style>
 
 </resources>

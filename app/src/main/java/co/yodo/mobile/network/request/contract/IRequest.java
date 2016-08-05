@@ -1,7 +1,7 @@
 package co.yodo.mobile.network.request.contract;
 
-import co.yodo.mobile.component.Encrypter;
-import co.yodo.mobile.network.YodoRequest;
+import co.yodo.mobile.component.cipher.RSACrypt;
+import co.yodo.mobile.network.ApiClient;
 
 /**
  * Created by hei on 10/06/16.
@@ -40,5 +40,5 @@ public abstract class IRequest {
                pUserData;
     }
 
-    public abstract void execute( Encrypter oEncrypter, YodoRequest manager );
+    public abstract void execute( RSACrypt oEncrypter, ApiClient manager );
 }

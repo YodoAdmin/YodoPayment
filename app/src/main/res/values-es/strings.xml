@@ -41,7 +41,7 @@
     <string name="pip_different">Los PIP no coinciden</string>
     <string name="pip_hint">Frase de Identificación Personal</string>
     <string name="face_recognition">Reconocimiento de Rostro</string>
-    <string name="face_required">Tienes que seleccionar un token biométrico primero</string>
+    <string name="face_required">Seleccione un token biométrico primero</string>
     <string name="next">SIGUIENTE</string>
     <string name="register">REGISTRARSE</string>
     <string name="face_explanation">Yodo no recoge una imagen de su rostro, sólo un token numérico que representa el rostro. Esto le permite restaurar su PIP en caso de olvidarlo sin dejar de ser totalmente anónima. Pulse el icono de arriba para empezar.</string>
@@ -74,8 +74,8 @@
 
     <!-- Reset PIP Messages -->
     <string name="current_pip">PIP Actual:</string>
-    <string name="new_pip">Nuevo PIP:</string>
-    <string name="confirm_pip">Confirmar Nuevo PIP:</string>
+    <string name="new_pip">Nuevo PIP</string>
+    <string name="confirm_pip">Confirmar Nuevo PIP</string>
     <string name="new_pip_hint">(4–8 caracteres)</string>
     <string name="forgot_pip">Olvido su PIP?</string>
 

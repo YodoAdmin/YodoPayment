@@ -1,6 +1,7 @@
 package co.yodo.mobile.helper;
 
 import co.yodo.mobile.BuildConfig;
+import co.yodo.mobile.network.ApiClient;
 
 /**
  * Created by luis on 15/12/14.
@@ -54,7 +55,7 @@ public class AppConfig {
     /* If the token was successfully sent to the server
 	 * type -- boolean
 	 */
-    public static final String SPREF_TOKEN_TO_SERVER  = "SPTokenToServer";
+    public static final String SPREF_TOKEN_TO_SERVER  = "SPTokenToServer" + ApiClient.getSwitch();
 
     /* Action to be taken
      * type -- String
@@ -66,29 +67,10 @@ public class AppConfig {
 	 */
     public static final String SPREF_FOREGROUND = "SPForeground";
 
-    /* The strategy time for nearby (promotions)
-	 * type -- Integer
-	 */
-    public static final String SPREF_PROMOTION_TIME = "SPPromotionTime";
-
     /**
      * Default values
      * {{ ======================================================================
      */
-
-    /*
-	 * Default value for the language
-	 *
-	 * Default: en (English)
-	 */
-    public static final String DEFAULT_LANGUAGE = "en";
-
-    /*
-	 * Default value for the promotions
-	 *
-	 * Default: 300 (5 minutes)
-	 */
-    public static final String DEFAULT_PROMOTION = "300";
 
     /* Biometric Default */
     public static final String YODO_BIOMETRIC = "BiometricTest";

@@ -31,7 +31,6 @@ import static org.hamcrest.core.IsNot.not;
  * Tests for the pip reset activity
  */
 @RunWith( AndroidJUnit4.class )
-@LargeTest
 public class ResetPIPActivityTest {
     /** Test strings */
     private static final String correctPIP = "aaaa";
@@ -43,33 +42,16 @@ public class ResetPIPActivityTest {
     public ResetPIPTestRule mActivityRule = new ResetPIPTestRule<>( ResetPIPActivity.class );
 
     /**
-     * Tests only the current PIP input
-     * @throws Exception
-     */
-    @Test
-    public void testPIPInput() throws Exception {
-        onView( withId( R.id.currentPipText ) )
-                .perform( typeText( shortPIP ), closeSoftKeyboard() );
-
-        onView( withId( R.id.bResetPip ) )
-                .perform( click() );
-
-        onView( withText( R.string.pip_short ) )
-                .inRoot( withDecorView( not( mActivityRule.getActivity().getWindow().getDecorView() ) ) )
-                .check( matches( isDisplayed() ) );
-    }
-
-    /**
      * Tests when the current PIP is not defined,
      * and the new and confirmation PIP are correct
      * @throws Exception
      */
     @Test
     public void testNoPIPInput() throws Exception {
-        onView( withId( R.id.newPipText ) )
+        onView( withId( R.id.etNewPip ) )
                 .perform( typeText( newPIP ), closeSoftKeyboard() );
 
-        onView( withId( R.id.confirmPipText ) )
+        onView( withId( R.id.etConfirmPip ) )
                 .perform( scrollTo(), typeText( newPIP ), closeSoftKeyboard() );
 
         onView( withId( R.id.bResetPip ) )
@@ -86,10 +68,7 @@ public class ResetPIPActivityTest {
      */
     @Test
     public void testNewPIPInput() throws Exception {
-        onView( withId( R.id.currentPipText ) )
-                .perform( typeText( correctPIP ), closeSoftKeyboard() );
-
-        onView( withId( R.id.newPipText ) )
+        onView( withId( R.id.etNewPip ) )
                 .perform( typeText( shortPIP ), closeSoftKeyboard() );
 
         onView( withId( R.id.bResetPip ) )
@@ -107,13 +86,10 @@ public class ResetPIPActivityTest {
      */
     @Test
     public void testConfirmationPIPInput() throws Exception {
-        onView( withId( R.id.currentPipText ) )
-                .perform( typeText( correctPIP ), closeSoftKeyboard() );
-
-        onView( withId( R.id.newPipText ) )
+        onView( withId( R.id.etNewPip ) )
                 .perform( typeText( newPIP ), closeSoftKeyboard() );
 
-        onView( withId( R.id.confirmPipText ) )
+        onView( withId( R.id.etConfirmPip ) )
                 .perform( scrollTo(), typeText( shortPIP ), closeSoftKeyboard() );
 
         onView( withId( R.id.bResetPip ) )
@@ -131,10 +107,7 @@ public class ResetPIPActivityTest {
      */
     @Test
     public void testNoNewPIPInput() throws Exception {
-        onView( withId( R.id.currentPipText ) )
-                .perform( typeText( correctPIP ), closeSoftKeyboard() );
-
-        onView( withId( R.id.confirmPipText ) )
+        onView( withId( R.id.etConfirmPip ) )
                 .perform( scrollTo(), typeText( newPIP ), closeSoftKeyboard() );
 
         onView( withId( R.id.bResetPip ) )
@@ -153,13 +126,10 @@ public class ResetPIPActivityTest {
      */
     @Test
     public void testCorrectPIPInput() throws Exception {
-        onView( withId( R.id.currentPipText ) )
-                .perform( typeText( wrongPIP ), closeSoftKeyboard() );
-
-        onView( withId( R.id.newPipText ) )
+        onView( withId( R.id.etNewPip ) )
                 .perform( typeText( newPIP ), closeSoftKeyboard() );
 
-        onView( withId( R.id.confirmPipText ) )
+        onView( withId( R.id.etConfirmPip ) )
                 .perform( scrollTo(), typeText( newPIP ), closeSoftKeyboard() );
 
         onView( withId( R.id.bResetPip ) )
@@ -177,7 +147,7 @@ public class ResetPIPActivityTest {
      */
     @Test
     public void testForgotPIPInput() throws Exception {
-        onView( withId( R.id.newPipText ) )
+        onView( withId( R.id.etNewPip ) )
                 .perform( typeText( shortPIP ), closeSoftKeyboard() );
 
         onView( withId( R.id.bForgotPip ) )
@@ -196,10 +166,10 @@ public class ResetPIPActivityTest {
      */
     @Test
     public void testForgotConfirmationPIPInput() throws Exception {
-        onView( withId( R.id.newPipText ) )
+        onView( withId( R.id.etNewPip ) )
                 .perform( typeText( newPIP ), closeSoftKeyboard() );
 
-        onView( withId( R.id.confirmPipText ) )
+        onView( withId( R.id.etConfirmPip ) )
                 .perform( typeText( shortPIP ), closeSoftKeyboard() );
 
         onView( withId( R.id.bForgotPip ) )
@@ -218,10 +188,10 @@ public class ResetPIPActivityTest {
      */
     @Test
     public void testForgotCorrectPIPInput() throws Exception {
-         onView( withId( R.id.newPipText ) )
+         onView( withId( R.id.etNewPip ) )
                 .perform( typeText( newPIP ), closeSoftKeyboard() );
 
-        onView( withId( R.id.confirmPipText ) )
+        onView( withId( R.id.etConfirmPip ) )
                 .perform( scrollTo(), typeText( newPIP ), closeSoftKeyboard() );
 
         onView( withId( R.id.bForgotPip ) )
@@ -241,13 +211,10 @@ public class ResetPIPActivityTest {
         onView( withId( R.id.cbShowPassword ) )
                 .perform( scrollTo(), click() );
 
-        onView( withId( R.id.currentPipText ) )
+        onView( withId( R.id.etNewPip ) )
                 .check( matches( withInputType( InputType.TYPE_TEXT_VARIATION_PASSWORD ) ) );
 
-        onView( withId( R.id.newPipText ) )
-                .check( matches( withInputType( InputType.TYPE_TEXT_VARIATION_PASSWORD ) ) );
-
-        onView( withId( R.id.confirmPipText ) )
+        onView( withId( R.id.etConfirmPip ) )
                 .check( matches( withInputType( InputType.TYPE_TEXT_VARIATION_PASSWORD ) ) );
     }
 }

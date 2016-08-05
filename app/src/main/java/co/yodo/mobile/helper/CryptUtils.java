@@ -1,6 +1,6 @@
 package co.yodo.mobile.helper;
 
-import co.yodo.mobile.network.YodoRequest;
+import co.yodo.mobile.network.ApiClient;
 
 /**
  * Created by hei on 10/06/16.
@@ -18,11 +18,11 @@ public class CryptUtils {
     public static String getPublicKey() {
         String PUBLIC_KEY;
 
-        if( YodoRequest.getSwitch().equals( "P" ) )
+        if( ApiClient.getSwitch().equals( "P" ) )
             PUBLIC_KEY = "YodoKey/Prod/12.public.der";
         else
             PUBLIC_KEY = "YodoKey/Local/12.public.der";
-        /*else if( YodoRequest.getSwitch().equals( "L" ) )
+        /*else if( ApiClient.getSwitch().equals( "L" ) )
             PUBLIC_KEY = "YodoKey/Local/12.public.der";
         else
             PUBLIC_KEY = "YodoKey/Dev/12.public.der";*/

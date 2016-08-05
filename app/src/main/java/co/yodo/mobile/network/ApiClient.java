@@ -1,11 +1,5 @@
 package co.yodo.mobile.network;
 
-import android.annotation.SuppressLint;
-import android.content.Context;
-import android.graphics.Bitmap;
-import android.support.v4.util.LruCache;
-import android.text.TextUtils;
-
 import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.NetworkError;
 import com.android.volley.Request;
@@ -17,7 +11,6 @@ import com.android.volley.TimeoutError;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,26 +22,24 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.util.Map;
 
+import javax.inject.Inject;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.parsers.SAXParser;
 import javax.xml.parsers.SAXParserFactory;
 
-import co.yodo.mobile.R;
-import co.yodo.mobile.component.Encrypter;
+import co.yodo.mobile.component.cipher.RSACrypt;
 import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.network.handler.XMLHandler;
 import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.request.contract.IRequest;
-import okhttp3.OkHttpClient;
 
 /**
  * Created by luis on 15/12/14.
  * Generates a request to the Yodo Server
  */
-@SuppressLint( "ParcelCreator" )
-public class YodoRequest {
+public class ApiClient {
     /** DEBUG */
-    private static final String TAG = YodoRequest.class.getSimpleName();
+    private static final String TAG = ApiClient.class.getSimpleName();
 
     /** Switch server IP address */
     private static final String PROD_IP  = "http://50.56.180.133";   // Production
@@ -70,23 +61,19 @@ public class YodoRequest {
             DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
     );
 
-    /** Context of the application */
-    private Context mCtx;
+    /** Global request queue for Volley */
+    private RequestQueue mRequestQueue;
 
-    /** Global request queue for Volley and Image Loader */
-    private RequestQueue mRequestQueue = null;
-    private ImageLoader mImageLoader = null;
+    /** Loads images from URLs */
+    private ImageLoader mImageLoader;
 
     /** Object used to encrypt information */
-    private Encrypter oEncrypter;
+    private RSACrypt mEncrypter;
 
-    /** The external listener to the service */
-    private RESTListener listener;
+    /** The external mListener to the service */
+    private RequestsListener mListener;
 
-    /** Singleton instance */
-    private static YodoRequest instance = null;
-
-    public interface RESTListener {
+    public interface RequestsListener {
         /**
          * Listener for the preparation of the request
          */
@@ -100,56 +87,11 @@ public class YodoRequest {
         void onResponse( int responseCode, ServerResponse response );
     }
 
-    /**
-     * Private constructor for the singleton
-     * @param context The application context
-     */
-    private YodoRequest( Context context )  {
-        // getApplicationContext() is key, it keeps you from leaking the
-        // Activity or BroadcastReceiver if someone passes one in.
-        mCtx = context.getApplicationContext();
-        mRequestQueue = getRequestQueue();
-        oEncrypter = Encrypter.getInstance( mCtx );
-
-        mImageLoader = new ImageLoader( mRequestQueue,
-                new ImageLoader.ImageCache() {
-                    private final LruCache<String, Bitmap> cache = new LruCache<>( 10 );
-
-                    @Override
-                    public Bitmap getBitmap( String url) {
-                        return cache.get( url );
-                    }
-
-                    @Override
-                    public void putBitmap( String url, Bitmap bitmap ) {
-                        cache.put( url, bitmap );
-                    }
-                }
-        );
-    }
-
-    /**
-     * Gets the instance of the service
-     * @return instance
-     */
-    public static synchronized YodoRequest getInstance( Context context ) {
-        if( instance == null )
-            instance = new YodoRequest( context );
-        return instance;
-    }
-
-    /**
-     * Returns the request queue for other queries
-     * @return The static volley request queue
-     */
-    public RequestQueue getRequestQueue() {
-        if( mRequestQueue == null ) {
-            mRequestQueue = Volley.newRequestQueue(
-                    mCtx,
-                    new OkHttp3Stack( new OkHttpClient() )
-            );
-        }
-        return mRequestQueue;
+    @Inject
+    public ApiClient( RequestQueue requestQueue, ImageLoader imageLoader, RSACrypt encrypter )  {
+        mRequestQueue = requestQueue;
+        mImageLoader = imageLoader;
+        mEncrypter = encrypter;
     }
 
     /**
@@ -161,11 +103,11 @@ public class YodoRequest {
     }
 
     /**
-     * Add a listener to the service
+     * Add a mListener to the service
      * @param listener Listener for the requests to the server
      */
-    public void setListener( RESTListener listener ) {
-        this.listener = listener ;
+    public void setListener( RequestsListener listener ) {
+        this.mListener = listener ;
     }
 
     /**
@@ -187,7 +129,7 @@ public class YodoRequest {
      * @param responseCode The response code
      */
     public void sendXMLRequest( final String request, final int responseCode ) {
-        if( listener == null )
+        if( mListener == null )
             throw new NullPointerException( "Listener not defined" );
 
         final StringRequest httpRequest = new StringRequest( Request.Method.GET, IP + YODO_ADDRESS + request,
@@ -211,15 +153,14 @@ public class YodoRequest {
                         } catch( ParserConfigurationException | SAXException | IOException e ) {
                             e.printStackTrace();
                             response.setCode( ServerResponse.ERROR_SERVER );
-                            response.setMessage( mCtx.getString( R.string.message_error_server ) );
                         }
-                        listener.onResponse( responseCode, response );
+                        mListener.onResponse( responseCode, response );
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse( VolleyError error ) {
-                        handleVolleyException( error, responseCode );
+                        handleVolleyException( responseCode, error );
                     }
                 }
         );
@@ -232,7 +173,7 @@ public class YodoRequest {
      * @param responseCode The response code
      */
     public void sendJSONRequest( final Map<String, String> params, final int responseCode ) {
-        if( listener == null )
+        if( mListener == null )
             throw new NullPointerException( "Listener not defined" );
 
         final StringRequest httpRequest = new StringRequest( Request.Method.POST, IP + ":8081/yodo",
@@ -249,21 +190,19 @@ public class YodoRequest {
                             response.setMessage( jsonResponse.getString( "msg" ) );
                             response.setRTime( jsonResponse.getLong( "respTime" ) );
 
-                            // Sends the response to the listener
-
+                            // Sends the response to the mListener
                             SystemUtils.Logger( TAG, response.toString() );
                         } catch( JSONException e ) {
                             e.printStackTrace();
                             response.setCode( ServerResponse.ERROR_SERVER );
-                            response.setMessage( mCtx.getString( R.string.message_error_server ) );
                         }
-                        listener.onResponse( responseCode, response );
+                        mListener.onResponse( responseCode, response );
                     }
                 },
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse( VolleyError error ) {
-                        handleVolleyException( error, responseCode );
+                        handleVolleyException( responseCode, error );
                     }
                 }
         ) {
@@ -278,49 +217,47 @@ public class YodoRequest {
 
     public <T> void addToRequestQueue( Request<T> httpRequest ) {
         // Setups any configuration before the request is added to the queue
-        listener.onPrepare();
+        mListener.onPrepare();
 
         httpRequest.setTag( TAG );
         httpRequest.setRetryPolicy( retryPolicy );
-        getRequestQueue().add( httpRequest );
+        mRequestQueue.add( httpRequest );
     }
 
     /**
      * Handles the error response from volley
+     * * @param responseCode The response code for the activity
      * @param error The Volley error (e.g. timeout, network, server)
-     * @param responseCode The response code for the activity
      */
-    private void handleVolleyException( VolleyError error, int responseCode ) {
+    private void handleVolleyException( int responseCode, VolleyError error ) {
         error.printStackTrace();
         // depending on the error, return an alert to the activity
         ServerResponse response = new ServerResponse();
-        if( error instanceof TimeoutError  ) {
+        if( error instanceof TimeoutError  )
             response.setCode( ServerResponse.ERROR_TIMEOUT );
-            response.setMessage( mCtx.getString( R.string.message_error_timeout ) );
-        } else if( error instanceof NetworkError ) {
+        else if( error instanceof NetworkError )
             response.setCode( ServerResponse.ERROR_NETWORK );
-            response.setMessage( mCtx.getString( R.string.message_error_network ) );
-        } else if( error instanceof ServerError ) {
+        else if( error instanceof ServerError )
             response.setCode( ServerResponse.ERROR_SERVER );
-            response.setMessage( mCtx.getString( R.string.message_error_server ) );
-        } else {
+        else
             response.setCode( ServerResponse.ERROR_UNKOWN );
-            response.setMessage( mCtx.getString( R.string.message_error_unknown ) );
-        }
-        listener.onResponse( responseCode, response );
+        mListener.onResponse( responseCode, response );
     }
 
+    /**
+     * Cancels all the pending requests with an identifier
+     * @param tag The identifier
+     */
     @SuppressWarnings( "unused" )
     public void cancelPendingRequests( Object tag ) {
-        if( mRequestQueue != null )
-            mRequestQueue.cancelAll( tag );
+        mRequestQueue.cancelAll( tag );
     }
 
     /**
      * Executes a request (extends IRequest class)
      * @param request The request to be executed
      */
-    public void invoke( IRequest request) {
-        request.execute( oEncrypter, this );
+    public void invoke( IRequest request ) {
+        request.execute( mEncrypter, this );
     }
 }

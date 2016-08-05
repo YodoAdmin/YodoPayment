@@ -13,7 +13,7 @@ import android.widget.TextView;
 import co.yodo.mobile.BuildConfig;
 import co.yodo.mobile.R;
 import co.yodo.mobile.helper.PrefUtils;
-import co.yodo.mobile.network.YodoRequest;
+import co.yodo.mobile.network.ApiClient;
 import co.yodo.mobile.ui.option.contract.IOption;
 import co.yodo.mobile.ui.notification.AlertDialogHelper;
 
@@ -25,10 +25,7 @@ public class AboutOption extends IOption {
     /** Data of the about */
     private final String mHardwareToken;
 
-    /** Elements for the AlertDialog */
-    private final String mTitle;
-    private final String mMessage;
-    private final String mEmail;
+    /** Layout for the AlertDialog */
     private final View mLayout;
 
     /**
@@ -38,21 +35,12 @@ public class AboutOption extends IOption {
     public AboutOption( Activity activity ) {
         super( activity );
         // Data
-        this.mHardwareToken = PrefUtils.getHardwareToken( this.mActivity );
-
-        // AlertDialog
-        this.mTitle = this.mActivity.getString( R.string.action_about );
-        this.mMessage =
-                this.mActivity.getString( R.string.version_label ) + " " +
-                BuildConfig.VERSION_NAME + "/" +
-                YodoRequest.getSwitch() + "\n\n" +
-                this.mActivity.getString( R.string.about_message );
-        this.mEmail = this.mActivity.getString( R.string.about_email );
+        this.mHardwareToken = PrefUtils.getHardwareToken( mActivity );
 
         // Gets and sets the dialog layout
-        LayoutInflater inflater = (LayoutInflater) this.mActivity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-        this.mLayout = inflater.inflate( R.layout.dialog_about, new LinearLayout( this.mActivity ), false );
-        setupLayout( this.mLayout );
+        LayoutInflater inflater = (LayoutInflater) mActivity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        mLayout = inflater.inflate( R.layout.dialog_about, new LinearLayout( mActivity ), false );
+        setupLayout( mLayout );
     }
 
     /**
@@ -63,34 +51,43 @@ public class AboutOption extends IOption {
         // GUI controllers of the dialog
         TextView emailView = (TextView) layout.findViewById( R.id.emailView );
         TextView messageView = (TextView) layout.findViewById( R.id.messageView );
-        SpannableString ssEmail = new SpannableString( this.mEmail );
+
+        // Get data
+        final String message = mActivity.getString( R.string.version_label ) + " " +
+                        BuildConfig.VERSION_NAME + "/" +
+                        ApiClient.getSwitch()    + "\n\n" +
+                        mActivity.getString( R.string.about_message );
+        final String email = mActivity.getString( R.string.about_email );
 
         // Set text to the controllers
+        SpannableString ssEmail = new SpannableString( email );
         ssEmail.setSpan( new UnderlineSpan(), 0, ssEmail.length(), 0 );
         emailView.setText( ssEmail );
-        messageView.setText( this.mMessage  );
+        messageView.setText( message  );
 
         // Create the onClick listener
         emailView.setOnClickListener( new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent( Intent.ACTION_SEND );
-                String[] recipients = { mEmail };
+                String[] recipients = { email };
                 intent.putExtra( Intent.EXTRA_EMAIL, recipients ) ;
                 intent.putExtra( Intent.EXTRA_SUBJECT, mHardwareToken );
                 intent.setType( "text/html" );
                 mActivity.startActivity( Intent.createChooser( intent, "Send Email" ) );
             }
         });
+
+        // Generate the AlertDialog
+        mAlertDialog = AlertDialogHelper.create(
+                mActivity,
+                R.string.action_about,
+                mLayout
+        );
     }
 
     @Override
     public void execute() {
-        // Generate the AlertDialog
-        AlertDialogHelper.showAlertDialog(
-                this.mActivity,
-                this.mTitle,
-                this.mLayout
-        );
+        mAlertDialog.show();
     }
 }

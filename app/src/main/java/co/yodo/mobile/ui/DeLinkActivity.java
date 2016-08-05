@@ -3,9 +3,7 @@ package co.yodo.mobile.ui;
 import android.content.Context;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,23 +11,27 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import javax.inject.Inject;
+
+import butterknife.ButterKnife;
 import co.yodo.mobile.R;
+import co.yodo.mobile.YodoApplication;
+import co.yodo.mobile.component.Intents;
+import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.GUIUtils;
+import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.network.ApiClient;
+import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.request.DeLinkRequest;
 import co.yodo.mobile.ui.notification.ProgressDialogHelper;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.notification.YodoHandler;
-import co.yodo.mobile.network.model.ServerResponse;
-import co.yodo.mobile.helper.AppConfig;
-import co.yodo.mobile.helper.PrefUtils;
-import co.yodo.mobile.component.Intents;
-import co.yodo.mobile.network.YodoRequest;
 
 /**
  * Created by luis on 20/02/15.
  * Dialog to de-link accounts
  */
-public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RESTListener {
+public class DeLinkActivity extends AppCompatActivity implements ApiClient.RequestsListener {
     /** DEBUG */
     @SuppressWarnings( "unused" )
     private static final String TAG = DeLinkActivity.class.getSimpleName();
@@ -45,7 +47,12 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
     private YodoHandler handlerMessages;
 
     /** Manager for the server requests */
-    private YodoRequest mRequestManager;
+    @Inject
+    ApiClient mRequestManager;
+
+    /** Progress dialog for the requests */
+    @Inject
+    ProgressDialogHelper mProgressManager;
 
     /** GUI controllers */
     private LinearLayout llTo;
@@ -65,7 +72,7 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
         updateData();
 
         if( savedInstanceState != null && savedInstanceState.getBoolean( AppConfig.IS_SHOWING ) ) {
-            ProgressDialogHelper.getInstance().createProgressDialog( ac );
+            mProgressManager.createProgressDialog( ac );
         }
     }
 
@@ -74,7 +81,7 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
         super.onSaveInstanceState(outState);
         outState.putBoolean(
                 AppConfig.IS_SHOWING,
-                ProgressDialogHelper.getInstance().isProgressDialogShowing()
+                mProgressManager.isProgressDialogShowing()
         );
     }
 
@@ -87,7 +94,7 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ProgressDialogHelper.getInstance().destroyProgressDialog();
+        mProgressManager.destroyProgressDialog();
     }
 
     @Override
@@ -108,21 +115,17 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
         // get the context
         ac = DeLinkActivity.this;
         handlerMessages = new YodoHandler( DeLinkActivity.this );
-        mRequestManager = YodoRequest.getInstance( ac );
+
+        // Injection
+        ButterKnife.bind( this );
+        YodoApplication.getComponent().inject( this );
 
         // GUI Global components
         llTo   = (LinearLayout) findViewById( R.id.toLayout );
         llFrom = (LinearLayout) findViewById( R.id.fromLayout );
 
-        // Only used at creation
-        Toolbar toolbar = (Toolbar) findViewById( R.id.actionBar );
-
         // Setup the toolbar
-        setTitle( R.string.title_activity_de_link );
-        setSupportActionBar( toolbar );
-        ActionBar actionBar = getSupportActionBar();
-        if( actionBar != null )
-            actionBar.setDisplayHomeAsUpEnabled( true );
+        GUIUtils.setActionBar( this, R.string.title_activity_de_link );
     }
 
     /**
@@ -180,7 +183,7 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
             public void onClick(final View account) {
                 vCurrentDeLink = account;
 
-                ProgressDialogHelper.getInstance().createProgressDialog( ac );
+                mProgressManager.createProgressDialog( ac );
                 mRequestManager.invoke( new DeLinkRequest(
                         DELINK_REQ,
                         hardwareToken,
@@ -200,7 +203,7 @@ public class DeLinkActivity extends AppCompatActivity implements YodoRequest.RES
 
     @Override
     public void onResponse( int responseCode, ServerResponse response ) {
-        ProgressDialogHelper.getInstance().destroyProgressDialog();
+        mProgressManager.destroyProgressDialog();
         String code, message;
 
         switch( responseCode ) {

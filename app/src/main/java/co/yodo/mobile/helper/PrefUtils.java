@@ -5,8 +5,6 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.telephony.TelephonyManager;
 
-import com.google.android.gms.nearby.messages.Strategy;
-
 /**
  * Created by luis on 15/12/14.
  * Utilities for the App, Mainly shared preferences
@@ -279,19 +277,5 @@ public class PrefUtils {
     public static boolean isForeground( Context c ) {
         SharedPreferences config = getSPrefConfig( c );
         return config.getBoolean( AppConfig.SPREF_FOREGROUND, false );
-    }
-
-    /**
-     * It gets if the token was sent to the server
-     * @param c The Context of the Android system
-     * @return Integer
-     */
-    public static Integer getPromotionsTime( Context c ) {
-        SharedPreferences config = getSPrefConfig( c );
-        String value = config.getString( AppConfig.SPREF_PROMOTION_TIME, AppConfig.DEFAULT_PROMOTION );
-
-        if( value.equals( "999" ) ) // 999 represents infinite in the array
-            return Strategy.TTL_SECONDS_INFINITE;
-        return Integer.parseInt( value );
     }
 }

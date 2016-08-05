@@ -52,10 +52,11 @@ public class SaveCouponOption extends IOption {
             }
         };
 
-        AlertDialogHelper.showAlertDialog(
-                this.mActivity,
+        AlertDialogHelper.create(
+                mActivity,
+                null,
                 R.string.save_image,
                 onClick
-        );
+        ).show();
     }
 }

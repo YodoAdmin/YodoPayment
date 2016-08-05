@@ -42,7 +42,7 @@
     <string name="pip_different">PIPs do not match</string>
     <string name="pip_hint">Personal Identity Phrase</string>
     <string name="face_recognition">Face Recognition</string>
-    <string name="face_required">You need to select a biometric token first</string>
+    <string name="face_required">Select a biometric token first</string>
     <string name="next">NEXT</string>
     <string name="register">REGISTER</string>
     <string name="face_explanation">Yodo does not collect an image of your face, only a bio-token to allow you to reset forgotten PIPs while remaining anonymous. Press the icon above to get started.</string>
@@ -75,8 +75,8 @@
 
     <!-- Reset PIP Messages -->
     <string name="current_pip">Current PIP:</string>
-    <string name="new_pip">New PIP:</string>
-    <string name="confirm_pip">Confirm New PIP:</string>
+    <string name="new_pip">New PIP</string>
+    <string name="confirm_pip">Confirm New PIP</string>
     <string name="new_pip_hint">(4–8 characters)</string>
     <string name="forgot_pip">Forgot the PIP?</string>
 
