@@ -22,25 +22,17 @@ import co.yodo.mobile.ui.notification.AlertDialogHelper;
  * Implements the About Option of the MainActivity
  */
 public class AboutOption extends IOption {
-    /** Data of the about */
-    private final String mHardwareToken;
-
-    /** Layout for the AlertDialog */
-    private final View mLayout;
-
     /**
      * Sets up the main elements of the options
      * @param activity The Activity to handle
      */
     public AboutOption( Activity activity ) {
         super( activity );
-        // Data
-        this.mHardwareToken = PrefUtils.getHardwareToken( mActivity );
 
         // Gets and sets the dialog layout
         LayoutInflater inflater = (LayoutInflater) mActivity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-        mLayout = inflater.inflate( R.layout.dialog_about, new LinearLayout( mActivity ), false );
-        setupLayout( mLayout );
+        final View layout = inflater.inflate( R.layout.dialog_about, new LinearLayout( mActivity ), false );
+        setupLayout( layout );
     }
 
     /**
@@ -53,6 +45,7 @@ public class AboutOption extends IOption {
         TextView messageView = (TextView) layout.findViewById( R.id.messageView );
 
         // Get data
+        final String hardwareToken = PrefUtils.getHardwareToken( mActivity );
         final String message = mActivity.getString( R.string.version_label ) + " " +
                         BuildConfig.VERSION_NAME + "/" +
                         ApiClient.getSwitch()    + "\n\n" +
@@ -72,7 +65,7 @@ public class AboutOption extends IOption {
                 Intent intent = new Intent( Intent.ACTION_SEND );
                 String[] recipients = { email };
                 intent.putExtra( Intent.EXTRA_EMAIL, recipients ) ;
-                intent.putExtra( Intent.EXTRA_SUBJECT, mHardwareToken );
+                intent.putExtra( Intent.EXTRA_SUBJECT, hardwareToken );
                 intent.setType( "text/html" );
                 mActivity.startActivity( Intent.createChooser( intent, "Send Email" ) );
             }
@@ -82,7 +75,7 @@ public class AboutOption extends IOption {
         mAlertDialog = AlertDialogHelper.create(
                 mActivity,
                 R.string.action_about,
-                mLayout
+                layout
         );
     }
 

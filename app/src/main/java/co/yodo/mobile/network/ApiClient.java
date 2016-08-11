@@ -46,7 +46,7 @@ public class ApiClient {
     private static final String DEMO_IP  = "http://198.101.209.120"; // Demo
     private static final String DEV_IP   = "http://162.244.228.78";  // Development
     private static final String LOCAL_IP = "http://192.168.1.34";    // Local
-    private static final String IP = DEMO_IP;
+    private static final String IP = DEV_IP;
 
     /** Two paths used for the requests */
     private static final String YODO_ADDRESS = "/yodo/yodoswitchrequest/getRequest/";
