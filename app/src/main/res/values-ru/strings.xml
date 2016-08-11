@@ -122,11 +122,11 @@
     <string name="farewell_message">Пожалуйста, полностью удалите приложение Yodo, используя инструменты для управления приложениями в настройках телефона.</string>
 
     <!-- Settings Headers -->
-    <string name="config_pref_services">Сервисы</string>
+    <string name="config_pref_security">Безопасность</string>
 
     <!-- Settings Titles -->
-    <string name="config_pref_advertising">Акции</string>
-    <string name="config_pref_advertising_summary">Получить акции из близлежащих магазинов</string>
+    <string name="config_pref_pip_visibility">Видимость Пипа</string>
+    <string name="config_pref_pip_visibility_summary">Показывает значение по умолчанию PIP</string>
     <string name="config_pref_languages">Язык</string>
 
     <!-- Tutorial -->

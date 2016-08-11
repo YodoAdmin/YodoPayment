@@ -124,11 +124,11 @@
     <string name="farewell_message">Please completely remove the Yodo App using the App Management tools under phone Settings</string>
 
     <!-- Settings Headers -->
-    <string name="config_pref_services">Services</string>
+    <string name="config_pref_security">Sécurité</string>
 
     <!-- Settings Titles -->
-    <string name="config_pref_advertising">Advertising</string>
-    <string name="config_pref_advertising_summary">Receive advertising from the closest store</string>
+    <string name="config_pref_pip_visibility">La visibilité de PIP</string>
+    <string name="config_pref_pip_visibility_summary">Affiche la valeur PIP par défaut</string>
     <string name="config_pref_languages">Language</string>
 
     <!-- Tutorial -->

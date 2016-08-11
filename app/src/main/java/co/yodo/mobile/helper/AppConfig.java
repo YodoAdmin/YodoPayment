@@ -47,6 +47,16 @@ public class AppConfig {
 	 */
     public static final String SPREF_CURRENT_LANGUAGE = "SPCurrentLanguage";
 
+    /* The current state of the PIP visibility.
+     * type -- Boolean
+     */
+    public static final String SPREF_PIP_VISIBILITY = "SPPIPVisibility";
+
+    /* The current user balance.
+     * type -- String
+     */
+    public static final String SPREF_CURRENT_BALANCE = "SPCurrentBalance";
+
     /* Registration authnumber
 	 * type -- String
 	 */
@@ -83,4 +93,7 @@ public class AppConfig {
 
     /* Progress Dialog */
     public static final String IS_SHOWING = "is_showing";
+
+    /* Default user balance */
+    public static final String DEFAULT_BALANCE = "0.00";
 }

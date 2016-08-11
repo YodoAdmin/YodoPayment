@@ -119,11 +119,11 @@
     <string name="farewell_message">携帯の設定メニューのアプリ管理ツールを使ってYodoアプリを携帯から削除してください</string>
 
     <!-- Settings Headers -->
-    <string name="config_pref_services">サービス</string>
+    <string name="config_pref_security">セキュリティ</string>
 
     <!-- Settings Titles -->
-    <string name="config_pref_advertising">広告</string>
-    <string name="config_pref_advertising_summary">近辺の店舗から広告を受け取る</string>
+    <string name="config_pref_pip_visibility">PIPの可視性</string>
+    <string name="config_pref_pip_visibility_summary">デフォルトでは、PIPの値を表示します</string>
     <string name="config_pref_languages">言語</string>
 
     <!-- Tutorial -->
@@ -192,6 +192,6 @@
     <string name="crash_toast_text">システムエラー。問題解決のために、ディベロッパーにレポートが送信されました！</string>
     <string name="message.error.code">コードでエラーを解決できませんでした：</string>
     <string name="message.error.incorrect_pip">不適切なPIP。 再試行する</string>
-    <string name="message.error.no_connectivity">いいえ、接続、続行することはできません。 「設定」に修正して再試行してください</string>"
+    <string name="message.error.no_connectivity">いいえ、接続、続行することはできません。 「設定」に修正して再試行してください</string>
     
 </resources>

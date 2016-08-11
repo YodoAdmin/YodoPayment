@@ -2,6 +2,7 @@ package co.yodo.mobile.ui.components;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.support.design.widget.TextInputEditText;
 import android.support.v4.content.res.ResourcesCompat;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -16,7 +17,7 @@ import co.yodo.mobile.R;
  * Created by luis on 25/07/13.
  * Edit Tex with delete button
  */
-public class ClearEditText extends EditText {
+public class ClearEditText extends TextInputEditText {
     //The image we are going to use for the Clear button
     private Drawable imgCloseButton = ResourcesCompat.getDrawable( getResources(), R.drawable.clear_button_image, null );
 
@@ -43,9 +44,9 @@ public class ClearEditText extends EditText {
         handleClearButton();
 
         // If the Close image is displayed and the user remove his finger from the button, clear it. Otherwise do nothing
-        this.setOnTouchListener(new OnTouchListener() {
+        this.setOnTouchListener( new OnTouchListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
+            public boolean onTouch( View v, MotionEvent event ) {
                 ClearEditText et = ClearEditText.this;
 
                 if( et.getCompoundDrawables()[2] == null )
@@ -63,18 +64,18 @@ public class ClearEditText extends EditText {
         });
 
         // If text changes, take care of the button
-        this.addTextChangedListener(new TextWatcher() {
+        this.addTextChangedListener( new TextWatcher() {
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public void onTextChanged( CharSequence s, int start, int before, int count ) {
                 ClearEditText.this.handleClearButton();
             }
 
             @Override
-            public void afterTextChanged(Editable arg0) {
+            public void afterTextChanged( Editable arg0 ) {
             }
 
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+            public void beforeTextChanged( CharSequence s, int start, int count, int after ) {
             }
         });
     }

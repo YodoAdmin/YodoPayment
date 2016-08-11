@@ -119,11 +119,11 @@
     <string name="farewell_message">请使用下手机设置的应用程序管理工具完全删除应用程序Yodo</string>
 
     <!-- Settings Headers -->
-    <string name="config_pref_services">服务</string>
+    <string name="config_pref_security">安全</string>
 
     <!-- Settings Titles -->
-    <string name="config_pref_advertising">促销</string>
-    <string name="config_pref_advertising_summary">获取广告</string>
+    <string name="config_pref_pip_visibility">PIP的知名度</string>
+    <string name="config_pref_pip_visibility_summary">缺省情况下显示PIP值</string>
     <string name="config_pref_languages">语言</string>
 
     <!-- Tutorial -->

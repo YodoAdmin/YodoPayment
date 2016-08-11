@@ -164,11 +164,11 @@
     <string name="title_activity_yodo_camera">Yodo Camera</string>
 
     <!-- Settings Headers -->
-    <string name="config_pref_services">Services</string>
+    <string name="config_pref_security">Security</string>
 
     <!-- Settings Titles -->
-    <string name="config_pref_advertising">Keep promotions service alive for:</string>
-    <string name="config_pref_advertising_summary">Receive promotions from nearby stores</string>
+    <string name="config_pref_pip_visibility">PIP\'s Visibility</string>
+    <string name="config_pref_pip_visibility_summary">Shows the PIP value by default</string>
     <string name="config_pref_languages">Language</string>
 
     <!-- Languages -->

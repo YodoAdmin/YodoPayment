@@ -13,7 +13,8 @@
         <ImageView
             style="@style/HeaderImage"
             android:src="@drawable/ic_launcher"
-            android:contentDescription="@string/desc" />
+            android:contentDescription="@string/desc"
+            android:onClick="hideClick"/>
 
         <!-- data -->
         <LinearLayout style="@style/HeaderLayout" >
@@ -32,7 +33,9 @@
 
         </LinearLayout>
 
-        <LinearLayout style="@style/HeaderLayout" >
+        <LinearLayout
+            android:id="@+id/llAccountData"
+            style="@style/HeaderLayout" >
 
             <TextView
                 style="@style/HeaderData"

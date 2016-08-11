@@ -9,6 +9,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -84,9 +85,9 @@ public abstract class IRequestOption extends IOption {
         cbShowPIP = (CheckBox) layout.findViewById( R.id.showPassword );
         tilPip = (TextInputLayout) etInput.getParent();
 
-        cbShowPIP.setOnClickListener( new View.OnClickListener() {
+        cbShowPIP.setOnCheckedChangeListener( new CompoundButton.OnCheckedChangeListener() {
             @Override
-            public void onClick( View v ) {
+            public void onCheckedChanged( CompoundButton compoundButton, boolean b ) {
                 GUIUtils.showPassword( cbShowPIP, etInput );
             }
         } );
@@ -121,7 +122,6 @@ public abstract class IRequestOption extends IOption {
         tilPip.setErrorEnabled( false );
         tilPip.setError( null );
         etInput.requestFocus();
-        cbShowPIP.setChecked( false );
-        GUIUtils.showPassword( cbShowPIP, etInput );
+        cbShowPIP.setChecked( PrefUtils.getPIPVisibility( mActivity ) );
     }
 }

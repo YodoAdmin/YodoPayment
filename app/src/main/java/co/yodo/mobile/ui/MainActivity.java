@@ -23,6 +23,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -69,14 +70,7 @@ import co.yodo.mobile.ui.notification.AlertDialogHelper;
 import co.yodo.mobile.ui.notification.ProgressDialogHelper;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.notification.YodoHandler;
-import co.yodo.mobile.ui.option.AboutOption;
-import co.yodo.mobile.ui.option.BalanceOption;
-import co.yodo.mobile.ui.option.CloseAccountOption;
-import co.yodo.mobile.ui.option.DeLinkAccountOption;
-import co.yodo.mobile.ui.option.LinkAccountOption;
-import co.yodo.mobile.ui.option.LinkCodeOption;
-import co.yodo.mobile.ui.option.PaymentOption;
-import co.yodo.mobile.ui.option.SaveCouponOption;
+import co.yodo.mobile.ui.option.factory.OptionsFactory;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 
@@ -110,6 +104,9 @@ public class MainActivity extends AppCompatActivity implements
     ProgressDialogHelper mProgressManager;
 
     /** GUI Controllers */
+    @BindView( R.id.llAccountData )
+    LinearLayout llAccountData;
+
     @BindView( R.id.tvAccountNumber )
     TextView tvAccountNumber;
 
@@ -132,16 +129,7 @@ public class MainActivity extends AppCompatActivity implements
     private ActionBarDrawerToggle mDrawerToggle;
 
     /** Options */
-    private SaveCouponOption mSaveCouponOption;
-    private AboutOption mAboutOption;
-
-    /** Options that executes a request */
-    private PaymentOption mPaymentOption;
-    private BalanceOption mBalanceOption;
-    private LinkCodeOption mLinkCodeOption;
-    private LinkAccountOption mLinkAccountOption;
-    private DeLinkAccountOption mDeLinkAccountOption;
-    private CloseAccountOption mCloseAccountOption;
+    private OptionsFactory mOptFactory;
 
     /** Database and current merchant */
     private CouponsDataSource couponsdb;
@@ -257,7 +245,7 @@ public class MainActivity extends AppCompatActivity implements
                 return true;
 
             case R.id.action_about:
-                mAboutOption.execute();
+                mOptFactory.getOption( OptionsFactory.Option.ABOUT ).execute();
                 return true;
         }
         return super.onOptionsItemSelected( item );
@@ -295,16 +283,7 @@ public class MainActivity extends AppCompatActivity implements
         YodoApplication.getComponent().inject( this );
 
         // Options
-        mSaveCouponOption = new SaveCouponOption( this );
-        mAboutOption      = new AboutOption( this );
-
-        // Request options
-        mPaymentOption       = new PaymentOption( this, mHandlerMessages );
-        mBalanceOption       = new BalanceOption( this, mHandlerMessages );
-        mLinkCodeOption      = new LinkCodeOption( this, mHandlerMessages );
-        mLinkAccountOption   = new LinkAccountOption( this, mHandlerMessages );
-        mDeLinkAccountOption = new DeLinkAccountOption( this, mHandlerMessages );
-        mCloseAccountOption  = new CloseAccountOption( this, mHandlerMessages );
+        mOptFactory = new OptionsFactory( this, mHandlerMessages );
 
         // Setup the toolbar
         Toolbar toolbar = GUIUtils.setActionBar( this, R.string.title_activity_main );
@@ -338,7 +317,7 @@ public class MainActivity extends AppCompatActivity implements
                 if( !writePermission || drawable == null )
                     return false;
 
-                mSaveCouponOption.execute();
+                mOptFactory.getOption( OptionsFactory.Option.SAVE_COUPON ).execute();
                 return true;
             }
         });
@@ -348,6 +327,16 @@ public class MainActivity extends AppCompatActivity implements
             dlPayment.openDrawer( GravityCompat.START );
             PrefUtils.saveFirstLogin( ac, false );
         }
+
+       /* dlPayment.openDrawer( GravityCompat.START );
+        Target target = new ViewTarget( toolbar );
+
+        new ShowcaseView.Builder( this )
+                .setTarget( target )
+                .setContentTitle( "ShowcaseView" )
+                .setContentText( "This is highlighting the Home button" )
+                .hideOnTouchOutside()
+                .build();*/
 
         // Show the terms, if the app is updated
         EulaUtils.show( this );
@@ -370,6 +359,7 @@ public class MainActivity extends AppCompatActivity implements
         // Set the account number and current date
         tvAccountNumber.setText( mHardwareToken );
         tvAccountDate.setText( FormatUtils.getCurrentDate() );
+        tvAccountBalance.setText( PrefUtils.getCurrentBalance( ac ) );
     }
 
     /**
@@ -503,6 +493,18 @@ public class MainActivity extends AppCompatActivity implements
      */
 
     /**
+     * Hides the user data
+     * @param v, Button view, not used
+     */
+    public void hideClick( View v ) {
+        int visibility = llAccountData.getVisibility();
+        if( visibility == View.VISIBLE )
+            llAccountData.setVisibility( View.GONE );
+        else
+            llAccountData.setVisibility( View.VISIBLE );
+    }
+
+    /**
      * Tries to subscribe to close Rocket (POS) devices
      * for advertisement
      * @param v The view, used to change the icon
@@ -531,7 +533,7 @@ public class MainActivity extends AppCompatActivity implements
      * @param v The view, not used
      */
     public void paymentClick( View v ) {
-        mPaymentOption.execute();
+        mOptFactory.getOption( OptionsFactory.Option.PAYMENT ).execute();
     }
 
     public void payment( String pip ) {
@@ -599,17 +601,17 @@ public class MainActivity extends AppCompatActivity implements
                 switch( item ) {
                     // Generates a linking code
                     case 0:
-                        mLinkCodeOption.execute();
+                        mOptFactory.getOption( OptionsFactory.Option.LINK_CODE ).execute();
                         break;
 
                     // Links accounts with a linking code
                     case 1:
-                        mLinkAccountOption.execute();
+                        mOptFactory.getOption( OptionsFactory.Option.LINK_ACCOUNT ).execute();
                         break;
 
                     // DeLinks an account
                     case 2:
-                        mDeLinkAccountOption.execute();
+                        mOptFactory.getOption( OptionsFactory.Option.DE_LINK_ACCOUNT ).execute();
                         break;
                 }
             }
@@ -629,10 +631,11 @@ public class MainActivity extends AppCompatActivity implements
      */
     public void balanceClick( View v ) {
         dlPayment.closeDrawers();
-        mBalanceOption.execute();
+        mOptFactory.getOption( OptionsFactory.Option.BALANCE ).execute();
     }
 
     public void setBalance( String balance ) {
+        PrefUtils.saveBalance( ac, balance );
         tvAccountBalance.setText( balance );
     }
 
@@ -642,7 +645,7 @@ public class MainActivity extends AppCompatActivity implements
      */
     public void closeAccountClick(View v) {
         dlPayment.closeDrawers();
-        mCloseAccountOption.execute();
+        mOptFactory.getOption( OptionsFactory.Option.CLOSE_ACCOUNT ).execute();
     }
 
     public void clearSavedData() {
@@ -736,12 +739,10 @@ public class MainActivity extends AppCompatActivity implements
                 .build();
 
         // Account balance
-        tvAccountBalance.setText(
-                String.format( "%s %s",
-                        FormatUtils.truncateDecimal( receipt.getBalanceAmount() ),
-                        receipt.getCurrency()
-                )
-        );
+        setBalance( String.format( "%s %s",
+                FormatUtils.truncateDecimal( receipt.getBalanceAmount() ),
+                receipt.getCurrency()
+        ) );
     }
 
     @Override

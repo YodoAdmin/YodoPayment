@@ -105,7 +105,7 @@ public class PrefUtils {
     }
 
     /**
-     * It savesthe current language
+     * It saves the current language
      * @param c The Context of the Android system.
      * @param language It is the language used by the app
      * @return true  The flag was saved successfully.
@@ -126,6 +126,40 @@ public class PrefUtils {
     public static String getLanguage( Context c ) {
         SharedPreferences config = getSPrefConfig( c );
         return config.getString( AppConfig.SPREF_CURRENT_LANGUAGE, null );
+    }
+
+    /**
+     * It gets the state of the PIP's visibility
+     * @param c The Context of the Android system
+     * @return Boolean It returns true or false
+     */
+    public static Boolean getPIPVisibility( Context c ) {
+        SharedPreferences config = getSPrefConfig( c );
+        return config.getBoolean( AppConfig.SPREF_PIP_VISIBILITY, false );
+    }
+
+    /**
+     * It saves the current user balance
+     * @param c The Context of the Android system.
+     * @param balance It is the user balance
+     * @return true  The flag was saved successfully.
+     *         false The flag was not saved successfully.
+     */
+    public static boolean saveBalance( Context c, String balance ) {
+        SharedPreferences config = getSPrefConfig( c );
+        SharedPreferences.Editor writer = config.edit();
+        writer.putString( AppConfig.SPREF_CURRENT_BALANCE, balance );
+        return writer.commit();
+    }
+
+    /**
+     * It gets the user balance
+     * @param c The Context of the Android system
+     * @return String It returns the balance
+     */
+    public static String getCurrentBalance( Context c ) {
+        SharedPreferences config = getSPrefConfig( c );
+        return config.getString( AppConfig.SPREF_CURRENT_BALANCE, AppConfig.DEFAULT_BALANCE );
     }
 
     /**
