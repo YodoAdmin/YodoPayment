@@ -23,6 +23,7 @@ import co.yodo.mobile.R;
 import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.broadcastreceiver.BroadcastMessage;
 import co.yodo.mobile.component.Intents;
+import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.EulaUtils;
 import co.yodo.mobile.helper.GUIUtils;
 import co.yodo.mobile.helper.PrefUtils;
@@ -198,8 +199,9 @@ public class RegistrationActivity extends AppCompatActivity implements EulaUtils
 
                 // If the auth is correct, let's continue with the registration
                 if( code.equals( ServerResponse.AUTHORIZED_REGISTRATION ) ) {
-                    // Save the authnumber for later use (i.e. biometric registration)
+                    // Save the authnumber for later use (i.e. biometric registration), and balance
                     PrefUtils.saveAuthNumber( ac, response.getAuthNumber() );
+                    PrefUtils.saveBalance( ac, AppConfig.DEFAULT_BALANCE );
 
                     // let's register the gcm id
                     Intent intent = new Intent( ac, RegistrationIntentService.class );

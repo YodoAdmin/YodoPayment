@@ -193,5 +193,18 @@
     <string name="message.error.code">コードでエラーを解決できませんでした：</string>
     <string name="message.error.incorrect_pip">不適切なPIP。 再試行する</string>
     <string name="message.error.no_connectivity">いいえ、接続、続行することはできません。 「設定」に修正して再試行してください</string>
-    
+
+    <!-- Tutorial -->
+    <string name="title.slide1">シンプルな使用法!</string>
+    <string name="message.slide1">主なツールを表示する右に画面をスワイプ</string>
+
+    <string name="title.slide2">高速の支払い！</string>
+    <string name="message.slide2">ただ、QRコードと金貨とボタンを使用して、SKSコードを生成</string>
+
+    <string name="title.slide3">プロモーションをゲット！</string>
+    <string name="message.slide3">最寄りの商人からプロモーションを受信するために2つの矢印でアイコンを押してください</string>
+
+    <string name="title.slide4">淀川のアイコンを使用して情報を隠します</string>
+    <string name="message.slide4">GET STARTED</string>
+
 </resources>

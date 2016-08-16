@@ -194,4 +194,17 @@
     <string name="message.error.incorrect_pip">PIP不正確。 再試一次</string>
     <string name="message.error.no_connectivity">無連接，無法進行。修正了“設置”，然後再試一次</string>
 
+    <!-- Tutorial -->
+    <string name="title.slide1">简单的用法！</string>
+    <string name="message.slide1">轻扫屏幕来显示主要工具的权利</string>
+
+    <string name="title.slide2">快速支付!</string>
+    <string name="message.slide2">只是使用按钮与QR码和金币生成一个SKS代码</string>
+
+    <string name="title.slide3">获取促销！</string>
+    <string name="message.slide3">按图标，两个箭头来接收从最近的商家促销</string>
+
+    <string name="title.slide4">隐藏的图标淀川您的信息</string>
+    <string name="message.slide4">使用入门</string>
+
 </resources>

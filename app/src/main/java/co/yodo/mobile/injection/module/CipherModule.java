@@ -11,7 +11,7 @@ import dagger.Provides;
 public class CipherModule {
     @Provides
     @ApplicationScope
-    RSACrypt providesRSACrypt( Context context ){
+    RSACrypt providesRSACrypt( Context context ) {
         return new RSACrypt( context );
     }
 }

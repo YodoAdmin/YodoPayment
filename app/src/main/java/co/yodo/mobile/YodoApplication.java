@@ -13,12 +13,10 @@ import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
 import co.yodo.mobile.helper.AppConfig;
-import co.yodo.mobile.helper.GUIUtils;
 import co.yodo.mobile.injection.component.ApplicationComponent;
 import co.yodo.mobile.injection.component.DaggerApplicationComponent;
 import co.yodo.mobile.injection.component.DaggerGraphComponent;
 import co.yodo.mobile.injection.component.GraphComponent;
-import co.yodo.mobile.injection.module.ApiClientModule;
 import co.yodo.mobile.injection.module.ApplicationModule;
 
 @ReportsCrashes(formUri = "http://198.101.209.120/MAB-LAB/report/report.php",

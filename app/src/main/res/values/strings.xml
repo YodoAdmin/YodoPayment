@@ -219,4 +219,17 @@
     <!-- ACRA -->
     <string name="crash_toast_text">System Error. A report has been sent to the developer to fix the issue!</string>
 
+    <!-- Tutorial -->
+    <string name="title.slide1">Simple usage!</string>
+    <string name="message.slide1">Swipe the screen to the right to show the main tools</string>
+
+    <string name="title.slide2">Fast payments!</string>
+    <string name="message.slide2">Just generate a SKS code using the button with the QR code and gold coins</string>
+
+    <string name="title.slide3">Get promotions!</string>
+    <string name="message.slide3">Press the icon with two arrows to receive promotions from the closest merchant</string>
+
+    <string name="title.slide4">Hide your info with the Yodo icon</string>
+    <string name="message.slide4">GET STARTED</string>
+
 </resources>

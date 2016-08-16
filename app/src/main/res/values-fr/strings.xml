@@ -196,4 +196,17 @@
     <!-- ACRA -->
     <string name="crash_toast_text">Ooooops ! I crashed, but a report has been sent to my developer to help fix the issue !</string>
 
+    <!-- Tutorial -->
+    <string name="title.slide1">Utilisation simple!</string>
+    <string name="message.slide1">Balayez l\'écran vers la droite pour montrer les principaux outils</string>
+
+    <string name="title.slide2">Paiements rapides!</string>
+    <string name="message.slide2">Il suffit de générer un code SKS en utilisant le bouton avec le code et d\'or QR</string>
+
+    <string name="title.slide3">Obtenez les promotions!</string>
+    <string name="message.slide3">Appuyez sur l\'icône avec deux flèches pour recevoir des promotions chez le marchand le plus proche</string>
+
+    <string name="title.slide4">Cachez vos informations avec l\'icône Yodo</string>
+    <string name="message.slide4">COMMENCER</string>
+
 </resources>

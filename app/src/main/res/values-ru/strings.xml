@@ -194,4 +194,17 @@
     <!-- ACRA -->
     <string name="crash_toast_text">Упс! Неудача. Чтобы помочь исправить проблему, отчет был отправлен разработчикам.</string>
 
+    <!-- Tutorial -->
+    <string name="title.slide1">Простое использование!</string>
+    <string name="message.slide1">Размах экрана справа, чтобы показать основные инструменты</string>
+
+    <string name="title.slide2">Быстрые платежи!</string>
+    <string name="message.slide2">Просто генерировать код SKS с помощью кнопки с кодом и золотыми монетами QR</string>
+
+    <string name="title.slide3">Получить промо-акции!</string>
+    <string name="message.slide3">Нажмите на значок с двумя стрелками, чтобы получить акции от ближайшего торговца</string>
+
+    <string name="title.slide4">Скрыть свою информацию со значком Yodo</string>
+    <string name="message.slide4">НАЧАТЬ</string>
+
 </resources>

@@ -159,7 +159,7 @@ public class PrefUtils {
      */
     public static String getCurrentBalance( Context c ) {
         SharedPreferences config = getSPrefConfig( c );
-        return config.getString( AppConfig.SPREF_CURRENT_BALANCE, AppConfig.DEFAULT_BALANCE );
+        return config.getString( AppConfig.SPREF_CURRENT_BALANCE, AppConfig.NO_BALANCE );
     }
 
     /**

@@ -71,6 +71,7 @@ import co.yodo.mobile.ui.notification.ProgressDialogHelper;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.notification.YodoHandler;
 import co.yodo.mobile.ui.option.factory.OptionsFactory;
+import co.yodo.mobile.ui.tutorial.IntroActivity;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 
@@ -325,18 +326,12 @@ public class MainActivity extends AppCompatActivity implements
         // If it is the first login show the drawer open
         if( PrefUtils.isFirstLogin( ac ) ) {
             dlPayment.openDrawer( GravityCompat.START );
+
+            Intent intent = new Intent( ac, IntroActivity.class );
+            startActivity( intent );
+
             PrefUtils.saveFirstLogin( ac, false );
         }
-
-       /* dlPayment.openDrawer( GravityCompat.START );
-        Target target = new ViewTarget( toolbar );
-
-        new ShowcaseView.Builder( this )
-                .setTarget( target )
-                .setContentTitle( "ShowcaseView" )
-                .setContentText( "This is highlighting the Home button" )
-                .hideOnTouchOutside()
-                .build();*/
 
         // Show the terms, if the app is updated
         EulaUtils.show( this );

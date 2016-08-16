@@ -152,6 +152,12 @@
             android:label="@string/title_activity_de_link" >
         </activity>
 
+        <!-- Intro -->
+        <activity
+            android:name=".ui.tutorial.IntroActivity"
+            android:screenOrientation="sensorPortrait" >
+        </activity>
+
         <!-- Providers -->
         <!--
         <provider

@@ -1,10 +1,8 @@
 package co.yodo.mobile.ui.option;
 
-import android.support.design.widget.Snackbar;
-import android.support.v4.widget.DrawerLayout;
 import android.view.View;
 
-import co.yodo.mobile.R;
+import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.FormatUtils;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.network.ApiClient;
@@ -20,9 +18,6 @@ import co.yodo.mobile.ui.option.contract.IRequestOption;
  * Implements the Balance Option of the MainActivity
  */
 public class BalanceOption extends IRequestOption implements ApiClient.RequestsListener {
-    /** GUI elements */
-    private final DrawerLayout mDrawerLayout;
-
     /** Response codes for the server requests */
     private static final int QUERY_BAL_REQ = 0x04;
 
@@ -32,9 +27,6 @@ public class BalanceOption extends IRequestOption implements ApiClient.RequestsL
      */
     public BalanceOption( MainActivity activity, YodoHandler handlerMessages ) {
         super( activity, handlerMessages );
-
-        // GUI
-        mDrawerLayout = (DrawerLayout) mActivity.findViewById( R.id.dlPayment );
 
         // Dialog
         final View layout = buildLayout();
@@ -100,12 +92,12 @@ public class BalanceOption extends IRequestOption implements ApiClient.RequestsL
 
                     case ServerResponse.ERROR_NO_BALANCE:
                         // Clear the balance
-                        ( (MainActivity) mActivity ).setBalance( "" );
-                        Snackbar.make(
+                        ( (MainActivity) mActivity ).setBalance( AppConfig.DEFAULT_BALANCE );
+                        /*Snackbar.make(
                                 mDrawerLayout,
                                 R.string.message_error_no_balance,
                                 Snackbar.LENGTH_LONG
-                        ).show();
+                        ).show();*/
                         break;
 
                     default:
