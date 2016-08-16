@@ -1,6 +1,7 @@
 package co.yodo.mobile.helper;
 
 import co.yodo.mobile.BuildConfig;
+import co.yodo.mobile.network.ApiClient;
 
 /**
  * Created by luis on 15/12/14.
@@ -8,7 +9,7 @@ import co.yodo.mobile.BuildConfig;
  */
 public class AppConfig {
     /** DEBUG flag */
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     /** ID of the shared preferences file */
     public static final String SHARED_PREF_FILE = "YodoPaymentSharedPref";
@@ -46,6 +47,16 @@ public class AppConfig {
 	 */
     public static final String SPREF_CURRENT_LANGUAGE = "SPCurrentLanguage";
 
+    /* The current state of the PIP visibility.
+     * type -- Boolean
+     */
+    public static final String SPREF_PIP_VISIBILITY = "SPPIPVisibility";
+
+    /* The current user balance.
+     * type -- String
+     */
+    public static final String SPREF_CURRENT_BALANCE = "SPCurrentBalance";
+
     /* Registration authnumber
 	 * type -- String
 	 */
@@ -54,7 +65,7 @@ public class AppConfig {
     /* If the token was successfully sent to the server
 	 * type -- boolean
 	 */
-    public static final String SPREF_TOKEN_TO_SERVER  = "SPTokenToServer";
+    public static final String SPREF_TOKEN_TO_SERVER  = "SPTokenToServer" + ApiClient.getSwitch();
 
     /* Action to be taken
      * type -- String
@@ -66,29 +77,10 @@ public class AppConfig {
 	 */
     public static final String SPREF_FOREGROUND = "SPForeground";
 
-    /* The strategy time for nearby (promotions)
-	 * type -- Integer
-	 */
-    public static final String SPREF_PROMOTION_TIME = "SPPromotionTime";
-
     /**
      * Default values
      * {{ ======================================================================
      */
-
-    /*
-	 * Default value for the language
-	 *
-	 * Default: en (English)
-	 */
-    public static final String DEFAULT_LANGUAGE = "en";
-
-    /*
-	 * Default value for the promotions
-	 *
-	 * Default: 300 (5 minutes)
-	 */
-    public static final String DEFAULT_PROMOTION = "300";
 
     /* Biometric Default */
     public static final String YODO_BIOMETRIC = "BiometricTest";
@@ -101,4 +93,8 @@ public class AppConfig {
 
     /* Progress Dialog */
     public static final String IS_SHOWING = "is_showing";
+
+    /* Default values for user balance */
+    public static final String NO_BALANCE = "*.**";
+    public static final String DEFAULT_BALANCE = "0.00";
 }

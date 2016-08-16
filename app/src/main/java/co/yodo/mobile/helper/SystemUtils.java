@@ -67,11 +67,12 @@ public class SystemUtils {
                     }
                 };
 
-                AlertDialogHelper.showAlertDialog(
+                AlertDialogHelper.create(
                         ac,
+                        null,
                         message,
                         onClick
-                );
+                ).show();
             } else {
                 // No explanation needed, we can request the permission.
                 ActivityCompat.requestPermissions( ac, new String[]{permission}, requestCode );

@@ -1,17 +1,29 @@
 package co.yodo.mobile.ui.option.contract;
 
 import android.app.Activity;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.support.v7.app.AlertDialog;
 import android.text.InputFilter;
 import android.text.InputType;
 import android.text.Spanned;
 import android.text.method.DigitsKeyListener;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
+import javax.inject.Inject;
+
+import co.yodo.mobile.R;
+import co.yodo.mobile.YodoApplication;
+import co.yodo.mobile.helper.GUIUtils;
+import co.yodo.mobile.network.ApiClient;
 import co.yodo.mobile.ui.components.ClearEditText;
+import co.yodo.mobile.ui.notification.ProgressDialogHelper;
+import co.yodo.mobile.ui.validator.PIPValidator;
 
 /**
  * Created by hei on 14/06/16.
@@ -21,7 +33,6 @@ import co.yodo.mobile.ui.components.ClearEditText;
 public abstract class IOption {
     /** Main options elements */
     protected final Activity mActivity;
-    protected final EditText etInput;
     protected AlertDialog mAlertDialog;
 
     /**
@@ -30,27 +41,6 @@ public abstract class IOption {
      */
     protected IOption( Activity activity ) {
         this.mActivity = activity;
-        this.etInput = new ClearEditText( this.mActivity );
-    }
-
-    /**
-     * Builds a listener for the positive button
-     * @param onPositive The new procedure for the positive button
-     * @return The listener
-     */
-    protected DialogInterface.OnShowListener buildOnClick( final View.OnClickListener onPositive ) {
-        this.etInput.setText( "" );
-        return new DialogInterface.OnShowListener() {
-            @Override
-            public void onShow( DialogInterface dialog ) {
-                // Get the AlertDialog and the positive Button
-                mAlertDialog = AlertDialog.class.cast( dialog );
-                final Button button = mAlertDialog.getButton( AlertDialog.BUTTON_POSITIVE );
-
-                // Sets the action for the positive Button
-                button.setOnClickListener( onPositive );
-            }
-        };
     }
 
     /**

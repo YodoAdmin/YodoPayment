@@ -10,6 +10,9 @@ import android.graphics.Rect;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.InputType;
 import android.util.DisplayMetrics;
 import android.view.View;
@@ -19,6 +22,8 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 
 import java.util.Locale;
+
+import co.yodo.mobile.R;
 
 /**
  * Created by hei on 10/06/16.
@@ -108,39 +113,22 @@ public class GUIUtils {
     }
 
     /**
-     * Gets the SKS size for the screen
-     * @param activity The Context of the Android system (as activity)
-     * @return int The size
+     * Sets the action bar and title to the activity
+     * @param act      The activity to be updated
+     * @param title    The integer that represents the resource title
+     * @return Toolbar The toolbar found for the activity
      */
-    public static int getSKSSize( Activity activity ) {
-        int screenLayout = activity.getResources().getConfiguration().screenLayout;
-        screenLayout &= Configuration.SCREENLAYOUT_SIZE_MASK;
+    public static Toolbar setActionBar( AppCompatActivity act, int title ) {
+        // Only used at creation
+        Toolbar toolbar = (Toolbar) act.findViewById( R.id.actionBar );
 
-        Rect displayRectangle = new Rect();
-        Window window = activity.getWindow();
-        window.getDecorView().getWindowVisibleDisplayFrame( displayRectangle );
-        int size, currentOrientation = activity.getResources().getConfiguration().orientation;
+        // Setup the toolbar
+        act.setTitle( title );
+        act.setSupportActionBar( toolbar );
+        ActionBar actionBar = act.getSupportActionBar();
+        if( actionBar != null )
+            actionBar.setDisplayHomeAsUpEnabled( true );
 
-        if( currentOrientation == Configuration.ORIENTATION_LANDSCAPE )
-            size = displayRectangle.height();
-        else
-            size = displayRectangle.width();
-
-        switch( screenLayout ) {
-            case Configuration.SCREENLAYOUT_SIZE_SMALL:
-                return (int)( size * 0.7f );
-
-            case Configuration.SCREENLAYOUT_SIZE_NORMAL:
-                return (int)( size * 0.7f );
-
-            case Configuration.SCREENLAYOUT_SIZE_LARGE:
-                return (int)( size * 0.4f );
-
-            case Configuration.SCREENLAYOUT_SIZE_XLARGE:
-                return (int)( size * 0.3f );
-
-            default:
-                return 300;
-        }
+        return toolbar;
     }
 }

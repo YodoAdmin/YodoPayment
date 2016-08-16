@@ -2,7 +2,6 @@ package co.yodo.mobile;
 
 import android.support.test.espresso.intent.Intents;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.LargeTest;
 import android.text.InputType;
 
 import org.junit.Rule;
@@ -41,7 +40,6 @@ import static org.hamcrest.core.StringEndsWith.endsWith;
  * Test the interactions with the navigation bar of the MainActivity
  */
 @RunWith( AndroidJUnit4.class )
-@LargeTest
 public class MainNavigateActivityTest {
     /** Test strings */
     private static final String shortPIP = "abc";
@@ -59,7 +57,7 @@ public class MainNavigateActivityTest {
     public void testResetPIP() throws Exception {
         Intents.init();
 
-        onView( withId( R.id.drawerLayout ) )
+        onView( withId( R.id.dlPayment ) )
                 .perform( open() );
 
         onView( withId( R.id.bResetPip ) )
@@ -77,7 +75,7 @@ public class MainNavigateActivityTest {
     public void testReceipts() throws Exception {
         Intents.init();
 
-        onView( withId( R.id.drawerLayout ) )
+        onView( withId( R.id.dlPayment ) )
                 .perform( open() );
 
         onView( withId( R.id.bReceipts ) )
@@ -247,7 +245,7 @@ public class MainNavigateActivityTest {
     @Test
     public void testBalancePIPInput() throws Exception {
         // Open navigation
-        onView( withId( R.id.drawerLayout ) )
+        onView( withId( R.id.dlPayment ) )
                 .perform( open() );
 
         // Click on Get Balance
@@ -265,7 +263,7 @@ public class MainNavigateActivityTest {
     @Test
     public void testBalanceCorrectPIPInput() throws Exception {
         // Open navigation
-        onView( withId( R.id.drawerLayout ) )
+        onView( withId( R.id.dlPayment ) )
                 .perform( open() );
 
         // Click on Get Balance
@@ -283,7 +281,7 @@ public class MainNavigateActivityTest {
     @Test
     public void testClosePIPInput() throws Exception {
         // Open navigation
-        onView( withId( R.id.drawerLayout ) )
+        onView( withId( R.id.dlPayment ) )
                 .perform( open() );
 
         // Click on Close Account
@@ -301,7 +299,7 @@ public class MainNavigateActivityTest {
     @Test
     public void testCloseCorrectPIPInput() throws Exception {
         // Open navigation
-        onView( withId( R.id.drawerLayout ) )
+        onView( withId( R.id.dlPayment ) )
                 .perform( open() );
 
         // Click on Close Account
@@ -316,7 +314,7 @@ public class MainNavigateActivityTest {
      */
     private void openLinks() {
         // Open navigation
-        onView( withId( R.id.drawerLayout ) )
+        onView( withId( R.id.dlPayment ) )
                 .perform( open() );
 
         // Click on Links

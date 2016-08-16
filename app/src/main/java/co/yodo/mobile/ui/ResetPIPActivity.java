@@ -3,31 +3,34 @@ package co.yodo.mobile.ui;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import co.yodo.mobile.R;
+import co.yodo.mobile.YodoApplication;
+import co.yodo.mobile.component.Intents;
+import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.GUIUtils;
-import co.yodo.mobile.network.request.AuthenticateRequest;
+import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.network.ApiClient;
+import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.request.QueryRequest;
 import co.yodo.mobile.network.request.ResetPIPRequest;
 import co.yodo.mobile.ui.notification.ProgressDialogHelper;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.notification.YodoHandler;
-import co.yodo.mobile.network.model.ServerResponse;
-import co.yodo.mobile.helper.AppConfig;
-import co.yodo.mobile.helper.PrefUtils;
-import co.yodo.mobile.component.Intents;
-import co.yodo.mobile.network.YodoRequest;
+import co.yodo.mobile.ui.option.ResetPIPOption;
 import co.yodo.mobile.ui.validator.PIPValidator;
 
-public class ResetPIPActivity extends AppCompatActivity implements YodoRequest.RESTListener {
+public class ResetPIPActivity extends AppCompatActivity implements ApiClient.RequestsListener {
     /** DEBUG */
     @SuppressWarnings( "unused" )
     private static final String TAG = ResetPIPActivity.class.getSimpleName();
@@ -36,31 +39,40 @@ public class ResetPIPActivity extends AppCompatActivity implements YodoRequest.R
     private Context ac;
 
     /** Account identifiers */
-    private String hardwareToken;
-    private String authNumber;
+    private String mHardwareToken;
+    private String mAuthNumber;
 
     /** Messages Handler */
-    private YodoHandler handlerMessages;
+    private YodoHandler mHandlerMessages;
 
     /** Manager for the server requests */
-    private YodoRequest mRequestManager;
+    @Inject
+    ApiClient mRequestManager;
+
+    /** Progress dialog for the requests */
+    @Inject
+    ProgressDialogHelper mProgressManager;
+
+    /** PIP validator */
+    @Inject
+    protected PIPValidator mPipValidator;
 
     /** GUI Controllers */
-    private EditText etCurrentPip;
-    private EditText etNewPip;
-    private EditText etConfirmPip;
+    @BindView( R.id.etNewPip )
+    EditText etNewPip;
 
-    /** PIP validators */
-    private PIPValidator pipValidator;
-    private PIPValidator newPipValidator;
+    @BindView( R.id.etConfirmPip )
+    EditText etConfirmPip;
+
+    /** Options that executes a request */
+    private ResetPIPOption mResetOption;
 
     /** Activity Result */
     private static final int REQUEST_FACE_ACTIVITY = 0;
 
     /** Response codes for the server requests */
-    private static final int AUTH_REQ  = 0x00;
-    private static final int RESET_REQ = 0x01;
-    private static final int QUERY_REQ = 0x02;
+    private static final int RESET_REQ = 0x00;
+    private static final int QUERY_REQ = 0x01;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
@@ -72,7 +84,7 @@ public class ResetPIPActivity extends AppCompatActivity implements YodoRequest.R
         updateData();
 
         if( savedInstanceState != null && savedInstanceState.getBoolean( AppConfig.IS_SHOWING ) ) {
-            ProgressDialogHelper.getInstance().createProgressDialog( ac );
+            mProgressManager.createProgressDialog( ac );
         }
     }
 
@@ -81,7 +93,7 @@ public class ResetPIPActivity extends AppCompatActivity implements YodoRequest.R
         super.onSaveInstanceState( outState );
         outState.putBoolean(
                 AppConfig.IS_SHOWING,
-                ProgressDialogHelper.getInstance().isProgressDialogShowing()
+                mProgressManager.isProgressDialogShowing()
         );
     }
 
@@ -94,7 +106,7 @@ public class ResetPIPActivity extends AppCompatActivity implements YodoRequest.R
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        ProgressDialogHelper.getInstance().destroyProgressDialog();
+        mProgressManager.destroyProgressDialog();
     }
 
     @Override
@@ -114,27 +126,17 @@ public class ResetPIPActivity extends AppCompatActivity implements YodoRequest.R
     private void setupGUI() {
         // Get the context
         ac = ResetPIPActivity.this;
-        handlerMessages = new YodoHandler( ResetPIPActivity.this );
-        mRequestManager = YodoRequest.getInstance( ac );
+        mHandlerMessages = new YodoHandler( this );
 
-        // GUI Global components
-        etCurrentPip = (EditText) findViewById( R.id.currentPipText );
-        etNewPip     = (EditText) findViewById( R.id.newPipText );
-        etConfirmPip = (EditText) findViewById( R.id.confirmPipText );
+        // Injection
+        ButterKnife.bind( this );
+        YodoApplication.getComponent().inject( this );
 
-        // PIP validators
-        pipValidator    = new PIPValidator( etCurrentPip );
-        newPipValidator = new PIPValidator( etNewPip, etConfirmPip );
-
-        // Only used at creation
-        Toolbar toolbar = (Toolbar) findViewById( R.id.actionBar );
+        // Request options
+        mResetOption = new ResetPIPOption( this, mHandlerMessages );
 
         // Setup the toolbar
-        setTitle( R.string.title_activity_pip_reset );
-        setSupportActionBar( toolbar );
-        ActionBar actionBar = getSupportActionBar();
-        if( actionBar != null )
-            actionBar.setDisplayHomeAsUpEnabled( true );
+        GUIUtils.setActionBar( this, R.string.title_activity_pip_reset );
     }
 
     /**
@@ -142,8 +144,8 @@ public class ResetPIPActivity extends AppCompatActivity implements YodoRequest.R
      */
     private void updateData() {
         // Gets the hardware token - account identifier
-        hardwareToken = PrefUtils.getHardwareToken( ac );
-        if( hardwareToken == null ) {
+        mHardwareToken = PrefUtils.getHardwareToken( ac );
+        if( mHardwareToken == null ) {
             ToastMaster.makeText( ac, R.string.message_no_hardware, Toast.LENGTH_LONG ).show();
             finish();
         }
@@ -154,9 +156,17 @@ public class ResetPIPActivity extends AppCompatActivity implements YodoRequest.R
      * @param v The view of the checkbox
      */
     public void showPasswordClick( View v ) {
-        GUIUtils.showPassword( (CheckBox) v, etCurrentPip);
         GUIUtils.showPassword( (CheckBox) v, etNewPip );
         GUIUtils.showPassword( (CheckBox) v, etConfirmPip );
+    }
+
+    /**
+     * Verifies that both pips are correct
+     * @return Boolean True or false, if correct or not
+     */
+    private boolean verifyPIPs() throws NoSuchFieldException {
+        return !( !mPipValidator.validate( etNewPip ) || !mPipValidator.validate( etConfirmPip ) )
+                && mPipValidator.validate( etNewPip, etConfirmPip );
     }
 
     /**
@@ -165,23 +175,24 @@ public class ResetPIPActivity extends AppCompatActivity implements YodoRequest.R
      * @param v The view of the button
      */
     public void resetPipClick( View v ) {
-        GUIUtils.hideSoftKeyboard( this );
-
-        // Validates the current PIP format
-        if( pipValidator.validate() ) {
-            // Validates the new PIP and its confirmation
-            if( newPipValidator.validate() ) {
-                // Request an authentication
-                final String currentPip = etCurrentPip.getText().toString();
-
-                ProgressDialogHelper.getInstance().createProgressDialog( ac );
-                mRequestManager.invoke( new AuthenticateRequest(
-                        AUTH_REQ,
-                        hardwareToken,
-                        currentPip
-                ) );
-            }
+        try {
+            if( verifyPIPs() )
+                mResetOption.execute();
+        } catch( NoSuchFieldException e ) {
+            e.printStackTrace();
         }
+    }
+
+    public void doReset( String pip ) {
+        final String newPip = etNewPip.getText().toString();
+
+        mProgressManager.createProgressDialog( ac );
+        mRequestManager.invoke( new ResetPIPRequest(
+                RESET_REQ,
+                mHardwareToken,
+                pip,
+                newPip
+        ) );
     }
 
     /**
@@ -190,17 +201,19 @@ public class ResetPIPActivity extends AppCompatActivity implements YodoRequest.R
      * @param v The view of the button
      */
     public void forgotPipClick( View v ) {
-        GUIUtils.hideSoftKeyboard( this );
-
         // Validates the new PIP and its confirmation
-        if( newPipValidator.validate() ) {
-            // Request the biometric token
-            ProgressDialogHelper.getInstance().createProgressDialog( ac );
-            mRequestManager.invoke( new QueryRequest(
-                    QUERY_REQ,
-                    hardwareToken,
-                    QueryRequest.Record.BIOMETRIC
-            ) );
+        try {
+            if( verifyPIPs() ) {
+                // Request the biometric token
+                mProgressManager.createProgressDialog( ac );
+                mRequestManager.invoke( new QueryRequest(
+                        QUERY_REQ,
+                        mHardwareToken,
+                        QueryRequest.Record.BIOMETRIC
+                ) );
+            }
+        } catch( NoSuchFieldException e ) {
+            e.printStackTrace();
         }
     }
 
@@ -210,32 +223,10 @@ public class ResetPIPActivity extends AppCompatActivity implements YodoRequest.R
 
     @Override
     public void onResponse( int requestCode, ServerResponse response ) {
-        ProgressDialogHelper.getInstance().destroyProgressDialog();
+        mProgressManager.destroyProgressDialog();
         String code, message;
 
         switch( requestCode ) {
-             case AUTH_REQ:
-                 code = response.getCode();
-
-                 // If the auth is correct, let's change the password
-                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
-                     final String currentPip = etCurrentPip.getText().toString();
-                     final String newPip     = etNewPip.getText().toString();
-
-                     ProgressDialogHelper.getInstance().createProgressDialog( ac );
-                     mRequestManager.invoke( new ResetPIPRequest(
-                             RESET_REQ,
-                             hardwareToken,
-                             currentPip,
-                             newPip
-                     ) );
-                 // There was an error during the process
-                 } else {
-                     message = response.getMessage();
-                     YodoHandler.sendMessage( handlerMessages, code, message );
-                 }
-                 break;
-
             case RESET_REQ:
                 code = response.getCode();
 
@@ -246,7 +237,7 @@ public class ResetPIPActivity extends AppCompatActivity implements YodoRequest.R
                 // There was an error during the process
                 } else {
                     message = response.getMessage();
-                    YodoHandler.sendMessage( handlerMessages, code, message );
+                    YodoHandler.sendMessage( mHandlerMessages, code, message );
                 }
 
                 break;
@@ -259,7 +250,7 @@ public class ResetPIPActivity extends AppCompatActivity implements YodoRequest.R
                     String biometricToken = response.getParam( ServerResponse.BIOMETRIC );
                     // The user has a biometric token
                     if( !biometricToken.equals( AppConfig.YODO_BIOMETRIC ) ) {
-                        authNumber = response.getAuthNumber();
+                        mAuthNumber = response.getAuthNumber();
                         // Start the recognition activity
                         Intent intent = new Intent( ac, CameraActivity.class );
                         intent.putExtra( Intents.BIOMETRIC_TOKEN, biometricToken );
@@ -267,7 +258,7 @@ public class ResetPIPActivity extends AppCompatActivity implements YodoRequest.R
                     // The user doesn't have a biometric token
                     } else {
                         YodoHandler.sendMessage(
-                                handlerMessages,
+                                mHandlerMessages,
                                 ServerResponse.ERROR_FAILED,
                                 getString( R.string.no_biometric )
                         );
@@ -275,7 +266,7 @@ public class ResetPIPActivity extends AppCompatActivity implements YodoRequest.R
                 // There was an error during the process
                 } else {
                     message = response.getMessage();
-                    YodoHandler.sendMessage( handlerMessages, code, message );
+                    YodoHandler.sendMessage( mHandlerMessages, code, message );
                 }
 
                 break;
@@ -290,11 +281,11 @@ public class ResetPIPActivity extends AppCompatActivity implements YodoRequest.R
                 if( resultCode == RESULT_OK ) {
                     final String newPip = etNewPip.getText().toString();
 
-                    ProgressDialogHelper.getInstance().createProgressDialog( ac );
+                    mProgressManager.createProgressDialog( ac );
                     mRequestManager.invoke( new ResetPIPRequest(
                             RESET_REQ,
-                            hardwareToken,
-                            authNumber,
+                            mHardwareToken,
+                            mAuthNumber,
                             newPip,
                             ResetPIPRequest.ResetST.PIP_BIO
                     ) );

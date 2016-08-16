@@ -13,13 +13,16 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import javax.inject.Inject;
+
 import co.yodo.mobile.R;
+import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.broadcastreceiver.BroadcastMessage;
 import co.yodo.mobile.component.Intents;
 import co.yodo.mobile.helper.GUIUtils;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.helper.SystemUtils;
-import co.yodo.mobile.network.YodoRequest;
+import co.yodo.mobile.network.ApiClient;
 import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.request.AuthenticateRequest;
 import co.yodo.mobile.service.RegistrationIntentService;
@@ -27,7 +30,7 @@ import co.yodo.mobile.service.model.GCMResponse;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.notification.YodoHandler;
 
-public class SplashActivity extends Activity implements YodoRequest.RESTListener {
+public class SplashActivity extends Activity implements ApiClient.RequestsListener {
     /** DEBUG */
     @SuppressWarnings( "unused" )
     private static final String TAG = SplashActivity.class.getSimpleName();
@@ -36,13 +39,14 @@ public class SplashActivity extends Activity implements YodoRequest.RESTListener
     private Context ac;
 
     /** Account identifier */
-    private String hardwareToken;
+    private String mHardwareToken;
 
     /** Messages Handler */
-    private YodoHandler handlerMessages;
+    private YodoHandler mHandlerMessages;
 
     /** Manager for the server requests */
-    private YodoRequest mRequestManager;
+    @Inject
+    ApiClient mRequestManager;
 
     /** Request for error Google Play Services */
     private static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 0;
@@ -81,8 +85,10 @@ public class SplashActivity extends Activity implements YodoRequest.RESTListener
     private void setupGUI() {
         // Get the context
         ac = SplashActivity.this;
-        handlerMessages = new YodoHandler( SplashActivity.this );
-        mRequestManager = YodoRequest.getInstance( ac );
+        mHandlerMessages = new YodoHandler( SplashActivity.this );
+
+        // Injection
+        YodoApplication.getComponent().inject( this );
         mRequestManager.setListener( this );
     }
 
@@ -98,13 +104,13 @@ public class SplashActivity extends Activity implements YodoRequest.RESTListener
 
         // Verify Google Play Services
         if( hasServices ) {
-            hardwareToken = PrefUtils.getHardwareToken( ac );
-            if( hardwareToken == null ) {
+            mHardwareToken = PrefUtils.getHardwareToken( ac );
+            if( mHardwareToken == null ) {
                 setupPermissions();
             } else {
                 mRequestManager.invoke( new AuthenticateRequest(
                         AUTH_REQ,
-                        hardwareToken
+                        mHardwareToken
                 ) );
             }
         }
@@ -132,17 +138,17 @@ public class SplashActivity extends Activity implements YodoRequest.RESTListener
      */
     private void authenticateUser() {
         // Gets the hardware token
-        hardwareToken = PrefUtils.generateHardwareToken( ac );
-        if( hardwareToken == null ) {
+        mHardwareToken = PrefUtils.generateHardwareToken( ac );
+        if( mHardwareToken == null ) {
             // The device doesn't have a hardware token
             ToastMaster.makeText( ac, R.string.message_no_hardware, Toast.LENGTH_LONG ).show();
             finish();
         } else {
             // We have the hardware token, now let's verify if the user exists
-            PrefUtils.saveHardwareToken( ac, hardwareToken );
+            PrefUtils.saveHardwareToken( ac, mHardwareToken );
             mRequestManager.invoke( new AuthenticateRequest(
                     AUTH_REQ,
-                    hardwareToken
+                    mHardwareToken
             ) );
         }
     }
@@ -187,7 +193,7 @@ public class SplashActivity extends Activity implements YodoRequest.RESTListener
                         // There is no token for GCM, let's try to register
                         if( !isTokenSent ) {
                             Intent intent = new Intent( this, RegistrationIntentService.class );
-                            intent.putExtra( BroadcastMessage.EXTRA_HARDWARE_TOKEN, hardwareToken );
+                            intent.putExtra( BroadcastMessage.EXTRA_HARDWARE_TOKEN, mHardwareToken );
                             startService( intent );
                         } else {
                             finish();
@@ -206,7 +212,7 @@ public class SplashActivity extends Activity implements YodoRequest.RESTListener
                     // There was an error during the process
                     default:
                         message = response.getMessage();
-                        YodoHandler.sendMessage( YodoHandler.INIT_ERROR, handlerMessages, code, message );
+                        YodoHandler.sendMessage( YodoHandler.INIT_ERROR, mHandlerMessages, code, message );
                         break;
                 }
                 break;

@@ -1,8 +1,8 @@
 package co.yodo.mobile.network.request;
 
-import co.yodo.mobile.component.Encrypter;
+import co.yodo.mobile.component.cipher.RSACrypt;
 import co.yodo.mobile.helper.SystemUtils;
-import co.yodo.mobile.network.YodoRequest;
+import co.yodo.mobile.network.ApiClient;
 import co.yodo.mobile.network.request.contract.IRequest;
 
 /**
@@ -69,24 +69,16 @@ public class ResetPIPRequest extends IRequest {
     }
 
     @Override
-    public void execute( Encrypter oEncrypter, YodoRequest manager ) {
+    public void execute( RSACrypt oEncrypter, ApiClient manager ) {
         String sEncryptedClientData, sEncryptedHardwareToken, sEncryptedId, sEncryptedNewPIP,
                 pRequest;
 
         switch( this.mRequestST ) {
             case PIP:
                 // Encrypting to create request
-                oEncrypter.setsUnEncryptedString( this.mHardwareToken );
-                oEncrypter.rsaEncrypt();
-                sEncryptedHardwareToken = oEncrypter.bytesToHex();
-
-                oEncrypter.setsUnEncryptedString( this.mIdentifier );
-                oEncrypter.rsaEncrypt();
-                sEncryptedId = oEncrypter.bytesToHex();
-
-                oEncrypter.setsUnEncryptedString( this.mNewPIP );
-                oEncrypter.rsaEncrypt();
-                sEncryptedNewPIP = oEncrypter.bytesToHex();
+                sEncryptedHardwareToken = oEncrypter.encrypt( mHardwareToken );
+                sEncryptedId = oEncrypter.encrypt( mIdentifier );
+                sEncryptedNewPIP = oEncrypter.encrypt( mNewPIP );
 
                 sEncryptedClientData =
                         sEncryptedHardwareToken + REQ_SEP +
@@ -101,9 +93,7 @@ public class ResetPIPRequest extends IRequest {
                         this.mNewPIP;
 
                 // Encrypting to create request
-                oEncrypter.setsUnEncryptedString( this.mFormattedUsrData );
-                oEncrypter.rsaEncrypt();
-                sEncryptedClientData = oEncrypter.bytesToHex();
+                sEncryptedClientData = oEncrypter.encrypt( mFormattedUsrData );
                 break;
 
             default:

@@ -41,7 +41,7 @@
     <string name="pip_different">Пароли не совпадают</string>
     <string name="pip_hint">Кодовая фраза</string>
     <string name="face_recognition">Распознавание лица</string>
-    <string name="face_required">Сперва Вы должны выбрать местоположение</string>
+    <string name="face_required">Выберите биометрический маркер первой</string>
     <string name="next">Далее</string>
     <string name="register">Регистрация</string>
     <string name="face_explanation">Yodo не собирает изображения Вашего лица, только числовой символ, представляющий лицо. Это позволяет сбрасывать пароль, если Вы его забыли, оставаясь абсолютно анонимным. Нажмите на значок, который находится сверху, чтобы начать.</string>
@@ -74,8 +74,8 @@
 
     <!-- Reset PIP Messages -->
     <string name="current_pip">Текущая кодовая фраза:</string>
-    <string name="new_pip">Новая кодовая фраза:</string>
-    <string name="confirm_pip">Подтвердить кодовую фразу:</string>
+    <string name="new_pip">Новая кодовая фраза</string>
+    <string name="confirm_pip">Подтвердить кодовую фразу</string>
     <string name="new_pip_hint">(4вЂ“8 characters)</string>
     <string name="forgot_pip">Забыли кодовую фразу?</string>
 
@@ -122,11 +122,11 @@
     <string name="farewell_message">Пожалуйста, полностью удалите приложение Yodo, используя инструменты для управления приложениями в настройках телефона.</string>
 
     <!-- Settings Headers -->
-    <string name="config_pref_services">Сервисы</string>
+    <string name="config_pref_security">Безопасность</string>
 
     <!-- Settings Titles -->
-    <string name="config_pref_advertising">Акции</string>
-    <string name="config_pref_advertising_summary">Получить акции из близлежащих магазинов</string>
+    <string name="config_pref_pip_visibility">Видимость Пипа</string>
+    <string name="config_pref_pip_visibility_summary">Показывает значение по умолчанию PIP</string>
     <string name="config_pref_languages">Язык</string>
 
     <!-- Tutorial -->
@@ -193,5 +193,18 @@
 
     <!-- ACRA -->
     <string name="crash_toast_text">Упс! Неудача. Чтобы помочь исправить проблему, отчет был отправлен разработчикам.</string>
+
+    <!-- Tutorial -->
+    <string name="title.slide1">Простое использование!</string>
+    <string name="message.slide1">Размах экрана справа, чтобы показать основные инструменты</string>
+
+    <string name="title.slide2">Быстрые платежи!</string>
+    <string name="message.slide2">Просто генерировать код SKS с помощью кнопки с кодом и золотыми монетами QR</string>
+
+    <string name="title.slide3">Получить промо-акции!</string>
+    <string name="message.slide3">Нажмите на значок с двумя стрелками, чтобы получить акции от ближайшего торговца</string>
+
+    <string name="title.slide4">Скрыть свою информацию со значком Yodo</string>
+    <string name="message.slide4">НАЧАТЬ</string>
 
 </resources>

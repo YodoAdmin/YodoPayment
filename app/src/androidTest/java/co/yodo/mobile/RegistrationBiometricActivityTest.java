@@ -2,7 +2,6 @@ package co.yodo.mobile;
 
 import android.support.test.espresso.intent.Intents;
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.LargeTest;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -28,7 +27,6 @@ import static org.hamcrest.core.IsNot.not;
  * Tests for the registration activity
  */
 @RunWith( AndroidJUnit4.class )
-@LargeTest
 public class RegistrationBiometricActivityTest {
     @Rule
     public RegistrationBiometricTestRule mActivityRule = new RegistrationBiometricTestRule<>( RegistrationBiometricActivity.class );
@@ -56,7 +54,7 @@ public class RegistrationBiometricActivityTest {
     public void testStartBiometric() throws Exception {
         Intents.init();
 
-        onView( withId( R.id.faceView ) )
+        onView( withId( R.id.ivFaceBiometric ) )
                 .perform( click() );
 
         intended( hasComponent( CameraActivity.class.getName() ) );

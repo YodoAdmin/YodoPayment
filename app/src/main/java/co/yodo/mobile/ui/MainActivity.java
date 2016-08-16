@@ -14,7 +14,6 @@ import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -22,9 +21,9 @@ import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -41,11 +40,16 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import co.yodo.mobile.R;
+import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.broadcastreceiver.HeartbeatReceiver;
 import co.yodo.mobile.component.SKSCreater;
+import co.yodo.mobile.component.cipher.RSACrypt;
 import co.yodo.mobile.database.CouponsDataSource;
 import co.yodo.mobile.database.ReceiptsDataSource;
 import co.yodo.mobile.database.model.Receipt;
@@ -56,9 +60,8 @@ import co.yodo.mobile.helper.GUIUtils;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.manager.PromotionManager;
-import co.yodo.mobile.network.YodoRequest;
+import co.yodo.mobile.network.ApiClient;
 import co.yodo.mobile.network.model.ServerResponse;
-import co.yodo.mobile.network.request.AuthenticateRequest;
 import co.yodo.mobile.network.request.QueryRequest;
 import co.yodo.mobile.ui.dialog.PaymentDialog;
 import co.yodo.mobile.ui.dialog.ReceiptDialog;
@@ -67,19 +70,13 @@ import co.yodo.mobile.ui.notification.AlertDialogHelper;
 import co.yodo.mobile.ui.notification.ProgressDialogHelper;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.notification.YodoHandler;
-import co.yodo.mobile.ui.option.AboutOption;
-import co.yodo.mobile.ui.option.BalanceOption;
-import co.yodo.mobile.ui.option.CloseAccountOption;
-import co.yodo.mobile.ui.option.DeLinkAccountOption;
-import co.yodo.mobile.ui.option.LinkAccountOption;
-import co.yodo.mobile.ui.option.LinkCodeOption;
-import co.yodo.mobile.ui.option.PaymentOption;
-import co.yodo.mobile.ui.option.SaveCouponOption;
+import co.yodo.mobile.ui.option.factory.OptionsFactory;
+import co.yodo.mobile.ui.tutorial.IntroActivity;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 
 public class MainActivity extends AppCompatActivity implements
-        YodoRequest.RESTListener,
+        ApiClient.RequestsListener,
         PromotionManager.IPromotionListener,
         SharedPreferences.OnSharedPreferenceChangeListener {
     /** DEBUG */
@@ -96,28 +93,44 @@ public class MainActivity extends AppCompatActivity implements
     private YodoHandler mHandlerMessages;
 
     /** Manager for the server requests */
-    private YodoRequest mRequestManager;
+    @Inject
+    ApiClient mRequestManager;
+
+    /** Object used to encrypt information */
+    @Inject
+    RSACrypt mEncrypter;
+
+    /** Progress dialog for the requests */
+    @Inject
+    ProgressDialogHelper mProgressManager;
 
     /** GUI Controllers */
-    private TextView mAccountNumber;
-    private TextView mAccountDate;
-    private TextView mAccountBalance;
-    private ImageViewTouch mAdvertisingImage;
-    private DrawerLayout mDrawerLayout;
+    @BindView( R.id.llAccountData )
+    LinearLayout llAccountData;
+
+    @BindView( R.id.tvAccountNumber )
+    TextView tvAccountNumber;
+
+    @BindView( R.id.tvAccountDate )
+    TextView tvAccountDate;
+
+    @BindView( R.id.tvAccountBalance )
+    TextView tvAccountBalance;
+
+    @BindView( R.id.ivtAdvertising )
+    ImageViewTouch ivtAdvertising;
+
+    @BindView( R.id.ibSubscription )
+    ImageButton ibSubscription;
+
+    @BindView( R.id.dlPayment )
+    DrawerLayout dlPayment;
+
+    /** Handles the drawable layout and toolbar */
     private ActionBarDrawerToggle mDrawerToggle;
-    private ImageButton ibSubscription;
 
-    /** Options from the main window */
-    private PaymentOption mPaymentOption;
-    private SaveCouponOption mSaveCouponOption;
-    private AboutOption mAboutOption;
-
-    /** Options from the navigation window */
-    private BalanceOption mBalanceOption;
-    private LinkCodeOption mLinkCodeOption;
-    private LinkAccountOption mLinkAccountOption;
-    private DeLinkAccountOption mDeLinkAccountOption;
-    private CloseAccountOption mCloseAccountOption;
+    /** Options */
+    private OptionsFactory mOptFactory;
 
     /** Database and current merchant */
     private CouponsDataSource couponsdb;
@@ -149,14 +162,13 @@ public class MainActivity extends AppCompatActivity implements
     private static final int PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE = 1;
 
     /** Response codes for the server requests */
-    private static final int AUTH_REQ              = 0x00;
-    private static final int QUERY_LNK_ACC_SKS_REQ = 0x01;
-    private static final int QUERY_ADV_REQ         = 0x02;
+    private static final int QUERY_LNK_ACC_SKS_REQ = 0x00;
+    private static final int QUERY_ADV_REQ         = 0x01;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        GUIUtils.setLanguage( MainActivity.this );
+        GUIUtils.setLanguage( this );
         setContentView( R.layout.activity_main );
 
         setupGUI();
@@ -168,6 +180,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onResume();
         // True when the activity is in foreground
         PrefUtils.saveIsForeground( ac, true );
+
         // Open databases
         openDatabases();
     }
@@ -177,6 +190,7 @@ public class MainActivity extends AppCompatActivity implements
         super.onPause();
         // False when the activity is not in foreground
         PrefUtils.saveIsForeground( ac, false );
+
         // Close databases
         closeDatabases();
     }
@@ -186,9 +200,11 @@ public class MainActivity extends AppCompatActivity implements
         super.onStart();
         // Register to event bus
         EventBus.getDefault().register( this );
+
         // Set listener for preferences
         PrefUtils.registerSPListener( ac, this );
-        // Register listener for requests and  broadcast receivers
+
+        // Register listener for requests
         mRequestManager.setListener( this );
     }
 
@@ -196,8 +212,10 @@ public class MainActivity extends AppCompatActivity implements
     public void onStop() {
         // unsubscribe to the promotions
         PrefUtils.setSubscribing( ac, false );
+
         // Unregister listener for preferences
         PrefUtils.unregisterSPListener( ac, this );
+
         // Unregister from event bus
         EventBus.getDefault().unregister( this );
         super.onStop();
@@ -228,7 +246,7 @@ public class MainActivity extends AppCompatActivity implements
                 return true;
 
             case R.id.action_about:
-                mAboutOption.execute();
+                mOptFactory.getOption( OptionsFactory.Option.ABOUT ).execute();
                 return true;
         }
         return super.onOptionsItemSelected( item );
@@ -259,38 +277,17 @@ public class MainActivity extends AppCompatActivity implements
     private void setupGUI() {
         // get the context
         ac = MainActivity.this;
-        mHandlerMessages = new YodoHandler( MainActivity.this );
-        mRequestManager = YodoRequest.getInstance( ac );
+        mHandlerMessages = new YodoHandler( this );
 
-        // Global GUI Components
-        mAccountNumber     = (TextView) findViewById( R.id.accountNumberText );
-        mAccountDate       = (TextView) findViewById( R.id.accountDateText );
-        mAccountBalance    = (TextView) findViewById( R.id.accountBalanceText );
-        mAdvertisingImage  = (ImageViewTouch) findViewById( R.id.advertisingImage );
-        mDrawerLayout      = (DrawerLayout) findViewById(R.id.drawerLayout);
-        ibSubscription     = (ImageButton) findViewById( R.id.ibSubscription );
+        // Injection
+        ButterKnife.bind( this );
+        YodoApplication.getComponent().inject( this );
 
-        // Global Options (main window)
-        mPaymentOption    = new PaymentOption( this );
-        mSaveCouponOption = new SaveCouponOption( this );
-        mAboutOption      = new AboutOption( this );
-
-        // Global options (navigation window)
-        mBalanceOption       = new BalanceOption( this, mRequestManager, mHandlerMessages );
-        mLinkCodeOption      = new LinkCodeOption( this, mRequestManager, mHandlerMessages );
-        mLinkAccountOption   = new LinkAccountOption( this, mRequestManager, mHandlerMessages );
-        mDeLinkAccountOption = new DeLinkAccountOption( this, mRequestManager, mHandlerMessages );
-        mCloseAccountOption  = new CloseAccountOption( this, mRequestManager, mHandlerMessages );
-
-        // Only used at creation
-        Toolbar toolbar = (Toolbar) findViewById( R.id.actionBar );
+        // Options
+        mOptFactory = new OptionsFactory( this, mHandlerMessages );
 
         // Setup the toolbar
-        setTitle( R.string.title_activity_main );
-        setSupportActionBar( toolbar );
-        ActionBar actionBar = getSupportActionBar();
-        if( actionBar != null )
-            actionBar.setDisplayHomeAsUpEnabled( true );
+        Toolbar toolbar = GUIUtils.setActionBar( this, R.string.title_activity_main );
 
         // Set up the listeners for the drawable and Nearby messages
         initializeDrawableListener( toolbar );
@@ -305,8 +302,8 @@ public class MainActivity extends AppCompatActivity implements
         receiptsdb = ReceiptsDataSource.getInstance( ac );
 
         // Images fit parent and set listener to save coupon
-        mAdvertisingImage.setDisplayType( ImageViewTouchBase.DisplayType.FIT_TO_SCREEN );
-        mAdvertisingImage.setOnLongClickListener( new View.OnLongClickListener() {
+        ivtAdvertising.setDisplayType( ImageViewTouchBase.DisplayType.FIT_TO_SCREEN );
+        ivtAdvertising.setOnLongClickListener( new View.OnLongClickListener() {
             @Override
             public boolean onLongClick( View v ) {
                 boolean writePermission = SystemUtils.requestPermission(
@@ -316,19 +313,23 @@ public class MainActivity extends AppCompatActivity implements
                         PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
                 );
 
-                final Drawable drawable = mAdvertisingImage.getDrawable();
+                final Drawable drawable = ivtAdvertising.getDrawable();
 
                 if( !writePermission || drawable == null )
                     return false;
 
-                mSaveCouponOption.execute();
+                mOptFactory.getOption( OptionsFactory.Option.SAVE_COUPON ).execute();
                 return true;
             }
         });
 
         // If it is the first login show the drawer open
         if( PrefUtils.isFirstLogin( ac ) ) {
-            mDrawerLayout.openDrawer( GravityCompat.START );
+            dlPayment.openDrawer( GravityCompat.START );
+
+            Intent intent = new Intent( ac, IntroActivity.class );
+            startActivity( intent );
+
             PrefUtils.saveFirstLogin( ac, false );
         }
 
@@ -351,8 +352,9 @@ public class MainActivity extends AppCompatActivity implements
         }
 
         // Set the account number and current date
-        mAccountNumber.setText( mHardwareToken );
-        mAccountDate.setText( FormatUtils.getCurrentDate() );
+        tvAccountNumber.setText( mHardwareToken );
+        tvAccountDate.setText( FormatUtils.getCurrentDate() );
+        tvAccountBalance.setText( PrefUtils.getCurrentBalance( ac ) );
     }
 
     /**
@@ -374,8 +376,8 @@ public class MainActivity extends AppCompatActivity implements
      * @param image The file where the image is saved
      */
     public void saveCoupon( File image ) {
-        final Drawable drawable = mAdvertisingImage.getDrawable();
-        final CharSequence description = mAdvertisingImage.getContentDescription();
+        final Drawable drawable = ivtAdvertising.getDrawable();
+        final CharSequence description = ivtAdvertising.getContentDescription();
         Bitmap bitmap = GUIUtils.drawableToBitmap( drawable );
 
         try {
@@ -410,7 +412,7 @@ public class MainActivity extends AppCompatActivity implements
      * Initializes the drawable for the nearby API
      */
     private void initializeDrawableListener( Toolbar toolbar ) {
-        mDrawerToggle = new ActionBarDrawerToggle( this, mDrawerLayout, toolbar, R.string.drawer_open, R.string.drawer_close ) {
+        mDrawerToggle = new ActionBarDrawerToggle( this, dlPayment, toolbar, R.string.drawer_open, R.string.drawer_close ) {
             @Override
             public void onDrawerClosed( View drawerView ) {
                 super.onDrawerClosed( drawerView );
@@ -421,7 +423,7 @@ public class MainActivity extends AppCompatActivity implements
             }
         };
 
-        mDrawerLayout.addDrawerListener( mDrawerToggle );
+        dlPayment.addDrawerListener( mDrawerToggle );
     }
 
     /**
@@ -458,7 +460,7 @@ public class MainActivity extends AppCompatActivity implements
     private void removeAdvertisement() {
         mMerchant = null;
         mHandlerMessages.removeCallbacks( mGetAdvertisement );
-        mAdvertisingImage.setImageDrawable( null );
+        ivtAdvertising.setImageDrawable( null );
     }
 
     // Runnable that takes care of request the advertisement
@@ -472,7 +474,7 @@ public class MainActivity extends AppCompatActivity implements
                         mMerchant,
                         QueryRequest.Record.ADVERTISING
                 ) );
-                mAdvertisingImage.setContentDescription( mMerchant );
+                ivtAdvertising.setContentDescription( mMerchant );
 
                 // Wait some time for the next advertisement request
                 mHandlerMessages.postDelayed( mGetAdvertisement, DELAY_BETWEEN_REQUESTS );
@@ -484,6 +486,18 @@ public class MainActivity extends AppCompatActivity implements
      * Button Actions.
      * {{ ==============================================
      */
+
+    /**
+     * Hides the user data
+     * @param v, Button view, not used
+     */
+    public void hideClick( View v ) {
+        int visibility = llAccountData.getVisibility();
+        if( visibility == View.VISIBLE )
+            llAccountData.setVisibility( View.GONE );
+        else
+            llAccountData.setVisibility( View.VISIBLE );
+    }
 
     /**
      * Tries to subscribe to close Rocket (POS) devices
@@ -514,22 +528,19 @@ public class MainActivity extends AppCompatActivity implements
      * @param v The view, not used
      */
     public void paymentClick( View v ) {
-        mPaymentOption.execute();
+        mOptFactory.getOption( OptionsFactory.Option.PAYMENT ).execute();
     }
 
-    public void payment( EditText inputBox ) {
-        // Stop advertising
-        PrefUtils.setSubscribing( ac, false );
+    public void payment( String pip ) {
+        // Set temporal pip
+        setTempPIP( pip );
 
-        // Set a temporary PIP and Code
-        setTempPIP( inputBox.getText().toString() );
-
-        // Start the request
-        ProgressDialogHelper.getInstance().createProgressDialog( ac );
-        mRequestManager.invoke( new AuthenticateRequest(
-                AUTH_REQ,
+        mProgressManager.createProgressDialog( ac );
+        mRequestManager.invoke( new QueryRequest(
+                QUERY_LNK_ACC_SKS_REQ,
                 mHardwareToken,
-                tempPIP
+                pip,
+                QueryRequest.Record.LINKED_ACCOUNTS
         ) );
     }
 
@@ -547,7 +558,7 @@ public class MainActivity extends AppCompatActivity implements
      * @param v, not used
      */
     public void networkClick( View v ) {
-        Snackbar.make( mDrawerLayout, R.string.no_available, Snackbar.LENGTH_SHORT ).show();
+        Snackbar.make( dlPayment, R.string.no_available, Snackbar.LENGTH_SHORT ).show();
     }
 
     /**
@@ -555,7 +566,7 @@ public class MainActivity extends AppCompatActivity implements
      * @param v, not used
      */
     public void resetPipClick( View v ) {
-        mDrawerLayout.closeDrawers();
+        dlPayment.closeDrawers();
         Intent intent = new Intent( MainActivity.this, ResetPIPActivity.class );
         startActivity( intent );
     }
@@ -565,7 +576,7 @@ public class MainActivity extends AppCompatActivity implements
      * @param v, not used
      */
     public void savedReceiptsClick( View v ) {
-        mDrawerLayout.closeDrawers();
+        dlPayment.closeDrawers();
         Intent intent = new Intent( MainActivity.this, ReceiptsActivity.class );
         startActivity( intent );
     }
@@ -575,10 +586,9 @@ public class MainActivity extends AppCompatActivity implements
      * @param v, not used
      */
     public void linkAccountsClick( View v ) {
-        mDrawerLayout.closeDrawers();
+        dlPayment.closeDrawers();
 
         // Values of the select dialog
-        final String title = getString( R.string.linking_menu );
         final String[] options = getResources().getStringArray( R.array.link_options_array );
 
         DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
@@ -586,28 +596,28 @@ public class MainActivity extends AppCompatActivity implements
                 switch( item ) {
                     // Generates a linking code
                     case 0:
-                        mLinkCodeOption.execute();
+                        mOptFactory.getOption( OptionsFactory.Option.LINK_CODE ).execute();
                         break;
 
                     // Links accounts with a linking code
                     case 1:
-                        mLinkAccountOption.execute();
+                        mOptFactory.getOption( OptionsFactory.Option.LINK_ACCOUNT ).execute();
                         break;
 
                     // DeLinks an account
                     case 2:
-                        mDeLinkAccountOption.execute();
+                        mOptFactory.getOption( OptionsFactory.Option.DE_LINK_ACCOUNT ).execute();
                         break;
                 }
             }
         };
 
-        AlertDialogHelper.showAlertDialog(
+        AlertDialogHelper.create(
                 ac,
-                title,
+                R.string.linking_menu,
                 options,
                 onClick
-        );
+        ).show();
     }
 
     /**
@@ -615,12 +625,13 @@ public class MainActivity extends AppCompatActivity implements
      * @param v, The button view, not used
      */
     public void balanceClick( View v ) {
-        mDrawerLayout.closeDrawers();
-        mBalanceOption.execute();
+        dlPayment.closeDrawers();
+        mOptFactory.getOption( OptionsFactory.Option.BALANCE ).execute();
     }
 
     public void setBalance( String balance ) {
-        this.mAccountBalance.setText( balance );
+        PrefUtils.saveBalance( ac, balance );
+        tvAccountBalance.setText( balance );
     }
 
     /**
@@ -628,8 +639,8 @@ public class MainActivity extends AppCompatActivity implements
      * @param v, not used
      */
     public void closeAccountClick(View v) {
-        mDrawerLayout.closeDrawers();
-        mCloseAccountOption.execute();
+        dlPayment.closeDrawers();
+        mOptFactory.getOption( OptionsFactory.Option.CLOSE_ACCOUNT ).execute();
     }
 
     public void clearSavedData() {
@@ -645,21 +656,17 @@ public class MainActivity extends AppCompatActivity implements
      * Method to show the dialog containing the SKS code
      */
     private void showSKSDialog( final String code, final Integer account_type ) {
-        try {
-            final Bitmap sksCode = SKSCreater.createSKS( code, this, SKSCreater.SKS_CODE, account_type );
-            setTempSKS( new SKSDialog.Builder( ac )
-                    .code( sksCode )
-                    .brightness( 1.0f )
-                    .dismiss( TIME_TO_DISMISS_SKS )
-                    .dismissKey( KeyEvent.KEYCODE_BACK )
-                    .build()
-            );
+        final Bitmap sksCode = SKSCreater.createSKS( this, mEncrypter.encrypt( code ), account_type );
+        setTempSKS( new SKSDialog.Builder( ac )
+                .code( sksCode )
+                .brightness( 1.0f )
+                .dismiss( TIME_TO_DISMISS_SKS )
+                .dismissKey( KeyEvent.KEYCODE_BACK )
+                .build()
+        );
 
-            // It should fix the problem with the delay in the receipts
-            ac.sendBroadcast( new Intent( ac, HeartbeatReceiver.class ) );
-        } catch( UnsupportedEncodingException e ) {
-            e.printStackTrace();
-        }
+        // It should fix the problem with the delay in the receipts
+        ac.sendBroadcast( new Intent( ac, HeartbeatReceiver.class ) );
     }
 
     /**
@@ -680,7 +687,7 @@ public class MainActivity extends AppCompatActivity implements
                 // Save the receipt
                 receiptsdb.addReceipt( receipt );
                 // Show a notification which can reverse the save
-                Snackbar.make( mDrawerLayout, R.string.saved_receipt, Snackbar.LENGTH_LONG )
+                Snackbar.make( dlPayment, R.string.saved_receipt, Snackbar.LENGTH_LONG )
                         .setAction( R.string.message_undo, new View.OnClickListener() {
                             @Override
                             public void onClick( View v ) {
@@ -702,7 +709,7 @@ public class MainActivity extends AppCompatActivity implements
                 }
 
                 // Show a notification which can reverse the delete
-                Snackbar.make( mDrawerLayout, R.string.message_deleted_receipt, Snackbar.LENGTH_LONG )
+                Snackbar.make( dlPayment, R.string.message_deleted_receipt, Snackbar.LENGTH_LONG )
                         .setAction( R.string.message_undo, new View.OnClickListener() {
                             @Override
                             public void onClick( View v ) {
@@ -727,12 +734,10 @@ public class MainActivity extends AppCompatActivity implements
                 .build();
 
         // Account balance
-        mAccountBalance.setText(
-                String.format( "%s %s",
-                        FormatUtils.truncateDecimal( receipt.getBalanceAmount() ),
-                        receipt.getCurrency()
-                )
-        );
+        setBalance( String.format( "%s %s",
+                FormatUtils.truncateDecimal( receipt.getBalanceAmount() ),
+                receipt.getCurrency()
+        ) );
     }
 
     @Override
@@ -742,27 +747,12 @@ public class MainActivity extends AppCompatActivity implements
     @Override
     public void onResponse( int responseCode, ServerResponse response ) {
         if( responseCode != QUERY_ADV_REQ )
-            ProgressDialogHelper.getInstance().destroyProgressDialog();
+            mProgressManager.destroyProgressDialog();
 
         String code = response.getCode();
         String message = response.getMessage();
 
         switch( responseCode ) {
-            case AUTH_REQ:
-                if( code.equals( ServerResponse.AUTHORIZED ) ) {
-                    ProgressDialogHelper.getInstance().createProgressDialog( ac );
-                    mRequestManager.invoke( new QueryRequest(
-                            QUERY_LNK_ACC_SKS_REQ,
-                            mHardwareToken,
-                            this.tempPIP,
-                            QueryRequest.Record.LINKED_ACCOUNTS
-                    ) );
-                } else {
-                    YodoHandler.sendMessage( mHandlerMessages, code, message );
-                }
-
-                break;
-
             case QUERY_ADV_REQ:
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
                     String url = response.getParam( ServerResponse.ADVERTISING ).replaceAll( " ", "%20" );
@@ -772,7 +762,7 @@ public class MainActivity extends AppCompatActivity implements
                                 public void onResponse( ImageLoader.ImageContainer response, boolean isImmediate ) {
                                     if( response.getBitmap() != null && mMerchant != null ) {
                                         // load image into ImageView
-                                        mAdvertisingImage.setImageBitmap( response.getBitmap() );
+                                        ivtAdvertising.setImageBitmap( response.getBitmap() );
                                     }
                                 }
 
@@ -788,8 +778,8 @@ public class MainActivity extends AppCompatActivity implements
 
             case QUERY_LNK_ACC_SKS_REQ:
                 final String originalCode =
-                        tempPIP + SKS_SEP +
-                                mHardwareToken + SKS_SEP +
+                        tempPIP        + SKS_SEP +
+                        mHardwareToken + SKS_SEP +
                         response.getRTime();
 
                 switch( code ) {

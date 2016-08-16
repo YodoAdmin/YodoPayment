@@ -1,8 +1,8 @@
 package co.yodo.mobile.network.request;
 
-import co.yodo.mobile.component.Encrypter;
+import co.yodo.mobile.component.cipher.RSACrypt;
 import co.yodo.mobile.helper.SystemUtils;
-import co.yodo.mobile.network.YodoRequest;
+import co.yodo.mobile.network.ApiClient;
 import co.yodo.mobile.network.request.contract.IRequest;
 
 /**
@@ -53,13 +53,11 @@ public class CloseRequest extends IRequest {
     }
 
     @Override
-    public void execute( Encrypter oEncrypter, YodoRequest manager ) {
+    public void execute( RSACrypt oEncrypter, ApiClient manager ) {
         String sEncryptedClientData, pRequest;
 
         // Encrypting to create request
-        oEncrypter.setsUnEncryptedString( this.mFormattedUsrData );
-        oEncrypter.rsaEncrypt();
-        sEncryptedClientData = oEncrypter.bytesToHex();
+        sEncryptedClientData = oEncrypter.encrypt( mFormattedUsrData );
 
         pRequest = buildRequest( CLOSE_RT,
                 this.mRequestST.getValue(),

@@ -8,10 +8,8 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.Toolbar;
 import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -172,15 +170,8 @@ public class ReceiptsActivity extends AppCompatActivity implements
         pbLoading = (ProgressBar) findViewById( R.id.pbLoading );
         lvReceipts = (ListView) findViewById( R.id.receiptsList );
 
-        // Only used at creation
-        Toolbar toolbar = (Toolbar) findViewById( R.id.actionBar );
-
         // Setup the toolbar
-        setTitle( R.string.title_activity_receipts );
-        setSupportActionBar( toolbar );
-        ActionBar actionBar = getSupportActionBar();
-        if( actionBar != null )
-            actionBar.setDisplayHomeAsUpEnabled( true );
+        GUIUtils.setActionBar( this, R.string.title_activity_receipts );
     }
 
     private void updateData() {

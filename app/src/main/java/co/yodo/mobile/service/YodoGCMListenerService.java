@@ -99,6 +99,12 @@ public class YodoGCMListenerService extends GcmListenerService {
                     response.getParam( ServerResponse.CREATED )
             );
 
+            // Updates the current balance
+            PrefUtils.saveBalance( ac, String.format( "%s %s",
+                    FormatUtils.truncateDecimal( receipt.getBalanceAmount() ),
+                    receipt.getCurrency()
+            ) );
+
             if( !isOpen )
                 receiptsdb.close();
             EventBus.getDefault().post( receipt );
