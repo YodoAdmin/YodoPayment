@@ -1,11 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:paddingLeft="@dimen/activity_horizontal_margin"
-    android:paddingRight="@dimen/activity_horizontal_margin"
-    android:paddingTop="@dimen/activity_vertical_margin"
-    android:paddingBottom="@dimen/activity_vertical_margin">
+    style="@style/GeneralLayout" >
 
     <!-- header -->
     <LinearLayout
@@ -16,63 +11,43 @@
 
         <!-- logo -->
         <ImageView
-            android:id="@+id/yodoLogo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            style="@style/HeaderImage"
             android:src="@drawable/ic_launcher"
-            android:contentDescription="@string/desc" />
+            android:contentDescription="@string/desc"
+            android:onClick="hideClick"/>
 
         <!-- data -->
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dp"
-            android:layout_marginStart="10dp"
-            android:layout_gravity="center_vertical"
-            android:orientation="vertical">
+        <LinearLayout style="@style/HeaderLayout" >
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/HeaderInfo"
                 android:text="@string/account"/>
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                style="@style/HeaderInfo"
                 android:text="@string/date" />
 
             <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="@string/balance"
-                android:id="@+id/balanceTextLabel" />
+                style="@style/HeaderInfo"
+                android:text="@string/balance" />
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/top_data_text"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="5dp"
-            android:layout_marginStart="5dp"
-            android:layout_gravity="center_vertical"
-            android:orientation="vertical">
+            android:id="@+id/llAccountData"
+            style="@style/HeaderLayout" >
 
             <TextView
-                android:id="@+id/accountNumberText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                style="@style/HeaderData"
+                android:id="@+id/tvAccountNumber" />
 
             <TextView
-                android:id="@+id/accountDateText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                style="@style/HeaderData"
+                android:id="@+id/tvAccountDate" />
 
             <TextView
-                android:id="@+id/accountBalanceText"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                style="@style/HeaderData"
+                android:id="@+id/tvAccountBalance" />
 
         </LinearLayout>
 
@@ -82,10 +57,8 @@
             android:layout_weight="1" />
 
         <ImageButton
+            style="@style/HeaderImage"
             android:id="@+id/ibSubscription"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
             android:background="@null"
             android:contentDescription="@string/desc"
             android:src="@drawable/ic_nearby"
@@ -94,7 +67,7 @@
     </LinearLayout>
     <!-- end header -->
 
-    <!-- main payments button -->
+    <!-- main payment button -->
     <LinearLayout
         android:id="@+id/yodo_buttons"
         android:layout_width="match_parent"
@@ -125,7 +98,7 @@
             android:onClick="networkClick"/>
 
     </LinearLayout>
-    <!-- end main payments button -->
+    <!-- end main payment button -->
 
     <!-- start ads view -->
     <RelativeLayout
@@ -139,7 +112,7 @@
         android:orientation="vertical" >
 
         <it.sephiroth.android.library.imagezoom.ImageViewTouch
-            android:id="@+id/advertisingImage"
+            android:id="@+id/ivtAdvertising"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:contentDescription="@string/desc"/>

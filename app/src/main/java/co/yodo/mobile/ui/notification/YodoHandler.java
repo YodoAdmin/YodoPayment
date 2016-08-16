@@ -56,17 +56,27 @@ public class YodoHandler extends Handler {
 
         switch( code ) {
             case ServerResponse.ERROR_INCORRECT_PIP:
-                AlertDialogHelper.showAlertDialog(
-                        main,
-                        code,
-                        main.getString( R.string.message_error_incorrect_pip ),
-                        clickListener
-                );
+                response = main.getString( R.string.message_error_incorrect_pip );
                 break;
 
-            default:
-                AlertDialogHelper.showAlertDialog( main, code, response, clickListener );
+            case ServerResponse.ERROR_TIMEOUT:
+                response = main.getString( R.string.message_error_timeout );
+                break;
+
+            case ServerResponse.ERROR_NETWORK:
+                response = main.getString( R.string.message_error_network );
+                break;
+
+            case ServerResponse.ERROR_SERVER:
+                response = main.getString( R.string.message_error_server );
+                break;
+
+            case ServerResponse.ERROR_UNKOWN:
+                response = main.getString( R.string.message_error_unknown );
+                break;
         }
+
+        AlertDialogHelper.showAlertDialog( main, code, response, clickListener );
     }
 
     /**

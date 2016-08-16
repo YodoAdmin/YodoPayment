@@ -42,7 +42,7 @@
     <string name="pip_different">PIPs do not match</string>
     <string name="pip_hint">Personal Identity Phrase</string>
     <string name="face_recognition">Face Recognition</string>
-    <string name="face_required">You need to select a biometric token first</string>
+    <string name="face_required">Select a biometric token first</string>
     <string name="next">NEXT</string>
     <string name="register">REGISTER</string>
     <string name="face_explanation">Yodo does not collect an image of your face, only a bio-token to allow you to reset forgotten PIPs while remaining anonymous. Press the icon above to get started.</string>
@@ -75,8 +75,8 @@
 
     <!-- Reset PIP Messages -->
     <string name="current_pip">Current PIP:</string>
-    <string name="new_pip">New PIP:</string>
-    <string name="confirm_pip">Confirm New PIP:</string>
+    <string name="new_pip">New PIP</string>
+    <string name="confirm_pip">Confirm New PIP</string>
     <string name="new_pip_hint">(4–8 characters)</string>
     <string name="forgot_pip">Forgot the PIP?</string>
 
@@ -164,11 +164,11 @@
     <string name="title_activity_yodo_camera">Yodo Camera</string>
 
     <!-- Settings Headers -->
-    <string name="config_pref_services">Services</string>
+    <string name="config_pref_security">Security</string>
 
     <!-- Settings Titles -->
-    <string name="config_pref_advertising">Keep promotions service alive for:</string>
-    <string name="config_pref_advertising_summary">Receive promotions from nearby stores</string>
+    <string name="config_pref_pip_visibility">PIP\'s Visibility</string>
+    <string name="config_pref_pip_visibility_summary">Shows the PIP value by default</string>
     <string name="config_pref_languages">Language</string>
 
     <!-- Languages -->
@@ -218,5 +218,18 @@
 
     <!-- ACRA -->
     <string name="crash_toast_text">System Error. A report has been sent to the developer to fix the issue!</string>
+
+    <!-- Tutorial -->
+    <string name="title.slide1">Simple usage!</string>
+    <string name="message.slide1">Swipe the screen to the right to show the main tools</string>
+
+    <string name="title.slide2">Fast payments!</string>
+    <string name="message.slide2">Just generate a SKS code using the button with the QR code and gold coins</string>
+
+    <string name="title.slide3">Get promotions!</string>
+    <string name="message.slide3">Press the icon with two arrows to receive promotions from the closest merchant</string>
+
+    <string name="title.slide4">Hide your info with the Yodo icon</string>
+    <string name="message.slide4">GET STARTED</string>
 
 </resources>

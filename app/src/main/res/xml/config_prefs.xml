@@ -7,17 +7,15 @@
         android:entries="@array/languages_array"
         android:entryValues="@array/languages_array_values"
         android:defaultValue="en"/>
-<!--
-    <PreferenceCategory android:title="@string/config_pref_services">
 
-        <ListPreference
-            android:key="SPPromotionTime"
-            android:title="@string/config_pref_advertising"
-            android:summary="%s"
-            android:entries="@array/promotion_array"
-            android:entryValues="@array/promotion_array_values"
-            android:defaultValue="300"/>
+    <PreferenceCategory android:title="@string/config_pref_security">
+
+        <CheckBoxPreference
+            android:key="SPPIPVisibility"
+            android:title="@string/config_pref_pip_visibility"
+            android:summary="@string/config_pref_pip_visibility_summary"
+            android:defaultValue="false"/>
 
     </PreferenceCategory>
--->
+
 </PreferenceScreen>

@@ -7,9 +7,7 @@ import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.ContextMenu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -20,7 +18,6 @@ import android.widget.ProgressBar;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
@@ -136,15 +133,8 @@ public class CouponsActivity extends AppCompatActivity implements
         pbLoading = (ProgressBar ) findViewById( R.id.pbLoading );
         gvCoupons = (GridView) findViewById( R.id.couponsGrid );
 
-        // Only used at creation
-        Toolbar toolbar = (Toolbar) findViewById( R.id.actionBar );
-
         // Setup the toolbar
-        setTitle( R.string.title_activity_coupons );
-        setSupportActionBar( toolbar );
-        ActionBar actionbar = getSupportActionBar();
-        if( actionbar != null )
-            actionbar.setDisplayHomeAsUpEnabled( true );
+        GUIUtils.setActionBar( this, R.string.title_activity_coupons );
     }
 
     private void updateData() {

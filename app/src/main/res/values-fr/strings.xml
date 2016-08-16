@@ -41,7 +41,7 @@
     <string name="pip_different">PIPs do not match</string>
     <string name="pip_hint">Personal Identity Phrase</string>
     <string name="face_recognition">Face Recognition</string>
-    <string name="face_required">You need to select a biometric token first</string>
+    <string name="face_required">Select a biometric token first</string>
     <string name="next">NEXT</string>
     <string name="register">REGISTER</string>
     <string name="face_explanation">Yodo does not collect an image of your face, only a numeric token representing your face. This allows you to reset your PIP if forgotten while still remaining completely anonymous. Press the icon above to get started.</string>
@@ -74,8 +74,8 @@
 
     <!-- Reset PIP Messages -->
     <string name="current_pip">Current PIP:</string>
-    <string name="new_pip">New PIP:</string>
-    <string name="confirm_pip">Confirm New PIP:</string>
+    <string name="new_pip">New PIP</string>
+    <string name="confirm_pip">Confirm New PIP</string>
     <string name="new_pip_hint">(4–8 characters)</string>
     <string name="forgot_pip">Forgot the PIP?</string>
 
@@ -124,11 +124,11 @@
     <string name="farewell_message">Please completely remove the Yodo App using the App Management tools under phone Settings</string>
 
     <!-- Settings Headers -->
-    <string name="config_pref_services">Services</string>
+    <string name="config_pref_security">Sécurité</string>
 
     <!-- Settings Titles -->
-    <string name="config_pref_advertising">Advertising</string>
-    <string name="config_pref_advertising_summary">Receive advertising from the closest store</string>
+    <string name="config_pref_pip_visibility">La visibilité de PIP</string>
+    <string name="config_pref_pip_visibility_summary">Affiche la valeur PIP par défaut</string>
     <string name="config_pref_languages">Language</string>
 
     <!-- Tutorial -->
@@ -195,5 +195,18 @@
 
     <!-- ACRA -->
     <string name="crash_toast_text">Ooooops ! I crashed, but a report has been sent to my developer to help fix the issue !</string>
+
+    <!-- Tutorial -->
+    <string name="title.slide1">Utilisation simple!</string>
+    <string name="message.slide1">Balayez l\'écran vers la droite pour montrer les principaux outils</string>
+
+    <string name="title.slide2">Paiements rapides!</string>
+    <string name="message.slide2">Il suffit de générer un code SKS en utilisant le bouton avec le code et d\'or QR</string>
+
+    <string name="title.slide3">Obtenez les promotions!</string>
+    <string name="message.slide3">Appuyez sur l\'icône avec deux flèches pour recevoir des promotions chez le marchand le plus proche</string>
+
+    <string name="title.slide4">Cachez vos informations avec l\'icône Yodo</string>
+    <string name="message.slide4">COMMENCER</string>
 
 </resources>

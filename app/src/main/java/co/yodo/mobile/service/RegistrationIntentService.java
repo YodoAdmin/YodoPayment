@@ -1,7 +1,6 @@
 package co.yodo.mobile.service;
 
 import android.app.IntentService;
-import android.content.Context;
 import android.content.Intent;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
@@ -9,12 +8,15 @@ import com.google.android.gms.iid.InstanceID;
 
 import org.greenrobot.eventbus.EventBus;
 
+import javax.inject.Inject;
+
 import co.yodo.mobile.R;
+import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.broadcastreceiver.BroadcastMessage;
-import co.yodo.mobile.helper.SystemUtils;
-import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.helper.PrefUtils;
-import co.yodo.mobile.network.YodoRequest;
+import co.yodo.mobile.helper.SystemUtils;
+import co.yodo.mobile.network.ApiClient;
+import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.request.RegisterRequest;
 import co.yodo.mobile.service.model.GCMResponse;
 
@@ -26,31 +28,26 @@ import co.yodo.mobile.service.model.GCMResponse;
  * helper methods.
  */
 public
-class RegistrationIntentService extends IntentService implements YodoRequest.RESTListener {
+class RegistrationIntentService extends IntentService implements ApiClient.RequestsListener {
     /** DEBUG */
     @SuppressWarnings( "unused" )
     private static final String TAG = RegistrationIntentService.class.getSimpleName();
 
-    /** The context object */
-    private Context ac;
-
     /** Manager for the server requests */
-    private YodoRequest mRequestManager;
+    @Inject
+    ApiClient mRequestManager;
 
     /** Response codes for the server requests */
     private static final int REG_REQ = 0x00;
 
     public RegistrationIntentService() {
         super( TAG );
-        mRequestManager = YodoRequest.getInstance( ac );
+        YodoApplication.getComponent().inject( this );
         mRequestManager.setListener( this );
     }
 
     @Override
     protected void onHandleIntent( Intent intent ) {
-        // get the context
-        ac = RegistrationIntentService.this;
-
         try {
             String hardwareToken = intent.getStringExtra( BroadcastMessage.EXTRA_HARDWARE_TOKEN );
             // Initially this call goes out to the network to retrieve the token, subsequent calls

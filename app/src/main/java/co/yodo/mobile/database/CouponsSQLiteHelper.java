@@ -24,18 +24,18 @@ public class CouponsSQLiteHelper extends SQLiteOpenHelper {
     		COLUMN_DESCRIPTION + " TEXT, " + COLUMN_URL + " TEXT, " +
             COLUMN_CREATED     + " DATETIME)";
 
-    public CouponsSQLiteHelper(Context context) {
-    	super(context, DATABASE_NAME, null, DATABASE_VERSION);
+    public CouponsSQLiteHelper( Context context ) {
+    	super( context, DATABASE_NAME, null, DATABASE_VERSION );
     }
 
     @Override
-    public void onCreate(SQLiteDatabase db) {
+    public void onCreate( SQLiteDatabase db ) {
         //Se ejecuta la sentencia SQL de creación de la tabla
         db.execSQL( sqlCreate );
     }
 
     @Override
-    public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+    public void onUpgrade( SQLiteDatabase db, int oldVersion, int newVersion ) {
         //Se elimina la versión anterior de la tabla
         //db.execSQL( "DROP TABLE IF EXISTS Coupons" );
 

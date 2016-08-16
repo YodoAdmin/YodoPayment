@@ -6,9 +6,8 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v7.app.ActionBar;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.animation.Animation;
@@ -16,34 +15,45 @@ import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import co.yodo.mobile.R;
+import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.component.Intents;
 import co.yodo.mobile.helper.GUIUtils;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.helper.SystemUtils;
-import co.yodo.mobile.network.YodoRequest;
+import co.yodo.mobile.network.ApiClient;
 import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.request.RegisterRequest;
 import co.yodo.mobile.ui.notification.ProgressDialogHelper;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.notification.YodoHandler;
 
-public class RegistrationBiometricActivity extends AppCompatActivity implements YodoRequest.RESTListener {
+public class RegistrationBiometricActivity extends AppCompatActivity implements ApiClient.RequestsListener {
     /** The context object */
     private Context ac;
 
     /** Account identifiers */
-    private String authNumber;
-    private String biometricToken;
+    private String mAuthNumber;
+    private String mBiometricToken;
 
     /** Messages Handler */
-    private YodoHandler handlerMessages;
+    private YodoHandler mHandlerMessages;
 
     /** Manager for the server requests */
-    private YodoRequest mRequestManager;
+    @Inject
+    ApiClient mRequestManager;
+
+    /** Progress dialog for the requests */
+    @Inject
+    ProgressDialogHelper mProgressManager;
 
     /** GUI Controllers */
-    private ImageView imFaceBiometric;
+    @BindView( R.id.ivFaceBiometric )
+    ImageView imFaceBiometric;
 
     /** The shake animation for wrong inputs */
     private Animation aShake;
@@ -60,7 +70,7 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        GUIUtils.setLanguage( RegistrationBiometricActivity.this );
+        GUIUtils.setLanguage( this );
         setContentView( R.layout.activity_registration_biometric );
 
         setupGUI();
@@ -84,25 +94,20 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
     private void setupGUI() {
         // Get the context
         ac = RegistrationBiometricActivity.this;
+        mHandlerMessages = new YodoHandler( this );
 
-        // Sets the messages handler and the request manager
-        handlerMessages = new YodoHandler( RegistrationBiometricActivity.this );
-        mRequestManager = YodoRequest.getInstance( ac );
+        // Injection
+        ButterKnife.bind( this );
+        YodoApplication.getComponent().inject( this );
+
+        // Register listener for requests
         mRequestManager.setListener( this );
-
-        // GUI Global components
-        imFaceBiometric = (ImageView) findViewById( R.id.faceView );
 
         // Load the animation
         aShake = AnimationUtils.loadAnimation( this, R.anim.shake );
 
-        // Only used at creation
-        Toolbar mActionBarToolbar = (Toolbar) findViewById( R.id.actionBar );
-
-        setSupportActionBar( mActionBarToolbar );
-        ActionBar actionBar = getSupportActionBar();
-        if( actionBar != null )
-            actionBar.setDisplayHomeAsUpEnabled( true );
+        // Setup the toolbar
+        GUIUtils.setActionBar( this, R.string.title_activity_registration_biometric );
     }
 
     /**
@@ -111,11 +116,11 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
     private void updateData() {
         Bundle bundle = getIntent().getExtras();
         if( bundle != null ) {
-            authNumber = bundle.getString( Intents.AUTH_NUMBER );
+            mAuthNumber = bundle.getString( Intents.AUTH_NUMBER );
         }
 
-        // If we don't have an authNumber, then error registration
-        if( authNumber == null ) {
+        // If we don't have an mAuthNumber, then error registration
+        if( mAuthNumber == null ) {
             ToastMaster.makeText( ac, R.string.error_registration, Toast.LENGTH_SHORT ).show();
             finish();
         }
@@ -139,21 +144,21 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
 
     /**
      * Realize a registration request
-     * @param v View of the button, not used
+     * @param v View of the button
      */
     public void registrationClick( View v ) {
         // We have a biometric token, we can proceed
-        if( biometricToken != null ) {
-            ProgressDialogHelper.getInstance().createProgressDialog( ac );
+        if( mBiometricToken != null ) {
+            mProgressManager.createProgressDialog( ac );
             mRequestManager.invoke( new RegisterRequest(
                     REG_REQ,
-                    authNumber,
-                    biometricToken,
+                    mAuthNumber,
+                    mBiometricToken,
                     RegisterRequest.RegST.BIOMETRIC
             ) );
         // The user needs to capture a biometric token first
         } else {
-            ToastMaster.makeText( ac, R.string.face_required , Toast.LENGTH_SHORT ).show();
+            Snackbar.make( v, R.string.face_required, Snackbar.LENGTH_LONG ).show();
             imFaceBiometric.startAnimation( aShake );
         }
     }
@@ -172,7 +177,7 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
 
     @Override
     public void onResponse( int requestCode, ServerResponse response ) {
-        ProgressDialogHelper.getInstance().destroyProgressDialog();
+        mProgressManager.destroyProgressDialog();
         String code, message;
 
         switch( requestCode ) {
@@ -190,7 +195,7 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
                 // There was an error during the process
                 else {
                     message  = response.getMessage();
-                    YodoHandler.sendMessage( handlerMessages, code, message );
+                    YodoHandler.sendMessage( mHandlerMessages, code, message );
                 }
 
                 break;
@@ -204,7 +209,7 @@ public class RegistrationBiometricActivity extends AppCompatActivity implements 
             case( RESULT_CAMERA_ACTIVITY ) :
                 // Just trained the biometric recognition, let's save the token
                 if( resultCode == RESULT_OK ) {
-                    biometricToken = data.getStringExtra( Intents.RESULT_FACE );
+                    mBiometricToken = data.getStringExtra( Intents.RESULT_FACE );
                     ToastMaster.makeText( ac, R.string.face_trained, Toast.LENGTH_LONG ).show();
                 }
                 break;

@@ -1,7 +1,6 @@
 package co.yodo.mobile;
 
 import android.support.test.runner.AndroidJUnit4;
-import android.test.suitebuilder.annotation.LargeTest;
 import android.text.InputType;
 
 import org.junit.Rule;
@@ -29,7 +28,6 @@ import static org.hamcrest.core.IsNot.not;
  * Tests for the registration activity
  */
 @RunWith( AndroidJUnit4.class )
-@LargeTest
 public class RegistrationActivityTest  {
     /** Test strings */
     private static final String shortPIP = "abc";
@@ -45,7 +43,7 @@ public class RegistrationActivityTest  {
      */
     @Test
     public void testPIPInput() throws Exception {
-        onView( withId( R.id.pipText ) )
+        onView( withId( R.id.etPip ) )
                 .perform( typeText( shortPIP ), closeSoftKeyboard() );
 
         onView( withId( R.id.registerPipButton ) )
@@ -62,7 +60,7 @@ public class RegistrationActivityTest  {
      */
     @Test
     public void testNoPIP() throws Exception {
-        onView( withId( R.id.confirmationPipText ) )
+        onView( withId( R.id.etConfirmPip ) )
                 .perform( typeText( newPIP ), closeSoftKeyboard() );
 
         onView( withId( R.id.registerPipButton ) )
@@ -80,10 +78,10 @@ public class RegistrationActivityTest  {
      */
     @Test
     public void testConfirmationPIPInput() throws Exception {
-        onView( withId( R.id.pipText ) )
+        onView( withId( R.id.etPip ) )
                 .perform( typeText( newPIP ), closeSoftKeyboard() );
 
-        onView( withId( R.id.confirmationPipText ) )
+        onView( withId( R.id.etConfirmPip ) )
                 .perform( typeText( wrongPIP ), closeSoftKeyboard() );
 
         onView( withId( R.id.registerPipButton ) )
@@ -105,10 +103,10 @@ public class RegistrationActivityTest  {
                 .check( matches( not( isChecked() ) ) )
                 .perform( click() );
 
-        onView( withId( R.id.pipText ) )
+        onView( withId( R.id.etPip ) )
                 .check( matches( withInputType( InputType.TYPE_TEXT_VARIATION_PASSWORD ) ) );
 
-        onView( withId( R.id.confirmationPipText ) )
+        onView( withId( R.id.etConfirmPip ) )
                 .check( matches( withInputType( InputType.TYPE_TEXT_VARIATION_PASSWORD ) ) );
     }
 }

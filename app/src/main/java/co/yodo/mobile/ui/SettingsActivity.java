@@ -5,9 +5,7 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.MenuItem;
 
 import co.yodo.mobile.R;
@@ -39,15 +37,8 @@ public class SettingsActivity extends AppCompatActivity {
      * Configures the main GUI Controllers
      */
     private void setupGUI() {
-        // Only used at creation
-        Toolbar toolbar = (Toolbar) findViewById( R.id.toolbar );
-
         // Setup the toolbar
-        setTitle( R.string.title_activity_settings );
-        setSupportActionBar( toolbar );
-        ActionBar actionbar = getSupportActionBar();
-        if( actionbar != null )
-            actionbar.setDisplayHomeAsUpEnabled( true );
+        GUIUtils.setActionBar( this, R.string.title_activity_settings );
 
         // Sets the fragment content
         getFragmentManager().beginTransaction().replace( R.id.content, new PrefsFragmentInner() ).commit();

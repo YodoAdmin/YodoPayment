@@ -41,7 +41,7 @@
     <string name="pip_different">PIPが合致しません</string>
     <string name="pip_hint">個人識別フレーズ</string>
     <string name="face_recognition">顔認識</string>
-    <string name="face_required">最初に生体認証トークンを選択してください</string>
+    <string name="face_required">第1のバイオメトリックのトークンを選択</string>
     <string name="next">次へ</string>
     <string name="register">PIP登録中</string>
     <string name="face_explanation">Yodoは顔画像を収集しません。匿名を維持しながら、忘れたPIPをリセットできるように生体認証トークンを収集します。上のアイコンを押してスタートしてください</string>
@@ -74,8 +74,8 @@
     
     <!-- Reset PIP Messages  -->
     <string name="current_pip">現在のPIP:</string>
-    <string name="new_pip">新しいPIP:</string>
-    <string name="confirm_pip">新しいPIPを確認してください:</string>
+    <string name="new_pip">新しいPIP</string>
+    <string name="confirm_pip">新しいPIPを確認してください</string>
     <string name="new_pip_hint">新しいPIP (4–8 文字)</string>
     <string name="forgot_pip">PIPを忘れましたか?</string> 
     
@@ -119,11 +119,11 @@
     <string name="farewell_message">携帯の設定メニューのアプリ管理ツールを使ってYodoアプリを携帯から削除してください</string>
 
     <!-- Settings Headers -->
-    <string name="config_pref_services">サービス</string>
+    <string name="config_pref_security">セキュリティ</string>
 
     <!-- Settings Titles -->
-    <string name="config_pref_advertising">広告</string>
-    <string name="config_pref_advertising_summary">近辺の店舗から広告を受け取る</string>
+    <string name="config_pref_pip_visibility">PIPの可視性</string>
+    <string name="config_pref_pip_visibility_summary">デフォルトでは、PIPの値を表示します</string>
     <string name="config_pref_languages">言語</string>
 
     <!-- Tutorial -->
@@ -192,6 +192,19 @@
     <string name="crash_toast_text">システムエラー。問題解決のために、ディベロッパーにレポートが送信されました！</string>
     <string name="message.error.code">コードでエラーを解決できませんでした：</string>
     <string name="message.error.incorrect_pip">不適切なPIP。 再試行する</string>
-    <string name="message.error.no_connectivity">いいえ、接続、続行することはできません。 「設定」に修正して再試行してください</string>"
-    
+    <string name="message.error.no_connectivity">いいえ、接続、続行することはできません。 「設定」に修正して再試行してください</string>
+
+    <!-- Tutorial -->
+    <string name="title.slide1">シンプルな使用法!</string>
+    <string name="message.slide1">主なツールを表示する右に画面をスワイプ</string>
+
+    <string name="title.slide2">高速の支払い！</string>
+    <string name="message.slide2">ただ、QRコードと金貨とボタンを使用して、SKSコードを生成</string>
+
+    <string name="title.slide3">プロモーションをゲット！</string>
+    <string name="message.slide3">最寄りの商人からプロモーションを受信するために2つの矢印でアイコンを押してください</string>
+
+    <string name="title.slide4">淀川のアイコンを使用して情報を隠します</string>
+    <string name="message.slide4">GET STARTED</string>
+
 </resources>
