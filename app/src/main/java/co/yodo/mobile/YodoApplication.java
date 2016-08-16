@@ -25,8 +25,8 @@ import co.yodo.mobile.injection.module.ApplicationModule;
                 httpMethod = org.acra.sender.HttpSender.Method.POST,
                 reportType = org.acra.sender.HttpSender.Type.JSON,
                 mode = ReportingInteractionMode.TOAST,
-                resToastText = R.string.crash_toast_text)
-
+                resToastText = R.string.crash_toast_text
+)
 public class YodoApplication extends Application {
     /** Component that build the dependencies */
     private static GraphComponent mComponent;
