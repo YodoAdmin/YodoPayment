@@ -11,6 +11,11 @@ public abstract class IRequest {
      /** Formatted data for the request */
     protected String mFormattedUsrData;
 
+    /** Encrypted data for the request */
+    protected String mEncyptedData;
+    protected String mEncyptedSignature;
+    protected String mEncyptedKey;
+
     /** The code for the response */
     protected final int responseCode;
 

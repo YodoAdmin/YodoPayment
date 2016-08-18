@@ -1,6 +1,10 @@
 package co.yodo.mobile.network.request;
 
+import javax.crypto.spec.SecretKeySpec;
+
+import co.yodo.mobile.component.cipher.AESCrypt;
 import co.yodo.mobile.component.cipher.RSACrypt;
+import co.yodo.mobile.component.signature.MessageIntegrityAttribute;
 import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.network.ApiClient;
 import co.yodo.mobile.network.request.contract.IRequest;
@@ -66,8 +70,18 @@ public class AuthenticateRequest extends IRequest {
     public void execute( RSACrypt oEncrypter, ApiClient manager ) {
         String sEncryptedClientData, pRequest;
 
+        SecretKeySpec key = AESCrypt.generateKey();
+
+        mEncyptedData = AESCrypt.encrypt( mFormattedUsrData, key );
+        mEncyptedSignature = MessageIntegrityAttribute.encode( mFormattedUsrData, key );
+        mEncyptedKey = oEncrypter.encrypt( AESCrypt.encodeKey( key ) );
+
         // Encrypting to create request
-        sEncryptedClientData = oEncrypter.encrypt( mFormattedUsrData );
+        //sEncryptedClientData = oEncrypter.encrypt( mFormattedUsrData );
+        sEncryptedClientData =
+                mEncyptedData      + REQ_SEP +
+                mEncyptedSignature + REQ_SEP +
+                mEncyptedKey;
 
         pRequest = buildRequest( AUTH_RT,
                 this.mRequestST.getValue(),

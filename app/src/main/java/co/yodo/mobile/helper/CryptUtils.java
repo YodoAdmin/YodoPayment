@@ -19,13 +19,11 @@ public class CryptUtils {
         String PUBLIC_KEY;
 
         if( ApiClient.getSwitch().equals( "P" ) )
-            PUBLIC_KEY = "YodoKey/Prod/12.public.der";
-        else
-            PUBLIC_KEY = "YodoKey/Local/12.public.der";
-        /*else if( ApiClient.getSwitch().equals( "L" ) )
-            PUBLIC_KEY = "YodoKey/Local/12.public.der";
-        else
-            PUBLIC_KEY = "YodoKey/Dev/12.public.der";*/
+            PUBLIC_KEY = "YodoKey/Prod/512.public.der";
+        else if( ApiClient.getSwitch().equals( "L" ) )
+            PUBLIC_KEY = "YodoKey/Local/2048.public.der";
+        else // Dev/Demo
+            PUBLIC_KEY = "YodoKey/Dev/512.public.der";
 
         return PUBLIC_KEY;
     }
