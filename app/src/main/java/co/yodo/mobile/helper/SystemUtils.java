@@ -31,6 +31,7 @@ public class SystemUtils {
     public static boolean isGooglePlayServicesAvailable( Activity activity, int code ) {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
         int resultCode = apiAvailability.isGooglePlayServicesAvailable( activity );
+
         if( resultCode != ConnectionResult.SUCCESS ) {
             if( apiAvailability.isUserResolvableError( resultCode ) ) {
                 apiAvailability.getErrorDialog( activity, resultCode, code ).show();
