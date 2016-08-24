@@ -4,6 +4,9 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.crypto.spec.SecretKeySpec;
+
+import co.yodo.mobile.component.cipher.AESCrypt;
 import co.yodo.mobile.component.cipher.RSACrypt;
 import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.SystemUtils;
@@ -93,6 +96,11 @@ public class RegisterRequest extends IRequest {
     public void execute( RSACrypt oEncrypter, ApiClient manager ) {
         String sEncryptedClientData, pRequest;
 
+        SecretKeySpec key = AESCrypt.generateKey();
+
+        //mEncyptedSignature = MessageIntegrityAttribute.encode( mFormattedUsrData, key );
+        mEncyptedKey = oEncrypter.encrypt( AESCrypt.encodeKey( key ) );
+
         switch( this.mRequestST ) {
             case CLIENT:
                 this.mFormattedUsrData =
@@ -101,7 +109,12 @@ public class RegisterRequest extends IRequest {
                         this.mUserIdentifier + USR_SEP +
                         System.currentTimeMillis() / 1000L;
 
-                sEncryptedClientData = oEncrypter.encrypt( mFormattedUsrData );
+                mEncyptedData = AESCrypt.encrypt( mFormattedUsrData, key );
+
+                //sEncryptedClientData = oEncrypter.encrypt( mFormattedUsrData );
+                sEncryptedClientData =
+                        mEncyptedKey + REQ_SEP +
+                        mEncyptedData;
 
                 pRequest = buildRequest( REG_RT,
                         this.mRequestST.getValue(),
