@@ -73,15 +73,14 @@ public class AuthenticateRequest extends IRequest {
         SecretKeySpec key = AESCrypt.generateKey();
 
         mEncyptedData = AESCrypt.encrypt( mFormattedUsrData, key );
-        mEncyptedSignature = MessageIntegrityAttribute.encode( mFormattedUsrData, key );
+        //mEncyptedSignature = MessageIntegrityAttribute.encode( mFormattedUsrData, key );
         mEncyptedKey = oEncrypter.encrypt( AESCrypt.encodeKey( key ) );
 
         // Encrypting to create request
         //sEncryptedClientData = oEncrypter.encrypt( mFormattedUsrData );
         sEncryptedClientData =
-                mEncyptedData      + REQ_SEP +
-                mEncyptedSignature + REQ_SEP +
-                mEncyptedKey;
+                mEncyptedKey + REQ_SEP +
+                mEncyptedData;
 
         pRequest = buildRequest( AUTH_RT,
                 this.mRequestST.getValue(),

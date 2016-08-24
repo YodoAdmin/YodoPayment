@@ -22,6 +22,8 @@ public class CryptUtils {
             PUBLIC_KEY = "YodoKey/Prod/512.public.der";
         else if( ApiClient.getSwitch().equals( "L" ) )
             PUBLIC_KEY = "YodoKey/Local/2048.public.der";
+        else if( ApiClient.getSwitch().equals( "D" ) )
+            PUBLIC_KEY = "YodoKey/Dev/2048.public.der";
         else // Dev/Demo
             PUBLIC_KEY = "YodoKey/Dev/512.public.der";
 

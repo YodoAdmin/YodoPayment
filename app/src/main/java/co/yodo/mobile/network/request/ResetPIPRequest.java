@@ -1,5 +1,8 @@
 package co.yodo.mobile.network.request;
 
+import javax.crypto.spec.SecretKeySpec;
+
+import co.yodo.mobile.component.cipher.AESCrypt;
 import co.yodo.mobile.component.cipher.RSACrypt;
 import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.network.ApiClient;
@@ -73,16 +76,26 @@ public class ResetPIPRequest extends IRequest {
         String sEncryptedClientData, sEncryptedHardwareToken, sEncryptedId, sEncryptedNewPIP,
                 pRequest;
 
+        SecretKeySpec key = AESCrypt.generateKey();
+
+        //mEncyptedSignature = MessageIntegrityAttribute.encode( mFormattedUsrData, key );
+        mEncyptedKey = oEncrypter.encrypt( AESCrypt.encodeKey( key ) );
+
         switch( this.mRequestST ) {
             case PIP:
                 // Encrypting to create request
-                sEncryptedHardwareToken = oEncrypter.encrypt( mHardwareToken );
+                /*sEncryptedHardwareToken = oEncrypter.encrypt( mHardwareToken );
                 sEncryptedId = oEncrypter.encrypt( mIdentifier );
-                sEncryptedNewPIP = oEncrypter.encrypt( mNewPIP );
+                sEncryptedNewPIP = oEncrypter.encrypt( mNewPIP );*/
+
+                sEncryptedHardwareToken = AESCrypt.encrypt( mHardwareToken, key );
+                sEncryptedId = AESCrypt.encrypt( mIdentifier, key );
+                sEncryptedNewPIP = AESCrypt.encrypt( mNewPIP, key );
 
                 sEncryptedClientData =
+                        mEncyptedKey            + REQ_SEP +
                         sEncryptedHardwareToken + REQ_SEP +
-                        sEncryptedId + REQ_SEP +
+                        sEncryptedId            + REQ_SEP +
                         sEncryptedNewPIP;
                 break;
 
@@ -92,12 +105,17 @@ public class ResetPIPRequest extends IRequest {
                         this.mHardwareToken + REQ_SEP +
                         this.mNewPIP;
 
+                mEncyptedData = AESCrypt.encrypt( mFormattedUsrData, key );
+
                 // Encrypting to create request
-                sEncryptedClientData = oEncrypter.encrypt( mFormattedUsrData );
+                //sEncryptedClientData = oEncrypter.encrypt( mFormattedUsrData );
+                sEncryptedClientData =
+                        mEncyptedKey + REQ_SEP +
+                        mEncyptedData;
                 break;
 
             default:
-                throw new IllegalArgumentException( "type no supported" );
+                throw new IllegalArgumentException( "type not supported" );
         }
 
         pRequest = buildRequest( RESET_RT,
