@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 	xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:rsv="http://schemas.android.com/apk/res-auto"
 	style="@style/GeneralLayout"
 	android:id="@+id/dialog_with_password"
 	android:orientation="vertical">
@@ -28,7 +27,7 @@
 		android:layout_width="match_parent"
 		android:layout_height="wrap_content"
 		android:orientation="vertical"
-		android:visibility="visible">
+		android:visibility="gone">
 
 		<View style="@style/SeparatorView" />
 
