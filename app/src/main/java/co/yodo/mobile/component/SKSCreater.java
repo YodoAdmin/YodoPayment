@@ -10,7 +10,6 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.common.BitMatrix;
 
-import co.yodo.mobile.R;
 import co.yodo.mobile.helper.SystemUtils;
 
 /**
@@ -27,25 +26,24 @@ public class SKSCreater {
 	private static final int WHITE = 0xFFFFFFFF;
 	private static final int BLACK = 0xFF000000;
 
+	/** QR code separator */
+	private static final String QR_SEP = "#";
+
 	/**
 	 * Encodes the user data as a SKS to build a Bitmap
 	 * @param parent The activity that is creating the SKS
 	 * @param code The user encrypted data
-	 * @param account_type The account type
 	 * @return A bitmap with the SKS code (QR)
 	 */
-	public static Bitmap createSKS( Activity parent, String code, Integer account_type ) {
+	public static Bitmap createSKS( Activity parent, String header, String code ) {
 		Bitmap bitmap = null;
 
 		try {
-			if( account_type != null )
-				code += account_type;
-
-			SystemUtils.Logger( TAG, code + " - " + code.length() );
+			SystemUtils.Logger( TAG, header + QR_SEP + code + " - " + code.length() );
 
 			Integer QR_SIZE = getSKSSize( parent );
 			BitMatrix qrMatrix = new MultiFormatWriter().encode(
-					parent.getResources().getString( R.string.SKS_HEADER ) + code,
+					header + QR_SEP + code,
 					BarcodeFormat.QR_CODE,
 					QR_SIZE, QR_SIZE,
 					null

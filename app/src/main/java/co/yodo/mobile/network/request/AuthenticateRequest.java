@@ -72,9 +72,9 @@ public class AuthenticateRequest extends IRequest {
 
         SecretKeySpec key = AESCrypt.generateKey();
 
+        mEncyptedKey = oEncrypter.encrypt( AESCrypt.encodeKey( key ) );
         mEncyptedData = AESCrypt.encrypt( mFormattedUsrData, key );
         //mEncyptedSignature = MessageIntegrityAttribute.encode( mFormattedUsrData, key );
-        mEncyptedKey = oEncrypter.encrypt( AESCrypt.encodeKey( key ) );
 
         // Encrypting to create request
         //sEncryptedClientData = oEncrypter.encrypt( mFormattedUsrData );

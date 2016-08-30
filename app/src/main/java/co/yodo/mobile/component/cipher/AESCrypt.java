@@ -1,7 +1,5 @@
 package co.yodo.mobile.component.cipher;
 
-import android.util.Base64;
-
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 

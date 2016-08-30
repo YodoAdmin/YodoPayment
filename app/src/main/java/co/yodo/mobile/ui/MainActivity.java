@@ -50,6 +50,8 @@ import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.broadcastreceiver.HeartbeatReceiver;
 import co.yodo.mobile.component.SKSCreater;
 import co.yodo.mobile.component.cipher.RSACrypt;
+import co.yodo.mobile.component.totp.TOTP;
+import co.yodo.mobile.component.totp.TOTPUtils;
 import co.yodo.mobile.database.CouponsDataSource;
 import co.yodo.mobile.database.ReceiptsDataSource;
 import co.yodo.mobile.database.model.Receipt;
@@ -149,11 +151,15 @@ public class MainActivity extends AppCompatActivity implements
     /** Time between advertisement requests */
     private static final int DELAY_BETWEEN_REQUESTS = 1000 * 25; // 25 seconds
 
-    /** SKS data separator */
+    /** Header and SKS data separator */
+    private static final String HDR_SEP = ",";
     private static final String SKS_SEP = "**";
 
     /** PIP temporal */
     private String tempPIP;
+
+    /** TIP temporal */
+    private Integer tempTIP;
 
     /** Temporal SKSDialog */
     private SKSDialog tempSKS;
@@ -401,6 +407,14 @@ public class MainActivity extends AppCompatActivity implements
     }
 
     /**
+     * Sets the temporary TIP, it must be return to null later
+     * @param value The value for the temporary TIP
+     */
+    private void setTempTIP( Integer value ) {
+        this.tempTIP = value;
+    }
+
+    /**
      * Sets a temporary SKS, it must be return to null later
      * @param value The value for the temporary SKS
      */
@@ -531,9 +545,10 @@ public class MainActivity extends AppCompatActivity implements
         mOptFactory.getOption( OptionsFactory.Option.PAYMENT ).execute();
     }
 
-    public void payment( String pip ) {
-        // Set temporal pip
+    public void payment( String pip, int tip ) {
+        // Set temporal pip and tip
         setTempPIP( pip );
+        setTempTIP( tip );
 
         mProgressManager.createProgressDialog( ac );
         mRequestManager.invoke( new QueryRequest(
@@ -655,8 +670,9 @@ public class MainActivity extends AppCompatActivity implements
     /**
      * Method to show the dialog containing the SKS code
      */
-    private void showSKSDialog( final String code, final Integer account_type ) {
-        final Bitmap sksCode = SKSCreater.createSKS( this, mEncrypter.encrypt( code ), account_type );
+    private void showSKSDialog( final String code, final String payment_type ) {
+        final String header = payment_type + HDR_SEP + this.tempTIP;
+        final Bitmap sksCode = SKSCreater.createSKS( this, header, code );
         setTempSKS( new SKSDialog.Builder( ac )
                 .code( sksCode )
                 .brightness( 1.0f )
@@ -667,6 +683,9 @@ public class MainActivity extends AppCompatActivity implements
 
         // It should fix the problem with the delay in the receipts
         ac.sendBroadcast( new Intent( ac, HeartbeatReceiver.class ) );
+
+        setTempPIP( null );
+        setTempTIP( null );
     }
 
     /**
@@ -777,10 +796,20 @@ public class MainActivity extends AppCompatActivity implements
                 break;
 
             case QUERY_LNK_ACC_SKS_REQ:
+                // SKS - User data
+                final int otp = TOTP.generateTOTP(
+                        tempPIP.getBytes(),
+                        TOTPUtils.getTimeIndex(),
+                        TOTP.LENGTH,
+                        TOTP.HmacSHA1
+                );
+
                 final String originalCode =
-                        tempPIP        + SKS_SEP +
-                        mHardwareToken + SKS_SEP +
-                        response.getRTime();
+                        otp + SKS_SEP +
+                        mHardwareToken;
+
+                // Identifier for a normal payment
+                final String yodoPayment = getString( R.string.account_yodo );
 
                 switch( code ) {
                     case ServerResponse.AUTHORIZED:
@@ -791,13 +820,8 @@ public class MainActivity extends AppCompatActivity implements
                                 @Override
                                 public void onClick( View v ) {
                                     final ImageView accountImage = (ImageView) v;
-                                    Integer account_type = Integer.parseInt(
-                                            accountImage.getContentDescription().toString()
-                                    );
-
-                                    if( account_type == 0 )
-                                        account_type = null;
-                                    showSKSDialog( originalCode, account_type );
+                                    final String paymentType = accountImage.getContentDescription().toString();
+                                    showSKSDialog( originalCode, paymentType );
                                 }
                             };
 
@@ -808,23 +832,24 @@ public class MainActivity extends AppCompatActivity implements
                         }
                         // We are only acting as donor, so show normal SKS
                         else {
-                            showSKSDialog( originalCode, null );
+                            showSKSDialog( originalCode, yodoPayment );
                         }
 
                         break;
 
                     // We don't have links
                     case ServerResponse.ERROR_FAILED:
-                        showSKSDialog( originalCode, null );
+                        showSKSDialog( originalCode, yodoPayment );
                         break;
 
                     // If it is something else, show the error
                     default:
+                        // Set PIP and TIP to null
+                        setTempPIP( null );
+                        setTempTIP( null );
                         YodoHandler.sendMessage( mHandlerMessages, code, message );
                         break;
                 }
-
-                setTempPIP( null );
                 break;
         }
     }
