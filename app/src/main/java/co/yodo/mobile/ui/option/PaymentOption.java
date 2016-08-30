@@ -1,7 +1,13 @@
 package co.yodo.mobile.ui.option;
 
+import android.annotation.TargetApi;
+import android.os.Build;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.TextView;
 
+import co.yodo.mobile.R;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.network.ApiClient;
 import co.yodo.mobile.network.model.ServerResponse;
@@ -16,8 +22,15 @@ import co.yodo.mobile.ui.option.contract.IRequestOption;
  * Implements the Payment Option of the MainActivity
  */
 public class PaymentOption extends IRequestOption implements ApiClient.RequestsListener {
+    /** GUI Controllers */
+    private SeekBar sbTips;
+
+    /** Text */
+    private final String mTipText;
+
     /** Temporal */
     private String mTempPIP;
+    private int mTempTip = 0;
 
     /** Response codes for the server requests */
     private static final int AUTH_REQ = 0x00;
@@ -28,6 +41,9 @@ public class PaymentOption extends IRequestOption implements ApiClient.RequestsL
      */
     public PaymentOption( MainActivity activity, YodoHandler handlerMessages ) {
         super( activity, handlerMessages );
+
+        // Get text for tips
+        mTipText = mActivity.getString( R.string.text_tip );
 
         // Dialog
         final View layout = buildLayout();
@@ -57,11 +73,43 @@ public class PaymentOption extends IRequestOption implements ApiClient.RequestsL
             }
         };
 
+        setupGUI( layout );
+
         mAlertDialog = AlertDialogHelper.create(
                 mActivity,
                 layout,
                 buildOnClick( okClick )
         );
+    }
+
+    /**
+     * Setups other components for the option
+     * @param layout The layout of the option
+     */
+    @TargetApi( Build.VERSION_CODES.JELLY_BEAN )
+    private void setupGUI( View layout ) {
+        // Set other components
+        final LinearLayout llTips = (LinearLayout) layout.findViewById( R.id.llTips );
+        final TextView tvTips = (TextView) layout.findViewById( R.id.tvTips );
+        sbTips = (SeekBar) layout.findViewById( R.id.sbTips );
+
+        llTips.setVisibility( View.VISIBLE );
+        tvTips.setText( String.format( mTipText, 0 ) );
+        sbTips.setOnSeekBarChangeListener( new SeekBar.OnSeekBarChangeListener() {
+            @Override
+            public void onProgressChanged( SeekBar seekBar, int progressValue, boolean fromUser ) {
+                tvTips.setText( String.format( mTipText, progressValue ) );
+                mTempTip = progressValue;
+            }
+
+            @Override
+            public void onStartTrackingTouch( SeekBar seekBar ) {
+            }
+
+            @Override
+            public void onStopTrackingTouch( SeekBar seekBar ) {
+            }
+        } );
     }
 
     /**
@@ -76,6 +124,7 @@ public class PaymentOption extends IRequestOption implements ApiClient.RequestsL
     public void execute() {
         mAlertDialog.show();
         clearGUI();
+        sbTips.setProgress( 0 );
     }
 
     @Override
@@ -95,7 +144,7 @@ public class PaymentOption extends IRequestOption implements ApiClient.RequestsL
         switch( responseCode ) {
             case AUTH_REQ:
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
-                    ( (MainActivity) mActivity).payment( mTempPIP );
+                    ( (MainActivity) mActivity).payment( mTempPIP, mTempTip );
                 } else {
                     String message = response.getMessage();
                     YodoHandler.sendMessage( mHandlerMessages, code, message );
