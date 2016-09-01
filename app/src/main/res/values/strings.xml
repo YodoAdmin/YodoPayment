@@ -115,6 +115,7 @@
     <string name="about_message">Please use the email below to contact us. We\'ll do everything we can to respond quickly. We will never sell or distribute personal information you provide.</string>
     <string name="about_email">support@yodo.co</string>
     <string name="copied_text">Text has been copied to clipboard</string>
+    <string name="text.tip" translatable="false">TIP %1$d%%</string>
 
     <!-- Close Messages -->
     <string name="close_message">WARNING: If your account has a positive balance it will be forfeited if you close your account now. Only enter your PIP to proceed if you are prepared to forfeit this funds</string>
