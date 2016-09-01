@@ -4,7 +4,8 @@ import javax.crypto.spec.SecretKeySpec;
 
 import co.yodo.mobile.component.cipher.AESCrypt;
 import co.yodo.mobile.component.cipher.RSACrypt;
-import co.yodo.mobile.component.signature.MessageIntegrityAttribute;
+import co.yodo.mobile.component.totp.TOTP;
+import co.yodo.mobile.component.totp.TOTPUtils;
 import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.network.ApiClient;
 import co.yodo.mobile.network.request.contract.IRequest;
@@ -59,9 +60,21 @@ public class AuthenticateRequest extends IRequest {
      */
     public AuthenticateRequest( int responseCode, String hardwareToken, String pip ) {
         super( responseCode );
+
+        final String hashPip = TOTPUtils.sha1( pip );
+        if( hashPip == null )
+            throw new NullPointerException( "Null user pip" );
+
+        final int otp = TOTP.generateTOTP(
+                hashPip.getBytes(),
+                TOTPUtils.getTimeIndex(),
+                TOTP.LENGTH,
+                TOTP.HmacSHA1
+        );
+
         this.mFormattedUsrData =
                 hardwareToken + PCLIENT_SEP +
-                pip + PCLIENT_SEP +
+                otp           + PCLIENT_SEP +
                 System.currentTimeMillis() / 1000L;
         this.mRequestST = AuthST.HW_PIP;
     }
