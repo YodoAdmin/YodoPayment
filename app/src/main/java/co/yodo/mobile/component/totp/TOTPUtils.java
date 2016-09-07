@@ -64,4 +64,24 @@ public class TOTPUtils {
         }
         return null;
     }
+
+    /**
+     * Generates an OTP with default parameters
+     * @param pip The user's password
+     * @return The one time password
+     */
+    public static String defaultOTP( String pip ) {
+        final String hashPip = TOTPUtils.sha1( pip );
+        if( hashPip == null )
+            throw new NullPointerException( "Null user pip" );
+
+        final int otp = TOTP.generateTOTP(
+                hashPip.getBytes(),
+                TOTPUtils.getTimeIndex(),
+                TOTP.LENGTH,
+                TOTP.HmacSHA1
+        );
+
+        return String.valueOf( otp );
+    }
 }

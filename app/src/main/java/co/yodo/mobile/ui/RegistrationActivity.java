@@ -37,7 +37,8 @@ import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.notification.YodoHandler;
 import co.yodo.mobile.ui.validator.PIPValidator;
 
-public class RegistrationActivity extends AppCompatActivity implements EulaUtils.OnEulaAgreedTo, ApiClient.RequestsListener {
+public class
+RegistrationActivity extends AppCompatActivity implements EulaUtils.OnEulaAgreedTo, ApiClient.RequestsListener {
     /** DEBUG */
     @SuppressWarnings( "unused" )
     private static final String TAG = RegistrationActivity.class.getSimpleName();

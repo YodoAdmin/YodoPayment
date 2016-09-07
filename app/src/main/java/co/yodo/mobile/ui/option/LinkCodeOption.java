@@ -8,6 +8,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import co.yodo.mobile.R;
+import co.yodo.mobile.component.totp.TOTPUtils;
 import co.yodo.mobile.helper.GUIUtils;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.network.ApiClient;
@@ -42,7 +43,7 @@ public class LinkCodeOption extends IRequestOption implements ApiClient.Requests
                 try {
                     if( mPipValidator.validate( etInput ) ) {
                         mAlertDialog.dismiss();
-                        final String pip = etInput.getText().toString();
+                        final String pip = TOTPUtils.defaultOTP( etInput.getText().toString() );
 
                         mProgressManager.createProgressDialog( mActivity );
                         mRequestManager.setListener( LinkCodeOption.this );
