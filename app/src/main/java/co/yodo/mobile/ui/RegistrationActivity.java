@@ -204,7 +204,6 @@ RegistrationActivity extends AppCompatActivity implements EulaUtils.OnEulaAgreed
                     PrefUtils.saveAuthNumber( ac, response.getAuthNumber() );
                     PrefUtils.saveBalance( ac, AppConfig.DEFAULT_BALANCE );
 
-                    // let's register the gcm id
                     Intent intent = new Intent( ac, RegistrationIntentService.class );
                     intent.putExtra( BroadcastMessage.EXTRA_HARDWARE_TOKEN, mHardwareToken );
                     startService( intent );
