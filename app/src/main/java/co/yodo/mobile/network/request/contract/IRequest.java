@@ -20,7 +20,7 @@ public abstract class IRequest {
     protected final int responseCode;
 
     /** Protocol version used in the requests */
-    protected static final String PROTOCOL_VERSION = "1.1.5";
+    protected static final String PROTOCOL_VERSION = "1.1.6";
 
     /** User's data separator */
     protected static final String USR_SEP     = "**";
