@@ -50,6 +50,8 @@ import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.broadcastreceiver.HeartbeatReceiver;
 import co.yodo.mobile.component.SKSCreater;
 import co.yodo.mobile.component.cipher.RSACrypt;
+import co.yodo.mobile.component.totp.TOTP;
+import co.yodo.mobile.component.totp.TOTPUtils;
 import co.yodo.mobile.database.CouponsDataSource;
 import co.yodo.mobile.database.ReceiptsDataSource;
 import co.yodo.mobile.database.model.Receipt;
@@ -670,7 +672,7 @@ public class MainActivity extends AppCompatActivity implements
      */
     private void showSKSDialog( final String code, final String payment_type ) {
         final String header = payment_type + HDR_SEP + this.tempTIP;
-        final Bitmap sksCode = SKSCreater.createSKS( this, header, mEncrypter.encrypt( code ) );
+        final Bitmap sksCode = SKSCreater.createSKS( this, header, code );
         setTempSKS( new SKSDialog.Builder( ac )
                 .code( sksCode )
                 .brightness( 1.0f )
@@ -681,6 +683,9 @@ public class MainActivity extends AppCompatActivity implements
 
         // It should fix the problem with the delay in the receipts
         ac.sendBroadcast( new Intent( ac, HeartbeatReceiver.class ) );
+
+        setTempPIP( null );
+        setTempTIP( null );
     }
 
     /**
@@ -792,10 +797,16 @@ public class MainActivity extends AppCompatActivity implements
 
             case QUERY_LNK_ACC_SKS_REQ:
                 // SKS - User data
+                final int otp = TOTP.generateTOTP(
+                        tempPIP.getBytes(),
+                        TOTPUtils.getTimeIndex(),
+                        TOTP.LENGTH,
+                        TOTP.HmacSHA1
+                );
+
                 final String originalCode =
-                        tempPIP        + SKS_SEP +
-                        mHardwareToken + SKS_SEP +
-                        response.getRTime();
+                        otp + SKS_SEP +
+                        mHardwareToken;
 
                 // Identifier for a normal payment
                 final String yodoPayment = getString( R.string.account_yodo );
@@ -833,13 +844,12 @@ public class MainActivity extends AppCompatActivity implements
 
                     // If it is something else, show the error
                     default:
+                        // Set PIP and TIP to null
+                        setTempPIP( null );
+                        setTempTIP( null );
                         YodoHandler.sendMessage( mHandlerMessages, code, message );
                         break;
                 }
-
-                // Set PIP and TIP to null
-                setTempPIP( null );
-                //setTempTIP( null );
                 break;
         }
     }

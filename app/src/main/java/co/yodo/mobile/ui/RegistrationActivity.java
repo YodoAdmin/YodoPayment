@@ -37,7 +37,8 @@ import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.notification.YodoHandler;
 import co.yodo.mobile.ui.validator.PIPValidator;
 
-public class RegistrationActivity extends AppCompatActivity implements EulaUtils.OnEulaAgreedTo, ApiClient.RequestsListener {
+public class
+RegistrationActivity extends AppCompatActivity implements EulaUtils.OnEulaAgreedTo, ApiClient.RequestsListener {
     /** DEBUG */
     @SuppressWarnings( "unused" )
     private static final String TAG = RegistrationActivity.class.getSimpleName();
@@ -203,7 +204,6 @@ public class RegistrationActivity extends AppCompatActivity implements EulaUtils
                     PrefUtils.saveAuthNumber( ac, response.getAuthNumber() );
                     PrefUtils.saveBalance( ac, AppConfig.DEFAULT_BALANCE );
 
-                    // let's register the gcm id
                     Intent intent = new Intent( ac, RegistrationIntentService.class );
                     intent.putExtra( BroadcastMessage.EXTRA_HARDWARE_TOKEN, mHardwareToken );
                     startService( intent );

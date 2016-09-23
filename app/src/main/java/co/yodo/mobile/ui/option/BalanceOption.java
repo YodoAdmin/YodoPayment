@@ -2,6 +2,7 @@ package co.yodo.mobile.ui.option;
 
 import android.view.View;
 
+import co.yodo.mobile.component.totp.TOTPUtils;
 import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.FormatUtils;
 import co.yodo.mobile.helper.PrefUtils;
@@ -36,7 +37,7 @@ public class BalanceOption extends IRequestOption implements ApiClient.RequestsL
                 try {
                     if( mPipValidator.validate( etInput ) ) {
                         mAlertDialog.dismiss();
-                        final String pip = etInput.getText().toString();
+                        final String pip = TOTPUtils.defaultOTP( etInput.getText().toString() );
 
                         mProgressManager.createProgressDialog( mActivity );
                         mRequestManager.setListener( BalanceOption.this );

@@ -43,7 +43,8 @@ public class ApiClient {
 
     /** Switch server IP address */
     private static final String PROD_IP  = "http://50.56.180.133";   // Production
-    private static final String DEMO_IP  = "http://198.101.209.120"; // Demo
+    //private static final String DEMO_IP  = "http://198.101.209.120"; // Demo
+    private static final String DEMO_IP  = "http://162.244.228.84";  // Demo
     private static final String DEV_IP   = "http://162.244.228.78";  // Development
     private static final String LOCAL_IP = "http://192.168.1.33";    // Local
     private static final String IP = DEMO_IP;
@@ -120,7 +121,7 @@ public class ApiClient {
     public static String getSwitch() {
         return ( IP.equals( PROD_IP ) ) ? "P" :
                ( IP.equals( DEMO_IP ) ) ? "E" :
-               ( IP.equals( LOCAL_IP ) ) ? "L" : "D";
+               ( IP.equals( DEV_IP ) ) ? "D" : "L";
     }
 
     /**

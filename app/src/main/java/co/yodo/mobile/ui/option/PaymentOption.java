@@ -8,6 +8,8 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 
 import co.yodo.mobile.R;
+import co.yodo.mobile.component.totp.TOTP;
+import co.yodo.mobile.component.totp.TOTPUtils;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.network.ApiClient;
 import co.yodo.mobile.network.model.ServerResponse;
@@ -55,7 +57,7 @@ public class PaymentOption extends IRequestOption implements ApiClient.RequestsL
                         mAlertDialog.dismiss();
 
                         // Set a temporary PIP and Code
-                        final String pip = etInput.getText().toString();
+                        final String pip = TOTPUtils.defaultOTP( etInput.getText().toString() );
                         setTempPIP( pip );
 
                         // Start the request

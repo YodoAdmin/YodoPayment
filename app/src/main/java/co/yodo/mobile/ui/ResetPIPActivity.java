@@ -17,6 +17,7 @@ import butterknife.ButterKnife;
 import co.yodo.mobile.R;
 import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.component.Intents;
+import co.yodo.mobile.component.totp.TOTPUtils;
 import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.GUIUtils;
 import co.yodo.mobile.helper.PrefUtils;

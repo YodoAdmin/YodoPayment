@@ -1,5 +1,8 @@
 package co.yodo.mobile.network.request;
 
+import javax.crypto.spec.SecretKeySpec;
+
+import co.yodo.mobile.component.cipher.AESCrypt;
 import co.yodo.mobile.component.cipher.RSACrypt;
 import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.network.ApiClient;
@@ -58,8 +61,17 @@ public class DeLinkRequest extends IRequest {
     public void execute( RSACrypt oEncrypter, ApiClient manager ) {
         String sEncryptedClientData, pRequest;
 
+        SecretKeySpec key = AESCrypt.generateKey();
+
+        mEncyptedData = AESCrypt.encrypt( mFormattedUsrData, key );
+        //mEncyptedSignature = MessageIntegrityAttribute.encode( mFormattedUsrData, key );
+        mEncyptedKey = oEncrypter.encrypt( AESCrypt.encodeKey( key ) );
+
         // Encrypting to create request
-        sEncryptedClientData = oEncrypter.encrypt( mFormattedUsrData );
+        //sEncryptedClientData = oEncrypter.encrypt( mFormattedUsrData );
+        sEncryptedClientData =
+                mEncyptedKey + REQ_SEP +
+                mEncyptedData;
 
         pRequest = buildRequest( DELINK_RT,
                 this.mRequestST.getValue(),

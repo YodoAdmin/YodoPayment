@@ -5,6 +5,7 @@ import android.view.View;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.component.Intents;
+import co.yodo.mobile.component.totp.TOTPUtils;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.network.ApiClient;
 import co.yodo.mobile.network.model.ServerResponse;
@@ -42,7 +43,10 @@ public class DeLinkAccountOption extends IRequestOption implements ApiClient.Req
                 try {
                     if( mPipValidator.validate( etInput ) ) {
                         mAlertDialog.dismiss();
-                        setTempPIP( etInput.getText().toString() );
+
+                        // Set a temporary PIP and Code
+                        final String pip = TOTPUtils.defaultOTP( etInput.getText().toString() );
+                        setTempPIP( pip );
 
                         mProgressManager.createProgressDialog( mActivity );
                         mRequestManager.setListener( DeLinkAccountOption.this );

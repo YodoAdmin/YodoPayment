@@ -2,6 +2,7 @@ package co.yodo.mobile.ui.option;
 
 import android.view.View;
 
+import co.yodo.mobile.component.totp.TOTPUtils;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.network.ApiClient;
 import co.yodo.mobile.network.model.ServerResponse;
@@ -35,7 +36,8 @@ public class ResetPIPOption extends IRequestOption implements ApiClient.Requests
                         mAlertDialog.dismiss();
 
                         // Set a temporary PIP and Code
-                        final String pip = etInput.getText().toString();
+                        final String pip = TOTPUtils.defaultOTP( etInput.getText().toString() );
+                        //final String pip = etInput.getText().toString();
                         setTempPIP( pip );
 
                         // Start the request
