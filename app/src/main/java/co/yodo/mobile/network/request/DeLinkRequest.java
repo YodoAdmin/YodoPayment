@@ -6,7 +6,11 @@ import co.yodo.mobile.component.cipher.AESCrypt;
 import co.yodo.mobile.component.cipher.RSACrypt;
 import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.network.ApiClient;
+import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.request.contract.IRequest;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 /**
  * Created by hei on 12/06/16.
@@ -39,6 +43,12 @@ public class DeLinkRequest extends IRequest {
     /** Sub-type of the request */
     private final DeLinkST mRequestST;
 
+    /** Interface for the DE_LINK requests */
+    interface IApiEndpoint {
+        @GET( YODO_ADDRESS + "{request}" )
+        Call<ServerResponse> deLink( @Path( "request" ) String request );
+    }
+
     /**
      * Delinks two linked accounts
      * @param responseCode The code used to respond the caller activity
@@ -58,7 +68,7 @@ public class DeLinkRequest extends IRequest {
     }
 
     @Override
-    public void execute( RSACrypt oEncrypter, ApiClient manager ) {
+    public void execute( RSACrypt oEncrypter, ApiClient oManager ) {
         String sEncryptedClientData, pRequest;
 
         SecretKeySpec key = AESCrypt.generateKey();
@@ -68,17 +78,17 @@ public class DeLinkRequest extends IRequest {
         mEncyptedKey = oEncrypter.encrypt( AESCrypt.encodeKey( key ) );
 
         // Encrypting to create request
-        //sEncryptedClientData = oEncrypter.encrypt( mFormattedUsrData );
         sEncryptedClientData =
                 mEncyptedKey + REQ_SEP +
                 mEncyptedData;
 
         pRequest = buildRequest( DELINK_RT,
-                this.mRequestST.getValue(),
+                mRequestST.getValue(),
                 sEncryptedClientData
         );
 
-        SystemUtils.Logger( TAG, pRequest );
-        manager.sendXMLRequest( pRequest, responseCode );
+        IApiEndpoint iCaller = oManager.create( IApiEndpoint.class );
+        Call<ServerResponse> sResponse = iCaller.deLink( pRequest );
+        oManager.sendRequest( sResponse, mResponseCode );
     }
 }

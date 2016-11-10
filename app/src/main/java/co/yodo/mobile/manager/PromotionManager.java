@@ -78,14 +78,14 @@ public class PromotionManager {
         if( isNotAvailable() )
             return;
 
-        SystemUtils.Logger( TAG, "trying to subscribe" );
+        SystemUtils.iLogger( TAG, "trying to subscribe" );
         SubscribeOptions options = new SubscribeOptions.Builder()
                 .setStrategy( PUB_SUB_STRATEGY )
                 .setCallback( new SubscribeCallback() {
                     @Override
                     public void onExpired() {
                         super.onExpired();
-                        SystemUtils.Logger( TAG, "no longer subscribing" );
+                        SystemUtils.iLogger( TAG, "no longer subscribing" );
                     }
                 }).build();
 
@@ -94,9 +94,9 @@ public class PromotionManager {
                     @Override
                     public void onResult( @NonNull Status status ) {
                         if( status.isSuccess() ) {
-                            SystemUtils.Logger( TAG, "subscribed successfully" );
+                            SystemUtils.iLogger( TAG, "subscribed successfully" );
                         } else {
-                            SystemUtils.Logger( TAG, "could not subscribe" );
+                            SystemUtils.iLogger( TAG, "could not subscribe" );
                             PrefUtils.setSubscribing( ac, false );
                         }
                     }
@@ -113,15 +113,15 @@ public class PromotionManager {
         if( isNotAvailable() )
             return;
 
-        SystemUtils.Logger( TAG, "trying to unsubscribe" );
+        SystemUtils.iLogger( TAG, "trying to unsubscribe" );
         Nearby.Messages.unsubscribe( mGoogleApiClient, mMessageListener )
                 .setResultCallback( new ResultCallback<Status>() {
                     @Override
                     public void onResult( @NonNull Status status ) {
                         if( status.isSuccess() ) {
-                            SystemUtils.Logger( TAG, "unsubscribed successfully" );
+                            SystemUtils.iLogger( TAG, "unsubscribed successfully" );
                         } else {
-                            SystemUtils.Logger( TAG, "could not unsubscribe" );
+                            SystemUtils.iLogger( TAG, "could not unsubscribe" );
                             PrefUtils.setSubscribing( ac, true );
                         }
                     }

@@ -87,13 +87,13 @@ public class CouponsDataSource {
 
 	public void deleteCoupon(Coupon coupon) {
 	    long id = coupon.getId();
-		SystemUtils.Logger( TAG, "Coupon deleted with id: " + id );
+		SystemUtils.iLogger( TAG, "Coupon deleted with id: " + id );
 	    database.delete( CouponsSQLiteHelper.TABLE_COUPONS, CouponsSQLiteHelper.COLUMN_ID
 				+ " = " + id, null );
 	}
 
 	public void delete() {
-		SystemUtils.Logger( TAG, "Coupons database deleted" );
+		SystemUtils.iLogger( TAG, "Coupons database deleted" );
 		database.delete( CouponsSQLiteHelper.TABLE_COUPONS, null, null );
 		database.close();
 	}

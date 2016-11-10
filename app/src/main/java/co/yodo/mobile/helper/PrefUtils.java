@@ -111,7 +111,7 @@ public class PrefUtils {
      * @return true  The flag was saved successfully.
      *         false The flag was not saved successfully.
      */
-    public static boolean saveLanguage( Context c, String language ) {
+    static boolean saveLanguage( Context c, String language ) {
         SharedPreferences config = getSPrefConfig( c );
         SharedPreferences.Editor writer = config.edit();
         writer.putString( AppConfig.SPREF_CURRENT_LANGUAGE, language );
@@ -123,7 +123,7 @@ public class PrefUtils {
      * @param c The Context of the Android system
      * @return String It returns the language
      */
-    public static String getLanguage( Context c ) {
+    static String getLanguage( Context c ) {
         SharedPreferences config = getSPrefConfig( c );
         return config.getString( AppConfig.SPREF_CURRENT_LANGUAGE, null );
     }
@@ -207,7 +207,7 @@ public class PrefUtils {
      * @return true  The user accepted the EULA.
      *         false The user didn't accept the EULA.
      */
-    public static Boolean isEulaAccepted(Context c) {
+    static Boolean isEulaAccepted(Context c) {
         SharedPreferences config = getSPrefConfig( c );
         return config.getBoolean( AppConfig.SPREF_EULA_ACCEPTED, false );
     }

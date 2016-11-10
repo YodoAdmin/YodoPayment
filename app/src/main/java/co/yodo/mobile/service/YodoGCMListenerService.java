@@ -53,8 +53,8 @@ public class YodoGCMListenerService extends GcmListenerService {
     @Override
     public void onMessageReceived( String from, Bundle data ) {
         String message = data.getString( "message" );
-        SystemUtils.Logger( TAG, "From: " + from );
-        SystemUtils.Logger( TAG, "Message: " + message );
+        SystemUtils.iLogger( TAG, "From: " + from );
+        SystemUtils.iLogger( TAG, "Message: " + message );
 
         /**
          * Production applications would usually process the message here.
@@ -62,20 +62,20 @@ public class YodoGCMListenerService extends GcmListenerService {
          *     - Store message in local database.
          *     - Update UI.
          */
-        ServerResponse response = JSONHandler.parseReceipt( message );
+        Receipt receipt = JSONHandler.parseReceipt( message );
 
         if( !PrefUtils.isForeground( ac ) )
-            sendNotification( response );
+            sendNotification( receipt );
         else
-            EventBus.getDefault().post( response );
+            EventBus.getDefault().post( receipt );
     }
 
     /**
      * Create and show a simple notification containing the received GCM message.
      *
-     * @param response GCM message received as a ServerResponse
+     * @param receipt GCM message received as a ServerResponse
      */
-    private synchronized void sendNotification( ServerResponse response ) {
+    private synchronized void sendNotification( Receipt receipt ) {
         try {
             // Database
             ReceiptsDataSource receiptsdb = ReceiptsDataSource.getInstance( ac );
@@ -83,21 +83,7 @@ public class YodoGCMListenerService extends GcmListenerService {
             if( !isOpen )
                 receiptsdb.open();
 
-            final Receipt receipt = receiptsdb.createReceipt(
-                    response.getParam( ServerResponse.AUTHNUMBER ),
-                    response.getParam( ServerResponse.DESCRIPTION ),
-                    response.getParam( ServerResponse.TCURRENCY ),
-                    response.getParam( ServerResponse.EXCH_RATE ),
-                    response.getParam( ServerResponse.DCURRENCY ),
-                    response.getParam( ServerResponse.AMOUNT ),
-                    response.getParam( ServerResponse.TAMOUNT ),
-                    response.getParam( ServerResponse.CASHBACK ),
-                    response.getParam( ServerResponse.BALANCE ),
-                    response.getParam( ServerResponse.CURRENCY ),
-                    response.getParam( ServerResponse.DONOR ),
-                    response.getParam( ServerResponse.RECEIVER ),
-                    response.getParam( ServerResponse.CREATED )
-            );
+            receiptsdb.addReceipt( receipt );
 
             // Updates the current balance
             PrefUtils.saveBalance( ac, String.format( "%s %s",
@@ -120,8 +106,8 @@ public class YodoGCMListenerService extends GcmListenerService {
                         .getPendingIntent( 0, PendingIntent.FLAG_UPDATE_CURRENT );
 
         String text =
-                FormatUtils.truncateDecimal( response.getParam( ServerResponse.AMOUNT ) ) + " " +
-                response.getParam( ServerResponse.TCURRENCY );
+                FormatUtils.truncateDecimal( receipt.getTotalAmount() ) + " " +
+                receipt.getTCurrency();
 
         Uri defaultSoundUri = RingtoneManager.getDefaultUri( RingtoneManager.TYPE_NOTIFICATION );
         mBuilder = new NotificationCompat.Builder( this )

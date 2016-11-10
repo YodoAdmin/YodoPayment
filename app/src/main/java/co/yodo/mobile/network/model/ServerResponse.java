@@ -1,5 +1,7 @@
 package co.yodo.mobile.network.model;
 
+import org.simpleframework.xml.Element;
+
 import java.io.Serializable;
 import java.util.Collections;
 import java.util.HashMap;
@@ -46,64 +48,69 @@ public class ServerResponse implements Serializable {
     public static final String TO   = "to";
     public static final String FROM = "from";
 
-	private String code;
-	private String authNumber;
-	private String message;
-	private long rtime;
-    private HashMap<String, String> params;
+    @Element( name = "code" )
+    private String code;
 
-    public ServerResponse() {
-        params = new HashMap<>();
+    @Element( name = "authNumber" )
+    private String authNumber;
+
+    @Element( name = "message", required = false )
+    private String message;
+
+    @Element
+    private Params params;
+
+    @Element( name = "rtime" )
+    private long rtime;
+
+    public void setCode( String code ) {
+        this.code = code;
     }
 
-	public void setCode(String code) {
-		this.code = code;
-	}
-
-	public String getCode() {
-		return this.code;
-	}
-
-	public void setAuthNumber(String authNumber) {
-		this.authNumber = authNumber;
-	}
-
-	public String getAuthNumber() {
-		return this.authNumber;
-	}
-
-	public void setMessage(String message) {
-		this.message = message;
-	}
-
-	public String getMessage() {
-		return this.message;
-	}
-
-	public void setRTime(long rtime) {
-		this.rtime = rtime;
-	}
-
-	public long getRTime() {
-		return this.rtime;
-	}
-
-    public void addParam( String key, String value ) {
-        params.put( key, value );
+    public String getCode() {
+        return this.code;
     }
 
-    public String getParam( String key ) {
-        return params.get( key );
+    public void setAuthNumber( String authNumber ) {
+        this.authNumber = authNumber;
     }
 
-    public HashMap<String, String> getParams() { return params; }
-	
+    public String getAuthNumber() {
+        return this.authNumber;
+    }
+
+    public void setMessage( String message ) {
+        this.message = message;
+    }
+
+    public String getMessage() {
+        return this.message;
+    }
+
+    public Params getParams() {
+        return this.params;
+    }
+
+    public void setRTime( long rtime ) {
+        this.rtime = rtime;
+    }
+
+    public long getRTime() {
+        return this.rtime;
+    }
+
+    public void setParams( Params params ) {
+        this.params = params;
+    }
+
+    public String getParam( String test ) { return ""; }
+
 	@Override
 	public String toString() {
 		return "\nCode : "      + this.code       + "\n" +
                " AuthNumber : " + this.authNumber + "\n" +
                " Message : "    + this.message    + "\n" +
                " Time : "       + this.rtime      + "\n" +
-               " Params : "     + Collections.singletonList( this.params );
+               " Params : "     + this.params.toString();
 	}
 }

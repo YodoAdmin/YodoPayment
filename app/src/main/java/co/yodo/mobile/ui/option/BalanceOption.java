@@ -85,8 +85,8 @@ public class BalanceOption extends IRequestOption implements ApiClient.RequestsL
                 switch( code ) {
                     case ServerResponse.AUTHORIZED_BALANCE:
                         final String tvBalance =
-                                FormatUtils.truncateDecimal( response.getParam( ServerResponse.BALANCE ) ) + " " +
-                                response.getParam( ServerResponse.CURRENCY );
+                                FormatUtils.truncateDecimal( response.getParams().getBalance() ) + " " +
+                                response.getParams().getCurrency();
                         // Trim the balance
                         ( (MainActivity) mActivity ).setBalance( tvBalance );
                         break;
@@ -94,11 +94,6 @@ public class BalanceOption extends IRequestOption implements ApiClient.RequestsL
                     case ServerResponse.ERROR_NO_BALANCE:
                         // Clear the balance
                         ( (MainActivity) mActivity ).setBalance( AppConfig.DEFAULT_BALANCE );
-                        /*Snackbar.make(
-                                mDrawerLayout,
-                                R.string.message_error_no_balance,
-                                Snackbar.LENGTH_LONG
-                        ).show();*/
                         break;
 
                     default:

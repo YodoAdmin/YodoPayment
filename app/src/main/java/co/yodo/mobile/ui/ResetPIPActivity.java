@@ -1,8 +1,11 @@
 package co.yodo.mobile.ui;
 
+import android.Manifest;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,10 +20,10 @@ import butterknife.ButterKnife;
 import co.yodo.mobile.R;
 import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.component.Intents;
-import co.yodo.mobile.component.totp.TOTPUtils;
 import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.GUIUtils;
 import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.network.ApiClient;
 import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.request.QueryRequest;
@@ -70,6 +73,9 @@ public class ResetPIPActivity extends AppCompatActivity implements ApiClient.Req
 
     /** Activity Result */
     private static final int REQUEST_FACE_ACTIVITY = 0;
+
+    /** Request codes for the permissions */
+    private static final int PERMISSIONS_REQUEST_CAMERA = 1;
 
     /** Response codes for the server requests */
     private static final int RESET_REQ = 0x00;
@@ -202,7 +208,21 @@ public class ResetPIPActivity extends AppCompatActivity implements ApiClient.Req
      * @param v The view of the button
      */
     public void forgotPipClick( View v ) {
-        // Validates the new PIP and its confirmation
+        boolean cameraPermission = SystemUtils.requestPermission(
+                ResetPIPActivity.this,
+                R.string.message_permission_camera,
+                Manifest.permission.CAMERA,
+                PERMISSIONS_REQUEST_CAMERA
+        );
+
+        if( cameraPermission )
+            startRecognition();
+    }
+
+    /**
+     * Validates the new PIP and its confirmation
+     */
+    private void startRecognition() {
         try {
             if( verifyPIPs() ) {
                 // Request the biometric token
@@ -248,7 +268,7 @@ public class ResetPIPActivity extends AppCompatActivity implements ApiClient.Req
 
                 // We received the biometric token from the server
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
-                    String biometricToken = response.getParam( ServerResponse.BIOMETRIC );
+                    String biometricToken = response.getParams().getBiometricToken();
                     // The user has a biometric token
                     if( !biometricToken.equals( AppConfig.YODO_BIOMETRIC ) ) {
                         mAuthNumber = response.getAuthNumber();
@@ -292,6 +312,23 @@ public class ResetPIPActivity extends AppCompatActivity implements ApiClient.Req
                     ) );
                 }
                 break;
+        }
+    }
+
+    @Override
+    public void onRequestPermissionsResult( int requestCode, @NonNull String permissions[], @NonNull int[] grantResults ) {
+        switch( requestCode ) {
+            // Permission for the camera
+            case PERMISSIONS_REQUEST_CAMERA:
+                // If request is cancelled, the result arrays are empty.
+                if( grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED ) {
+                    // Permission Granted
+                    startRecognition();
+                }
+                break;
+
+            default:
+                super.onRequestPermissionsResult( requestCode, permissions, grantResults );
         }
     }
 }
