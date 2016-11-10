@@ -24,6 +24,6 @@ public class HeartbeatReceiver extends BroadcastReceiver {
     public void onReceive( Context context, Intent intent) {
         context.sendBroadcast( GTALK_HEART_BEAT_INTENT );
         context.sendBroadcast( MCS_MCS_HEARTBEAT_INTENT );
-        SystemUtils.Logger( TAG, "HeartbeatReceiver sent heartbeat request" );
+        SystemUtils.iLogger( TAG, "HeartbeatReceiver sent heartbeat request" );
     }
 }

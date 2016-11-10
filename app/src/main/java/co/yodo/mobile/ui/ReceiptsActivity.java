@@ -337,7 +337,7 @@ public class ReceiptsActivity extends AppCompatActivity implements
          * @param context The activity context
          * @param receiptsdb The receipts database
          */
-        public LoadTask( Context context, ReceiptsDataSource receiptsdb ) {
+        LoadTask( Context context, ReceiptsDataSource receiptsdb ) {
             super( context );
             this.mReceiptsdb = receiptsdb;
         }

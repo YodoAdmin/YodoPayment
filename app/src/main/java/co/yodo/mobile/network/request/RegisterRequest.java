@@ -4,11 +4,24 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
+import javax.crypto.spec.SecretKeySpec;
+
+import co.yodo.mobile.YodoApplication;
+import co.yodo.mobile.component.cipher.AESCrypt;
 import co.yodo.mobile.component.cipher.RSACrypt;
 import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.network.ApiClient;
+import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.request.contract.IRequest;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.http.Field;
+import retrofit2.http.FormUrlEncoded;
+import retrofit2.http.GET;
+import retrofit2.http.POST;
+import retrofit2.http.Path;
+import retrofit2.http.Url;
 
 /**
  * Created by hei on 12/06/16.
@@ -48,6 +61,21 @@ public class RegisterRequest extends IRequest {
 
     /** Sub-type of the request */
     private final RegST mRequestST;
+
+    /** Interface for the REG requests */
+    interface IApiEndpoint {
+        @GET( YODO_ADDRESS + "{request}" )
+        Call<ServerResponse> register( @Path( "request" ) String request );
+
+        @FormUrlEncoded
+        @POST
+        Call<ResponseBody> register(
+                @Url String url,
+                @Field( "prt" ) String prt,
+                @Field( "req" ) String req,
+                @Field( "par" ) String par
+        );
+    }
 
     /**
      * Registers a new user with his/her pip
@@ -90,8 +118,13 @@ public class RegisterRequest extends IRequest {
     }
 
     @Override
-    public void execute( RSACrypt oEncrypter, ApiClient manager ) {
+    public void execute( RSACrypt oEncrypter, ApiClient oManager ) {
         String sEncryptedClientData, pRequest;
+
+        SecretKeySpec key = AESCrypt.generateKey();
+
+        //mEncyptedSignature = MessageIntegrityAttribute.encode( mFormattedUsrData, key );
+        mEncyptedKey = oEncrypter.encrypt( AESCrypt.encodeKey( key ) );
 
         switch( this.mRequestST ) {
             case CLIENT:
@@ -101,15 +134,20 @@ public class RegisterRequest extends IRequest {
                         this.mUserIdentifier + USR_SEP +
                         System.currentTimeMillis() / 1000L;
 
-                sEncryptedClientData = oEncrypter.encrypt( mFormattedUsrData );
+                mEncyptedData = AESCrypt.encrypt( mFormattedUsrData, key );
+
+                sEncryptedClientData =
+                        mEncyptedKey + REQ_SEP +
+                        mEncyptedData;
 
                 pRequest = buildRequest( REG_RT,
-                        this.mRequestST.getValue(),
+                        mRequestST.getValue(),
                         sEncryptedClientData
                 );
 
-                SystemUtils.Logger( TAG, pRequest );
-                manager.sendXMLRequest( pRequest, responseCode );
+                IApiEndpoint iCaller = oManager.create( IApiEndpoint.class );
+                Call<ServerResponse> sResponse = iCaller.register( pRequest );
+                oManager.sendRequest( sResponse, mResponseCode );
                 break;
 
             case BIOMETRIC:
@@ -118,12 +156,13 @@ public class RegisterRequest extends IRequest {
                         this.mToken;
 
                 pRequest = buildRequest( REG_RT,
-                        this.mRequestST.getValue(),
-                        this.mFormattedUsrData
+                        mRequestST.getValue(),
+                        mFormattedUsrData
                 );
 
-                SystemUtils.Logger( TAG, pRequest );
-                manager.sendXMLRequest( pRequest, responseCode );
+                iCaller = oManager.create( IApiEndpoint.class );
+                sResponse = iCaller.register( pRequest );
+                oManager.sendRequest( sResponse, mResponseCode );
                 break;
 
             case GCM:
@@ -139,8 +178,16 @@ public class RegisterRequest extends IRequest {
                         this.mRequestST.getValue()
                 );
 
-                SystemUtils.Logger( TAG, Collections.singletonList( params ).toString() );
-                manager.sendJSONRequest( params, responseCode );
+                SystemUtils.iLogger( TAG, Collections.singletonList( params ).toString() );
+
+                iCaller = oManager.create( IApiEndpoint.class );
+                Call<ResponseBody> gResponse = iCaller.register(
+                        YodoApplication.IP + ":8081/yodo",
+                        PROTOCOL_VERSION,
+                        REG_RT + REQ_SEP + mRequestST.getValue(),
+                        mFormattedUsrData
+                );
+                oManager.sendJsonRequest( gResponse, mResponseCode );
                 break;
 
             default:

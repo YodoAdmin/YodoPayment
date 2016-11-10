@@ -9,8 +9,8 @@ android {
         applicationId "co.yodo"
         minSdkVersion 15
         targetSdkVersion 24
-        versionCode 20
-        versionName "2.0.12"
+        versionCode 24
+        versionName "2.0.21"
 
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -38,11 +38,17 @@ dependencies {
     // -- Google --
     compile 'com.google.code.gson:gson:2.4'
     compile 'com.google.zxing:core:3.2.0'
-    compile 'com.google.android.gms:play-services-gcm:9.4.0'
-    compile 'com.google.android.gms:play-services-nearby:9.4.0'
-    // -- Networking (Volley and OkHttp3) --
-    compile 'com.squareup.okhttp3:okhttp:3.3.1'
-    compile 'com.android.volley:volley:1.0.0'
+    compile 'com.google.android.gms:play-services-gcm:9.8.0'
+    compile 'com.google.android.gms:play-services-nearby:9.8.0'
+    // -- Retrofit --
+    compile 'com.squareup.retrofit2:retrofit:2.1.0'
+    compile ('com.squareup.retrofit2:converter-simplexml:2.1.0') {
+        exclude group: 'xpp3', module: 'xpp3'
+        exclude group: 'stax', module: 'stax-api'
+        exclude group: 'stax', module: 'stax'
+    }
+    compile 'com.squareup.okhttp3:logging-interceptor:3.3.0'
+    compile 'com.squareup.picasso:picasso:2.1.0'
     // -- Images others --
     compile 'it.sephiroth.android.library.imagezoom:imagezoom:2.2.4'
     compile 'com.nostra13.universalimageloader:universal-image-loader:1.9.5'

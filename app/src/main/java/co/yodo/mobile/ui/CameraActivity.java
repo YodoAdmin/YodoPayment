@@ -77,7 +77,7 @@ public class CameraActivity extends Activity {
                 try {
                     Thread.sleep( 10 );
                 } catch(InterruptedException e) {
-                    SystemUtils.Logger( TAG, e.getMessage() );
+                    SystemUtils.eLogger( TAG, e.getMessage() );
                 }
             }
 
@@ -234,7 +234,7 @@ class FrameCallback implements Camera.PreviewCallback {
 
         }
         catch(InterruptedException e) {
-            SystemUtils.Logger( TAG, e.getMessage() );
+            SystemUtils.eLogger( TAG, e.getMessage() );
         }
     }
 }
@@ -331,7 +331,7 @@ class CameraFrameAnalyzer implements Runnable {
                 }
             }
         } catch(InterruptedException e) {
-            SystemUtils.Logger( TAG, e.getMessage() );
+            SystemUtils.iLogger( TAG, e.getMessage() );
         }
         input.mStopRequest = 2;
     }
@@ -352,7 +352,7 @@ class CameraFrameAnalyzer implements Runnable {
                 currentFreq = Integer.parseInt( line );
             }
         } catch(IOException e) {
-            SystemUtils.Logger(TAG, e.getMessage());
+            SystemUtils.eLogger(TAG, e.getMessage());
         }
 
         return currentFreq;
@@ -374,7 +374,7 @@ class CameraFrameAnalyzer implements Runnable {
                 currentFreq = Integer.parseInt( line );
             }
         } catch(IOException e) {
-            SystemUtils.Logger( TAG, e.getMessage() );
+            SystemUtils.iLogger( TAG, e.getMessage() );
         }
 
         return currentFreq;
@@ -390,7 +390,7 @@ class CameraFrameAnalyzer implements Runnable {
         if( input.mResetFlag ){
             // Reset face database.
             VerificationAPI.ResetState state = VerificationAPI.resetDatabase();
-            SystemUtils.Logger( TAG, "ResetState: " + state );
+            SystemUtils.iLogger( TAG, "ResetState: " + state );
 
             input.mResetFlag = false;
             input.mNbrOfItems = VerificationAPI.getNbrOfDBItems();
@@ -413,24 +413,24 @@ class CameraFrameAnalyzer implements Runnable {
                 // save template somewhere
                 String image_str = CryptUtils.bytesToHex( faceTemplate );
 
-                SystemUtils.Logger( TAG, image_str );
+                SystemUtils.iLogger( TAG, image_str );
 
                 Intent resultIntent = new Intent();
                 resultIntent.putExtra( Intents.RESULT_FACE, image_str );
                 ((Activity)ctx).setResult( Activity.RESULT_OK, resultIntent );
                 ((Activity)ctx).finish();
 
-                SystemUtils.Logger( TAG, "face template obtained, size = " + faceTemplate.length );
-                SystemUtils.Logger( TAG, "deleting face database" );
+                SystemUtils.iLogger( TAG, "face template obtained, size = " + faceTemplate.length );
+                SystemUtils.iLogger( TAG, "deleting face database" );
 
                 // delete recently enrolled face
                 VerificationAPI.ResetState resState = VerificationAPI.resetDatabase();
 
-                SystemUtils.Logger( TAG, "reset state = " + resState );
+                SystemUtils.iLogger( TAG, "reset state = " + resState );
 
                 // load template
                 VerificationAPI.LoadState lstate = VerificationAPI.loadFaceTemplate( faceTemplate );
-                SystemUtils.Logger( TAG, "load face template state = " + lstate );
+                SystemUtils.iLogger( TAG, "load face template state = " + lstate );
                 input.mNbrOfItems = VerificationAPI.getNbrOfDBItems();
             }
         } else { // Otherwise apply verification

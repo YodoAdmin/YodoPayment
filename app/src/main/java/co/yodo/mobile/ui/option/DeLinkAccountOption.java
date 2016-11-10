@@ -5,6 +5,7 @@ import android.view.View;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.component.Intents;
+import co.yodo.mobile.component.totp.TOTPUtils;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.network.ApiClient;
 import co.yodo.mobile.network.model.ServerResponse;
@@ -14,7 +15,6 @@ import co.yodo.mobile.ui.MainActivity;
 import co.yodo.mobile.ui.notification.AlertDialogHelper;
 import co.yodo.mobile.ui.notification.YodoHandler;
 import co.yodo.mobile.ui.option.contract.IRequestOption;
-import co.yodo.mobile.ui.validator.PIPValidator;
 
 /**
  * Created by hei on 14/06/16.
@@ -42,7 +42,10 @@ public class DeLinkAccountOption extends IRequestOption implements ApiClient.Req
                 try {
                     if( mPipValidator.validate( etInput ) ) {
                         mAlertDialog.dismiss();
-                        setTempPIP( etInput.getText().toString() );
+
+                        // Set a temporary PIP and Code
+                        final String pip = TOTPUtils.defaultOTP( etInput.getText().toString() );
+                        setTempPIP( pip );
 
                         mProgressManager.createProgressDialog( mActivity );
                         mRequestManager.setListener( DeLinkAccountOption.this );
@@ -95,8 +98,8 @@ public class DeLinkAccountOption extends IRequestOption implements ApiClient.Req
             case QUERY_LNK_ACC_REQ:
                 switch( code ) {
                     case ServerResponse.AUTHORIZED:
-                        String from = response.getParam( ServerResponse.FROM );
-                        String to = response.getParam( ServerResponse.TO );
+                        String from = response.getParams().getLinkedFrom();
+                        String to = response.getParams().getLinkedTo();
 
                         Intent i = new Intent( mActivity, DeLinkActivity.class );
                         i.putExtra( Intents.LINKED_ACC_TO, to );

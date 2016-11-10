@@ -143,7 +143,7 @@ public class ReceiptsDataSource {
         try {
             id = database.insert( ReceiptsSQLiteHelper.TABLE_RECEIPTS, null, values );
             receipt.setId( id );
-            SystemUtils.Logger( TAG, "Receipt inserted with id: " + id );
+            SystemUtils.iLogger( TAG, "Receipt inserted with id: " + id );
             database.setTransactionSuccessful();
         } finally {
             database.endTransaction();
@@ -182,7 +182,7 @@ public class ReceiptsDataSource {
             database.delete(
                 ReceiptsSQLiteHelper.TABLE_RECEIPTS,
                 ReceiptsSQLiteHelper.COLUMN_ID + " = " + id, null );
-            SystemUtils.Logger( TAG, "Receipt deleted with id: " + id );
+            SystemUtils.iLogger( TAG, "Receipt deleted with id: " + id );
             database.setTransactionSuccessful();
         } finally {
             database.endTransaction();
@@ -190,7 +190,7 @@ public class ReceiptsDataSource {
     }
 
     public void delete() {
-        SystemUtils.Logger( TAG, "Receipts database deleted" );
+        SystemUtils.iLogger( TAG, "Receipts database deleted" );
         database.delete( ReceiptsSQLiteHelper.TABLE_RECEIPTS, null, null );
         database.close();
     }

@@ -1,7 +1,5 @@
 package co.yodo.mobile.component.cipher;
 
-import android.util.Base64;
-
 import java.security.NoSuchAlgorithmException;
 import java.security.SecureRandom;
 
@@ -10,6 +8,8 @@ import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
+
+import co.yodo.mobile.helper.CryptUtils;
 
 /**
  * Created by hei on 15/07/16.
@@ -26,9 +26,6 @@ public class AESCrypt {
 
     /** Cipher instance used for encryption */
     private static final String CIPHER_INSTANCE = "AES/CBC/PKCS5Padding";
-
-    /** BASE_64_FLAGS  */
-    private static final int BASE64_FLAGS = Base64.NO_WRAP;
 
     /**
      * Function that creates a key and returns the java object that contains it
@@ -55,7 +52,7 @@ public class AESCrypt {
      * @return String Text version of the key
      */
     public static String encodeKey( SecretKeySpec key ) {
-        return Base64.encodeToString( key.getEncoded(), BASE64_FLAGS );
+        return CryptUtils.bytesToHex( key.getEncoded() );
     }
 
     /**
@@ -64,7 +61,7 @@ public class AESCrypt {
      * @return SecretKeySpec The AES Key
      */
     public static SecretKeySpec decodeKey( String key ) {
-        final byte[] decodedKey = Base64.decode( key, BASE64_FLAGS );
+        final byte[] decodedKey = CryptUtils.hexToBytes( key );
         return new SecretKeySpec( decodedKey, 0, decodedKey.length, KEY_INSTANCE );
     }
 
@@ -91,7 +88,7 @@ public class AESCrypt {
             Cipher cipher = Cipher.getInstance( CIPHER_INSTANCE );
             cipher.init( Cipher.ENCRYPT_MODE, key, generateIV( key ) );
             final byte[] cipherData = cipher.doFinal( plainText.getBytes() );
-            encryptedData = Base64.encodeToString( cipherData, BASE64_FLAGS );
+            encryptedData = CryptUtils.bytesToHex( cipherData );
         } catch( Exception e ) {
             e.printStackTrace();
         }
@@ -105,7 +102,7 @@ public class AESCrypt {
      * @return String       The unencrypted data
      */
     public static String decrypt( String encryptedText, SecretKeySpec key ) {
-        final byte[] cipherData = Base64.decode( encryptedText, BASE64_FLAGS );
+        final byte[] cipherData = CryptUtils.hexToBytes( encryptedText );
         String unencryptedData = null;
 
         try {

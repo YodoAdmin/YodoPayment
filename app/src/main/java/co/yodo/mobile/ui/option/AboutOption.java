@@ -12,6 +12,7 @@ import android.widget.TextView;
 
 import co.yodo.mobile.BuildConfig;
 import co.yodo.mobile.R;
+import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.network.ApiClient;
 import co.yodo.mobile.ui.option.contract.IOption;
@@ -48,7 +49,7 @@ public class AboutOption extends IOption {
         final String hardwareToken = PrefUtils.getHardwareToken( mActivity );
         final String message = mActivity.getString( R.string.version_label ) + " " +
                         BuildConfig.VERSION_NAME + "/" +
-                        ApiClient.getSwitch()    + "\n\n" +
+                        YodoApplication.getSwitch()    + "\n\n" +
                         mActivity.getString( R.string.about_message );
         final String email = mActivity.getString( R.string.about_email );
 

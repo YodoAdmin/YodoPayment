@@ -54,7 +54,7 @@ class RegistrationIntentService extends IntentService implements ApiClient.Reque
             // are local.
             InstanceID instanceID = InstanceID.getInstance( this );
             String token = instanceID.getToken( getString( R.string.gcm_defaultSenderId ), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null ) ;
-            SystemUtils.Logger( TAG, "GCM Registration Token: " + token );
+            SystemUtils.iLogger( TAG, "GCM Registration Token: " + token );
 
             // Send the GCM token to the server
             mRequestManager.invoke( new RegisterRequest(

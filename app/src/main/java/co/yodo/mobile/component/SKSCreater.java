@@ -39,11 +39,10 @@ public class SKSCreater {
 		Bitmap bitmap = null;
 
 		try {
-			SystemUtils.Logger( TAG, code + " - " + code.length() );
+			SystemUtils.iLogger( TAG, header + QR_SEP + code + " - " + code.length() );
 
 			Integer QR_SIZE = getSKSSize( parent );
 			BitMatrix qrMatrix = new MultiFormatWriter().encode(
-					//parent.getResources().getString( R.string.SKS_HEADER ) + code,
 					header + QR_SEP + code,
 					BarcodeFormat.QR_CODE,
 					QR_SIZE, QR_SIZE,

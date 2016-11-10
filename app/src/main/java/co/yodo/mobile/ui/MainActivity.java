@@ -27,11 +27,10 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
+import com.squareup.picasso.Picasso;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
@@ -50,6 +49,7 @@ import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.broadcastreceiver.HeartbeatReceiver;
 import co.yodo.mobile.component.SKSCreater;
 import co.yodo.mobile.component.cipher.RSACrypt;
+import co.yodo.mobile.component.totp.TOTPUtils;
 import co.yodo.mobile.database.CouponsDataSource;
 import co.yodo.mobile.database.ReceiptsDataSource;
 import co.yodo.mobile.database.model.Receipt;
@@ -444,11 +444,11 @@ public class MainActivity extends AppCompatActivity implements
     private void initializeMessageListener() {
         mMessageListener = new MessageListener() {
             @Override
-            public void onFound( final Message message ) {
+            public synchronized void onFound( final Message message ) {
                 if( mMerchant == null ) {
                     mMerchant = new String( message.getContent() );
                     // Called when a message is detectable nearby.
-                    SystemUtils.Logger( TAG, "Found: " + mMerchant );
+                    SystemUtils.iLogger( TAG, "Found: " + mMerchant );
                     mHandlerMessages.post( mGetAdvertisement );
                     mPromotionManager.unsubscribe();
                 }
@@ -459,7 +459,7 @@ public class MainActivity extends AppCompatActivity implements
                 final String temp = new String( message.getContent() );
                 if( mMerchant.equals( temp ) ) {
                     // Called when a message is no longer detectable nearby.
-                    SystemUtils.Logger( TAG, "Lost: " + mMerchant );
+                    SystemUtils.iLogger( TAG, "Lost: " + mMerchant );
                     removeAdvertisement();
                 }
             }
@@ -670,7 +670,7 @@ public class MainActivity extends AppCompatActivity implements
      */
     private void showSKSDialog( final String code, final String payment_type ) {
         final String header = payment_type + HDR_SEP + this.tempTIP;
-        final Bitmap sksCode = SKSCreater.createSKS( this, header, mEncrypter.encrypt( code ) );
+        final Bitmap sksCode = SKSCreater.createSKS( this, header, code );
         setTempSKS( new SKSDialog.Builder( ac )
                 .code( sksCode )
                 .brightness( 1.0f )
@@ -681,6 +681,9 @@ public class MainActivity extends AppCompatActivity implements
 
         // It should fix the problem with the delay in the receipts
         ac.sendBroadcast( new Intent( ac, HeartbeatReceiver.class ) );
+
+        setTempPIP( null );
+        setTempTIP( null );
     }
 
     /**
@@ -769,42 +772,32 @@ public class MainActivity extends AppCompatActivity implements
         switch( responseCode ) {
             case QUERY_ADV_REQ:
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
-                    String url = response.getParam( ServerResponse.ADVERTISING ).replaceAll( " ", "%20" );
+                    String url = response.getParams().getAdvertisingImage().replaceAll( " ", "%20" );
                     if( !url.isEmpty() ) {
-                        mRequestManager.getImageLoader().get( url, new ImageLoader.ImageListener() {
-                                @Override
-                                public void onResponse( ImageLoader.ImageContainer response, boolean isImmediate ) {
-                                    if( response.getBitmap() != null && mMerchant != null ) {
-                                        // load image into ImageView
-                                        ivtAdvertising.setImageBitmap( response.getBitmap() );
-                                    }
-                                }
-
-                                @Override
-                                public void onErrorResponse( VolleyError error ) {
-                                    SystemUtils.Logger( TAG, "Image Load Error: " + error.getMessage() );
-                                }
-                            }
-                        );
+                        Picasso.with( ac )
+                                .load( url )
+                                .error( R.drawable.no_image )
+                                .into( ivtAdvertising );
                     }
                 }
                 break;
 
             case QUERY_LNK_ACC_SKS_REQ:
                 // SKS - User data
+                //SystemUtils.iLogger( TAG, tempPIP );
+                //final String otp = TOTPUtils.defaultOTP( tempPIP );
                 final String originalCode =
-                        tempPIP        + SKS_SEP +
-                        mHardwareToken + SKS_SEP +
-                        response.getRTime();
+                        tempPIP + SKS_SEP +
+                        mHardwareToken;
 
                 // Identifier for a normal payment
                 final String yodoPayment = getString( R.string.account_yodo );
 
                 switch( code ) {
                     case ServerResponse.AUTHORIZED:
-                        String from = response.getParam( ServerResponse.FROM );
+                        String from = response.getParams().getLinkedFrom();
                         // If we have a link show the options
-                        if( !from.isEmpty() ) {
+                        if( from != null && !from.isEmpty() ) {
                             View.OnClickListener onClick = new View.OnClickListener() {
                                 @Override
                                 public void onClick( View v ) {
@@ -833,36 +826,19 @@ public class MainActivity extends AppCompatActivity implements
 
                     // If it is something else, show the error
                     default:
+                        // Set PIP and TIP to null
+                        setTempPIP( null );
+                        setTempTIP( null );
                         YodoHandler.sendMessage( mHandlerMessages, code, message );
                         break;
                 }
-
-                // Set PIP and TIP to null
-                setTempPIP( null );
-                //setTempTIP( null );
                 break;
         }
     }
 
     @SuppressWarnings("unused") // receives GCM receipts
     @Subscribe( threadMode = ThreadMode.MAIN )
-    public void onResponseEvent( ServerResponse response ) {
-        Receipt receipt = new Receipt.Builder()
-                .description( response.getParam( ServerResponse.DESCRIPTION ) )
-                .authnumber( response.getParam( ServerResponse.AUTHNUMBER ) )
-                .created( response.getParam( ServerResponse.CREATED ) )
-                .total( response.getParam( ServerResponse.AMOUNT ),
-                        response.getParam( ServerResponse.TCURRENCY ) )
-                .tender( response.getParam( ServerResponse.TAMOUNT ),
-                         response.getParam( ServerResponse.DCURRENCY ) )
-                .cashback( response.getParam( ServerResponse.CASHBACK ) )
-                .exchRate( response.getParam( ServerResponse.EXCH_RATE ) )
-                .donor( response.getParam( ServerResponse.DONOR ) )
-                .recipient( response.getParam( ServerResponse.RECEIVER ) )
-                .balance( response.getParam( ServerResponse.BALANCE ),
-                          response.getParam( ServerResponse.CURRENCY ) )
-                .build();
-
+    public void onResponseEvent( Receipt receipt ) {
         buildReceiptDialog( receipt );
     }
 
@@ -881,17 +857,17 @@ public class MainActivity extends AppCompatActivity implements
 
     @Override
     public void onConnected( @Nullable Bundle bundle ) {
-        SystemUtils.Logger( TAG, "GoogleApiClient connected" );
+        SystemUtils.iLogger( TAG, "GoogleApiClient connected" );
         executePendingSubscriptionTask();
     }
 
     @Override
     public void onConnectionSuspended( int cause ) {
-        SystemUtils.Logger( TAG, "GoogleApiClient connection suspended: " +  cause );
+        SystemUtils.iLogger( TAG, "GoogleApiClient connection suspended: " +  cause );
     }
 
     @Override
     public void onConnectionFailed( @NonNull ConnectionResult connectionResult ) {
-        SystemUtils.Logger( TAG, "connection to GoogleApiClient failed" );
+        SystemUtils.iLogger( TAG, "connection to GoogleApiClient failed" );
     }
 }

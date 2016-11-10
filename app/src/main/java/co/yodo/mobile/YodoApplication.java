@@ -6,17 +6,15 @@ import android.app.NotificationManager;
 import android.content.Context;
 import android.os.Bundle;
 
-import com.android.volley.VolleyLog;
-
 import org.acra.ACRA;
 import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
-import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.injection.component.ApplicationComponent;
 import co.yodo.mobile.injection.component.DaggerApplicationComponent;
 import co.yodo.mobile.injection.component.DaggerGraphComponent;
 import co.yodo.mobile.injection.component.GraphComponent;
+import co.yodo.mobile.injection.module.ApiClientModule;
 import co.yodo.mobile.injection.module.ApplicationModule;
 
 @ReportsCrashes(formUri = "http://198.101.209.120/MAB-LAB/report/report.php",
@@ -28,6 +26,14 @@ import co.yodo.mobile.injection.module.ApplicationModule;
                 resToastText = R.string.crash_toast_text
 )
 public class YodoApplication extends Application {
+    /** Switch server IP address */
+    private static final String PROD_IP  = "http://50.56.180.133";   // Production
+    //private static final String DEMO_IP  = "http://198.101.209.120"; // Demo
+    private static final String DEMO_IP  = "http://162.244.228.84";  // Demo
+    private static final String DEV_IP   = "http://162.244.228.78";  // Development
+    private static final String LOCAL_IP = "http://192.168.1.33";    // Local
+    public static final String IP = DEV_IP;
+
     /** Component that build the dependencies */
     private static GraphComponent mComponent;
 
@@ -35,9 +41,6 @@ public class YodoApplication extends Application {
     protected void attachBaseContext( Context base ) {
         super.attachBaseContext( base );
         ACRA.init( this );
-
-        // Set DEBUG for Volley
-        VolleyLog.DEBUG = AppConfig.DEBUG;
     }
 
 	@Override
@@ -50,6 +53,7 @@ public class YodoApplication extends Application {
 
         mComponent = DaggerGraphComponent.builder()
                 .applicationComponent( appComponent )
+                .apiClientModule( new ApiClientModule( IP ) )
                 .build();
 
         registerActivityLifecycleCallbacks( new ActivityLifecycleCallbacks() {
@@ -89,6 +93,19 @@ public class YodoApplication extends Application {
 
             }
         } );
+    }
+
+    /**
+     * Returns an string that represents the server of the IP
+     * @return P  - production
+     *         De - demo
+     *         D  - development
+     *         L  - local
+     */
+    public static String getSwitch() {
+        return ( IP.equals( PROD_IP ) ) ? "P" :
+               ( IP.equals( DEMO_IP ) ) ? "E" :
+               ( IP.equals( DEV_IP ) ) ? "D" : "L";
     }
 
     public static GraphComponent getComponent() {

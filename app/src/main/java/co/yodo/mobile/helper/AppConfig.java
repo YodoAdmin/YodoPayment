@@ -9,7 +9,7 @@ import co.yodo.mobile.network.ApiClient;
  */
 public class AppConfig {
     /** DEBUG flag */
-    public static final boolean DEBUG = false;
+    public static final boolean DEBUG = true;
 
     /** ID of the shared preferences file */
     public static final String SHARED_PREF_FILE = "YodoPaymentSharedPref";
@@ -22,7 +22,7 @@ public class AppConfig {
     /* Hardware token for the account
      * type -- String
      */
-    public static final String SPREF_HARDWARE_TOKEN = "SPHardwareToken";
+    static final String SPREF_HARDWARE_TOKEN = "SPHardwareToken";
 
     /* EULA Accepted.
 	 * type -- Boolean
@@ -31,7 +31,7 @@ public class AppConfig {
 	 * true  -- The user accepted the EULA
 	 * false -- The user didn't accept the EULA
 	 */
-    public static final String SPREF_EULA_ACCEPTED = "SPEulaAccepted" + BuildConfig.VERSION_NAME;
+    static final String SPREF_EULA_ACCEPTED = "SPEulaAccepted" + BuildConfig.VERSION_NAME;
 
     /* First Login status.
 	 * type -- Boolean
@@ -40,7 +40,7 @@ public class AppConfig {
 	 * true  -- First time that the user is logged in
 	 * false -- It was already logged in several times
 	 */
-    public static final String SPREF_FIRST_LOGIN = "SPFirstLogin";
+    static final String SPREF_FIRST_LOGIN = "SPFirstLogin";
 
     /* The current language.
 	 * type -- String
@@ -50,22 +50,22 @@ public class AppConfig {
     /* The current state of the PIP visibility.
      * type -- Boolean
      */
-    public static final String SPREF_PIP_VISIBILITY = "SPPIPVisibility";
+    static final String SPREF_PIP_VISIBILITY = "SPPIPVisibility";
 
     /* The current user balance.
      * type -- String
      */
-    public static final String SPREF_CURRENT_BALANCE = "SPCurrentBalance";
+    static final String SPREF_CURRENT_BALANCE = "SPCurrentBalance";
 
     /* Registration authnumber
 	 * type -- String
 	 */
-    public static final String SPREF_AUTH_NUMBER = "SPAuthNumber";
+    static final String SPREF_AUTH_NUMBER = "SPAuthNumber";
 
     /* If the token was successfully sent to the server
 	 * type -- boolean
 	 */
-    public static final String SPREF_TOKEN_TO_SERVER  = "SPTokenToServer" + ApiClient.getSwitch();
+    static final String SPREF_TOKEN_TO_SERVER  = "SPTokenToServer" + ApiClient.getSwitch();
 
     /* Action to be taken
      * type -- String
@@ -75,7 +75,7 @@ public class AppConfig {
     /* If the main activity is in foreground
 	 * type -- boolean
 	 */
-    public static final String SPREF_FOREGROUND = "SPForeground";
+    static final String SPREF_FOREGROUND = "SPForeground";
 
     /**
      * Default values
@@ -95,6 +95,6 @@ public class AppConfig {
     public static final String IS_SHOWING = "is_showing";
 
     /* Default values for user balance */
-    public static final String NO_BALANCE = "*.**";
+    static final String NO_BALANCE = "*.**";
     public static final String DEFAULT_BALANCE = "0.00";
 }

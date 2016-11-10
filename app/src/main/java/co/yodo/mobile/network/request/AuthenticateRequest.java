@@ -1,9 +1,15 @@
 package co.yodo.mobile.network.request;
 
+import javax.crypto.spec.SecretKeySpec;
+
+import co.yodo.mobile.component.cipher.AESCrypt;
 import co.yodo.mobile.component.cipher.RSACrypt;
-import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.network.ApiClient;
+import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.request.contract.IRequest;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 /**
  * Created by hei on 10/06/16.
@@ -36,6 +42,12 @@ public class AuthenticateRequest extends IRequest {
     /** Sub-type of the request */
     private final AuthST mRequestST;
 
+    /** Interface for the AUTH requests */
+    interface IApiEndpoint {
+        @GET( YODO_ADDRESS + "{request}" )
+        Call<ServerResponse> authUser( @Path( "request" ) String request );
+    }
+
     /**
      * Authentication with just the hardware token
      * @param responseCode The code used to respond the caller activity
@@ -55,26 +67,36 @@ public class AuthenticateRequest extends IRequest {
      */
     public AuthenticateRequest( int responseCode, String hardwareToken, String pip ) {
         super( responseCode );
+
         this.mFormattedUsrData =
                 hardwareToken + PCLIENT_SEP +
-                pip + PCLIENT_SEP +
+                pip           + PCLIENT_SEP +
                 System.currentTimeMillis() / 1000L;
         this.mRequestST = AuthST.HW_PIP;
     }
 
     @Override
-    public void execute( RSACrypt oEncrypter, ApiClient manager ) {
+    public void execute( RSACrypt oEncrypter, ApiClient oManager ) {
         String sEncryptedClientData, pRequest;
 
+        SecretKeySpec key = AESCrypt.generateKey();
+
+        mEncyptedKey = oEncrypter.encrypt( AESCrypt.encodeKey( key ) );
+        mEncyptedData = AESCrypt.encrypt( mFormattedUsrData, key );
+        //mEncyptedSignature = MessageIntegrityAttribute.encode( mFormattedUsrData, key );
+
         // Encrypting to create request
-        sEncryptedClientData = oEncrypter.encrypt( mFormattedUsrData );
+        sEncryptedClientData =
+                mEncyptedKey + REQ_SEP +
+                mEncyptedData;
 
         pRequest = buildRequest( AUTH_RT,
-                this.mRequestST.getValue(),
+                mRequestST.getValue(),
                 sEncryptedClientData
         );
 
-        SystemUtils.Logger( TAG, pRequest );
-        manager.sendXMLRequest( pRequest, responseCode );
+        IApiEndpoint iCaller = oManager.create( IApiEndpoint.class );
+        Call<ServerResponse> sResponse = iCaller.authUser( pRequest );
+        oManager.sendRequest( sResponse, mResponseCode );
     }
 }

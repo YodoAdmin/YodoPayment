@@ -1,9 +1,15 @@
 package co.yodo.mobile.network.request;
 
+import javax.crypto.spec.SecretKeySpec;
+
+import co.yodo.mobile.component.cipher.AESCrypt;
 import co.yodo.mobile.component.cipher.RSACrypt;
-import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.network.ApiClient;
+import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.request.contract.IRequest;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 /**
  * Created by hei on 12/06/16.
@@ -41,6 +47,12 @@ public class ResetPIPRequest extends IRequest {
     /** Sub-type of the request */
     private final ResetST mRequestST;
 
+    /** Interface for the RESET_PIP requests */
+    interface IApiEndpoint {
+        @GET( YODO_ADDRESS + "{request}" )
+        Call<ServerResponse> resetPIP( @Path( "request" ) String request );
+    }
+
     /**
      * Request a change of PIP using the current pip or a biometric token
      * @param responseCode The code used to respond the caller activity
@@ -69,20 +81,26 @@ public class ResetPIPRequest extends IRequest {
     }
 
     @Override
-    public void execute( RSACrypt oEncrypter, ApiClient manager ) {
+    public void execute( RSACrypt oEncrypter, ApiClient oManager ) {
         String sEncryptedClientData, sEncryptedHardwareToken, sEncryptedId, sEncryptedNewPIP,
                 pRequest;
+
+        SecretKeySpec key = AESCrypt.generateKey();
+
+        //mEncyptedSignature = MessageIntegrityAttribute.encode( mFormattedUsrData, key );
+        mEncyptedKey = oEncrypter.encrypt( AESCrypt.encodeKey( key ) );
 
         switch( this.mRequestST ) {
             case PIP:
                 // Encrypting to create request
-                sEncryptedHardwareToken = oEncrypter.encrypt( mHardwareToken );
-                sEncryptedId = oEncrypter.encrypt( mIdentifier );
-                sEncryptedNewPIP = oEncrypter.encrypt( mNewPIP );
+                sEncryptedHardwareToken = AESCrypt.encrypt( mHardwareToken, key );
+                sEncryptedId = AESCrypt.encrypt( mIdentifier, key );
+                sEncryptedNewPIP = AESCrypt.encrypt( mNewPIP, key );
 
                 sEncryptedClientData =
+                        mEncyptedKey            + REQ_SEP +
                         sEncryptedHardwareToken + REQ_SEP +
-                        sEncryptedId + REQ_SEP +
+                        sEncryptedId            + REQ_SEP +
                         sEncryptedNewPIP;
                 break;
 
@@ -92,20 +110,25 @@ public class ResetPIPRequest extends IRequest {
                         this.mHardwareToken + REQ_SEP +
                         this.mNewPIP;
 
+                mEncyptedData = AESCrypt.encrypt( mFormattedUsrData, key );
+
                 // Encrypting to create request
-                sEncryptedClientData = oEncrypter.encrypt( mFormattedUsrData );
+                sEncryptedClientData =
+                        mEncyptedKey + REQ_SEP +
+                        mEncyptedData;
                 break;
 
             default:
-                throw new IllegalArgumentException( "type no supported" );
+                throw new IllegalArgumentException( "type not supported" );
         }
 
         pRequest = buildRequest( RESET_RT,
-                this.mRequestST.getValue(),
+                mRequestST.getValue(),
                 sEncryptedClientData
         );
 
-        SystemUtils.Logger( TAG, pRequest );
-        manager.sendXMLRequest( pRequest, responseCode );
+        IApiEndpoint iCaller = oManager.create( IApiEndpoint.class );
+        Call<ServerResponse> sResponse = iCaller.resetPIP( pRequest );
+        oManager.sendRequest( sResponse, mResponseCode );
     }
 }

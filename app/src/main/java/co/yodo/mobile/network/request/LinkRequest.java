@@ -1,9 +1,15 @@
 package co.yodo.mobile.network.request;
 
+import javax.crypto.spec.SecretKeySpec;
+
+import co.yodo.mobile.component.cipher.AESCrypt;
 import co.yodo.mobile.component.cipher.RSACrypt;
-import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.network.ApiClient;
+import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.request.contract.IRequest;
+import retrofit2.Call;
+import retrofit2.http.GET;
+import retrofit2.http.Path;
 
 /**
  * Created by hei on 12/06/16.
@@ -35,6 +41,12 @@ public class LinkRequest extends IRequest {
     /** Sub-type of the request */
     private final LinkST mRequestST;
 
+    /** Interface for the DE_LINK requests */
+    interface IApiEndpoint {
+        @GET( YODO_ADDRESS + "{request}" )
+        Call<ServerResponse> link( @Path( "request" ) String request );
+    }
+
     /**
      * Link two accounts for heart transactions
      * @param responseCode The code used to respond the caller activity
@@ -51,18 +63,27 @@ public class LinkRequest extends IRequest {
     }
 
     @Override
-    public void execute( RSACrypt oEncrypter, ApiClient manager ) {
+    public void execute( RSACrypt oEncrypter, ApiClient oManager ) {
         String sEncryptedClientData, pRequest;
 
+        SecretKeySpec key = AESCrypt.generateKey();
+
+        mEncyptedData = AESCrypt.encrypt( mFormattedUsrData, key );
+        //mEncyptedSignature = MessageIntegrityAttribute.encode( mFormattedUsrData, key );
+        mEncyptedKey = oEncrypter.encrypt( AESCrypt.encodeKey( key ) );
+
         // Encrypting to create request
-        sEncryptedClientData = oEncrypter.encrypt( mFormattedUsrData );
+        sEncryptedClientData =
+                mEncyptedKey + REQ_SEP +
+                mEncyptedData;
 
         pRequest = buildRequest( LINK_RT,
-                this.mRequestST.getValue(),
+                mRequestST.getValue(),
                 sEncryptedClientData
         );
 
-        SystemUtils.Logger( TAG, pRequest );
-        manager.sendXMLRequest( pRequest, responseCode );
+        IApiEndpoint iCaller = oManager.create( IApiEndpoint.class );
+        Call<ServerResponse> sResponse = iCaller.link( pRequest );
+        oManager.sendRequest( sResponse, mResponseCode );
     }
 }
