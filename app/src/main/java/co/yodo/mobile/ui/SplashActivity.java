@@ -191,7 +191,7 @@ public class SplashActivity extends Activity implements ApiClient.RequestsListen
                     case ServerResponse.AUTHORIZED:
                         final boolean isTokenSent = PrefUtils.isGCMTokenSent( ac );
                         // There is no token for GCM, let's try to register
-                        if( !ApiClient.getSwitch().equals( "L" ) && !isTokenSent ) {
+                        if( !YodoApplication.getSwitch().equals( "L" ) && !isTokenSent ) {
                             Intent intent = new Intent( this, RegistrationIntentService.class );
                             intent.putExtra( BroadcastMessage.EXTRA_HARDWARE_TOKEN, mHardwareToken );
                             startService( intent );

@@ -6,11 +6,17 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import co.yodo.mobile.helper.SystemUtils;
+
 /**
  * Created by hei on 27/07/16.
  * Utils for the TOTP
  */
 public class TOTPUtils {
+    /** DEBUG */
+    @SuppressWarnings( "unused" )
+    private static final String TAG = TOTPUtils.class.getSimpleName();
+
     /** Window is used to check codes generated in the near past */
     private static final int WINDOW = 1;
 
@@ -44,7 +50,7 @@ public class TOTPUtils {
      * Gets the time interval (life-time of the OTP)
      * @return The time interval
      */
-    public static long getTimeIndex() {
+    private static long getTimeIndex() {
         return System.currentTimeMillis() / INTERVAL;
     }
 
@@ -53,7 +59,7 @@ public class TOTPUtils {
      * @param password The text - usually a password
      * @return The hash key for the text
      */
-    public static String sha1( String password ) {
+    private static String sha1( String password ) {
         try {
             MessageDigest crypt = MessageDigest.getInstance( "SHA-1" );
             crypt.reset();
@@ -81,6 +87,8 @@ public class TOTPUtils {
                 TOTP.LENGTH,
                 TOTP.HmacSHA1
         );
+
+        SystemUtils.iLogger( TAG, otp + "" );
 
         return String.valueOf( otp );
     }

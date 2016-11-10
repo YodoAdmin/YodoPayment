@@ -91,7 +91,7 @@ public class LinkCodeOption extends IRequestOption implements ApiClient.Requests
             case QUERY_LNK_REQ:
                 if( code.equals( ServerResponse.AUTHORIZED ) ) {
                     // Get the linking code
-                    final String linking_code = response.getParam( ServerResponse.LINKING_CODE );
+                    final String linking_code = response.getParams().getLinkingCode();
 
                     // Create the dialog for the code
                     Dialog dialog = new Dialog( mActivity );

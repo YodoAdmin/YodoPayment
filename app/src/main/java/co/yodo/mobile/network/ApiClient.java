@@ -1,37 +1,20 @@
 package co.yodo.mobile.network;
 
-import com.android.volley.DefaultRetryPolicy;
-import com.android.volley.NetworkError;
-import com.android.volley.Request;
-import com.android.volley.RequestQueue;
-import com.android.volley.Response;
-import com.android.volley.RetryPolicy;
-import com.android.volley.ServerError;
-import com.android.volley.TimeoutError;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.ImageLoader;
-import com.android.volley.toolbox.StringRequest;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
 
 import java.io.IOException;
-import java.io.StringReader;
-import java.util.Map;
 
 import javax.inject.Inject;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.parsers.SAXParser;
-import javax.xml.parsers.SAXParserFactory;
 
 import co.yodo.mobile.component.cipher.RSACrypt;
 import co.yodo.mobile.helper.SystemUtils;
-import co.yodo.mobile.network.handler.XMLHandler;
 import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.request.contract.IRequest;
+import okhttp3.ResponseBody;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Retrofit;
 
 /**
  * Created by luis on 15/12/14.
@@ -41,32 +24,8 @@ public class ApiClient {
     /** DEBUG */
     private static final String TAG = ApiClient.class.getSimpleName();
 
-    /** Switch server IP address */
-    private static final String PROD_IP  = "http://50.56.180.133";   // Production
-    //private static final String DEMO_IP  = "http://198.101.209.120"; // Demo
-    private static final String DEMO_IP  = "http://162.244.228.84";  // Demo
-    private static final String DEV_IP   = "http://162.244.228.78";  // Development
-    private static final String LOCAL_IP = "http://192.168.1.33";    // Local
-    private static final String IP = DEMO_IP;
-
-    /** Two paths used for the requests */
-    private static final String YODO_ADDRESS = "/yodo/yodoswitchrequest/getRequest/";
-
-    /** Timeout for the requests */
-    private final static int TIMEOUT = 1000 * 20; // 20 seconds
-    private final static int RETRIES = -1; // To avoid retries
-
-    private RetryPolicy retryPolicy = new DefaultRetryPolicy(
-            TIMEOUT,
-            RETRIES,
-            DefaultRetryPolicy.DEFAULT_BACKOFF_MULT
-    );
-
-    /** Global request queue for Volley */
-    private RequestQueue mRequestQueue;
-
-    /** Loads images from URLs */
-    private ImageLoader mImageLoader;
+    /** Client to execute requests */
+    private Retrofit mRetrofit;
 
     /** Object used to encrypt information */
     private RSACrypt mEncrypter;
@@ -89,18 +48,9 @@ public class ApiClient {
     }
 
     @Inject
-    public ApiClient( RequestQueue requestQueue, ImageLoader imageLoader, RSACrypt encrypter )  {
-        mRequestQueue = requestQueue;
-        mImageLoader = imageLoader;
+    public ApiClient( Retrofit retrofit, RSACrypt encrypter )  {
+        mRetrofit = retrofit;
         mEncrypter = encrypter;
-    }
-
-    /**
-     * Gets the image loader object
-     * @return The image loader
-     */
-    public ImageLoader getImageLoader() {
-        return mImageLoader;
     }
 
     /**
@@ -119,139 +69,81 @@ public class ApiClient {
      *         L  - local
      */
     public static String getSwitch() {
-        return ( IP.equals( PROD_IP ) ) ? "P" :
-               ( IP.equals( DEMO_IP ) ) ? "E" :
-               ( IP.equals( DEV_IP ) ) ? "D" : "L";
+        return "P";
     }
 
     /**
-     * Sends a XML request to the server
-     * @param request The request body
+     * Creates the interface for the requests
+     * @param service The interface
+     * @param <T> The type
+     * @return An object to call the request
+     */
+    public <T> T create( Class<T> service ) {
+        return mRetrofit.create( service );
+    }
+
+    /**
+     * Handles the requests errors
      * @param responseCode The response code
+     * @param error The error type
      */
-    public void sendXMLRequest( final String request, final int responseCode ) {
-        if( mListener == null )
-            throw new NullPointerException( "Listener not defined" );
-
-        final StringRequest httpRequest = new StringRequest( Request.Method.GET, IP + YODO_ADDRESS + request,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse( String xml ) {
-                        ServerResponse response = new ServerResponse();
-                        try {
-                            // Handling XML
-                            SAXParserFactory spf = SAXParserFactory.newInstance();
-                            SAXParser sp = spf.newSAXParser();
-                            XMLReader xr = sp.getXMLReader();
-
-                            // Create handler to handle XML Tags ( extends DefaultHandler )
-                            xr.setContentHandler( new XMLHandler() );
-                            xr.parse( new InputSource( new StringReader( xml ) ) );
-
-                            // Get the response from the handler
-                            response = XMLHandler.response;
-                            SystemUtils.Logger( TAG, response.toString() );
-                        } catch( ParserConfigurationException | SAXException | IOException e ) {
-                            e.printStackTrace();
-                            response.setCode( ServerResponse.ERROR_SERVER );
-                        }
-                        mListener.onResponse( responseCode, response );
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse( VolleyError error ) {
-                        handleVolleyException( responseCode, error );
-                    }
-                }
-        );
-
-        addToRequestQueue( httpRequest );
-    }
-
-    /**
-     * Sends a JSON request to the server
-     * @param responseCode The response code
-     */
-    public void sendJSONRequest( final Map<String, String> params, final int responseCode ) {
-        if( mListener == null )
-            throw new NullPointerException( "Listener not defined" );
-
-        final StringRequest httpRequest = new StringRequest( Request.Method.POST, IP + ":8081/yodo",
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse( String json ) {
-                        ServerResponse response = new ServerResponse();
-                        try {
-                            JSONObject jsonResponse = new JSONObject( json );
-
-                            // Parse the attributes of the ServerResponse
-                            response.setCode( jsonResponse.getString( "respCode" ) );
-                            response.setAuthNumber( jsonResponse.getString( "authCode" ) );
-                            response.setMessage( jsonResponse.getString( "msg" ) );
-                            response.setRTime( jsonResponse.getLong( "respTime" ) );
-
-                            // Sends the response to the mListener
-                            SystemUtils.Logger( TAG, response.toString() );
-                        } catch( JSONException e ) {
-                            e.printStackTrace();
-                            response.setCode( ServerResponse.ERROR_SERVER );
-                        }
-                        mListener.onResponse( responseCode, response );
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse( VolleyError error ) {
-                        handleVolleyException( responseCode, error );
-                    }
-                }
-        ) {
-            @Override
-            protected Map<String, String> getParams() {
-                return params;
-            }
-        };
-
-        addToRequestQueue( httpRequest );
-    }
-
-    public <T> void addToRequestQueue( Request<T> httpRequest ) {
-        // Setups any configuration before the request is added to the queue
-        mListener.onPrepare();
-
-        httpRequest.setTag( TAG );
-        httpRequest.setRetryPolicy( retryPolicy );
-        mRequestQueue.add( httpRequest );
-    }
-
-    /**
-     * Handles the error response from volley
-     * * @param responseCode The response code for the activity
-     * @param error The Volley error (e.g. timeout, network, server)
-     */
-    private void handleVolleyException( int responseCode, VolleyError error ) {
+    private void handleError( final int responseCode, final Throwable error ) {
         error.printStackTrace();
+
         // depending on the error, return an alert to the activity
         ServerResponse response = new ServerResponse();
-        if( error instanceof TimeoutError  )
-            response.setCode( ServerResponse.ERROR_TIMEOUT );
-        else if( error instanceof NetworkError )
+        if( error instanceof IOException )  // Network error
             response.setCode( ServerResponse.ERROR_NETWORK );
-        else if( error instanceof ServerError )
-            response.setCode( ServerResponse.ERROR_SERVER );
         else
-            response.setCode( ServerResponse.ERROR_UNKOWN );
+            response.setCode( ServerResponse.ERROR_FAILED );
         mListener.onResponse( responseCode, response );
     }
 
-    /**
-     * Cancels all the pending requests with an identifier
-     * @param tag The identifier
-     */
-    @SuppressWarnings( "unused" )
-    public void cancelPendingRequests( Object tag ) {
-        mRequestQueue.cancelAll( tag );
+    public void sendRequest( Call<ServerResponse> sResponse, final int responseCode ) {
+        sResponse.enqueue( new Callback<ServerResponse>() {
+            @Override
+            public void onResponse( Call<ServerResponse> call, retrofit2.Response<ServerResponse> response ) {
+                ServerResponse temp = response.body();
+                SystemUtils.eLogger( TAG, temp.toString() );
+                mListener.onResponse( responseCode, temp );
+            }
+
+            @Override
+            public void onFailure( Call<ServerResponse> call, Throwable error ) {
+                handleError( responseCode, error );
+            }
+        } );
+    }
+
+    public void sendJsonRequest( Call<ResponseBody> sResponse, final int responseCode ) {
+        sResponse.enqueue( new Callback<ResponseBody>() {
+            @Override
+            public void onResponse( Call<ResponseBody> call, retrofit2.Response<ResponseBody> response ) {
+                ServerResponse serverResponse = new ServerResponse();
+
+                try {
+                    final String body = response.body().string();
+                    JSONObject jsonResponse = new JSONObject( body );
+                    SystemUtils.eLogger( TAG, body );
+
+                    // Parse the attributes of the ServerResponse
+                    serverResponse.setCode( jsonResponse.getString( "respCode" ) );
+                    serverResponse.setAuthNumber( jsonResponse.getString( "authCode" ) );
+                    serverResponse.setMessage( jsonResponse.getString( "msg" ) );
+                    serverResponse.setRTime( jsonResponse.getLong( "respTime" ) );
+                } catch( JSONException | IOException e ) {
+                    e.printStackTrace();
+                    serverResponse.setCode( ServerResponse.ERROR_SERVER );
+                }
+
+                mListener.onResponse( responseCode, serverResponse );
+            }
+
+            @Override
+            public void onFailure( Call<ResponseBody> call, Throwable error ) {
+                handleError( responseCode, error );
+            }
+        } );
     }
 
     /**
@@ -259,6 +151,9 @@ public class ApiClient {
      * @param request The request to be executed
      */
     public void invoke( IRequest request ) {
+        if( mListener == null )
+            throw new NullPointerException( "Listener not defined" );
+
         request.execute( mEncrypter, this );
     }
 }

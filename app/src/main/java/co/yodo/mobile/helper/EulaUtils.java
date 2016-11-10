@@ -86,7 +86,7 @@ public class EulaUtils {
 
             return buffer;
         } catch( IOException e ) {
-            SystemUtils.Logger( TAG, e.getMessage() );
+            SystemUtils.iLogger( TAG, e.getMessage() );
             return "";
         } finally {
             closeStream( in );

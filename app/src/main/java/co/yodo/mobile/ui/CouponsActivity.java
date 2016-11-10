@@ -109,7 +109,7 @@ public class CouponsActivity extends AppCompatActivity implements
                 boolean delete = file.delete();
 
                 if( !delete )
-                    SystemUtils.Logger( TAG, "File not found" );
+                    SystemUtils.iLogger( TAG, "File not found" );
 
                 couponsdb.deleteCoupon( coupon );
                 values.remove( info.position );
@@ -161,7 +161,7 @@ public class CouponsActivity extends AppCompatActivity implements
 
     @Override
     public void onLoadFinished( Loader<List<Coupon>> loader, List<Coupon> data ) {
-        SystemUtils.Logger( TAG, Collections.singletonList( data ).toString() );
+        SystemUtils.iLogger( TAG, Collections.singletonList( data ).toString() );
         cgvAdapter.addAll( data );
         gvCoupons.setAdapter( cgvAdapter );
         registerForContextMenu( gvCoupons );
@@ -189,7 +189,7 @@ public class CouponsActivity extends AppCompatActivity implements
          * @param context The activity context
          * @param coupondb The coupons database
          */
-        public LoadTask( Context context, CouponsDataSource coupondb ) {
+        LoadTask( Context context, CouponsDataSource coupondb ) {
             super( context );
             this.mCouponsdb = coupondb;
         }

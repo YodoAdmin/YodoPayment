@@ -15,7 +15,6 @@ import co.yodo.mobile.ui.MainActivity;
 import co.yodo.mobile.ui.notification.AlertDialogHelper;
 import co.yodo.mobile.ui.notification.YodoHandler;
 import co.yodo.mobile.ui.option.contract.IRequestOption;
-import co.yodo.mobile.ui.validator.PIPValidator;
 
 /**
  * Created by hei on 14/06/16.
@@ -99,8 +98,8 @@ public class DeLinkAccountOption extends IRequestOption implements ApiClient.Req
             case QUERY_LNK_ACC_REQ:
                 switch( code ) {
                     case ServerResponse.AUTHORIZED:
-                        String from = response.getParam( ServerResponse.FROM );
-                        String to = response.getParam( ServerResponse.TO );
+                        String from = response.getParams().getLinkedFrom();
+                        String to = response.getParams().getLinkedTo();
 
                         Intent i = new Intent( mActivity, DeLinkActivity.class );
                         i.putExtra( Intents.LINKED_ACC_TO, to );

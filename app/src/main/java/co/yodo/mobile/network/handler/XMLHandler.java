@@ -97,7 +97,7 @@ public class XMLHandler extends DefaultHandler {
         currentElement = false;
 
         /* Set value */
-        if( localName.equalsIgnoreCase( CODE_ELEM ) ) {
+        /*if( localName.equalsIgnoreCase( CODE_ELEM ) ) {
             response.setCode( currentValue );
         }
         else if( localName.equalsIgnoreCase( AUTH_NUM_ELEM ) ) {
@@ -108,17 +108,17 @@ public class XMLHandler extends DefaultHandler {
         }
         else if( localName.equalsIgnoreCase( TIME_ELEM ) ) {
             response.setRTime( Long.valueOf( currentValue ) );
-        }
+        }*/
 
         /* Close TAGs */
-        else if( localName.equals( TRANSACTION_ELEM ) ) {
+        /*else if( localName.equals( TRANSACTION_ELEM ) ) {
             transactionElement = false;
         }
         else if( localName.equals( LINKED_ACC_ELEM ) ) {
             linkedAccountElement = false;
         }
 
-        /* Receipt */
+        // Receipt
         else if( transactionElement ) {
             if( localName.equalsIgnoreCase( YI ) ) {
                 merchantElement = false;
@@ -166,7 +166,7 @@ public class XMLHandler extends DefaultHandler {
             }
         }
 
-        /* Linked Accounts */
+        // Linked Accounts
         else if( linkedAccountElement ) {
             if( localName.equalsIgnoreCase( TO_ELEM ) ) {
                 response.addParam( ServerResponse.TO, currentValue );
@@ -176,7 +176,7 @@ public class XMLHandler extends DefaultHandler {
             }
         }
 
-        /* Params */
+        // Params
         else if( localName.equalsIgnoreCase( LOGO_ELEM ) ) {
             response.addParam( ServerResponse.LOGO, currentValue );
         }
@@ -196,7 +196,7 @@ public class XMLHandler extends DefaultHandler {
             response.addParam( ServerResponse.LINKING_CODE, currentValue );
         }
 
-        currentValue = "";
+        currentValue = "";*/
     }
 
     /** Called to get tag characters ( ex:- <name>AndroidPeople</name>

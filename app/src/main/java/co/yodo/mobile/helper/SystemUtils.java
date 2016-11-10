@@ -3,6 +3,7 @@ package co.yodo.mobile.helper;
 import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
+import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -103,16 +104,55 @@ public class SystemUtils {
     }
 
     /**
-     * Logger for Android
-     * @param TAG The String of the TAG for the log
-     * @param text The text to print on the log
+     * Logger for the application, depending on the flag DEBUG
+     * @param type The char type of the log
+     * @param TAG The String used to know to which class the log belongs
+     * @param text The String to output on the log
      */
-    public static void Logger( String TAG, String text ) {
-        if( AppConfig.DEBUG ) {
-            if( text == null )
-                Log.e( TAG, "Null Text" );
-            else
-                Log.e( TAG, text );
+    private static void Logger( char type, String TAG, String text ) {
+        if( text == null ) {
+            Log.e( TAG, "NULL Message" );
+            return;
         }
+
+        if( AppConfig.DEBUG ) {
+            switch( type ) {
+                case 'i': // Information
+                    Log.i( TAG, text );
+                    break;
+
+                case 'w': // Warning
+                    Log.w( TAG, text );
+                    break;
+
+                case 'e': // Error
+                    Log.e( TAG, text );
+                    break;
+
+                case 'd': // Debug
+                    Log.d( TAG, text );
+                    break;
+
+                default:
+                    Log.d( TAG, text );
+                    break;
+            }
+        }
+    }
+
+    public static void iLogger( @NonNull String TAG, String text ) {
+        Logger( 'i', TAG, text );
+    }
+
+    public static void wLogger( @NonNull String TAG, String text ) {
+        Logger( 'w', TAG, text );
+    }
+
+    public static void dLogger( @NonNull String TAG, String text ) {
+        Logger( 'd', TAG, text );
+    }
+
+    public static void eLogger( @NonNull String TAG, String text ) {
+        Logger( 'e', TAG, text );
     }
 }
