@@ -161,7 +161,7 @@
     <string name="title_activity_coupons">Yodo Coupons</string>
     <string name="title_activity_receipts">Yodo Receipts</string>
     <string name="title_activity_linking">Yodo Linking</string>
-    <string name="title_activity_de_link">Yodo DeLink</string>
+    <string name="title_activity_de_link">Yodo Des liens</string>
     <string name="title_activity_yodo_camera">Yodo Camera</string>
 
     <!-- Languages -->
@@ -185,7 +185,7 @@
     <string-array name="link_options_array">
         <item>Generate Linking Code</item>
         <item>Input Linking Code</item>
-        <item>De-Link Account</item>
+        <item>Liste Liens</item>
     </string-array>
 
     <!-- Messages for the permissions -->

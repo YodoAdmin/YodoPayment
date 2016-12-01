@@ -49,7 +49,6 @@ import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.broadcastreceiver.HeartbeatReceiver;
 import co.yodo.mobile.component.SKSCreater;
 import co.yodo.mobile.component.cipher.RSACrypt;
-import co.yodo.mobile.component.totp.TOTPUtils;
 import co.yodo.mobile.database.CouponsDataSource;
 import co.yodo.mobile.database.ReceiptsDataSource;
 import co.yodo.mobile.database.model.Receipt;

@@ -77,6 +77,8 @@ public class AppConfig {
 	 */
     static final String SPREF_FOREGROUND = "SPForeground";
 
+    public static final String SPREF_NICKNAME = "SPNickname";
+
     /**
      * Default values
      * {{ ======================================================================

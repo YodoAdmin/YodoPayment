@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/GeneralLayout"
+    android:id="@+id/dialog_with_password"
+    android:orientation="vertical" >
+
+    <android.support.design.widget.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <co.yodo.mobile.ui.components.ClearEditText
+            style="@style/NicknameInput"
+            android:id="@+id/cetNickname" />
+
+    </android.support.design.widget.TextInputLayout>
+
+</LinearLayout>

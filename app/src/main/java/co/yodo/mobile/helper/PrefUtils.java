@@ -194,7 +194,7 @@ public class PrefUtils {
      * @return true  The flag was saved successfully.
      *         false The flag was not saved successfully.
      */
-    public static Boolean saveEulaAccepted(Context c, Boolean flag) {
+    public static Boolean saveEulaAccepted( Context c, Boolean flag ) {
         SharedPreferences config = getSPrefConfig( c );
         SharedPreferences.Editor writer = config.edit();
         writer.putBoolean( AppConfig.SPREF_EULA_ACCEPTED, flag );
@@ -207,7 +207,7 @@ public class PrefUtils {
      * @return true  The user accepted the EULA.
      *         false The user didn't accept the EULA.
      */
-    static Boolean isEulaAccepted(Context c) {
+    static Boolean isEulaAccepted( Context c ) {
         SharedPreferences config = getSPrefConfig( c );
         return config.getBoolean( AppConfig.SPREF_EULA_ACCEPTED, false );
     }
@@ -311,5 +311,30 @@ public class PrefUtils {
     public static boolean isForeground( Context c ) {
         SharedPreferences config = getSPrefConfig( c );
         return config.getBoolean( AppConfig.SPREF_FOREGROUND, false );
+    }
+
+    /**
+     * Saves the nickname for a hardware token
+     * @param c The Context of Android system
+     * @param hardware The hardware token
+     * @param nickname The nickname
+     * @return True if it saved correctly
+     */
+    public static boolean saveNickname( Context c, String hardware, String nickname ) {
+        SharedPreferences config = getSPrefConfig( c );
+        SharedPreferences.Editor writer = config.edit();
+        writer.putString( AppConfig.SPREF_NICKNAME + hardware, nickname );
+        return writer.commit();
+    }
+
+    /**
+     * Gets the nickname of a hardware token
+     * @param c The Context of Android system
+     * @param hardware The hardware token
+     * @return The nickname
+     */
+    public static String getNickname( Context c, String hardware ) {
+        SharedPreferences config = getSPrefConfig( c );
+        return config.getString( AppConfig.SPREF_NICKNAME + hardware, null );
     }
 }

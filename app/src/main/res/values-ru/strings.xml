@@ -183,7 +183,7 @@
     <string-array name="link_options_array">
         <item>Генерировать ссылочный код</item>
         <item>Введите ссылочный код</item>
-        <item>Разделенный аккаунт</item>
+        <item>список ссылок</item>
     </string-array>
 
     <!-- Messages for the permissions -->

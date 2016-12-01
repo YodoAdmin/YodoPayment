@@ -2,6 +2,7 @@ package co.yodo.mobile.ui.adapter;
 
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.support.annotation.NonNull;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,7 +29,7 @@ public class CouponsGridViewAdapter extends ArrayAdapter<Coupon> {
 
     /** Loader for the images */
     private ImageLoader imageLoader;
-    final DisplayImageOptions options = new DisplayImageOptions.Builder()
+    private final DisplayImageOptions options = new DisplayImageOptions.Builder()
             .showImageOnLoading( R.drawable.loading_image )
             .showImageOnFail( R.drawable.no_image )
             .bitmapConfig( Bitmap.Config.RGB_565 )
@@ -48,8 +49,9 @@ public class CouponsGridViewAdapter extends ArrayAdapter<Coupon> {
         this.imageLoader.init( ImageLoaderConfiguration.createDefault( context ) );
     }
  
+    @NonNull
     @Override
-    public View getView( int position, View convertView, ViewGroup parent ) {
+    public View getView( int position, View convertView, @NonNull ViewGroup parent ) {
         ViewHolder holder;
  
         if( convertView == null ) {
@@ -74,7 +76,7 @@ public class CouponsGridViewAdapter extends ArrayAdapter<Coupon> {
         return data;
     }
  
-    static class ViewHolder {
+    private static class ViewHolder {
         TextView couponTitle;
         ImageView image;
     }

@@ -159,7 +159,7 @@
     <string name="title_activity_coupons">Yodo Cupones</string>
     <string name="title_activity_receipts">Yodo Recibos</string>
     <string name="title_activity_linking">Yodo Linking</string>
-    <string name="title_activity_de_link">Yodo DeLink</string>
+    <string name="title_activity_de_link">Yodo Links</string>
     <string name="title_activity_yodo_camera">Yodo Cámara</string>
 
     <!-- Languages -->
@@ -183,7 +183,7 @@
     <string-array name="link_options_array">
         <item>Generar Código de Unión</item>
         <item>Insertar el Código de Unión</item>
-        <item>Separar Cuenta</item>
+        <item>Listar Links</item>
     </string-array>
 
     <!-- Messages for the permissions -->
