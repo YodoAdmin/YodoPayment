@@ -18,6 +18,7 @@
 
     <!-- Action Menu -->
     <string name="action_settings">设置</string>
+    <string name="action_share">分享</string>
     <string name="action_about">关于 Yodo</string>
      
     <!-- Receipts -->
@@ -206,5 +207,6 @@
 
     <string name="title.slide4">隐藏的图标淀川您的信息</string>
     <string name="message.slide4">使用入门</string>
+    <string name="input_nickname">输入 nickname</string>
 
 </resources>

@@ -18,6 +18,7 @@
       
     <!-- Action Menu -->
     <string name="action_settings">設定</string>
+    <string name="action_share">シェア</string>
     <string name="action_about">約 Yodo</string>
     
     <!-- Receipts -->
@@ -206,5 +207,6 @@
 
     <string name="title.slide4">淀川のアイコンを使用して情報を隠します</string>
     <string name="message.slide4">GET STARTED</string>
+    <string name="input_nickname">入力 nickname</string>
 
 </resources>

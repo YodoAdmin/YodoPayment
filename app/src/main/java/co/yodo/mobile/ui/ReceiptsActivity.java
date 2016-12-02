@@ -8,8 +8,10 @@ import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
+import android.support.v7.widget.ShareActionProvider;
 import android.view.ActionMode;
 import android.view.ContextMenu;
 import android.view.Menu;
@@ -30,7 +32,9 @@ import java.util.List;
 import co.yodo.mobile.R;
 import co.yodo.mobile.database.ReceiptsDataSource;
 import co.yodo.mobile.database.model.Receipt;
+import co.yodo.mobile.helper.FormatUtils;
 import co.yodo.mobile.helper.GUIUtils;
+import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.ui.adapter.ReceiptsListViewAdapter;
 import co.yodo.mobile.ui.dialog.ReceiptDialog;
 
@@ -204,7 +208,7 @@ public class ReceiptsActivity extends AppCompatActivity implements
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
         Receipt receipt = rlvAdapter.getItem( position );
 
-        if( !receipt.isOpened() ) {
+        if( receipt != null && !receipt.isOpened() ) {
             receipt.setOpened( true );
             receiptsdb.updateReceipt( receipt );
         }
@@ -219,12 +223,13 @@ public class ReceiptsActivity extends AppCompatActivity implements
         Receipt receipt = rlvAdapter.getItem( position );
 
         ReceiptsListViewAdapter.ViewHolder holder = (ReceiptsListViewAdapter.ViewHolder) view.getTag();
-        receipt.setChecked( !receipt.isChecked );
+        if( receipt != null )
+            receipt.setChecked( !receipt.isChecked );
         rlvAdapter.toggleSelection( position );
         rlvAdapter.updateCheckedState( holder, receipt );
 
         // Look for items to delete
-        int selectedCount = rlvAdapter.getDeleteCount();
+        int selectedCount = rlvAdapter.getSelectedCount();
         if( selectedCount > 0 ) {
             if( !isActionModeShowing ) {
                 mActionMode = ReceiptsActivity.this.startActionMode( ReceiptsActivity.this );
@@ -236,8 +241,10 @@ public class ReceiptsActivity extends AppCompatActivity implements
             isActionModeShowing = false;
         }
 
-        if( mActionMode != null )
+        if( mActionMode != null ) {
             mActionMode.setTitle( String.valueOf( selectedCount ) );
+            mActionMode.invalidate();
+        }
 
         return true;
     }
@@ -247,12 +254,26 @@ public class ReceiptsActivity extends AppCompatActivity implements
         // Inflate a menu resource providing context menu items
         MenuInflater inflater = mode.getMenuInflater();
         inflater.inflate( R.menu.receipts_multi, menu );
+
+        MenuItem item = menu.findItem( R.id.menu_item_share );
+        ShareActionProvider mShareActionProvider = ( ShareActionProvider ) MenuItemCompat.getActionProvider( item );
+        MenuItemCompat.setActionProvider(item, mShareActionProvider );
+
         return true;
     }
 
     @Override
     public boolean onPrepareActionMode( ActionMode mode, Menu menu ) {
-        return false;
+        int selectedCount = rlvAdapter.getSelectedCount();
+        if( selectedCount == 1 ) {
+            MenuItem item = menu.findItem( R.id.menu_item_share );
+            item.setVisible( true );
+            return true;
+        } else {
+            MenuItem item = menu.findItem( R.id.menu_item_share );
+            item.setVisible( false );
+            return true;
+        }
     }
 
     @Override
@@ -281,6 +302,17 @@ public class ReceiptsActivity extends AppCompatActivity implements
                         } ).show();
 
                 mode.finish();
+                return true;
+
+            case R.id.menu_item_share:
+                Receipt receipt = rlvAdapter.getSelected();
+
+                Intent sendIntent = new Intent();
+                sendIntent.setAction( Intent.ACTION_SEND );
+                sendIntent.putExtra( Intent.EXTRA_SUBJECT, getString( R.string.title_activity_receipts ) + ": " + receipt.getDescription() );
+                sendIntent.putExtra( Intent.EXTRA_TEXT, formatReceipt( receipt ) );
+                sendIntent.setType( "text/plain" );
+                startActivity( Intent.createChooser( sendIntent, getResources().getText( R.string.action_share ) ) );
                 return true;
 
             default:
@@ -346,5 +378,30 @@ public class ReceiptsActivity extends AppCompatActivity implements
         public List<Receipt> loadInBackground() {
             return mReceiptsdb.getAllReceipts();
         }
+    }
+
+    /**
+     * Gives a string format to a receipt
+     * @param receipt The receipt data
+     * @return A formatted String
+     */
+    private String formatReceipt( Receipt receipt ) {
+        return String.format(
+                "%s\n" +
+                "AU# %s\t\t%s\n" +
+                "Total:\t\t%s %s\n" +
+                "CashTender:\t%s %s\n" +
+                "CashBack:\t%s %s\n\n" +
+                "Donor: %s\n" +
+                "Recipient: %s",
+                receipt.getDescription(),
+                receipt.getAuthnumber() ,
+                receipt.getCreated(),
+                FormatUtils.truncateDecimal( receipt.getTotalAmount() ), receipt.getTCurrency(),
+                FormatUtils.truncateDecimal( receipt.getTenderAmount() ), receipt.getDCurrency(),
+                FormatUtils.truncateDecimal( receipt.getCashbackAmount() ), receipt.getTCurrency(),
+                FormatUtils.replaceNull( receipt.getDonorAccount() ),
+                receipt.getRecipientAccount()
+        );
     }
 }

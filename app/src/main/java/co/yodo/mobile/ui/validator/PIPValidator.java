@@ -19,7 +19,7 @@ public class PIPValidator {
     protected Context ac;
 
     /** The shake animation for wrong inputs */
-    protected Animation aShake;
+    private Animation aShake;
 
     /**
      * Validation for the pip
@@ -37,7 +37,7 @@ public class PIPValidator {
      */
     public boolean validate( EditText tvPIP ) throws NoSuchFieldException {
         final String pip = tvPIP.getText().toString();
-        final TextInputLayout tilPip = (TextInputLayout) tvPIP.getParent();
+        final TextInputLayout tilPip = (TextInputLayout) tvPIP.getParent().getParent();
 
         if( tilPip == null )
             throw new NoSuchFieldException( "No Input layout present" );
@@ -61,7 +61,7 @@ public class PIPValidator {
     public boolean validate( EditText tvPIP, EditText tvConfirmPIP ) throws NoSuchFieldException {
         final String pip = tvPIP.getText().toString();
         final String confirmPip = tvConfirmPIP.getText().toString();
-        final TextInputLayout tilConfirmPip = (TextInputLayout) tvConfirmPIP.getParent();
+        final TextInputLayout tilConfirmPip = (TextInputLayout) tvConfirmPIP.getParent().getParent();
 
         if( tilConfirmPip == null )
             throw new NoSuchFieldException( "No Input layout present" );

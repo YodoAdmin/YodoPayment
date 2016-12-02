@@ -19,11 +19,12 @@
 
     <!-- Action Menu -->
     <string name="action_settings">Settings</string>
+    <string name="action_share">Share</string>
     <string name="action_about">About Yodo</string>
 
     <!-- Links Menu -->
-    <string name="action_nickname">Nickname</string>
-    <string name="action_delink">De-Link</string>
+    <string name="action_nickname" translatable="false">Nickname</string>
+    <string name="action_delink" translatable="false">De-Link</string>
 
     <!-- Receipts -->
     <string name="new_recipt">New Receipt</string>
