@@ -18,6 +18,7 @@
 
     <!-- Action Menu -->
     <string name="action_settings">Настройки</string>
+    <string name="action_share">доля</string>
     <string name="action_about">Про Yodo</string>
 
     <!-- Receipts -->
@@ -206,5 +207,6 @@
 
     <string name="title.slide4">Скрыть свою информацию со значком Yodo</string>
     <string name="message.slide4">НАЧАТЬ</string>
+    <string name="input_nickname">Введите nickname</string>
 
 </resources>

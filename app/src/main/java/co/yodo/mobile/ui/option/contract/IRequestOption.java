@@ -82,15 +82,15 @@ public abstract class IRequestOption extends IOption {
 
         // GUI setup
         etInput = (EditText) layout.findViewById( R.id.cetPIP );
-        cbShowPIP = (CheckBox) layout.findViewById( R.id.showPassword );
-        tilPip = (TextInputLayout) etInput.getParent();
+        //cbShowPIP = (CheckBox) layout.findViewById( R.id.showPassword );
+        tilPip = (TextInputLayout) etInput.getParent().getParent();
 
-        cbShowPIP.setOnCheckedChangeListener( new CompoundButton.OnCheckedChangeListener() {
+        /*cbShowPIP.setOnCheckedChangeListener( new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged( CompoundButton compoundButton, boolean b ) {
                 GUIUtils.showPassword( cbShowPIP, etInput );
             }
-        } );
+        } );*/
 
         return layout;
     }
@@ -122,6 +122,6 @@ public abstract class IRequestOption extends IOption {
         tilPip.setErrorEnabled( false );
         tilPip.setError( null );
         etInput.requestFocus();
-        cbShowPIP.setChecked( PrefUtils.getPIPVisibility( mActivity ) );
+        //cbShowPIP.setChecked( PrefUtils.getPIPVisibility( mActivity ) );
     }
 }

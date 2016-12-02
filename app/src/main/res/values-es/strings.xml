@@ -18,6 +18,7 @@
 
     <!-- Action Menu -->
     <string name="action_settings">Ajustes</string>
+    <string name="action_share">Compartir</string>
     <string name="action_about">Acerca de Yodo</string>
 
     <!-- Receipts -->
@@ -206,5 +207,6 @@
 
     <string name="title.slide4">Oculte su información con el icono de Yodo</string>
     <string name="message.slide4">EMPEZAR</string>
+    <string name="input_nickname">Ingrese el nickname</string>
 
 </resources>

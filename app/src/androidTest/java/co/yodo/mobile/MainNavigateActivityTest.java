@@ -176,8 +176,8 @@ public class MainNavigateActivityTest {
                 .perform( typeText( linkingCode ), closeSoftKeyboard() );
 
         // Press show password
-        onView( withId( R.id.showPassword ) )
-                .perform( click() );
+        /*onView( withId( R.id.showPassword ) )
+                .perform( click() );*/
 
         // Verify the type of the EditText after show password pressed
         onView( withClassName( endsWith( "EditText" ) ) )
@@ -341,8 +341,8 @@ public class MainNavigateActivityTest {
                 .perform( typeText( shortPIP ), closeSoftKeyboard() );
 
         // Press show password
-        onView( withId( R.id.showPassword ) )
-                .perform( click() );
+        /*onView( withId( R.id.showPassword ) )
+                .perform( click() );*/
 
         // Verify the type of the EditText after show password pressed
         onView( withClassName( endsWith( "EditText" ) ) )
@@ -380,8 +380,8 @@ public class MainNavigateActivityTest {
                 .perform( typeText( wrongPIP ), closeSoftKeyboard() );
 
         // Press show password
-        onView( withId( R.id.showPassword ) )
-                .perform( click() );
+        /*onView( withId( R.id.showPassword ) )
+                .perform( click() );*/
 
         // Verify the type of the EditText after show password pressed
         onView( withClassName( endsWith( "EditText" ) ) )
