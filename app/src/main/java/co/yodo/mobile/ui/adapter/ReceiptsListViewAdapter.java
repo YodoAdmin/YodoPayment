@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.support.annotation.NonNull;
 import android.support.v4.content.ContextCompat;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -63,8 +64,9 @@ public class ReceiptsListViewAdapter extends ArrayAdapter<Receipt> implements Fi
         this.filteredData = data ;
     }
  
+    @NonNull
     @Override
-    public View getView( final int position, View convertView, ViewGroup parent ) {
+    public View getView( final int position, View convertView, @NonNull ViewGroup parent ) {
         View row = convertView;
         final ViewHolder holder;
  
@@ -188,7 +190,8 @@ public class ReceiptsListViewAdapter extends ArrayAdapter<Receipt> implements Fi
         List<Receipt> removed = new ArrayList<>( mSelectedItemsIds.size() );
         for( int i = (mSelectedItemsIds.size() - 1); i >= 0; i-- ) {
             Receipt item = getItem( mSelectedItemsIds.keyAt( i ) );
-            item.setChecked( false );
+            if( item != null )
+                item.setChecked( false );
             // Remove selected items following the ids
             removed.add( item );
             remove( item );
@@ -196,6 +199,10 @@ public class ReceiptsListViewAdapter extends ArrayAdapter<Receipt> implements Fi
         mSelectedItemsIds.clear();
 
         return removed;
+    }
+
+    public Receipt getSelected() {
+        return getItem( mSelectedItemsIds.keyAt( 0 ) );
     }
 
     /*public void addReceipt( Receipt receipt ) {
@@ -228,7 +235,7 @@ public class ReceiptsListViewAdapter extends ArrayAdapter<Receipt> implements Fi
      * Get the deleted amount of items
      * @return the number of deleted items
      */
-    public int getDeleteCount() {
+    public int getSelectedCount() {
         return mSelectedItemsIds.size();
     }
 
@@ -239,7 +246,8 @@ public class ReceiptsListViewAdapter extends ArrayAdapter<Receipt> implements Fi
     public void clearDeleteList() {
         for( int i = (mSelectedItemsIds.size() - 1); i >= 0; i-- ) {
             Receipt receipt = getItem( mSelectedItemsIds.keyAt( i ) );
-            receipt.setChecked( !receipt.isChecked );
+            if( receipt != null )
+                receipt.setChecked( !receipt.isChecked );
         }
         mSelectedItemsIds.clear();
     }
@@ -260,6 +268,7 @@ public class ReceiptsListViewAdapter extends ArrayAdapter<Receipt> implements Fi
         }
     }
 
+    @NonNull
     @Override
     public Filter getFilter() {
         return mFilter;

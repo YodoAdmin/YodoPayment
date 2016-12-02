@@ -18,6 +18,7 @@
       
     <!-- Action Menu -->
     <string name="action_settings">設定</string>
+    <string name="action_share">シェア</string>
     <string name="action_about">約 Yodo</string>
     
     <!-- Receipts -->
@@ -156,7 +157,7 @@
     <string name="title_activity_coupons">Yodo クーポン</string>
     <string name="title_activity_receipts">Yodo レシート</string>
     <string name="title_activity_linking">Yodo リンキング</string>
-    <string name="title_activity_de_link">Yodo リンク切り離し</string>
+    <string name="title_activity_de_link">Yodo リンク</string>
     <string name="title_activity_yodo_camera">Yodo カメラ</string>
 
     <!-- Languages -->
@@ -180,7 +181,7 @@
     <string-array name="link_options_array">
         <item>リンクコード作成</item>
         <item>リンクコード入力</item>
-        <item>アカウントを切り離す</item>
+        <item>リストのリンク</item>
     </string-array>
 
     <!-- Messages for the permissions -->
@@ -206,5 +207,6 @@
 
     <string name="title.slide4">淀川のアイコンを使用して情報を隠します</string>
     <string name="message.slide4">GET STARTED</string>
+    <string name="input_nickname">入力 nickname</string>
 
 </resources>

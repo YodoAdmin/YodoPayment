@@ -9,7 +9,7 @@ import co.yodo.mobile.network.ApiClient;
  */
 public class AppConfig {
     /** DEBUG flag */
-    public static final boolean DEBUG = true;
+    public static final boolean DEBUG = false;
 
     /** ID of the shared preferences file */
     public static final String SHARED_PREF_FILE = "YodoPaymentSharedPref";
@@ -76,6 +76,8 @@ public class AppConfig {
 	 * type -- boolean
 	 */
     static final String SPREF_FOREGROUND = "SPForeground";
+
+    public static final String SPREF_NICKNAME = "SPNickname";
 
     /**
      * Default values

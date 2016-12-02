@@ -1,6 +1,7 @@
 package co.yodo.mobile.ui.option;
 
 import android.content.Context;
+import android.support.design.widget.TextInputEditText;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
@@ -34,7 +35,7 @@ public class LinkAccountOption extends IRequestOption implements ApiClient.Reque
         // Dialog
         LayoutInflater inflater = (LayoutInflater) mActivity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
         final View layout = inflater.inflate( R.layout.dialog_with_code, new LinearLayout( mActivity ), false );
-        etInput = (EditText) layout.findViewById( R.id.cetLinkingCode );
+        etInput = (TextInputEditText ) layout.findViewById( R.id.cetLinkingCode );
         final View.OnClickListener okClick = new View.OnClickListener() {
             @Override
             public void onClick( View view  ) {

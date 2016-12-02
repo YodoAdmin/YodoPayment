@@ -18,6 +18,7 @@
 
     <!-- Action Menu -->
     <string name="action_settings">设置</string>
+    <string name="action_share">分享</string>
     <string name="action_about">关于 Yodo</string>
      
     <!-- Receipts -->
@@ -156,7 +157,7 @@
     <string name="title_activity_coupons">Yodo 优惠券</string>
     <string name="title_activity_receipts">Yodo 收据</string>
     <string name="title_activity_linking">Yodo 连接</string>
-    <string name="title_activity_de_link">Yodo 脱钩</string>
+    <string name="title_activity_de_link">Yodo链接</string>
     <string name="title_activity_yodo_camera">Yodo 摄像机</string>
 
     <!-- Languages -->
@@ -180,7 +181,7 @@
     <string-array name="link_options_array">
         <item>产生连结代码</item>
         <item>输入连结代码</item>
-        <item>中断与帐户的连结</item>
+        <item>列表链接</item>
     </string-array>
 
     <!-- Messages for the permissions -->
@@ -206,5 +207,6 @@
 
     <string name="title.slide4">隐藏的图标淀川您的信息</string>
     <string name="message.slide4">使用入门</string>
+    <string name="input_nickname">输入 nickname</string>
 
 </resources>
