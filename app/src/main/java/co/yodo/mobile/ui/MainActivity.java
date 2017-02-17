@@ -39,7 +39,10 @@ import org.greenrobot.eventbus.ThreadMode;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
 
+import javax.crypto.spec.SecretKeySpec;
 import javax.inject.Inject;
 
 import butterknife.BindView;
@@ -48,11 +51,14 @@ import co.yodo.mobile.R;
 import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.broadcastreceiver.HeartbeatReceiver;
 import co.yodo.mobile.component.SKSCreater;
+import co.yodo.mobile.component.cipher.AESCrypt;
 import co.yodo.mobile.component.cipher.RSACrypt;
+import co.yodo.mobile.component.totp.TOTPUtils;
 import co.yodo.mobile.database.CouponsDataSource;
 import co.yodo.mobile.database.ReceiptsDataSource;
 import co.yodo.mobile.database.model.Receipt;
 import co.yodo.mobile.helper.AppConfig;
+import co.yodo.mobile.helper.CryptUtils;
 import co.yodo.mobile.helper.EulaUtils;
 import co.yodo.mobile.helper.FormatUtils;
 import co.yodo.mobile.helper.GUIUtils;
@@ -790,11 +796,13 @@ public class MainActivity extends AppCompatActivity implements
                         mHardwareToken;
 
                 // Identifier for a normal payment
-                final String yodoPayment = getString( R.string.account_yodo );
+                final String yodoPayment  = getString( R.string.account_yodo );
+                final String heartPayment = getString( R.string.account_yodo_heart );
 
                 switch( code ) {
                     case ServerResponse.AUTHORIZED:
-                        String from = response.getParams().getLinkedFrom();
+                        final String from = response.getParams().getLinkedFrom();
+
                         // If we have a link show the options
                         if( from != null && !from.isEmpty() ) {
                             View.OnClickListener onClick = new View.OnClickListener() {
@@ -802,7 +810,31 @@ public class MainActivity extends AppCompatActivity implements
                                 public void onClick( View v ) {
                                     final ImageView accountImage = (ImageView) v;
                                     final String paymentType = accountImage.getContentDescription().toString();
-                                    showSKSDialog( originalCode, paymentType );
+                                    final String[] accounts = from.split( "-" );
+
+                                    if( paymentType.equals( heartPayment ) && accounts.length > 1 ) {
+                                        List<String> list = new ArrayList<>();
+
+                                        for( String account : accounts ) {
+                                            final String nickname = PrefUtils.getNickname( ac, account );
+                                            if( nickname != null )
+                                                list.add( nickname );
+                                            else
+                                                list.add( account );
+                                        }
+
+                                        DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
+                                            public void onClick( DialogInterface dialog, final int item ) {
+                                                final String donor = TOTPUtils.sha1( accounts[item] );
+                                                showSKSDialog( originalCode + SKS_SEP + donor, paymentType );
+                                                dialog.dismiss();
+                                            }
+                                        };
+
+                                        AlertDialogHelper.create( ac, R.string.linking_menu, list.toArray( new String[0] ), onClick ).show();
+                                    } else {
+                                        showSKSDialog( originalCode, paymentType );
+                                    }
                                 }
                             };
 

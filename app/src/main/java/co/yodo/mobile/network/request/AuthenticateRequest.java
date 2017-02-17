@@ -4,6 +4,7 @@ import javax.crypto.spec.SecretKeySpec;
 
 import co.yodo.mobile.component.cipher.AESCrypt;
 import co.yodo.mobile.component.cipher.RSACrypt;
+import co.yodo.mobile.helper.SystemUtils;
 import co.yodo.mobile.network.ApiClient;
 import co.yodo.mobile.network.model.ServerResponse;
 import co.yodo.mobile.network.request.contract.IRequest;
@@ -83,6 +84,7 @@ public class AuthenticateRequest extends IRequest {
 
         mEncyptedKey = oEncrypter.encrypt( AESCrypt.encodeKey( key ) );
         mEncyptedData = AESCrypt.encrypt( mFormattedUsrData, key );
+        
         //mEncyptedSignature = MessageIntegrityAttribute.encode( mFormattedUsrData, key );
 
         // Encrypting to create request

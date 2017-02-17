@@ -59,7 +59,7 @@ public class TOTPUtils {
      * @param password The text - usually a password
      * @return The hash key for the text
      */
-    private static String sha1( String password ) {
+    public static String sha1( String password ) {
         try {
             MessageDigest crypt = MessageDigest.getInstance( "SHA-1" );
             crypt.reset();
