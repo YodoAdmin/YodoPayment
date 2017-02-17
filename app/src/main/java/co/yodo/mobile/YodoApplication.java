@@ -31,8 +31,8 @@ public class YodoApplication extends Application {
     //private static final String DEMO_IP  = "http://198.101.209.120"; // Demo
     private static final String DEMO_IP  = "http://162.244.228.84";  // Demo
     private static final String DEV_IP   = "http://162.244.228.78";  // Development
-    private static final String LOCAL_IP = "http://192.168.1.33";    // Local
-    public static final String IP = PROD_IP;
+    private static final String LOCAL_IP = "http://192.168.1.38";    // Local
+    public static final String IP = DEV_IP;
 
     /** Component that build the dependencies */
     private static GraphComponent mComponent;

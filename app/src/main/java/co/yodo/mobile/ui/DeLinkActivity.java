@@ -253,7 +253,7 @@ public class DeLinkActivity extends AppCompatActivity implements ApiClient.Reque
             if( account != null && account.length() > 0 ) {
                 LinkedAccount linked = new LinkedAccount( account, DeLinkRequest.DeLinkST.TO );
 
-                String nickname = PrefUtils.getNickname( ac, account );
+                final String nickname = PrefUtils.getNickname( ac, account );
                 if( nickname != null )
                     linked.setNickname( nickname );
 
