@@ -36,17 +36,17 @@ public class SplashActivity extends Activity implements ApiClient.RequestsListen
     private static final String TAG = SplashActivity.class.getSimpleName();
 
     /** The context object */
-    private Context ac;
+    private Context context;
 
     /** Account identifier */
-    private String mHardwareToken;
+    private String hardwareToken;
 
     /** Messages Handler */
-    private YodoHandler mHandlerMessages;
+    private YodoHandler messagesHandler;
 
     /** Manager for the server requests */
     @Inject
-    ApiClient mRequestManager;
+    ApiClient requestManager;
 
     /** Request for error Google Play Services */
     private static final int REQUEST_CODE_RECOVER_PLAY_SERVICES = 0;
@@ -61,7 +61,6 @@ public class SplashActivity extends Activity implements ApiClient.RequestsListen
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
         GUIUtils.setLanguage( this );
-        setContentView( R.layout.activity_splash );
 
         setupGUI();
         updateData();
@@ -84,12 +83,12 @@ public class SplashActivity extends Activity implements ApiClient.RequestsListen
      */
     private void setupGUI() {
         // Get the context
-        ac = SplashActivity.this;
-        mHandlerMessages = new YodoHandler( SplashActivity.this );
+        context = SplashActivity.this;
+        messagesHandler = new YodoHandler( SplashActivity.this );
 
         // Injection
         YodoApplication.getComponent().inject( this );
-        mRequestManager.setListener( this );
+        requestManager.setListener( this );
     }
 
     /**
@@ -104,13 +103,13 @@ public class SplashActivity extends Activity implements ApiClient.RequestsListen
 
         // Verify Google Play Services
         if( hasServices ) {
-            mHardwareToken = PrefUtils.getHardwareToken( ac );
-            if( mHardwareToken == null ) {
+            hardwareToken = PrefUtils.getHardwareToken( context );
+            if( hardwareToken == null ) {
                 setupPermissions();
             } else {
-                mRequestManager.invoke( new AuthenticateRequest(
+                requestManager.invoke( new AuthenticateRequest(
                         AUTH_REQ,
-                        mHardwareToken
+                        hardwareToken
                 ) );
             }
         }
@@ -138,17 +137,17 @@ public class SplashActivity extends Activity implements ApiClient.RequestsListen
      */
     private void authenticateUser() {
         // Gets the hardware token
-        mHardwareToken = PrefUtils.generateHardwareToken( ac );
-        if( mHardwareToken == null ) {
+        hardwareToken = PrefUtils.generateHardwareToken( context );
+        if( hardwareToken == null ) {
             // The device doesn't have a hardware token
-            ToastMaster.makeText( ac, R.string.message_no_hardware, Toast.LENGTH_LONG ).show();
+            ToastMaster.makeText( context, R.string.message_no_hardware, Toast.LENGTH_LONG ).show();
             finish();
         } else {
             // We have the hardware token, now let's verify if the user exists
-            PrefUtils.saveHardwareToken( ac, mHardwareToken );
-            mRequestManager.invoke( new AuthenticateRequest(
+            PrefUtils.saveHardwareToken( context, hardwareToken );
+            requestManager.invoke( new AuthenticateRequest(
                     AUTH_REQ,
-                    mHardwareToken
+                    hardwareToken
             ) );
         }
     }
@@ -158,16 +157,16 @@ public class SplashActivity extends Activity implements ApiClient.RequestsListen
      * application, or the registration of the biometric token
      */
     private void startNextActivity() {
-        final String authNumber = PrefUtils.getAuthNumber( ac );
+        final String authNumber = PrefUtils.getAuthNumber( context );
         // The authnumber exists, so the biometric token has not been registered
         if( !authNumber.equals( "" ) ) {
-            Intent intent = new Intent( ac, RegistrationBiometricActivity.class );
+            Intent intent = new Intent( context, RegistrationBiometricActivity.class );
             intent.putExtra( Intents.AUTH_NUMBER, authNumber );
             startActivity( intent );
         }
         // The token biometric had already been sent, we can continue
         else {
-            Intent intent = new Intent( ac, MainActivity.class );
+            Intent intent = new Intent( context, MainActivity.class );
             startActivity( intent );
         }
     }
@@ -189,11 +188,11 @@ public class SplashActivity extends Activity implements ApiClient.RequestsListen
                 switch( code ) {
                     // The user exists, let's verify the rest of the registration
                     case ServerResponse.AUTHORIZED:
-                        final boolean isTokenSent = PrefUtils.isGCMTokenSent( ac );
+                        final boolean isTokenSent = PrefUtils.isGCMTokenSent( context );
                         // There is no token for GCM, let's try to register
                         if( !YodoApplication.getSwitch().equals( "L" ) && !isTokenSent ) {
                             Intent intent = new Intent( this, RegistrationIntentService.class );
-                            intent.putExtra( BroadcastMessage.EXTRA_HARDWARE_TOKEN, mHardwareToken );
+                            intent.putExtra( BroadcastMessage.EXTRA_HARDWARE_TOKEN, hardwareToken );
                             startService( intent );
                         } else {
                             finish();
@@ -212,7 +211,7 @@ public class SplashActivity extends Activity implements ApiClient.RequestsListen
                     // There was an error during the process
                     default:
                         message = response.getMessage();
-                        YodoHandler.sendMessage( YodoHandler.INIT_ERROR, mHandlerMessages, code, message );
+                        YodoHandler.sendMessage( YodoHandler.INIT_ERROR, messagesHandler, code, message );
                         break;
                 }
                 break;
@@ -225,10 +224,10 @@ public class SplashActivity extends Activity implements ApiClient.RequestsListen
             case REQUEST_CODE_RECOVER_PLAY_SERVICES:
                 finish();
                 if( resultCode == RESULT_OK ) {
-                    Intent iSplash = new Intent( ac, SplashActivity.class );
+                    Intent iSplash = new Intent( context, SplashActivity.class );
                     startActivity( iSplash );
                 } else if( resultCode == RESULT_CANCELED ) {
-                    Toast.makeText( ac, R.string.error_play_services, Toast.LENGTH_SHORT ).show();
+                    Toast.makeText( context, R.string.error_play_services, Toast.LENGTH_SHORT ).show();
                 }
                 break;
         }
@@ -260,12 +259,12 @@ public class SplashActivity extends Activity implements ApiClient.RequestsListen
     @Subscribe( sticky = true, threadMode = ThreadMode.MAIN )
     public void onResponseEvent( GCMResponse response ) {
         EventBus.getDefault().removeStickyEvent( response );
-        boolean sentToken = PrefUtils.isGCMTokenSent( ac );
+        boolean sentToken = PrefUtils.isGCMTokenSent( context );
         finish();
         if( sentToken ) {
             startNextActivity();
         } else {
-            Toast.makeText( ac, R.string.error_gcm_registration, Toast.LENGTH_SHORT ).show();
+            Toast.makeText( context, R.string.error_gcm_registration, Toast.LENGTH_SHORT ).show();
         }
     }
 }
