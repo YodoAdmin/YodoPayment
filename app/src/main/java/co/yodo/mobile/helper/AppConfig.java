@@ -1,7 +1,8 @@
 package co.yodo.mobile.helper;
 
 import co.yodo.mobile.BuildConfig;
-import co.yodo.mobile.network.ApiClient;
+import co.yodo.mobile.YodoApplication;
+import co.yodo.mobile.business.network.ApiClient;
 
 /**
  * Created by luis on 15/12/14.
@@ -65,22 +66,20 @@ public class AppConfig {
     /* If the token was successfully sent to the server
 	 * type -- boolean
 	 */
-    static final String SPREF_TOKEN_TO_SERVER  = "SPTokenToServer" + ApiClient.getSwitch();
+    static final String SPREF_TOKEN_TO_SERVER  = "SPTokenToServer" + YodoApplication.getSwitch();
+
+    /* Nickname for the links
+     * type -- String
+     */
+    static final String SPREF_NICKNAME = "SPNickname";
 
     /* Action to be taken
      * type -- String
      */
     public static final String SPREF_SUBSCRIPTION_TASK = "subscription_task";
 
-    /* If the main activity is in foreground
-	 * type -- boolean
-	 */
-    static final String SPREF_FOREGROUND = "SPForeground";
-
-    public static final String SPREF_NICKNAME = "SPNickname";
-
     /**
-     * Default values
+     * Configuration
      * {{ ======================================================================
      */
 
@@ -89,14 +88,4 @@ public class AppConfig {
 
     /* Coupons folder */
     public static final String COUPONS_FOLDER = "Yodo";
-
-    /* Minimum length for the PIP */
-    public static final int MIN_PIP_LENGTH = 4;
-
-    /* Progress Dialog */
-    public static final String IS_SHOWING = "is_showing";
-
-    /* Default values for user balance */
-    static final String NO_BALANCE = "*.**";
-    public static final String DEFAULT_BALANCE = "0.00";
 }

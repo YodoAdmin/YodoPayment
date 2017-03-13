@@ -26,17 +26,17 @@ public class MainTestRule<A extends MainActivity> extends ActivityTestRule<A> {
     protected void beforeActivityLaunched() {
         super.beforeActivityLaunched();
         mCtx = InstrumentationRegistry.getTargetContext();
-        PrefUtils.clearPrefConfig( mCtx );
+        PrefUtils.clearPrefConfig();
 
         // Set preferences
-        PrefUtils.saveEulaAccepted( mCtx, true );
+        PrefUtils.saveEulaAccepted( true );
         PrefUtils.saveFirstLogin( mCtx, false );
-        PrefUtils.saveHardwareToken( mCtx, fHardwareToken );
+        PrefUtils.saveHardwareToken( fHardwareToken );
     }
 
     @Override
     protected void afterActivityFinished() {
         super.afterActivityFinished();
-        PrefUtils.clearPrefConfig( mCtx );
+        PrefUtils.clearPrefConfig();
     }
 }

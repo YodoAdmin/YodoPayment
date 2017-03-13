@@ -1,6 +1,6 @@
 package co.yodo.mobile.ui.adapter.model;
 
-import co.yodo.mobile.network.request.DeLinkRequest;
+import co.yodo.mobile.business.network.request.DeLinkRequest;
 
 /**
  * Created by hei on 11/11/16.

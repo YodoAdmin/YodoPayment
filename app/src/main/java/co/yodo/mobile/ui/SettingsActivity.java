@@ -5,18 +5,17 @@ import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.helper.AppConfig;
-import co.yodo.mobile.helper.GUIUtils;
+import co.yodo.mobile.utils.GuiUtils;
 
-public class SettingsActivity extends AppCompatActivity {
+public class SettingsActivity extends BaseActivity {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        GUIUtils.setLanguage( SettingsActivity.this );
+        //GUIUtils.setLanguage( SettingsActivity.this );
         setContentView( R.layout.activity_settings );
 
         setupGUI();
@@ -38,7 +37,7 @@ public class SettingsActivity extends AppCompatActivity {
      */
     private void setupGUI() {
         // Setup the toolbar
-        GUIUtils.setActionBar( this, R.string.title_activity_settings );
+        GuiUtils.setActionBar( this );
 
         // Sets the fragment content
         getFragmentManager().beginTransaction().replace( R.id.content, new PrefsFragmentInner() ).commit();

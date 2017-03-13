@@ -1,6 +1,5 @@
 package co.yodo.mobile.ui.option.contract;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.support.design.widget.TextInputLayout;
@@ -8,8 +7,6 @@ import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
-import android.widget.CheckBox;
-import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 
@@ -17,12 +14,10 @@ import javax.inject.Inject;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.YodoApplication;
-import co.yodo.mobile.helper.GUIUtils;
+import co.yodo.mobile.business.network.ApiClient;
 import co.yodo.mobile.helper.PrefUtils;
-import co.yodo.mobile.network.ApiClient;
+import co.yodo.mobile.ui.BaseActivity;
 import co.yodo.mobile.ui.notification.ProgressDialogHelper;
-import co.yodo.mobile.ui.notification.YodoHandler;
-import co.yodo.mobile.ui.validator.PIPValidator;
 
 /**
  * Created by hei on 04/08/16.
@@ -31,44 +26,32 @@ import co.yodo.mobile.ui.validator.PIPValidator;
  */
 public abstract class IRequestOption extends IOption {
     /** User identifier */
-    protected final String mHardwareToken;
-
-    /** Handler for messages */
-    protected YodoHandler mHandlerMessages;
+    protected final String hardwareToken;
 
     /** Manager for the server requests */
     @Inject
-    protected ApiClient mRequestManager;
+    protected ApiClient requestManager;
 
     /** Progress dialog for the requests */
     @Inject
-    protected ProgressDialogHelper mProgressManager;
-
-    /** PIP validator */
-    @Inject
-    protected PIPValidator mPipValidator;
+    protected ProgressDialogHelper progressManager;
 
     /** GUI elements */
     protected EditText etInput;
-    protected CheckBox cbShowPIP;
-    private TextInputLayout tilPip;
+    protected TextInputLayout tilPip;
 
     /**
      * Sets up the main elements of the options
      * @param activity The Activity to handle
-     * @param handlerMessages The Messages handler
      */
-    protected IRequestOption( Activity activity, YodoHandler handlerMessages ) {
+    protected IRequestOption( BaseActivity activity ) {
         super( activity );
 
         // Gets request's data
-        this.mHardwareToken = PrefUtils.getHardwareToken( mActivity );
+        this.hardwareToken = PrefUtils.getHardwareToken();
 
         // Injection
         YodoApplication.getComponent().inject( this );
-
-        // Gets the messages handler
-        this.mHandlerMessages = handlerMessages;
     }
 
     /**
@@ -77,20 +60,12 @@ public abstract class IRequestOption extends IOption {
      */
     protected View buildLayout() {
         // Dialog
-        LayoutInflater inflater = (LayoutInflater) mActivity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-        final View layout = inflater.inflate( R.layout.dialog_with_pip, new LinearLayout( mActivity ), false );
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
+        final View layout = inflater.inflate( R.layout.dialog_with_pip, new LinearLayout( activity ), false );
 
         // GUI setup
-        etInput = (EditText) layout.findViewById( R.id.cetPIP );
-        //cbShowPIP = (CheckBox) layout.findViewById( R.id.showPassword );
+        etInput = (EditText) layout.findViewById( R.id.text_pip );
         tilPip = (TextInputLayout) etInput.getParent().getParent();
-
-        /*cbShowPIP.setOnCheckedChangeListener( new CompoundButton.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged( CompoundButton compoundButton, boolean b ) {
-                GUIUtils.showPassword( cbShowPIP, etInput );
-            }
-        } );*/
 
         return layout;
     }
@@ -105,8 +80,8 @@ public abstract class IRequestOption extends IOption {
             @Override
             public void onShow( DialogInterface dialog ) {
                 // Get the AlertDialog and the positive Button
-                mAlertDialog = AlertDialog.class.cast( dialog );
-                final Button button = mAlertDialog.getButton( AlertDialog.BUTTON_POSITIVE );
+                alertDialog = AlertDialog.class.cast( dialog );
+                final Button button = alertDialog.getButton( AlertDialog.BUTTON_POSITIVE );
 
                 // Sets the action for the positive Button
                 button.setOnClickListener( onPositive );
@@ -119,9 +94,7 @@ public abstract class IRequestOption extends IOption {
      */
     protected void clearGUI() {
         etInput.setText( "" );
-        tilPip.setErrorEnabled( false );
         tilPip.setError( null );
         etInput.requestFocus();
-        //cbShowPIP.setChecked( PrefUtils.getPIPVisibility( mActivity ) );
     }
 }

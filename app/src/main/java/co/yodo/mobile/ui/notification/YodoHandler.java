@@ -9,7 +9,8 @@ import android.os.Message;
 import java.lang.ref.WeakReference;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.network.model.ServerResponse;
+import co.yodo.mobile.business.network.model.ServerResponse;
+import co.yodo.mobile.helper.AlertDialogHelper;
 
 /**
  * Created by luis on 15/12/14.
@@ -51,7 +52,7 @@ public class YodoHandler extends Handler {
             };
         }
 
-        String code     = msg.getData().getString( CODE, ServerResponse.ERROR_FAILED );
+        /*String code     = msg.getData().getString( CODE, ServerResponse.ERROR_FAILED );
         String response = msg.getData().getString( MESSAGE );
 
         switch( code ) {
@@ -76,7 +77,7 @@ public class YodoHandler extends Handler {
                 break;
         }
 
-        AlertDialogHelper.showAlertDialog( main, code, response, clickListener );
+        AlertDialogHelper.showAlertDialog( main, code, response, clickListener );*/
     }
 
     /**

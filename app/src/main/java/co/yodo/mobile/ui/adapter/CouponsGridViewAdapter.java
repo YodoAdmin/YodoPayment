@@ -19,7 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.database.model.Coupon;
+import co.yodo.mobile.model.db.Coupon;
 
 public class CouponsGridViewAdapter extends ArrayAdapter<Coupon> {
     /** Data */
@@ -30,8 +30,8 @@ public class CouponsGridViewAdapter extends ArrayAdapter<Coupon> {
     /** Loader for the images */
     private ImageLoader imageLoader;
     private final DisplayImageOptions options = new DisplayImageOptions.Builder()
-            .showImageOnLoading( R.drawable.loading_image )
-            .showImageOnFail( R.drawable.no_image )
+            .showImageOnLoading( R.mipmap.loading_image )
+            .showImageOnFail( R.drawable.ic_no_image )
             .bitmapConfig( Bitmap.Config.RGB_565 )
             .imageScaleType( ImageScaleType.EXACTLY )
             .cacheInMemory( true )

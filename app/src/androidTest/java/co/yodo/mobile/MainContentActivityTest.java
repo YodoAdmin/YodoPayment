@@ -10,7 +10,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import co.yodo.mobile.network.model.ServerResponse;
+import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.rule.MainTestRule;
 import co.yodo.mobile.ui.CouponsActivity;
 import co.yodo.mobile.ui.MainActivity;
@@ -58,7 +58,7 @@ public class MainContentActivityTest {
     @Test
     public void testPaymentPIPInput() throws Exception {
         // Press to make the input PIP appears
-        onView( withId( R.id.ivPayment ) )
+        onView( withId( R.id.image_payment ) )
                 .perform( click() );
 
         // Check if the dialog appeared
@@ -87,7 +87,7 @@ public class MainContentActivityTest {
                 .perform( click() );
 
         // There should be an error for the PIP
-        onView( withText( R.string.pip_short ) )
+        onView( withText( R.string.error_pip_length ) )
                 .inRoot( withDecorView( not( mActivityRule.getActivity().getWindow().getDecorView() ) ) )
                 .check( matches( isDisplayed() ) );
 
@@ -104,7 +104,7 @@ public class MainContentActivityTest {
     @Test
     public void testPaymentCorrectPIPInput() throws Exception {
         // Press to make the input PIP appears
-        onView( withId( R.id.ivPayment ) )
+        onView( withId( R.id.image_payment ) )
                 .perform( click() );
 
         // Check if the dialog appeared
@@ -143,7 +143,7 @@ public class MainContentActivityTest {
     public void testCoupon() throws Exception {
         Intents.init();
 
-        onView( withId( R.id.ivCoupon ) )
+        onView( withId( R.id.image_coupons ) )
                 .perform( click() );
 
         intended( hasComponent( CouponsActivity.class.getName() ) );
@@ -157,10 +157,10 @@ public class MainContentActivityTest {
      */
     @Test
     public void testNetwork() throws Exception {
-        onView( withId( R.id.ivNetwork ) )
+        onView( withId( R.id.image_social ) )
                 .perform( click() );
 
-        onView( allOf( withId( android.support.design.R.id.snackbar_text ), withText( R.string.no_available ) ) )
+        onView( allOf( withId( android.support.design.R.id.snackbar_text ), withText( R.string.error_available ) ) )
                 .check( matches( isDisplayed() ) );
     }
 

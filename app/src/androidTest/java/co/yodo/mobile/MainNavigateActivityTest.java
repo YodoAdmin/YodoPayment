@@ -8,11 +8,11 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import co.yodo.mobile.network.model.ServerResponse;
+import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.rule.MainTestRule;
 import co.yodo.mobile.ui.MainActivity;
 import co.yodo.mobile.ui.ReceiptsActivity;
-import co.yodo.mobile.ui.ResetPIPActivity;
+import co.yodo.mobile.ui.ResetPipActivity;
 
 import static android.support.test.espresso.Espresso.onData;
 import static android.support.test.espresso.Espresso.onView;
@@ -57,13 +57,13 @@ public class MainNavigateActivityTest {
     public void testResetPIP() throws Exception {
         Intents.init();
 
-        onView( withId( R.id.dlPayment ) )
+        onView( withId( R.id.layout_payment ) )
                 .perform( open() );
 
-        onView( withId( R.id.bResetPip ) )
+        onView( withId( R.id.button_reset_pip ) )
                 .perform( click() );
 
-        intended( hasComponent( ResetPIPActivity.class.getName() ) );
+        intended( hasComponent( ResetPipActivity.class.getName() ) );
         Intents.release();
     }
 
@@ -75,10 +75,10 @@ public class MainNavigateActivityTest {
     public void testReceipts() throws Exception {
         Intents.init();
 
-        onView( withId( R.id.dlPayment ) )
+        onView( withId( R.id.layout_payment ) )
                 .perform( open() );
 
-        onView( withId( R.id.bReceipts ) )
+        onView( withId( R.id.button_receipts ) )
                 .perform( click() );
 
         intended( hasComponent( ReceiptsActivity.class.getName() ) );
@@ -99,7 +99,7 @@ public class MainNavigateActivityTest {
                 .perform( click() );
 
         // The dialog should not be visible any more
-        onView( withText( R.string.linking_menu ) )
+        onView( withText( R.string.text_options_select ) )
                 .check( doesNotExist() );
     }
 
@@ -245,11 +245,11 @@ public class MainNavigateActivityTest {
     @Test
     public void testBalancePIPInput() throws Exception {
         // Open navigation
-        onView( withId( R.id.dlPayment ) )
+        onView( withId( R.id.layout_payment ) )
                 .perform( open() );
 
         // Click on Get Balance
-        onView( withId( R.id.bBalance ) )
+        onView( withId( R.id.button_balance ) )
                 .perform( click() );
 
         verifyShortPIP();
@@ -263,11 +263,11 @@ public class MainNavigateActivityTest {
     @Test
     public void testBalanceCorrectPIPInput() throws Exception {
         // Open navigation
-        onView( withId( R.id.dlPayment ) )
+        onView( withId( R.id.layout_payment ) )
                 .perform( open() );
 
         // Click on Get Balance
-        onView( withId( R.id.bBalance ) )
+        onView( withId( R.id.button_balance ) )
                 .perform( click() );
 
         verifyCorrectPIP( ServerResponse.ERROR_INCORRECT_PIP );
@@ -281,11 +281,11 @@ public class MainNavigateActivityTest {
     @Test
     public void testClosePIPInput() throws Exception {
         // Open navigation
-        onView( withId( R.id.dlPayment ) )
+        onView( withId( R.id.layout_payment ) )
                 .perform( open() );
 
         // Click on Close Account
-        onView( withId( R.id.bClose ) )
+        onView( withId( R.id.button_close_account ) )
                 .perform( click() );
 
         verifyShortPIP();
@@ -299,11 +299,11 @@ public class MainNavigateActivityTest {
     @Test
     public void testCloseCorrectPIPInput() throws Exception {
         // Open navigation
-        onView( withId( R.id.dlPayment ) )
+        onView( withId( R.id.layout_payment ) )
                 .perform( open() );
 
         // Click on Close Account
-        onView( withId( R.id.bClose ) )
+        onView( withId( R.id.button_close_account ) )
                 .perform( click() );
 
         verifyCorrectPIP( ServerResponse.ERROR_INCORRECT_PIP );
@@ -314,15 +314,15 @@ public class MainNavigateActivityTest {
      */
     private void openLinks() {
         // Open navigation
-        onView( withId( R.id.dlPayment ) )
+        onView( withId( R.id.layout_payment ) )
                 .perform( open() );
 
         // Click on Links
-        onView( withId( R.id.bLinks ) )
+        onView( withId( R.id.button_links ) )
                 .perform( click() );
 
         // Check if the dialog appeared
-        onView( withText( R.string.linking_menu ) )
+        onView( withText( R.string.text_options_select ) )
                 .inRoot( isDialog() )
                 .check( matches( isDisplayed() ) );
     }
@@ -357,7 +357,7 @@ public class MainNavigateActivityTest {
                 .perform( click() );
 
         // There should be an error for the PIP
-        onView( withText( R.string.pip_short ) )
+        onView( withText( R.string.error_pip_length ) )
                 .inRoot( withDecorView( not( mActivityRule.getActivity().getWindow().getDecorView() ) ) )
                 .check( matches( isDisplayed() ) );
 

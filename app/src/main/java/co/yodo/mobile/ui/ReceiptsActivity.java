@@ -1,66 +1,52 @@
 package co.yodo.mobile.ui;
 
-import android.app.SearchManager;
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SearchView;
-import android.support.v7.widget.ShareActionProvider;
 import android.view.ActionMode;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ListView;
-import android.widget.ProgressBar;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import co.yodo.mobile.R;
-import co.yodo.mobile.database.ReceiptsDataSource;
-import co.yodo.mobile.database.model.Receipt;
+import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.helper.FormatUtils;
-import co.yodo.mobile.helper.GUIUtils;
-import co.yodo.mobile.helper.SystemUtils;
-import co.yodo.mobile.ui.adapter.ReceiptsListViewAdapter;
+import co.yodo.mobile.model.db.Receipt;
+import co.yodo.mobile.ui.adapter.ReceiptsAdapter;
 import co.yodo.mobile.ui.dialog.ReceiptDialog;
+import co.yodo.mobile.utils.GuiUtils;
 
-public class ReceiptsActivity extends AppCompatActivity implements
-        AdapterView.OnItemClickListener,
+public class ReceiptsActivity extends BaseActivity implements
+        /*AdapterView.OnItemClickListener,
         AdapterView.OnItemLongClickListener,
-        ActionMode.Callback,
+        ActionMode.Callback,*/
         LoaderManager.LoaderCallbacks<List<Receipt>> {
-    /** DEBUG */
-    @SuppressWarnings( "unused" )
-    private final static String TAG = ReceiptsActivity.class.getSimpleName();
-
-    /** The context object */
-    private Context ac;
-
-    /** Database */
-    private ReceiptsDataSource receiptsdb;
+    /** The application context */
+    @Inject
+    Context context;
 
     /** GUI Controllers */
+    @BindView( R.id.layout_receipts )
+    RecyclerView rvReceipts;
+
+    /** Receipts data */
+    private final List<Receipt> receipts = new ArrayList<>();
+    private ReceiptsAdapter adapter;
+
     private SearchView searchView;
-    private ProgressBar pbLoading;
-    private ListView lvReceipts;
-    private ReceiptsListViewAdapter rlvAdapter;
 
     /** Action Mode (Action bar) */
-    private ActionMode mActionMode;
+    private ActionMode actionMode;
     private boolean isActionModeShowing = false;
 
     /** Identifier for the loader */
@@ -69,45 +55,14 @@ public class ReceiptsActivity extends AppCompatActivity implements
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        GUIUtils.setLanguage( ReceiptsActivity.this );
+        //GUIUtils.setLanguage( ReceiptsActivity.this );
         setContentView( R.layout.activity_receipts );
 
         setupGUI();
         updateData();
     }
 
-    @Override
-    public void onResume() {
-        super.onResume();
-
-        if( receiptsdb != null ) {
-            receiptsdb.open();
-        }
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        if( receiptsdb != null )
-            receiptsdb.close();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        // register to event bus
-        EventBus.getDefault().register( this );
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        // unregister from event bus
-        EventBus.getDefault().unregister( this );
-    }
-
-    @Override
+    /*@Override
     protected void onNewIntent(Intent intent) {
         if ( Intent.ACTION_SEARCH.equals( intent.getAction() ) ) {
             String query = intent.getStringExtra( SearchManager.QUERY );
@@ -139,7 +94,7 @@ public class ReceiptsActivity extends AppCompatActivity implements
         } );
 
         return super.onCreateOptionsMenu( menu );
-    }
+    }*/
 
     @Override
     public boolean onOptionsItemSelected( MenuItem item ) {
@@ -152,36 +107,38 @@ public class ReceiptsActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected( item );
     }
 
-    @Override
+    /*@Override
     public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
         super.onCreateContextMenu( menu, v, menuInfo );
 
-        if( v.getId() == R.id.receiptsList ) {
+        if( v.getId() == R.id.layout_receipts ) {
             MenuInflater inflater = getMenuInflater();
             inflater.inflate( R.menu.menu_receipts, menu );
         }
-    }
+    }*/
 
     private void setupGUI() {
-        // get the context
-        ac = ReceiptsActivity.this;
-
-        // Bootstrap
-        receiptsdb = ReceiptsDataSource.getInstance( ac );
-        receiptsdb.open();
-
-        // Get controllers
-        pbLoading = (ProgressBar) findViewById( R.id.pbLoading );
-        lvReceipts = (ListView) findViewById( R.id.receiptsList );
+        // Injection
+        ButterKnife.bind( this );
+        YodoApplication.getComponent().inject( this );
 
         // Setup the toolbar
-        GUIUtils.setActionBar( this, R.string.title_activity_receipts );
+        GuiUtils.setActionBar( this );
+
+        // Manager for the recycler view
+        LinearLayoutManager llManager = new LinearLayoutManager( context );
+        rvReceipts.setLayoutManager( llManager );
+
+        // Create adapter
+        adapter = new ReceiptsAdapter( context, receipts );
+        rvReceipts.setAdapter( adapter );
     }
 
-    private void updateData() {
-        lvReceipts.setOnItemClickListener( this );
-        lvReceipts.setOnItemLongClickListener( this );
-        rlvAdapter = new ReceiptsListViewAdapter( ac, R.layout.row_list_receipts, new ArrayList<Receipt>() );
+    @Override
+    public void updateData() {
+        //rvReceipts.setOnItemClickListener( this );
+        //rvReceipts.setOnItemLongClickListener( this );
+
         getSupportLoaderManager().initLoader( THE_LOADER, null, this ).forceLoad();
     }
 
@@ -189,18 +146,18 @@ public class ReceiptsActivity extends AppCompatActivity implements
      * Builds the dialog for the receipt
      * @param params The receipt data
      */
-    private void buildReceiptDialog( Receipt params ) {
+    /*private void buildReceiptDialog( Receipt params ) {
         // The receipt dialog formats the values
-        new ReceiptDialog.Builder( ac )
+        new ReceiptDialog.Builder( context )
                 .cancelable( true )
                 .description( params.getDescription() )
                 .created( params.getCreated() )
                 .total( params.getTotalAmount(), params.getTCurrency() )
-                .authnumber( params.getAuthnumber() )
+                .authnumber( params.getAuthNumber() )
                 .donor( params.getDonorAccount() )
                 .recipient( params.getRecipientAccount() )
                 .tender( params.getTenderAmount(), params.getDCurrency())
-                .cashback( params.getCashbackAmount(), params.getTCurrency() )
+                .cashback( params.getCashBackAmount(), params.getTCurrency() )
                 .build();
     }
 
@@ -210,7 +167,7 @@ public class ReceiptsActivity extends AppCompatActivity implements
 
         if( receipt != null && !receipt.isOpened() ) {
             receipt.setOpened( true );
-            receiptsdb.updateReceipt( receipt );
+            //receiptsdb.updateReceipt( receipt );
         }
 
         buildReceiptDialog( receipt );
@@ -219,10 +176,10 @@ public class ReceiptsActivity extends AppCompatActivity implements
 
     @Override
     public boolean onItemLongClick( AdapterView<?> parent, View view, int position, long id ) {
-        //ReceiptsListViewAdapter adapter = (ReceiptsListViewAdapter) lvReceipts.getAdapter();
+        //ReceiptsListViewAdapter adapter = (ReceiptsListViewAdapter) rvReceipts.getAdapter();
         Receipt receipt = rlvAdapter.getItem( position );
 
-        ReceiptsListViewAdapter.ViewHolder holder = (ReceiptsListViewAdapter.ViewHolder) view.getTag();
+        ReceiptsAdapter.ViewHolder holder = (ReceiptsAdapter.ViewHolder) view.getTag();
         if( receipt != null )
             receipt.setChecked( !receipt.isChecked );
         rlvAdapter.toggleSelection( position );
@@ -232,18 +189,18 @@ public class ReceiptsActivity extends AppCompatActivity implements
         int selectedCount = rlvAdapter.getSelectedCount();
         if( selectedCount > 0 ) {
             if( !isActionModeShowing ) {
-                mActionMode = ReceiptsActivity.this.startActionMode( ReceiptsActivity.this );
+                actionMode = ReceiptsActivity.this.startActionMode( ReceiptsActivity.this );
                 isActionModeShowing = true;
             }
         }
-        else if( mActionMode != null ) {
-            mActionMode.finish();
+        else if( actionMode != null ) {
+            actionMode.finish();
             isActionModeShowing = false;
         }
 
-        if( mActionMode != null ) {
-            mActionMode.setTitle( String.valueOf( selectedCount ) );
-            mActionMode.invalidate();
+        if( actionMode != null ) {
+            actionMode.setTitle( String.valueOf( selectedCount ) );
+            actionMode.invalidate();
         }
 
         return true;
@@ -286,15 +243,15 @@ public class ReceiptsActivity extends AppCompatActivity implements
                 rlvAdapter.notifyDataSetChanged();
 
                 // Show a notification which can reverse the delete
-                String message = removed.size() + " " + getString( R.string.message_deleted );
-                Snackbar.make( lvReceipts, message, Snackbar.LENGTH_LONG )
-                        .setAction( R.string.message_undo, new View.OnClickListener() {
+                String message = removed.size() + " " + getString( R.string.text_deleted );
+                Snackbar.make( rvReceipts, message, Snackbar.LENGTH_LONG )
+                        .setAction( R.string.text_undo, new View.OnClickListener() {
                             @Override
                             public void onClick( View v ) {
                                 v.setEnabled( false );
 
                                 rlvAdapter.addAll( removed );
-                                rlvAdapter.sort( ReceiptsListViewAdapter.ReceiptsComparator );
+                                rlvAdapter.sort( ReceiptsAdapter.ReceiptsComparator );
 
                                 for( Receipt receipt : removed )
                                     receiptsdb.addReceipt( receipt );
@@ -333,50 +290,43 @@ public class ReceiptsActivity extends AppCompatActivity implements
     public void onReceiptEvent( Receipt receipt ) {
         //adapter.addReceipt( receipt );
         rlvAdapter.add( receipt );
-        rlvAdapter.sort( ReceiptsListViewAdapter.ReceiptsComparator );
+        rlvAdapter.sort( ReceiptsAdapter.ReceiptsComparator );
         rlvAdapter.notifyDataSetChanged();
-    }
+    }*/
 
     @Override
     public Loader<List<Receipt>> onCreateLoader( int id, Bundle args ) {
-        return new LoadTask( this, receiptsdb );
+        return new LoadTask( this );
     }
 
     @Override
     public void onLoadFinished( Loader<List<Receipt>> loader, List<Receipt> data ) {
-        rlvAdapter.addAll( data );
-        lvReceipts.setAdapter( rlvAdapter );
-        pbLoading.setVisibility( View.GONE );
-        lvReceipts.setVisibility( View.VISIBLE );
-
+        //rlvAdapter.addAll( data );
+        //rvReceipts.setAdapter( rlvAdapter );
+        receipts.addAll( data );
+        adapter.notifyDataSetChanged();
         getSupportLoaderManager().destroyLoader( THE_LOADER );
     }
 
     @Override
     public void onLoaderReset( Loader<List<Receipt>> loader ) {
-        lvReceipts.setAdapter( null );
     }
 
     /**
      * Loads the receipts from the database
      */
     private static class LoadTask extends AsyncTaskLoader<List<Receipt>> {
-        /** Receipts database */
-        private ReceiptsDataSource mReceiptsdb;
-
         /**
          * Sets the receipts from the caller
-         * @param context The activity context
-         * @param receiptsdb The receipts database
+         * @param context The application context
          */
-        LoadTask( Context context, ReceiptsDataSource receiptsdb ) {
+        LoadTask( Context context ) {
             super( context );
-            this.mReceiptsdb = receiptsdb;
         }
 
         @Override
         public List<Receipt> loadInBackground() {
-            return mReceiptsdb.getAllReceipts();
+            return Receipt.listAll( Receipt.class );
         }
     }
 
@@ -395,11 +345,11 @@ public class ReceiptsActivity extends AppCompatActivity implements
                 "Donor: %s\n" +
                 "Recipient: %s",
                 receipt.getDescription(),
-                receipt.getAuthnumber() ,
+                receipt.getAuthNumber() ,
                 receipt.getCreated(),
                 FormatUtils.truncateDecimal( receipt.getTotalAmount() ), receipt.getTCurrency(),
                 FormatUtils.truncateDecimal( receipt.getTenderAmount() ), receipt.getDCurrency(),
-                FormatUtils.truncateDecimal( receipt.getCashbackAmount() ), receipt.getTCurrency(),
+                FormatUtils.truncateDecimal( receipt.getCashBackAmount() ), receipt.getTCurrency(),
                 FormatUtils.replaceNull( receipt.getDonorAccount() ),
                 receipt.getRecipientAccount()
         );

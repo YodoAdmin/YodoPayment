@@ -26,7 +26,7 @@
             android:id="@+id/paidView"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/paid"
+            android:text="@string/text.receipt.total"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textStyle="bold" />
 
@@ -46,7 +46,7 @@
         <TextView
             style="@style/ReceiptLabel"
             android:id="@+id/authNumberView"
-            android:text="@string/receipt_auth" />
+            android:text="@string/text.receipt.auth" />
 
         <TextView
             style="@style/ReceiptInfo"
@@ -69,7 +69,7 @@
             <TextView
                 style="@style/ReceiptLabel"
                 android:id="@+id/tvDonorView"
-                android:text="@string/message.donor_account"/>
+                android:text="@string/text.receipt.donor"/>
 
             <TextView
                 style="@style/ReceiptInfo"
@@ -86,7 +86,7 @@
             <TextView
                 style="@style/ReceiptLabel"
                 android:id="@+id/tvReceiverView"
-                android:text="@string/message.recipient_account"/>
+                android:text="@string/text.receipt.recipient"/>
 
             <TextView
                 style="@style/ReceiptInfo"
@@ -110,7 +110,7 @@
             <TextView
                 style="@style/ReceiptLabel"
                 android:id="@+id/cashTenderView"
-                android:text="@string/cash_tender" />
+                android:text="@string/text.receipt.cash.tender" />
 
             <TextView
                 style="@style/ReceiptInfo"
@@ -127,7 +127,7 @@
             <TextView
                 style="@style/ReceiptLabel"
                 android:id="@+id/cashBackView"
-                android:text="@string/cash_back" />
+                android:text="@string/text.receipt.cash.back" />
 
             <TextView
                 style="@style/ReceiptInfo"
@@ -147,7 +147,7 @@
             android:layout_height="wrap_content"
             android:src="@drawable/save_file"
             android:layout_weight="1"
-            android:contentDescription="@string/desc"
+            android:contentDescription="@string/text.desc"
             android:visibility="gone"/>
 
         <ImageView
@@ -156,8 +156,9 @@
             android:layout_height="wrap_content"
             android:src="@drawable/trash_can"
             android:layout_weight="1"
-            android:contentDescription="@string/desc"
+            android:contentDescription="@string/text.desc"
             android:visibility="gone"/>
+
     </LinearLayout>
 
 </LinearLayout>

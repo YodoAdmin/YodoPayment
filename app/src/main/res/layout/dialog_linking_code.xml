@@ -1,58 +1,52 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:layout_margin="10dp">
+    android:layout_margin="10dp"
+    android:orientation="vertical">
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        style="@style/LinkingCodeTextTheme"
         android:layout_margin="10dp"
-        android:layout_gravity="center"
-        android:text="@string/link_code_text"
+        android:text="@string/text.link.code"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <LinearLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="center">
+        android:layout_gravity="center"
+        tools:ignore="UseCompoundDrawables">
 
         <TextView
-            android:id="@+id/codeText"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center"
+            android:id="@+id/text_code"
+            style="@style/LinkingCodeTextTheme"
             android:textStyle="bold"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <ImageView
-            android:id="@+id/copyCodeImage"
+            android:id="@+id/image_copy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginStart="10dp"
-            android:contentDescription="@string/desc"
-            android:src="@drawable/copy" />
+            android:contentDescription="@string/text.desc"
+            android:src="@mipmap/copy" />
 
     </LinearLayout>
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textStyle="bold"
-        android:textColor="@android:color/holo_red_light"
+        style="@style/LinkingCodeTextTheme"
+        android:text="@string/text.warning"
         android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/warning" />
+        android:textColor="@color/colorPrimaryRed"
+        android:textStyle="bold"/>
 
     <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:textColor="@android:color/holo_red_light"
+        style="@style/LinkingCodeTextTheme"
+        android:text="@string/text.link.code.warning"
         android:textAppearance="?android:attr/textAppearanceSmall"
-        android:text="@string/link_code_warning" />
+        android:textColor="@color/colorPrimaryRed"/>
 
 </LinearLayout>

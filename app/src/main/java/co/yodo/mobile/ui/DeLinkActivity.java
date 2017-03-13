@@ -2,22 +2,17 @@ package co.yodo.mobile.ui;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.graphics.Typeface;
 import android.os.Bundle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.view.ContextMenu;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
@@ -28,27 +23,24 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.yodo.mobile.R;
 import co.yodo.mobile.YodoApplication;
-import co.yodo.mobile.component.Intents;
+import co.yodo.mobile.business.component.Intents;
 import co.yodo.mobile.helper.AppConfig;
-import co.yodo.mobile.helper.GUIUtils;
+import co.yodo.mobile.utils.GuiUtils;
 import co.yodo.mobile.helper.PrefUtils;
-import co.yodo.mobile.network.ApiClient;
-import co.yodo.mobile.network.model.ServerResponse;
-import co.yodo.mobile.network.request.DeLinkRequest;
-import co.yodo.mobile.network.request.LinkRequest;
+import co.yodo.mobile.business.network.ApiClient;
+import co.yodo.mobile.business.network.request.DeLinkRequest;
 import co.yodo.mobile.ui.adapter.LinksListViewAdapter;
 import co.yodo.mobile.ui.adapter.model.LinkedAccount;
-import co.yodo.mobile.ui.notification.AlertDialogHelper;
+import co.yodo.mobile.helper.AlertDialogHelper;
 import co.yodo.mobile.ui.notification.ProgressDialogHelper;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.notification.YodoHandler;
-import co.yodo.mobile.ui.option.LinkAccountOption;
 
 /**
  * Created by luis on 20/02/15.
  * Dialog to de-link accounts
  */
-public class DeLinkActivity extends AppCompatActivity implements ApiClient.RequestsListener {
+public class DeLinkActivity extends BaseActivity /*implements ApiClient.RequestsCallback*/ {
     /** DEBUG */
     @SuppressWarnings( "unused" )
     private static final String TAG = DeLinkActivity.class.getSimpleName();
@@ -97,36 +89,36 @@ public class DeLinkActivity extends AppCompatActivity implements ApiClient.Reque
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        GUIUtils.setLanguage( DeLinkActivity.this );
+        //GUIUtils.setLanguage( DeLinkActivity.this );
         setContentView( R.layout.activity_delink );
 
         setupGUI();
         updateData();
 
-        if( savedInstanceState != null && savedInstanceState.getBoolean( AppConfig.IS_SHOWING ) ) {
-            mProgressManager.createProgressDialog( ac );
-        }
+        /*if( savedInstanceState != null && savedInstanceState.getBoolean( AppConfig.IS_SHOWING ) ) {
+            //progressManager.newInstance( context );
+        }*/
     }
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
-        outState.putBoolean(
+        /*outState.putBoolean(
                 AppConfig.IS_SHOWING,
-                mProgressManager.isProgressDialogShowing()
-        );
+                mProgressManager.isShowing()
+        );*/
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        mRequestManager.setListener( this );
+        //requestManager.setListener( this );
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        mProgressManager.destroyProgressDialog();
+        mProgressManager.destroy();
     }
 
     @Override
@@ -164,7 +156,7 @@ public class DeLinkActivity extends AppCompatActivity implements ApiClient.Reque
                 final EditText etInput = (EditText) layout.findViewById( R.id.cetNickname );
 
                 // Set old nickname
-                final String nickname = PrefUtils.getNickname( ac, account.getHardwareToken() );
+                final String nickname = PrefUtils.getNickname( account.getHardwareToken() );
                 if( nickname != null )
                     etInput.setText( nickname );
 
@@ -177,17 +169,17 @@ public class DeLinkActivity extends AppCompatActivity implements ApiClient.Reque
                             nickname = null;
 
                         account.setNickname( nickname );
-                        PrefUtils.saveNickname( ac, account.getHardwareToken(), nickname );
+                        PrefUtils.saveNickname( account.getHardwareToken(), nickname );
                         mSelectedAdapter.notifyDataSetChanged();
                     }
                 };
 
-                AlertDialogHelper.create(
-                        ac,
+                AlertDialogHelper.show(
+                        DeLinkActivity.this,
                         null, null,
                         layout,
                         okClick
-                ).show();
+                );
 
                 return true;
 
@@ -196,14 +188,14 @@ public class DeLinkActivity extends AppCompatActivity implements ApiClient.Reque
                 mTempPosition = info.position;
 
                 // Start the de-link process
-                mProgressManager.createProgressDialog( ac );
-                mRequestManager.invoke( new DeLinkRequest(
+                /*progressManager.newInstance( context );
+                requestManager.invoke( new DeLinkRequest(
                         DELINK_REQ,
                         hardwareToken,
                         pip,
                         account.getHardwareToken(),
                         account.getRequestST()
-                ) );
+                ) );*/
                 return true;
 
             default:
@@ -224,19 +216,12 @@ public class DeLinkActivity extends AppCompatActivity implements ApiClient.Reque
         YodoApplication.getComponent().inject( this );
 
         // Setup the toolbar
-        GUIUtils.setActionBar( this, R.string.title_activity_de_link );
+        GuiUtils.setActionBar( this );
     }
 
-    /**
-     * Sets the main values
-     */
-    private void updateData() {
-        // Gets the hardware token - account identifier
-        hardwareToken = PrefUtils.getHardwareToken( ac );
-        if( hardwareToken == null ) {
-            ToastMaster.makeText( ac, R.string.message_no_hardware, Toast.LENGTH_LONG ).show();
-            finish();
-        }
+    @Override
+    public void updateData() {
+        super.updateData();
 
         Bundle extras = getIntent().getExtras();
         if( extras == null ) {
@@ -253,7 +238,7 @@ public class DeLinkActivity extends AppCompatActivity implements ApiClient.Reque
             if( account != null && account.length() > 0 ) {
                 LinkedAccount linked = new LinkedAccount( account, DeLinkRequest.DeLinkST.TO );
 
-                final String nickname = PrefUtils.getNickname( ac, account );
+                final String nickname = PrefUtils.getNickname( account );
                 if( nickname != null )
                     linked.setNickname( nickname );
 
@@ -266,7 +251,7 @@ public class DeLinkActivity extends AppCompatActivity implements ApiClient.Reque
             if( account != null && account.length() > 0 ) {
                 LinkedAccount linked = new LinkedAccount( account, DeLinkRequest.DeLinkST.FROM );
 
-                String nickname = PrefUtils.getNickname( ac, account );
+                String nickname = PrefUtils.getNickname( account );
                 if( nickname != null )
                     linked.setNickname( nickname );
 
@@ -283,13 +268,13 @@ public class DeLinkActivity extends AppCompatActivity implements ApiClient.Reque
         registerForContextMenu( lvFromLayout );
     }
 
-    @Override
+    /*@Override
     public void onPrepare() {
     }
 
     @Override
     public void onResponse( int responseCode, ServerResponse response ) {
-        mProgressManager.destroyProgressDialog();
+        progressManager.destroy();
         String code, message;
 
         switch( responseCode ) {
@@ -305,5 +290,5 @@ public class DeLinkActivity extends AppCompatActivity implements ApiClient.Reque
                 YodoHandler.sendMessage( handlerMessages, code, message );
                 break;
         }
-    }
+    }*/
 }

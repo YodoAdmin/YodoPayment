@@ -1,17 +1,18 @@
 package co.yodo.mobile.helper;
 
+import android.annotation.SuppressLint;
 import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.telephony.TelephonyManager;
+
+import com.orhanobut.hawk.Hawk;
 
 /**
  * Created by luis on 15/12/14.
  * Utilities for the App, Mainly shared preferences
  */
 public class PrefUtils {
-    @SuppressWarnings( "unused" )
-    private static final String TAG = PrefUtils.class.getSimpleName();
 
     /**
      * A helper class just o obtain the config file for the Shared Preferences
@@ -43,11 +44,11 @@ public class PrefUtils {
 
     /**
      * Clear all the preferences
-     * @param c The Context of the Android system
      * @return True if it was a success otherwise false
      */
-    public static boolean clearPrefConfig( Context c ) {
-        return getSPrefConfig( c ).edit().clear().commit();
+    public static boolean clearPrefConfig() {
+        return Hawk.deleteAll();
+        //return getSPrefConfig( c ).edit().clear().commit();
     }
 
     /**
@@ -56,52 +57,143 @@ public class PrefUtils {
      * @param c The Context of the Android system.
      * @return A new hardware token
      */
+    @SuppressLint( "HardwareIds" )
     public static String generateHardwareToken( Context c ) {
-        String HARDWARE_TOKEN = null;
+        String hardwareToken = null;
 
         TelephonyManager telephonyManager  = (TelephonyManager) c.getSystemService( Context.TELEPHONY_SERVICE );
-        BluetoothAdapter mBluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // Try to get the IMEI
         if( telephonyManager != null ) {
             String tempMAC = telephonyManager.getDeviceId();
             if( tempMAC != null )
-                HARDWARE_TOKEN = tempMAC.replace( "/", "" );
+                hardwareToken = tempMAC.replace( "/", "" );
         }
 
         // Try to get the Bluetooth identifier if this device doesn't have IMEI
-        if( HARDWARE_TOKEN == null && mBluetoothAdapter != null ) {
-            if( mBluetoothAdapter.isEnabled() ) {
-                String tempMAC = mBluetoothAdapter.getAddress();
-                HARDWARE_TOKEN = tempMAC.replaceAll( ":", "" );
+        if( hardwareToken == null && bluetoothAdapter != null ) {
+            if( bluetoothAdapter.isEnabled() ) {
+                String tempMAC = bluetoothAdapter.getAddress();
+                hardwareToken = tempMAC.replaceAll( ":", "" );
             }
         }
 
-        return HARDWARE_TOKEN;
+        return hardwareToken;
     }
 
     /**
      * Saves the hardware token in the preferences
-     * @param c The Context of the Android system
      * @param hardwareToken The hardware token
      * @return If it was a success true otherwise false
      */
-    public static Boolean saveHardwareToken( Context c, String hardwareToken ) {
-        SharedPreferences config = getSPrefConfig( c );
-        SharedPreferences.Editor writer = config.edit();
-        writer.putString( AppConfig.SPREF_HARDWARE_TOKEN, hardwareToken );
-        return writer.commit();
+    public static Boolean saveHardwareToken( String hardwareToken ) {
+        return Hawk.put( AppConfig.SPREF_HARDWARE_TOKEN, hardwareToken );
     }
 
     /**
      * Gets the store hardware token if exists
-     * @param c The Context of the Android system
      * @return The stored token if exists
      */
-    public static String getHardwareToken( Context c ) {
-        SharedPreferences config = getSPrefConfig( c );
-        String token = config.getString( AppConfig.SPREF_HARDWARE_TOKEN, "" );
-        return ( token.equals( "" ) ) ? null : token;
+    public static String getHardwareToken() {
+        return Hawk.get( AppConfig.SPREF_HARDWARE_TOKEN );
+    }
+
+    /**
+     * It saves if it is the user accepted the EULA.
+     * @param flag Value if accepted or not the EULA
+     * @return true  The flag was saved successfully.
+     *         false The flag was not saved successfully.
+     */
+    public static Boolean saveEulaAccepted( Boolean flag ) {
+        return Hawk.put( AppConfig.SPREF_EULA_ACCEPTED, flag );
+    }
+
+    /**
+     * It gets if the user accepted the EULA.
+     * @return true  The user accepted the EULA.
+     *         false The user didn't accept the EULA.
+     */
+    static Boolean isEulaAccepted() {
+        return Hawk.get( AppConfig.SPREF_EULA_ACCEPTED, false );
+    }
+
+    /**
+     * It saves the authnumber of the pip registration to the Shared Preferences.
+     * @param authNumber The authNumber of the registration
+     * @return true  The account was saved successfully.
+     *         false The account was not saved successfully.
+     */
+    public static Boolean saveAuthNumber( String authNumber ) {
+        if( authNumber == null ) {
+            return Hawk.delete( AppConfig.SPREF_AUTH_NUMBER );
+        }
+        return Hawk.put( AppConfig.SPREF_AUTH_NUMBER, authNumber );
+    }
+
+    /**
+     * It gets authnumber of the pip registration
+     * @return String The authnumber of the pip registration
+     *         null    If there is no value set;
+     */
+    public static String getAuthNumber() {
+        return Hawk.get( AppConfig.SPREF_AUTH_NUMBER );
+    }
+
+    /**
+     * It saves if the token was successfully sent to the server in the Shared Preferences.
+     * @param sent If the token was sent or not
+     * @return true  The boolean was saved successfully.
+     *         false The boolean was not saved successfully.
+     */
+    public static Boolean saveGCMTokenSent( boolean sent ) {
+        return Hawk.put( AppConfig.SPREF_TOKEN_TO_SERVER, sent );
+    }
+
+    /**
+     * It gets if the token was sent to the server
+     * @return boolean If the token was sent to the server
+     *         null    If there is no value set;
+     */
+    public static boolean isGCMTokenSent() {
+        return Hawk.get( AppConfig.SPREF_TOKEN_TO_SERVER, false );
+    }
+
+    /**
+     * It saves the current user balance
+     * @param balance It is the user balance
+     * @return true  The flag was saved successfully.
+     *         false The flag was not saved successfully.
+     */
+    public static boolean saveBalance( String balance ) {
+        return Hawk.put( AppConfig.SPREF_CURRENT_BALANCE, balance );
+    }
+
+    /**
+     * It gets the user balance
+     * @return String It returns the balance
+     */
+    public static String getCurrentBalance() {
+        return Hawk.get( AppConfig.SPREF_CURRENT_BALANCE, "*.**" );
+    }
+
+    /**
+     * Saves the nickname for a hardware token
+     * @param hardware The hardware token
+     * @param nickname The nickname
+     * @return True if it saved correctly
+     */
+    public static boolean saveNickname( String hardware, String nickname ) {
+        return Hawk.put( AppConfig.SPREF_NICKNAME + hardware, nickname );
+    }
+
+    /**
+     * Gets the nickname of a hardware token
+     * @param hardware The hardware token
+     * @return The nickname
+     */
+    public static String getNickname( String hardware ) {
+        return Hawk.get( AppConfig.SPREF_NICKNAME + hardware, hardware );
     }
 
     /**
@@ -139,30 +231,6 @@ public class PrefUtils {
     }
 
     /**
-     * It saves the current user balance
-     * @param c The Context of the Android system.
-     * @param balance It is the user balance
-     * @return true  The flag was saved successfully.
-     *         false The flag was not saved successfully.
-     */
-    public static boolean saveBalance( Context c, String balance ) {
-        SharedPreferences config = getSPrefConfig( c );
-        SharedPreferences.Editor writer = config.edit();
-        writer.putString( AppConfig.SPREF_CURRENT_BALANCE, balance );
-        return writer.commit();
-    }
-
-    /**
-     * It gets the user balance
-     * @param c The Context of the Android system
-     * @return String It returns the balance
-     */
-    public static String getCurrentBalance( Context c ) {
-        SharedPreferences config = getSPrefConfig( c );
-        return config.getString( AppConfig.SPREF_CURRENT_BALANCE, AppConfig.NO_BALANCE );
-    }
-
-    /**
      * It saves if it is the first login.
      * @param c The Context of the Android system.
      * @param flag If it is the first login or not.
@@ -188,83 +256,6 @@ public class PrefUtils {
     }
 
     /**
-     * It saves if it is the user accepted the EULA.
-     * @param c The Context of the Android system.
-     * @param flag Value if accepted or not the EULA
-     * @return true  The flag was saved successfully.
-     *         false The flag was not saved successfully.
-     */
-    public static Boolean saveEulaAccepted( Context c, Boolean flag ) {
-        SharedPreferences config = getSPrefConfig( c );
-        SharedPreferences.Editor writer = config.edit();
-        writer.putBoolean( AppConfig.SPREF_EULA_ACCEPTED, flag );
-        return writer.commit();
-    }
-
-    /**
-     * It gets if the user accepted the EULA.
-     * @param c The Context of the Android system.
-     * @return true  The user accepted the EULA.
-     *         false The user didn't accept the EULA.
-     */
-    static Boolean isEulaAccepted( Context c ) {
-        SharedPreferences config = getSPrefConfig( c );
-        return config.getBoolean( AppConfig.SPREF_EULA_ACCEPTED, false );
-    }
-
-    /**
-     * It saves the authnumber of the pip registration to the Shared Preferences.
-     * @param c The Context of the Android system.
-     * @param authnumber The authnumber of the registration
-     * @return true  The account was saved successfully.
-     *         false The account was not saved successfully.
-     */
-    public static Boolean saveAuthNumber( Context c, String authnumber ) {
-        SharedPreferences config = getSPrefConfig( c );
-        SharedPreferences.Editor writer = config.edit();
-
-        writer.putString( AppConfig.SPREF_AUTH_NUMBER, authnumber );
-
-        return writer.commit();
-    }
-
-    /**
-     * It gets authnumber of the pip registration
-     * @param c The Context of the Android system.
-     * @return String The authnumber of the pip registration
-     *         null    If there is no value set;
-     */
-    public static String getAuthNumber( Context c ) {
-        SharedPreferences config = getSPrefConfig( c );
-        return config.getString( AppConfig.SPREF_AUTH_NUMBER, "" );
-    }
-
-    /**
-     * It saves if the token was successfully sent to the server in the Shared Preferences.
-     * @param c The Context of the Android system.
-     * @param sent If the token was sent or not
-     * @return true  The boolean was saved successfully.
-     *         false The boolean was not saved successfully.
-     */
-    public static Boolean saveGCMTokenSent( Context c, boolean sent ) {
-        SharedPreferences config = getSPrefConfig( c );
-        SharedPreferences.Editor writer = config.edit();
-        writer.putBoolean( AppConfig.SPREF_TOKEN_TO_SERVER, sent );
-        return writer.commit();
-    }
-
-    /**
-     * It gets if the token was sent to the server
-     * @param c The Context of the Android system.
-     * @return boolean If the token was sent to the server
-     *         null    If there is no value set;
-     */
-    public static boolean isGCMTokenSent( Context c ) {
-        SharedPreferences config = getSPrefConfig( c );
-        return config.getBoolean( AppConfig.SPREF_TOKEN_TO_SERVER, false );
-    }
-
-    /**
      * Get the current task for the subscription
      * @param c The Context of the Android system
      * @return The task
@@ -286,55 +277,5 @@ public class PrefUtils {
         SharedPreferences.Editor writer = config.edit();
         writer.putBoolean( AppConfig.SPREF_SUBSCRIPTION_TASK, value );
         return writer.commit();
-    }
-
-    /**
-     * It saves if the main activity is in the foreground to the Shared Preferences
-     * @param c The Context of the Android system
-     * @param foreground If the MainActivity is paused or resumed
-     * @return true  The boolean was saved successfully
-     *         false The boolean was not saved successfully
-     */
-    public static Boolean saveIsForeground( Context c, boolean foreground ) {
-        SharedPreferences config = getSPrefConfig( c );
-        SharedPreferences.Editor writer = config.edit();
-        writer.putBoolean( AppConfig.SPREF_FOREGROUND, foreground );
-        return writer.commit();
-    }
-
-    /**
-     * It gets if the MainActivity is in the foreground
-     * @param c The Context of the Android system
-     * @return boolean If the token was sent to the server
-     *         null    If there is no value set;
-     */
-    public static boolean isForeground( Context c ) {
-        SharedPreferences config = getSPrefConfig( c );
-        return config.getBoolean( AppConfig.SPREF_FOREGROUND, false );
-    }
-
-    /**
-     * Saves the nickname for a hardware token
-     * @param c The Context of Android system
-     * @param hardware The hardware token
-     * @param nickname The nickname
-     * @return True if it saved correctly
-     */
-    public static boolean saveNickname( Context c, String hardware, String nickname ) {
-        SharedPreferences config = getSPrefConfig( c );
-        SharedPreferences.Editor writer = config.edit();
-        writer.putString( AppConfig.SPREF_NICKNAME + hardware, nickname );
-        return writer.commit();
-    }
-
-    /**
-     * Gets the nickname of a hardware token
-     * @param c The Context of Android system
-     * @param hardware The hardware token
-     * @return The nickname
-     */
-    public static String getNickname( Context c, String hardware ) {
-        SharedPreferences config = getSPrefConfig( c );
-        return config.getString( AppConfig.SPREF_NICKNAME + hardware, null );
     }
 }
