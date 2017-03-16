@@ -4,18 +4,8 @@
         android:key="SPCurrentLanguage"
         android:title="@string/config_pref_languages"
         android:summary="%s"
-        android:entries="@array/languages_array"
-        android:entryValues="@array/languages_array_values"
+        android:entries="@array/languages_options"
+        android:entryValues="@array/languages_options_values"
         android:defaultValue="en"/>
-
-    <PreferenceCategory android:title="@string/config_pref_security">
-
-        <CheckBoxPreference
-            android:key="SPPIPVisibility"
-            android:title="@string/config_pref_pip_visibility"
-            android:summary="@string/config_pref_pip_visibility_summary"
-            android:defaultValue="false"/>
-
-    </PreferenceCategory>
 
 </PreferenceScreen>

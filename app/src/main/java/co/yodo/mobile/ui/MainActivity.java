@@ -341,7 +341,7 @@ public class MainActivity extends BaseActivity implements
                         break;
 
                     case 2: // List the linking accounts
-                        optsFactory.getOption( OptionsFactory.Option.DE_LINK_ACCOUNT ).execute();
+                        optsFactory.getOption( OptionsFactory.Option.LINKED_ACCOUNTS ).execute();
                         break;
                 }
             }
@@ -405,7 +405,7 @@ public class MainActivity extends BaseActivity implements
             public boolean onLongClick( View v ) {
                 boolean writePermission = SystemUtils.requestPermission(
                         MainActivity.this,
-                        R.string.msg_permission_write_external_storage,
+                        R.string.text_permission_write_external_storage,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
                 );

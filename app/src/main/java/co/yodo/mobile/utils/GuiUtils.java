@@ -1,14 +1,17 @@
 package co.yodo.mobile.utils;
 
+import android.app.Activity;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.ContextWrapper;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.view.View;
 
 /**
  * Created by hei on 10/06/16.
@@ -80,5 +83,21 @@ public class GuiUtils {
         ActionBar actionBar = act.getSupportActionBar();
         if( actionBar != null )
             actionBar.setDisplayHomeAsUpEnabled( true );
+    }
+
+    /**
+     * Gets an activity from a view if it exists
+     * @param v A view with a parent activity
+     * @return The activity that holds the view
+     */
+    public static Activity getActivity( View v ) {
+        Context context = v.getContext();
+        while( context instanceof ContextWrapper ) {
+            if( context instanceof Activity ) {
+                return (Activity )context;
+            }
+            context = ( (ContextWrapper) context ).getBaseContext();
+        }
+        return null;
     }
 }

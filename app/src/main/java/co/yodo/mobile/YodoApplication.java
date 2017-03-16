@@ -1,9 +1,9 @@
 package co.yodo.mobile;
 
-import android.app.Application;
 import android.content.Context;
 import android.util.Log;
 
+import com.evernote.android.job.JobManager;
 import com.orhanobut.hawk.Hawk;
 import com.orm.SugarApp;
 
@@ -17,6 +17,7 @@ import co.yodo.mobile.business.injection.component.DaggerGraphComponent;
 import co.yodo.mobile.business.injection.component.GraphComponent;
 import co.yodo.mobile.business.injection.module.ApiClientModule;
 import co.yodo.mobile.business.injection.module.ApplicationModule;
+import co.yodo.mobile.business.jobs.JobHandler;
 import timber.log.Timber;
 
 @ReportsCrashes(formUri = "http://198.101.209.120/MAB-LAB/report/report.php",
@@ -25,7 +26,7 @@ import timber.log.Timber;
                 httpMethod = org.acra.sender.HttpSender.Method.POST,
                 reportType = org.acra.sender.HttpSender.Type.JSON,
                 mode = ReportingInteractionMode.TOAST,
-                resToastText = R.string.msg_crash_toast
+                resToastText = R.string.error_crash_toast
 )
 public class YodoApplication extends SugarApp {
     /** Switch server IP address */
@@ -36,7 +37,7 @@ public class YodoApplication extends SugarApp {
     public static final String IP = DEV_IP;
 
     /** Component that build the dependencies */
-    private static GraphComponent mComponent;
+    private static GraphComponent component;
 
     @Override
     protected void attachBaseContext( Context base ) {
@@ -52,7 +53,7 @@ public class YodoApplication extends SugarApp {
                 .applicationModule( new ApplicationModule( this ) )
                 .build();
 
-        mComponent = DaggerGraphComponent.builder()
+        component = DaggerGraphComponent.builder()
                 .applicationComponent( appComponent )
                 .apiClientModule( new ApiClientModule( IP ) )
                 .build();
@@ -75,43 +76,10 @@ public class YodoApplication extends SugarApp {
             Timber.plant(new CrashReportingTree());
         }
 
-        /*registerActivityLifecycleCallbacks( new ActivityLifecycleCallbacks() {
-            @Override
-            public void onActivityCreated( Activity activity, Bundle savedInstanceState ) {
-
-            }
-
-            @Override
-            public void onActivityStarted( Activity activity ) {
-
-            }
-
-            @Override
-            public void onActivityResumed( Activity activity ) {
-                NotificationManager mNotificationManager = (NotificationManager) getSystemService( Context.NOTIFICATION_SERVICE );
-                mNotificationManager.cancel( 0 );
-            }
-
-            @Override
-            public void onActivityPaused( Activity activity ) {
-
-            }
-
-            @Override
-            public void onActivityStopped( Activity activity ) {
-
-            }
-
-            @Override
-            public void onActivitySaveInstanceState( Activity activity, Bundle outState ) {
-
-            }
-
-            @Override
-            public void onActivityDestroyed( Activity activity ) {
-
-            }
-        } );*/
+        // Init jobs manager
+        JobManager.create( this ).addJobCreator(
+                new JobHandler( component.provideJobs() )
+        );
     }
 
     /** A tree which logs important information for crash reporting. */
@@ -165,6 +133,6 @@ public class YodoApplication extends SugarApp {
     }
 
     public static GraphComponent getComponent() {
-        return mComponent;
+        return component;
     }
 }

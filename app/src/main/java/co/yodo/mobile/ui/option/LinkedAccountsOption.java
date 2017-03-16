@@ -1,30 +1,29 @@
 package co.yodo.mobile.ui.option;
 
 import android.view.View;
-import android.widget.Toast;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.business.component.totp.TOTPUtils;
 import co.yodo.mobile.business.network.ApiClient;
 import co.yodo.mobile.business.network.model.ServerResponse;
-import co.yodo.mobile.business.network.request.ResetPIPRequest;
+import co.yodo.mobile.business.network.request.QueryRequest;
 import co.yodo.mobile.helper.AlertDialogHelper;
 import co.yodo.mobile.ui.BaseActivity;
-import co.yodo.mobile.ui.notification.ToastMaster;
-import co.yodo.mobile.ui.option.contract.IOption;
+import co.yodo.mobile.ui.LinkedAccountsActivity;
 import co.yodo.mobile.ui.option.contract.IRequestOption;
 import co.yodo.mobile.utils.ErrorUtils;
 import co.yodo.mobile.utils.PipUtils;
 
 /**
- * Created by hei on 04/08/16.
- * Implements the Reset pip Option of the ResetPIPActivity
+ * Created by hei on 14/06/16.
+ * Implements the DeLink Account Option of the MainActivity
  */
-public class ResetPipOption extends IRequestOption  {
-    /** The new pip */
-    private String newPip;
-
-    public ResetPipOption( final BaseActivity activity ) {
+public class LinkedAccountsOption extends IRequestOption {
+    /**
+     * Sets up the main elements of the options
+     * @param activity The Activity to handle
+     */
+    public LinkedAccountsOption( final BaseActivity activity ) {
         super( activity );
 
         // Dialog
@@ -33,11 +32,12 @@ public class ResetPipOption extends IRequestOption  {
             @Override
             public void onClick( View view  ) {
                 if( PipUtils.validate( activity, etInput, null ) ) {
-                    final String pip = TOTPUtils.defaultOTP( etInput.getText().toString() );
+                    final String pip = etInput.getText().toString();
+                    final String otp = TOTPUtils.defaultOTP( pip );
 
                     progressManager.create( activity );
                     requestManager.invoke(
-                            new ResetPIPRequest( hardwareToken, pip, newPip ),
+                            new QueryRequest( hardwareToken, otp, QueryRequest.Record.LINKED_ACCOUNTS ),
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse( ServerResponse response ) {
@@ -47,18 +47,27 @@ public class ResetPipOption extends IRequestOption  {
                                     switch( code ) {
                                         case ServerResponse.AUTHORIZED:
                                             alertDialog.dismiss();
-                                            activity.finish();
-                                            ToastMaster.makeText( activity, R.string.text_update_successful, Toast.LENGTH_LONG ).show();
+                                            final String from = response.getParams().getLinkedFrom();
+                                            final String to = response.getParams().getLinkedTo();
+                                            LinkedAccountsActivity.newInstance( activity, to, from, pip );
                                             break;
 
                                         case ServerResponse.ERROR_INCORRECT_PIP:
                                             tilPip.setError( activity.getString( R.string.error_pip ) );
                                             break;
 
+                                        case ServerResponse.ERROR_FAILED:
+                                            ErrorUtils.handleError(
+                                                    activity,
+                                                    activity.getString( R.string.error_linked_accounts ),
+                                                    false
+                                            );
+                                            break;
+
                                         default:
                                             ErrorUtils.handleError(
                                                     activity,
-                                                    activity.getString( R.string.error_server ),
+                                                    activity.getString( R.string.error_unknown ),
                                                     false
                                             );
                                             break;
@@ -74,7 +83,8 @@ public class ResetPipOption extends IRequestOption  {
                                             false
                                     );
                                 }
-                            } );
+                            }
+                    );
                 }
             }
         };
@@ -90,14 +100,5 @@ public class ResetPipOption extends IRequestOption  {
     public void execute() {
         alertDialog.show();
         clearGUI();
-    }
-
-    /**
-     * Sets the new pip that will be updated
-     * @param newPip The new secret pip
-     */
-    public IRequestOption setNewPip( String newPip ) {
-        this.newPip = newPip;
-        return this;
     }
 }

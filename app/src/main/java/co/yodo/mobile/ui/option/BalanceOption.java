@@ -71,7 +71,7 @@ public class BalanceOption extends IRequestOption {
                                         default:
                                             ErrorUtils.handleError(
                                                     activity,
-                                                    activity.getString( R.string.error_unknown ),
+                                                    activity.getString( R.string.error_server ),
                                                     false
                                             );
                                             break;

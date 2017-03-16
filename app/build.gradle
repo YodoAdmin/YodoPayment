@@ -10,7 +10,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 25
-        versionName "2.2.0"
+        versionName "2.2.1"
 
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -81,6 +81,9 @@ dependencies {
 
     // -- Secure Preferences --
     compile 'com.orhanobut:hawk:2.0.1'
+
+    // -- Schedule Jobs
+    compile 'com.evernote:android-job:1.1.7'
 
     // -- ACRA --
     compile 'ch.acra:acra:4.8.5'

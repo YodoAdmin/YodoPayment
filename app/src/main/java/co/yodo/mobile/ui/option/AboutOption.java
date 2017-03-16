@@ -54,8 +54,8 @@ public class AboutOption extends IOption {
         final String message = activity.getString( R.string.text_version ) + " " +
                 BuildConfig.VERSION_NAME + "/" +
                 YodoApplication.getSwitch()    + "\n\n" +
-                activity.getString( R.string.about_message );
-        final String email = activity.getString( R.string.about_email );
+                activity.getString( R.string.text_about );
+        final String email = activity.getString( R.string.text_about_email );
 
         // Set text to the controllers
         SpannableString ssEmail = new SpannableString( email );

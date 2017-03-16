@@ -33,7 +33,7 @@ import co.yodo.mobile.business.network.request.RegisterRequest;
 import co.yodo.mobile.business.service.RegistrationIntentService;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.utils.SystemUtils;
-import co.yodo.mobile.model.environment.GCMResponse;
+import co.yodo.mobile.model.dtos.GCMResponse;
 import co.yodo.mobile.ui.CameraActivity;
 import co.yodo.mobile.ui.MainActivity;
 import co.yodo.mobile.ui.notification.ProgressDialogHelper;
@@ -248,7 +248,7 @@ public class RegistrationBiometricFragment extends Fragment {
             public void onClick( View v ) {
                 boolean cameraPermission = SystemUtils.requestPermission(
                         RegistrationBiometricFragment.this,
-                        R.string.msg_permission_camera,
+                        R.string.text_permission_camera,
                         Manifest.permission.CAMERA,
                         PERMISSIONS_REQUEST_CAMERA
                 );

@@ -45,4 +45,27 @@
         <item name="android:gravity">center</item>
     </style>
 
+    <!-- Linking Code Input -->
+    <style name="LinkingCodeInputTextTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:hint">@string/text.linking.code.hint</item>
+    </style>
+
+    <!-- Linked Account View -->
+    <style name="LinkedAccountTextTheme">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textAppearance">?android:attr/textAppearanceLarge</item>
+    </style>
+
+    <!-- Nickname Input -->
+    <style name="NicknameInputTextTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:singleLine">true</item>
+        <item name="android:hint">@string/text.nickname</item>
+    </style>
+
 </resources>

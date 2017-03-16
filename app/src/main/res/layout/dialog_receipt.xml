@@ -145,7 +145,7 @@
             android:id="@+id/saveButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/save_file"
+            android:src="@drawable/ic_receipt_save"
             android:layout_weight="1"
             android:contentDescription="@string/text.desc"
             android:visibility="gone"/>
@@ -154,7 +154,7 @@
             android:id="@+id/deleteButton"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:src="@drawable/trash_can"
+            android:src="@drawable/ic_receipt_delete"
             android:layout_weight="1"
             android:contentDescription="@string/text.desc"
             android:visibility="gone"/>

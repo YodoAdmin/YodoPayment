@@ -81,7 +81,7 @@ public class SaveCouponOption extends IOption {
 
         AlertDialogHelper.show(
                 activity,
-                R.string.save_image,
+                R.string.text_promotion,
                 onClick
         );
     }

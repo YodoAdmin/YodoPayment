@@ -176,7 +176,7 @@ public class PaymentOption extends IRequestOption {
                                             switch( type ) {
                                                 case HEART:
                                                     if( accounts.length > 1 ) {
-                                                        List<String> list = new ArrayList<>();
+                                                        /*List<String> list = new ArrayList<>();
                                                         for( String account : accounts ) {
                                                             list.add( PrefUtils.getNickname( account ) );
                                                         }
@@ -195,7 +195,7 @@ public class PaymentOption extends IRequestOption {
                                                                 R.string.text_options_select,
                                                                 list.toArray( new String[0] ),
                                                                 onClick
-                                                        );
+                                                        );*/
                                                     } else {
                                                         showSKS( "0", userCode, type.getValue() );
                                                     }

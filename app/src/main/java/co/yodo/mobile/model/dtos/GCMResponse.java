@@ -1,4 +1,4 @@
-package co.yodo.mobile.model.environment;
+package co.yodo.mobile.model.dtos;
 
 /**
  * Created by hei on 12/06/16.

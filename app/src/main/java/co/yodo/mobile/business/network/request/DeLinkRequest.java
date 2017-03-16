@@ -16,10 +16,6 @@ import retrofit2.http.Path;
  * Request a de-link from an account to the server
  */
 public class DeLinkRequest extends IRequest {
-    /** DEBUG */
-    @SuppressWarnings( "unused" )
-    private static final String TAG = DeLinkRequest.class.getSimpleName();
-
     /** De-Link request type */
     private static final String DELINK_RT = "11";
 
@@ -40,7 +36,7 @@ public class DeLinkRequest extends IRequest {
     }
 
     /** Sub-type of the request */
-    private final DeLinkST mRequestST;
+    private final DeLinkST requestST;
 
     /** Interface for the DE_LINK requests */
     interface IApiEndpoint {
@@ -50,43 +46,32 @@ public class DeLinkRequest extends IRequest {
 
     /**
      * Delinks two linked accounts
-     * @param responseCode The code used to respond the caller activity
      * @param hardwareToken The hardware token of the device
      * @param pip The password of the user
      * @param linkedAccount The linked account number
      * @param requestST The type of the account/request (donor or recipient)
      */
-    public DeLinkRequest( int responseCode, String hardwareToken, String pip, String linkedAccount, DeLinkST requestST ) {
-
-        this.formattedUsrData =
-                hardwareToken + REQ_SEP +
-                pip + REQ_SEP +
-                linkedAccount;
-        this.mRequestST = requestST;
+    public DeLinkRequest( String hardwareToken, String pip, String linkedAccount, DeLinkST requestST ) {
+        this.formattedUsrData = hardwareToken + REQ_SEP + pip + REQ_SEP + linkedAccount;
+        this.requestST = requestST;
     }
 
     @Override
     public void execute( RSACrypt cipher, ApiClient manager, ApiClient.RequestCallback callback ) {
-        String sEncryptedClientData, pRequest;
-
+        // Generate AES Key
         SecretKeySpec key = AESCrypt.generateKey();
-
         encyptedData = AESCrypt.encrypt( formattedUsrData, key );
-        //mEncyptedSignature = MessageIntegrityAttribute.encode( formattedUsrData, key );
         encyptedKey = cipher.encrypt( AESCrypt.encodeKey( key ) );
 
         // Encrypting to newInstance request
-        sEncryptedClientData =
-                encyptedKey + REQ_SEP +
-                        encyptedData;
-
-        pRequest = buildRequest( DELINK_RT,
-                mRequestST.getValue(),
-                sEncryptedClientData
+        final String encryptedClientData = encyptedKey + REQ_SEP + encyptedData;
+        final String requestData = buildRequest( DELINK_RT,
+                requestST.getValue(),
+                encryptedClientData
         );
 
         IApiEndpoint iCaller = manager.create( IApiEndpoint.class );
-        Call<ServerResponse> sResponse = iCaller.deLink( pRequest );
-        manager.sendXMLRequest( sResponse, callback );
+        Call<ServerResponse> request = iCaller.deLink( requestData );
+        manager.sendXMLRequest( request, callback );
     }
 }

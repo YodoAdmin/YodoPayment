@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
@@ -17,6 +18,10 @@ import java.io.File;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.helper.AlertDialogHelper;
+import co.yodo.mobile.helper.AppConfig;
+import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.model.db.Coupon;
+import co.yodo.mobile.model.db.Receipt;
 import co.yodo.mobile.ui.notification.ToastMaster;
 
 /**
@@ -155,5 +160,17 @@ public class SystemUtils {
         }
         buf.append(" } Bundle");
         return buf.toString();
+    }
+
+    /**
+     * Clears all the stored information
+     */
+    public static void clearUserData() {
+        PrefUtils.clearPrefConfig();
+        Receipt.deleteAll( Receipt.class );
+        Coupon.deleteAll( Coupon.class );
+        SystemUtils.deleteDir(
+                new File( Environment.getExternalStorageDirectory(), AppConfig.COUPONS_FOLDER )
+        );
     }
 }

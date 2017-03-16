@@ -1,10 +1,11 @@
 package co.yodo.mobile.ui.option.factory;
 
+import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.ui.BaseActivity;
 import co.yodo.mobile.ui.option.AboutOption;
 import co.yodo.mobile.ui.option.BalanceOption;
 import co.yodo.mobile.ui.option.CloseAccountOption;
-import co.yodo.mobile.ui.option.ListLinkAccountsOption;
+import co.yodo.mobile.ui.option.LinkedAccountsOption;
 import co.yodo.mobile.ui.option.LinkAccountOption;
 import co.yodo.mobile.ui.option.LinkingCodeOption;
 import co.yodo.mobile.ui.option.PaymentOption;
@@ -29,7 +30,7 @@ public class OptionsFactory {
         RESET_PIP,
         LINKING_CODE,
         LINK_ACCOUNT,
-        DE_LINK_ACCOUNT,
+        LINKED_ACCOUNTS,
         CLOSE_ACCOUNT
     }
 
@@ -43,7 +44,7 @@ public class OptionsFactory {
     private ResetPipOption resetPipOption = null;
     private LinkingCodeOption linkingCodeOption = null;
     private LinkAccountOption linkAccountOption = null;
-    private ListLinkAccountsOption listLinkAccountsOption = null;
+    private LinkedAccountsOption listLinkAccountsOption = null;
     private CloseAccountOption closeAccountOption = null;
 
     public OptionsFactory( BaseActivity activity ) {
@@ -51,6 +52,8 @@ public class OptionsFactory {
     }
 
     public IOption getOption( Option option ) {
+        PrefUtils.setSubscribing( activity, false );
+
         switch( option ) {
             case PAYMENT:
                 if( paymentOption == null ) {
@@ -88,15 +91,16 @@ public class OptionsFactory {
                 }
                 return linkingCodeOption;
 
-            /*case LINK_ACCOUNT:
+            case LINK_ACCOUNT:
                 if( linkAccountOption == null )
-                    linkAccountOption = new LinkAccountOption( activity, handlerMessages );
+                    linkAccountOption = new LinkAccountOption( activity );
                 return linkAccountOption;
 
-            case DE_LINK_ACCOUNT:
-                if( deLinkAccountOption == null )
-                    deLinkAccountOption = new DeLinkAccountOption( activity, handlerMessages );
-                return deLinkAccountOption;*/
+            case LINKED_ACCOUNTS:
+                if( listLinkAccountsOption == null ) {
+                    listLinkAccountsOption = new LinkedAccountsOption( activity );
+                }
+                return listLinkAccountsOption;
 
             case CLOSE_ACCOUNT:
                 if( closeAccountOption == null ) {

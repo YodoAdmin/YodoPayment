@@ -45,4 +45,17 @@
         <item name="android:layout_height">wrap_content</item>
     </style>
 
+    <!-- Recycler view layout -->
+    <style name="LinkedAccountsLayoutTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:orientation">vertical</item>
+    </style>
+
+    <style name="RecyclerLayoutTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+    </style>
+
 </resources>

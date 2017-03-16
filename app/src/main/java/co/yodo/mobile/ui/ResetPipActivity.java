@@ -37,11 +37,11 @@ public class ResetPipActivity extends BaseActivity {
 
     /** Manager for the server requests */
     @Inject
-    protected ApiClient requestManager;
+    ApiClient requestManager;
 
     /** Progress dialog for the requests */
     @Inject
-    protected ProgressDialogHelper progressManager;
+    ProgressDialogHelper progressManager;
 
     /** Account identifier for the reset pip and new pip */
     private String authNumber;
@@ -164,7 +164,7 @@ public class ResetPipActivity extends BaseActivity {
             newPip = pip;
             boolean cameraPermission = SystemUtils.requestPermission(
                     ResetPipActivity.this,
-                    R.string.msg_permission_camera,
+                    R.string.text_permission_camera,
                     Manifest.permission.CAMERA,
                     PERMISSIONS_REQUEST_CAMERA
             );

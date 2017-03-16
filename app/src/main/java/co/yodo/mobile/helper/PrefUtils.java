@@ -13,7 +13,6 @@ import com.orhanobut.hawk.Hawk;
  * Utilities for the App, Mainly shared preferences
  */
 public class PrefUtils {
-
     /**
      * A helper class just o obtain the config file for the Shared Preferences
      * using the default values for this Shared Preferences app.
@@ -184,16 +183,23 @@ public class PrefUtils {
      * @return True if it saved correctly
      */
     public static boolean saveNickname( String hardware, String nickname ) {
+        if( nickname == null ) {
+            return Hawk.delete( AppConfig.SPREF_NICKNAME + hardware );
+        }
         return Hawk.put( AppConfig.SPREF_NICKNAME + hardware, nickname );
     }
 
     /**
      * Gets the nickname of a hardware token
      * @param hardware The hardware token
-     * @return The nickname
+     * @return The nickname -- if it doesn't have a nickname, then it returns
+     * the last 5 digits of the hardware token
      */
     public static String getNickname( String hardware ) {
-        return Hawk.get( AppConfig.SPREF_NICKNAME + hardware, hardware );
+        return Hawk.get(
+                AppConfig.SPREF_NICKNAME + hardware,
+                "...." + hardware.substring( hardware.length() - 6 )
+        );
     }
 
     /**
@@ -218,16 +224,6 @@ public class PrefUtils {
     static String getLanguage( Context c ) {
         SharedPreferences config = getSPrefConfig( c );
         return config.getString( AppConfig.SPREF_CURRENT_LANGUAGE, null );
-    }
-
-    /**
-     * It gets the state of the PIP's visibility
-     * @param c The Context of the Android system
-     * @return Boolean It returns true or false
-     */
-    public static Boolean getPIPVisibility( Context c ) {
-        SharedPreferences config = getSPrefConfig( c );
-        return config.getBoolean( AppConfig.SPREF_PIP_VISIBILITY, false );
     }
 
     /**

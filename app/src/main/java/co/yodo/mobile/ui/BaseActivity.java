@@ -13,9 +13,11 @@ import co.yodo.mobile.R;
 import co.yodo.mobile.business.service.YodoGCMListenerService;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.model.db.Receipt;
+import co.yodo.mobile.model.dtos.ErrorEvent;
 import co.yodo.mobile.ui.dialog.ReceiptDialog;
 import co.yodo.mobile.ui.dialog.contract.IDialog;
 import co.yodo.mobile.ui.notification.ToastMaster;
+import co.yodo.mobile.utils.ErrorUtils;
 
 /**
  * Created by hei on 08/03/17.
@@ -114,6 +116,22 @@ public class BaseActivity extends AppCompatActivity {
                 .save( onSave )
                 .delete( onDelete )
                 .build();
+    }
+
+    @SuppressWarnings( "unused" )
+    @Subscribe( threadMode = ThreadMode.MAIN )
+    public void onMessageEvent( ErrorEvent event ) {
+        // Show an error message
+        final String message = event.message;
+        if( event.tag == ErrorEvent.TYPE.SNACKBAR ) {
+            Snackbar.make( findViewById( android.R.id.content ), message, Snackbar.LENGTH_LONG ).show();
+        } else {
+            ErrorUtils.handleError(
+                    this,
+                    message,
+                    false
+            );
+        }
     }
 
     @SuppressWarnings( "unused" )

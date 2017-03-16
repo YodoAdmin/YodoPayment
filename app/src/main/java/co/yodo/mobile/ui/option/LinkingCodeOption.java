@@ -70,7 +70,7 @@ public class LinkingCodeOption extends IRequestOption {
                                                 @Override
                                                 public void onClick( View v ) {
                                                     GuiUtils.copyCode( activity, linking_code );
-                                                    Snackbar.make( v, R.string.copied_text, Toast.LENGTH_SHORT ).show();
+                                                    Snackbar.make( v, R.string.text_link_code_clipboard, Toast.LENGTH_SHORT ).show();
                                                 }
                                             });
 
@@ -84,7 +84,7 @@ public class LinkingCodeOption extends IRequestOption {
                                         default:
                                             ErrorUtils.handleError(
                                                     activity,
-                                                    activity.getString( R.string.error_unknown ),
+                                                    activity.getString( R.string.error_server ),
                                                     false
                                             );
                                             break;

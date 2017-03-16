@@ -69,27 +69,42 @@ public class AlertDialogHelper {
             builder.setNegativeButton( R.string.text_cancel, null );
         }
 
-        builder.show();
+        final AlertDialog dialog = builder.show();
+
+        final Window window = dialog.getWindow();
+        if( window != null ) {
+            window.setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE );
+        }
     }
 
     /**
      * Shows an alert dialog with two buttons
-     * @param c The activity
+     * @param ac The activity
      * @param message A message to show
-     * @param okClick Action for the ok click
+     * @param onClick Action for the ok click
      */
-    public static void show( Activity ac, Integer message, DialogInterface.OnClickListener okClick ) {
-        show( ac, null, message, null, okClick );
+    public static void show( Activity ac, Integer message, DialogInterface.OnClickListener onClick ) {
+        show( ac, null, message, null, onClick );
+    }
+
+    /**
+     * Shows an alert dialog with two buttons and the layout
+     * @param ac The activity
+     * @param layout The layout to display
+     * @param onClick Action for the ok click
+     */
+    public static void show( Activity ac, View layout, DialogInterface.OnClickListener onClick ) {
+        show( ac, null, null, layout, onClick );
     }
 
     /**
      * Shows an alert dialog for a list
-     * @param c The activity
+     * @param ac The activity
      * @param title The title of the dialog
      * @param values Values to be shown
      */
     public static void show( Activity ac, Integer title, CharSequence[] values,
-                             DialogInterface.OnClickListener itemClick) {
+                             DialogInterface.OnClickListener itemClick ) {
         AlertDialog.Builder builder = new AlertDialog.Builder( ac );
 
         builder.setTitle( title );
@@ -106,11 +121,11 @@ public class AlertDialogHelper {
      * @param ac The activity
      * @param message The message of the dialog
      * @param layout The layout to be displayed
-     * @param okClick The click action
+     * @param onClick The click action
      * @return The AlertDialog object
      */
     public static AlertDialog create( Activity ac, Integer title, Integer message, View layout,
-                                    DialogInterface.OnShowListener okClick ) {
+                                    DialogInterface.OnShowListener onClick ) {
         AlertDialog.Builder builder = new AlertDialog.Builder( ac );
 
         if( title != null )
@@ -125,14 +140,14 @@ public class AlertDialogHelper {
         builder.setCancelable( false );
         builder.setPositiveButton( R.string.text_ok, null );
 
-        if( okClick != null )
+        if( onClick != null )
             builder.setNegativeButton( R.string.text_cancel, null );
 
         final AlertDialog dialog = builder.create();
         final Window window = dialog.getWindow();
 
-        if( okClick != null && window != null ) {
-            dialog.setOnShowListener( okClick );
+        if( onClick != null && window != null ) {
+            dialog.setOnShowListener( onClick );
             window.setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE );
         }
 

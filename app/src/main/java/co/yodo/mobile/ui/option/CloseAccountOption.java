@@ -13,7 +13,7 @@ import co.yodo.mobile.ui.BaseActivity;
 import co.yodo.mobile.ui.option.contract.IRequestOption;
 import co.yodo.mobile.utils.ErrorUtils;
 import co.yodo.mobile.utils.PipUtils;
-import co.yodo.mobile.utils.PreferenceUtils;
+import co.yodo.mobile.utils.SystemUtils;
 
 /**
  * Created by hei on 14/06/16.
@@ -48,7 +48,7 @@ public class CloseAccountOption extends IRequestOption {
                                         case ServerResponse.AUTHORIZED:
                                             // Destroy the dialog and clears the saved data
                                             alertDialog.dismiss();
-                                            PreferenceUtils.clearUserData();
+                                            SystemUtils.clearUserData();
 
                                             // Setups the AlertDialog
                                             DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
@@ -73,7 +73,7 @@ public class CloseAccountOption extends IRequestOption {
                                         default:
                                             ErrorUtils.handleError(
                                                     activity,
-                                                    activity.getString( R.string.error_unknown ),
+                                                    activity.getString( R.string.error_server ),
                                                     false
                                             );
                                             break;

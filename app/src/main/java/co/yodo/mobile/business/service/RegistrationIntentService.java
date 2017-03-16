@@ -17,7 +17,7 @@ import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.business.network.request.RegisterRequest;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.business.network.ApiClient;
-import co.yodo.mobile.model.environment.GCMResponse;
+import co.yodo.mobile.model.dtos.GCMResponse;
 import timber.log.Timber;
 
 /**

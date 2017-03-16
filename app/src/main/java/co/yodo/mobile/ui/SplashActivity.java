@@ -23,7 +23,7 @@ import co.yodo.mobile.business.network.request.AuthenticateRequest;
 import co.yodo.mobile.business.service.RegistrationIntentService;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.utils.SystemUtils;
-import co.yodo.mobile.model.environment.GCMResponse;
+import co.yodo.mobile.model.dtos.GCMResponse;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.utils.ErrorUtils;
 
@@ -138,7 +138,7 @@ public class SplashActivity extends AppCompatActivity {
     private void generateUserToken() {
         boolean phoneStatePermission = SystemUtils.requestPermission(
                 SplashActivity.this,
-                R.string.msg_permission_read_phone_state,
+                R.string.text_permission_read_phone_state,
                 Manifest.permission.READ_PHONE_STATE,
                 PERMISSIONS_REQUEST_READ_PHONE_STATE
         );

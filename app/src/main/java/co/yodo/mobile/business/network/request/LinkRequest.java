@@ -16,10 +16,6 @@ import retrofit2.http.Path;
  * Request a link of accounts to the server
  */
 public class LinkRequest extends IRequest {
-    /** DEBUG */
-    @SuppressWarnings( "unused" )
-    private static final String TAG = LinkRequest.class.getSimpleName();
-
     /** Link request type */
     private static final String LINK_RT = "10";
 
@@ -39,7 +35,7 @@ public class LinkRequest extends IRequest {
     }
 
     /** Sub-type of the request */
-    private final LinkST mRequestST;
+    private final LinkST requestST;
 
     /** Interface for the DE_LINK requests */
     interface IApiEndpoint {
@@ -49,39 +45,30 @@ public class LinkRequest extends IRequest {
 
     /**
      * Link two accounts for heart transactions
-     * @param responseCode The code used to respond the caller activity
      * @param hardwareToken The hardware token of the device
-     * @param linkCode The code used to link accounts
+     * @param linkingCode The code used to link accounts
      */
-    public LinkRequest( int responseCode, String hardwareToken, String linkCode ) {
-        this.formattedUsrData =
-                hardwareToken + REQ_SEP +
-                linkCode + REQ_SEP +
-                System.currentTimeMillis() / 1000L;
-        this.mRequestST = LinkST.ACC;
+    public LinkRequest( String hardwareToken, String linkingCode ) {
+        this.formattedUsrData = hardwareToken + REQ_SEP + linkingCode + REQ_SEP + System.currentTimeMillis() / 1000L;
+        this.requestST = LinkST.ACC;
     }
 
     @Override
     public void execute( RSACrypt cipher, ApiClient manager, ApiClient.RequestCallback callback ) {
-        String sEncryptedClientData, pRequest;
-
+        // Generate AES key
         SecretKeySpec key = AESCrypt.generateKey();
-
         encyptedData = AESCrypt.encrypt( formattedUsrData, key );
         encyptedKey = cipher.encrypt( AESCrypt.encodeKey( key ) );
 
         // Encrypting to newInstance request
-        sEncryptedClientData =
-                encyptedKey + REQ_SEP +
-                        encyptedData;
-
-        pRequest = buildRequest( LINK_RT,
-                mRequestST.getValue(),
-                sEncryptedClientData
+        final String encryptedClientData = encyptedKey + REQ_SEP + encyptedData;
+        final String requestData = buildRequest( LINK_RT,
+                requestST.getValue(),
+                encryptedClientData
         );
 
         IApiEndpoint iCaller = manager.create( IApiEndpoint.class );
-        Call<ServerResponse> sResponse = iCaller.link( pRequest );
-        manager.sendXMLRequest( sResponse, callback );
+        Call<ServerResponse> request = iCaller.link( requestData );
+        manager.sendXMLRequest( request, callback );
     }
 }

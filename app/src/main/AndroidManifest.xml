@@ -23,7 +23,7 @@
     <application
         android:name=".YodoApplication"
         android:allowBackup="true"
-        android:fullBackupContent="false"
+        android:fullBackupContent="@xml/backup_config"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
@@ -80,26 +80,26 @@
 
         <activity
             android:name=".ui.SettingsActivity"
-            android:label="@string/title_activity_settings"
+            android:label="@string/title.activity.settings"
             android:theme="@style/AppTheme.Settings"
             android:screenOrientation="sensorPortrait">
         </activity>
 
         <activity
             android:name=".ui.ResetPipActivity"
-            android:label="@string/title_activity_pip_reset"
+            android:label="@string/title.activity.pip.reset"
             android:screenOrientation="sensorPortrait">
         </activity>
 
         <activity
             android:name=".ui.CouponsActivity"
-            android:label="@string/title_activity_coupons"
+            android:label="@string/title.activity.coupons"
             android:screenOrientation="sensorPortrait">
         </activity>
 
         <activity
             android:name=".ui.ReceiptsActivity"
-            android:label="@string/title_activity_receipts"
+            android:label="@string/title.activity.receipts"
             android:screenOrientation="sensorPortrait">
 
             <intent-filter>
@@ -110,16 +110,11 @@
                 android:name="android.app.searchable"
                 android:resource="@xml/searchable"/>
 
-            <!-- The meta-data element is needed for versions lower than 4.1 -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity"/>
-
         </activity>
 
         <activity
-            android:name=".ui.DeLinkActivity"
-            android:label="@string/title_activity_de_link"
+            android:name=".ui.LinkedAccountsActivity"
+            android:label="@string/title.activity.linked.accounts"
             android:screenOrientation="sensorPortrait">
         </activity>
 

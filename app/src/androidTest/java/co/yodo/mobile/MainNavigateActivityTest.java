@@ -155,7 +155,7 @@ public class MainNavigateActivityTest {
                 .perform( click() );
 
         // Check if the dialog appeared
-        onView( withText( R.string.input_linking_code ) )
+        onView( withText( R.string.text_linking_code_hint ) )
                 .inRoot( isDialog() )
                 .check( matches( isDisplayed() ) );
 

@@ -1,15 +1,23 @@
 package co.yodo.mobile.ui.option;
 
 import android.content.Context;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputEditText;
+import android.support.design.widget.TextInputLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.LinearLayout;
 
 import co.yodo.mobile.R;
+import co.yodo.mobile.business.network.ApiClient;
+import co.yodo.mobile.business.network.model.ServerResponse;
+import co.yodo.mobile.business.network.request.LinkRequest;
 import co.yodo.mobile.helper.AlertDialogHelper;
+import co.yodo.mobile.helper.FormatUtils;
+import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.ui.BaseActivity;
 import co.yodo.mobile.ui.option.contract.IRequestOption;
+import co.yodo.mobile.utils.ErrorUtils;
 
 /**
  * Created by hei on 14/06/16.
@@ -20,27 +28,56 @@ public class LinkAccountOption extends IRequestOption {
      * Sets up the main elements of the options
      * @param activity The Activity to handle
      */
-    public LinkAccountOption( BaseActivity activity ) {
+    public LinkAccountOption( final BaseActivity activity ) {
         super( activity );
 
-        // Dialog
+        // Build dialog
         LayoutInflater inflater = (LayoutInflater) this.activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
         final View layout = inflater.inflate( R.layout.dialog_with_code, new LinearLayout( this.activity ), false );
-        etInput = (TextInputEditText ) layout.findViewById( R.id.cetLinkingCode );
+        etInput = (TextInputEditText) layout.findViewById( R.id.text_linking_code );
+        tilPip = (TextInputLayout) etInput.getParent().getParent();
         final View.OnClickListener okClick = new View.OnClickListener() {
             @Override
-            public void onClick( View view  ) {
-                alertDialog.dismiss();
+            public void onClick( View view ) {
                 final String linkingCode = etInput.getText().toString();
 
                 // Start the request, and set the listener to this object
-                progressManager.create( LinkAccountOption.this.activity );
-                //requestManager.setListener( LinkAccountOption.this );
-                /*requestManager.invoke( new LinkRequest(
-                        LINK_REQ,
-                        hardwareToken,
-                        linkingCode
-                ) );*/
+                progressManager.create( activity );
+                requestManager.invoke(
+                        new LinkRequest( hardwareToken, linkingCode ),
+                        new ApiClient.RequestCallback() {
+                            @Override
+                            public void onResponse( ServerResponse response ) {
+                                progressManager.destroy();
+                                final String code = response.getCode();
+
+                                switch( code ) {
+                                    case ServerResponse.AUTHORIZED:
+                                        alertDialog.dismiss();
+                                        Snackbar.make(
+                                                activity.findViewById( android.R.id.content ),
+                                                R.string.text_link_account_successful,
+                                                Snackbar.LENGTH_SHORT
+                                        ).show();
+                                        break;
+
+                                    default:
+                                        tilPip.setError( activity.getString( R.string.error_linking_code ) );
+                                        break;
+                                }
+                            }
+
+                            @Override
+                            public void onError( String message ) {
+                                progressManager.destroy();
+                                ErrorUtils.handleError(
+                                        activity,
+                                        message,
+                                        false
+                                );
+                            }
+                        }
+                );
             }
         };
 
@@ -53,30 +90,7 @@ public class LinkAccountOption extends IRequestOption {
 
     @Override
     public void execute() {
-        etInput.setText( "" );
         alertDialog.show();
-        etInput.requestFocus();
+        clearGUI();
     }
-
-    /*@Override
-    public void onPrepare() {
-        PrefUtils.setSubscribing( activity, false );
-    }
-
-    @Override
-    public void onResponse( int responseCode, ServerResponse response ) {
-        // Set listener to the principal activity
-        progressManager.destroy();
-        requestManager.setListener( (MainActivity) activity );
-
-        // Get the response code
-        String code = response.getCode();
-
-        switch( responseCode ) {
-            case LINK_REQ:
-                String message = response.getMessage();
-                YodoHandler.sendMessage( mHandlerMessages, code, message );
-                break;
-        }
-    }*/
 }

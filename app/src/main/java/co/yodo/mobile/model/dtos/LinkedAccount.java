@@ -1,4 +1,4 @@
-package co.yodo.mobile.ui.adapter.model;
+package co.yodo.mobile.model.dtos;
 
 import co.yodo.mobile.business.network.request.DeLinkRequest;
 
@@ -8,28 +8,28 @@ import co.yodo.mobile.business.network.request.DeLinkRequest;
  */
 public class LinkedAccount {
     /** Data of the linked account */
-    private String mHardwareToken;
-    private String mNickname;
-    private DeLinkRequest.DeLinkST mRequestST;
+    private String hardwareToken;
+    private String nickname;
+    private DeLinkRequest.DeLinkST requestST;
 
     public LinkedAccount( String hardwareToken, DeLinkRequest.DeLinkST requestST ) {
-        this.mHardwareToken = hardwareToken;
-        this.mRequestST = requestST;
+        this.hardwareToken = hardwareToken;
+        this.requestST = requestST;
     }
 
     public String getHardwareToken() {
-        return mHardwareToken;
+        return hardwareToken;
     }
 
     public DeLinkRequest.DeLinkST getRequestST() {
-        return mRequestST;
+        return requestST;
     }
 
     public String getNickname() {
-        return mNickname;
+        return nickname;
     }
 
     public void setNickname( String nickname ) {
-        this.mNickname = nickname;
+        this.nickname = nickname;
     }
 }
