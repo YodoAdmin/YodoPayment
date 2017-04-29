@@ -67,10 +67,10 @@ public class CameraActivity extends Activity {
     }
 
     private void setupGUI() {
-        previewCamera = (CameraPreview) findViewById(R.id.layout_preview );
+        previewCamera = (CameraPreview) findViewById(R.id.cpPreview );
 
-        status  = (TextView) findViewById( R.id.text_status );
-        status2 = (TextView) findViewById( R.id.text_status2 );
+        status  = (TextView) findViewById( R.id.tvStatus );
+        status2 = (TextView) findViewById( R.id.tvStatus2 );
         previewCamera.setTextViews( status, status2 );
 
         previewCamera.setKeepScreenOn( true );
@@ -92,9 +92,9 @@ public class CameraActivity extends Activity {
             String token = extras.getString( Intents.BIOMETRIC_TOKEN );
             previewCamera.setFace( token );
 
-            ToastMaster.makeText( this, R.string.message_face_recognition, Toast.LENGTH_LONG ).show();
+            ToastMaster.makeText( this, R.string.text_locate_face_recognition, Toast.LENGTH_LONG ).show();
         } else {
-            ToastMaster.makeText( this, R.string.message_train_camera, Toast.LENGTH_LONG ).show();
+            ToastMaster.makeText( this, R.string.text_train_face_recognition, Toast.LENGTH_LONG ).show();
         }
     }
 }

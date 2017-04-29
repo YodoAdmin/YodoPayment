@@ -47,8 +47,8 @@ public class LinkedAccountsOption extends IRequestOption {
                                     switch( code ) {
                                         case ServerResponse.AUTHORIZED:
                                             alertDialog.dismiss();
-                                            final String from = response.getParams().getLinkedFrom();
                                             final String to = response.getParams().getLinkedTo();
+                                            final String from = response.getParams().getLinkedFrom();
                                             LinkedAccountsActivity.newInstance( activity, to, from, pip );
                                             break;
 
@@ -56,10 +56,18 @@ public class LinkedAccountsOption extends IRequestOption {
                                             tilPip.setError( activity.getString( R.string.error_pip ) );
                                             break;
 
-                                        case ServerResponse.ERROR_FAILED:
+                                        case ServerResponse.ERROR_NO_LINKS:
                                             ErrorUtils.handleError(
                                                     activity,
                                                     activity.getString( R.string.error_linked_accounts ),
+                                                    false
+                                            );
+                                            break;
+
+                                        case ServerResponse.ERROR_FAILED:
+                                            ErrorUtils.handleError(
+                                                    activity,
+                                                    activity.getString( R.string.error_server ),
                                                     false
                                             );
                                             break;

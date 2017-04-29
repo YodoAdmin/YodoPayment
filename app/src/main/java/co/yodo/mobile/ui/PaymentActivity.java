@@ -27,7 +27,6 @@ import com.squareup.picasso.Picasso;
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import co.yodo.mobile.R;
 import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.business.PromotionManager;
@@ -40,16 +39,16 @@ import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.helper.EulaHelper;
 import co.yodo.mobile.helper.FormatUtils;
 import co.yodo.mobile.helper.PrefUtils;
-import co.yodo.mobile.ui.notification.ProgressDialogHelper;
+import co.yodo.mobile.helper.ProgressDialogHelper;
 import co.yodo.mobile.ui.option.SaveCouponOption;
 import co.yodo.mobile.ui.option.factory.OptionsFactory;
-import co.yodo.mobile.utils.GuiUtils;
+import co.yodo.mobile.ui.tutorial.IntroActivity;
 import co.yodo.mobile.utils.SystemUtils;
 import it.sephiroth.android.library.imagezoom.ImageViewTouch;
 import it.sephiroth.android.library.imagezoom.ImageViewTouchBase;
 import timber.log.Timber;
 
-public class MainActivity extends BaseActivity implements
+public class PaymentActivity extends BaseActivity implements
         PromotionManager.IPromotionListener,
         SharedPreferences.OnSharedPreferenceChangeListener {
     /** The context object */
@@ -69,19 +68,19 @@ public class MainActivity extends BaseActivity implements
     ProgressDialogHelper progressManager;
 
     /** GUI Controllers */
-    @BindView( R.id.layout_account_data )
+    @BindView( R.id.llAccountData )
     LinearLayout llAccountData;
 
-    @BindView( R.id.text_account_number )
+    @BindView( R.id.tvAccountNumber )
     TextView tvAccountNumber;
 
-    @BindView( R.id.text_account_date )
+    @BindView( R.id.tvAccountDate )
     TextView tvAccountDate;
 
-    @BindView( R.id.text_account_balance )
+    @BindView( R.id.tvAccountBalance )
     TextView tvAccountBalance;
 
-    @BindView( R.id.image_promotion )
+    @BindView( R.id.ivtPromotion )
     ImageViewTouch ivtPromotion;
 
     @BindView( R.id.ibSubscription )
@@ -148,10 +147,9 @@ public class MainActivity extends BaseActivity implements
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        //GUIUtils.setLanguage( this );
         setContentView( R.layout.activity_main );
 
-        setupGUI();
+        setupGUI( savedInstanceState );
     }
 
     @Override
@@ -228,7 +226,7 @@ public class MainActivity extends BaseActivity implements
 
     @Override
     public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
-        if( key.equals( AppConfig.SPREF_SUBSCRIPTION_TASK ) ) {
+        if( key.equals( AppConfig.SPREF_SUBSCRIPTION ) ) {
             executePendingSubscriptionTask();
             runOnUiThread( new Runnable() {
                 @Override
@@ -288,7 +286,7 @@ public class MainActivity extends BaseActivity implements
      * @param v, not used
      */
     public void coupons( View v ) {
-        Intent intent = new Intent( MainActivity.this, CouponsActivity.class );
+        Intent intent = new Intent( PaymentActivity.this, CouponsActivity.class );
         startActivity( intent );
     }
 
@@ -316,7 +314,7 @@ public class MainActivity extends BaseActivity implements
      */
     public void receipts( View v ) {
         dlPayment.closeDrawers();
-        Intent intent = new Intent( MainActivity.this, ReceiptsActivity.class );
+        Intent intent = new Intent( PaymentActivity.this, ReceiptsActivity.class );
         startActivity( intent );
     }
 
@@ -348,7 +346,7 @@ public class MainActivity extends BaseActivity implements
         };
 
         AlertDialogHelper.show(
-                MainActivity.this,
+                PaymentActivity.this,
                 R.string.text_options_select,
                 options,
                 onClick
@@ -376,16 +374,22 @@ public class MainActivity extends BaseActivity implements
     /**
      * Configures the main GUI Controllers
      */
-    private void setupGUI() {
+    @Override
+    protected void setupGUI( Bundle savedInstanceState ) {
+        super.setupGUI( savedInstanceState );
         // Injection
-        ButterKnife.bind( this );
         YodoApplication.getComponent().inject( this );
-
-        // Setup the toolbar
-        GuiUtils.setActionBar( this );
 
         // Show the terms, if the app is updated
         EulaHelper.show( this, null );
+
+        // If it is the first login show the drawer open
+        if( PrefUtils.isFirstLogin( context ) ) {
+            Intent intent = new Intent( context, IntroActivity.class );
+            startActivity( intent );
+
+            PrefUtils.saveFirstLogin( context, false );
+        }
 
         // Set up the listeners for the drawable
         initializeDrawableListener();
@@ -404,7 +408,7 @@ public class MainActivity extends BaseActivity implements
             @Override
             public boolean onLongClick( View v ) {
                 boolean writePermission = SystemUtils.requestPermission(
-                        MainActivity.this,
+                        PaymentActivity.this,
                         R.string.text_permission_write_external_storage,
                         Manifest.permission.WRITE_EXTERNAL_STORAGE,
                         PERMISSIONS_REQUEST_WRITE_EXTERNAL_STORAGE
@@ -419,16 +423,6 @@ public class MainActivity extends BaseActivity implements
                 return false;
             }
         });
-
-        // If it is the first login show the drawer open
-        /*if( PrefUtils.isFirstLogin( context ) ) {
-            dlPayment.openDrawer( GravityCompat.START );
-
-            Intent intent = new Intent( context, IntroActivity.class );
-            startActivity( intent );
-
-            PrefUtils.saveFirstLogin( context, false );
-        }*/
 
         // Upon orientation change, ensure that the state of the UI is maintained.
         updateUI();

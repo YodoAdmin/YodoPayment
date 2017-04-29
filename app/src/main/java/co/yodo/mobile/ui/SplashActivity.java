@@ -22,10 +22,10 @@ import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.business.network.request.AuthenticateRequest;
 import co.yodo.mobile.business.service.RegistrationIntentService;
 import co.yodo.mobile.helper.PrefUtils;
-import co.yodo.mobile.utils.SystemUtils;
 import co.yodo.mobile.model.dtos.GCMResponse;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.utils.ErrorUtils;
+import co.yodo.mobile.utils.SystemUtils;
 
 public class SplashActivity extends AppCompatActivity {
     /** The application context */
@@ -48,7 +48,6 @@ public class SplashActivity extends AppCompatActivity {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        //GUIUtils.setLanguage( this );
 
         setupGUI();
         updateData();
@@ -144,7 +143,7 @@ public class SplashActivity extends AppCompatActivity {
         );
 
         if( phoneStatePermission ) {
-            hardwareToken = PrefUtils.generateHardwareToken( context );
+            hardwareToken = SystemUtils.generateHardwareToken( context );
             if( hardwareToken == null ) {
                 ToastMaster.makeText( context, R.string.error_hardware, Toast.LENGTH_LONG ).show();
                 finish();
@@ -223,7 +222,7 @@ public class SplashActivity extends AppCompatActivity {
         }
         else {
             // The token biometric had already been sent, we can continue
-            Intent intent = new Intent( context, MainActivity.class );
+            Intent intent = new Intent( context, PaymentActivity.class );
             startActivity( intent );
         }
     }

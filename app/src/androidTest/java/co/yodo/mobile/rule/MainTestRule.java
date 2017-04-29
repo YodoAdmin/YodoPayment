@@ -5,13 +5,13 @@ import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 
 import co.yodo.mobile.helper.PrefUtils;
-import co.yodo.mobile.ui.MainActivity;
+import co.yodo.mobile.ui.PaymentActivity;
 
 /**
  * Created by hei on 15/06/16.
  * Test rules for the main activity
  */
-public class MainTestRule<A extends MainActivity> extends ActivityTestRule<A> {
+public class MainTestRule<A extends PaymentActivity> extends ActivityTestRule<A> {
     /** Test context */
     private static Context mCtx;
 
@@ -26,7 +26,7 @@ public class MainTestRule<A extends MainActivity> extends ActivityTestRule<A> {
     protected void beforeActivityLaunched() {
         super.beforeActivityLaunched();
         mCtx = InstrumentationRegistry.getTargetContext();
-        PrefUtils.clearPrefConfig();
+        PrefUtils.clearPrefConfig(mCtx);
 
         // Set preferences
         PrefUtils.saveEulaAccepted( true );
@@ -37,6 +37,6 @@ public class MainTestRule<A extends MainActivity> extends ActivityTestRule<A> {
     @Override
     protected void afterActivityFinished() {
         super.afterActivityFinished();
-        PrefUtils.clearPrefConfig();
+        PrefUtils.clearPrefConfig(mCtx);
     }
 }

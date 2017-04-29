@@ -6,6 +6,8 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import co.yodo.mobile.helper.FormatUtils;
+
 /**
  * Created by luis on 31/01/15.
  * POJO for the receipt
@@ -177,6 +179,20 @@ public class Receipt extends SugarRecord {
 
     public void setChecked( boolean checked ) {
         this.isChecked = checked;
+    }
+
+    @Override
+    public String toString() {
+        return String.format( "%s\nAU# %s\t\t%s\nTotal:\t\t%s %s\nCashTender:\t%s %s\nCashBack:\t%s %s\n\nDonor: %s\nRecipient: %s",
+                getDescription(),
+                getAuthNumber() ,
+                getCreated(),
+                FormatUtils.truncateDecimal( getTotalAmount() ), getTCurrency(),
+                FormatUtils.truncateDecimal( getTenderAmount() ), getDCurrency(),
+                FormatUtils.truncateDecimal( getCashBackAmount() ), getTCurrency(),
+                FormatUtils.replaceNull( getDonorAccount() ),
+                getRecipientAccount()
+        );
     }
 
     /**

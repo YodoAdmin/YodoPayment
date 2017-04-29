@@ -28,20 +28,20 @@ import co.yodo.mobile.utils.GuiUtils;
  * Created by hei on 11/11/16.
  * Adapter for the Linked accounts
  */
-public class LinkedAccountsAdapter extends RecyclerView.Adapter<LinkedAccountsAdapter.LinkAccountViewHolder> {
+public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.LinkAccountViewHolder> {
     /** Data for the list */
     private List<LinkedAccount> accounts = new ArrayList<>();
     private List<LinkedAccount> accountsPendingRemoval;
 
-    public LinkedAccountsAdapter( List<LinkedAccount> accounts ) {
+    public AccountsAdapter( List<LinkedAccount> accounts ) {
         this.accounts = accounts;
         this.accountsPendingRemoval = new ArrayList<>();
     }
 
     @Override
     public LinkAccountViewHolder onCreateViewHolder( ViewGroup parent, int viewType ) {
-        View v = LayoutInflater.from( parent.getContext() ).inflate( R.layout.row_accounts, parent, false );
-        return new LinkedAccountsAdapter.LinkAccountViewHolder( v );
+        View v = LayoutInflater.from( parent.getContext() ).inflate( R.layout.row_account, parent, false );
+        return new AccountsAdapter.LinkAccountViewHolder( v );
     }
 
     @Override

@@ -13,7 +13,7 @@ import org.junit.runner.RunWith;
 import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.rule.MainTestRule;
 import co.yodo.mobile.ui.CouponsActivity;
-import co.yodo.mobile.ui.MainActivity;
+import co.yodo.mobile.ui.PaymentActivity;
 import co.yodo.mobile.ui.SettingsActivity;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -48,7 +48,7 @@ public class MainContentActivityTest {
     private static final String wrongPIP = "----";
 
     @Rule
-    public MainTestRule mActivityRule = new MainTestRule<>( MainActivity.class );
+    public MainTestRule mActivityRule = new MainTestRule<>( PaymentActivity.class );
 
     /**
      * Tests when the user inserts a short PIP to
@@ -58,7 +58,7 @@ public class MainContentActivityTest {
     @Test
     public void testPaymentPIPInput() throws Exception {
         // Press to make the input PIP appears
-        onView( withId( R.id.image_payment ) )
+        onView( withId( R.id.ivPayment ) )
                 .perform( click() );
 
         // Check if the dialog appeared
@@ -104,7 +104,7 @@ public class MainContentActivityTest {
     @Test
     public void testPaymentCorrectPIPInput() throws Exception {
         // Press to make the input PIP appears
-        onView( withId( R.id.image_payment ) )
+        onView( withId( R.id.ivPayment ) )
                 .perform( click() );
 
         // Check if the dialog appeared
@@ -143,7 +143,7 @@ public class MainContentActivityTest {
     public void testCoupon() throws Exception {
         Intents.init();
 
-        onView( withId( R.id.image_coupons ) )
+        onView( withId( R.id.ivCoupons ) )
                 .perform( click() );
 
         intended( hasComponent( CouponsActivity.class.getName() ) );
@@ -157,7 +157,7 @@ public class MainContentActivityTest {
      */
     @Test
     public void testNetwork() throws Exception {
-        onView( withId( R.id.image_social ) )
+        onView( withId( R.id.ivSocial ) )
                 .perform( click() );
 
         onView( allOf( withId( android.support.design.R.id.snackbar_text ), withText( R.string.error_available ) ) )

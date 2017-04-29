@@ -46,8 +46,8 @@ public class AboutOption extends IOption {
      */
     private void setupLayout( View layout ) {
         // GUI controllers of the dialog
-        TextView emailView = (TextView) layout.findViewById( R.id.emailView );
-        TextView messageView = (TextView) layout.findViewById( R.id.messageView );
+        TextView emailView = (TextView) layout.findViewById( R.id.tvEmail );
+        TextView messageView = (TextView) layout.findViewById( R.id.tvMessage );
 
         // Get data
         final String hardwareToken = PrefUtils.getHardwareToken();

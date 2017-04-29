@@ -1,4 +1,4 @@
-package co.yodo.mobile.helper;
+package co.yodo.mobile.utils;
 
 import co.yodo.mobile.YodoApplication;
 
@@ -7,26 +7,29 @@ import co.yodo.mobile.YodoApplication;
  * Common utils for the encryption
  */
 public class CryptUtils {
-    /** DEBUG */
-    @SuppressWarnings( "unused" )
-    private static final String TAG = CryptUtils.class.getSimpleName();
-
-    /**
+     /**
      * Gets the public key for the RSA encryption
      * @return The String path of the public key
      */
     public static String getPublicKey() {
         String PUBLIC_KEY;
 
-        if( YodoApplication.getSwitch().equals( "P" ) )
+        // Production
+        if( YodoApplication.getSwitch().equals( "P" ) ) {
             PUBLIC_KEY = "YodoKey/Prod/2048.public.der";
-        else if( YodoApplication.getSwitch().equals( "E" ) )
+        }
+        // Demo
+        else if( YodoApplication.getSwitch().equals( "E" ) ) {
             PUBLIC_KEY = "YodoKey/Dev/2048.public.der";
-        else if( YodoApplication.getSwitch().equals( "D" ) )
+        }
+        // Development
+        else if( YodoApplication.getSwitch().equals( "D" ) ) {
             PUBLIC_KEY = "YodoKey/Dev/2048.public.der";
-        else // Demo
+        }
+        // Local
+        else {
             PUBLIC_KEY = "YodoKey/Local/2048.public.der";
-            //PUBLIC_KEY = "YodoKey/Dev/512.public.der";
+        }
 
         return PUBLIC_KEY;
     }

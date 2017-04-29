@@ -26,7 +26,7 @@ public class ResetPIPTestRule<A extends ResetPipActivity> extends ActivityTestRu
     protected void beforeActivityLaunched() {
         super.beforeActivityLaunched();
         mCtx = InstrumentationRegistry.getTargetContext();
-        PrefUtils.clearPrefConfig();
+        PrefUtils.clearPrefConfig(mCtx);
 
         // Set preferences
         PrefUtils.saveHardwareToken( fHardwareToken );
@@ -35,6 +35,6 @@ public class ResetPIPTestRule<A extends ResetPipActivity> extends ActivityTestRu
     @Override
     protected void afterActivityFinished() {
         super.afterActivityFinished();
-        PrefUtils.clearPrefConfig();
+        PrefUtils.clearPrefConfig(mCtx);
     }
 }

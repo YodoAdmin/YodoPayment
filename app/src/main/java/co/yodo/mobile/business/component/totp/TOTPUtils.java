@@ -6,20 +6,18 @@ import java.security.InvalidKeyException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import timber.log.Timber;
+
 /**
  * Created by hei on 27/07/16.
  * Utils for the TOTP
  */
 public class TOTPUtils {
-    /** DEBUG */
-    @SuppressWarnings( "unused" )
-    private static final String TAG = TOTPUtils.class.getSimpleName();
-
     /** Window is used to check codes generated in the near past */
-    private static final int WINDOW = 1;
+    private static final int WINDOW = 2;
 
     /** Interval of time for the OTP */
-    private static final int INTERVAL = 1000 * 30; // 30 seconds
+    private static final int INTERVAL = 30; // 30 seconds
 
     /**
      * Verify if a code (OTP) is still valid
@@ -49,7 +47,8 @@ public class TOTPUtils {
      * @return The time interval
      */
     private static long getTimeIndex() {
-        return System.currentTimeMillis() / INTERVAL;
+        final long currentTimeSeconds = System.currentTimeMillis() / 1000;
+        return currentTimeSeconds / INTERVAL;
     }
 
     /**
@@ -76,8 +75,12 @@ public class TOTPUtils {
      */
     public static String defaultOTP( String pip ) {
         final String hashPip = TOTPUtils.sha1( pip );
-        if( hashPip == null )
+        if( hashPip == null ) {
             throw new NullPointerException( "Null user pip" );
+        }
+
+        Timber.i("Time: " + System.currentTimeMillis());
+        Timber.i("Time: " + TOTPUtils.getTimeIndex());
 
         final int otp = TOTP.generateTOTP(
                 hashPip.getBytes(),

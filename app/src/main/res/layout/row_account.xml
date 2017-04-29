@@ -1,26 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:padding="5dp">
+    android:layout_height="wrap_content">
 
     <RelativeLayout
         android:id="@+id/rlUndo"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:background="@color/colorDeleted"
-        android:orientation="horizontal"
-        android:padding="5dp">
+        android:layout_height="60dp"
+        android:layout_margin="5dp"
+        android:background="@drawable/bg_border_delete">
 
         <TextView
             android:id="@+id/tvDeleted"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_height="match_parent"
             android:layout_alignParentStart="true"
             android:layout_alignParentLeft="true"
-            android:drawableStart="@mipmap/ic_archive_white"
-            android:drawableLeft="@mipmap/ic_archive_white"
-            android:drawablePadding="10dp"
             android:gravity="center_vertical"
             android:paddingLeft="20dp"
             android:paddingRight="20dp"
@@ -30,7 +26,7 @@
         <TextView
             android:id="@+id/tvUndo"
             android:layout_width="wrap_content"
-            android:layout_height="50dp"
+            android:layout_height="match_parent"
             android:layout_alignParentEnd="true"
             android:layout_alignParentRight="true"
             android:layout_toEndOf="@+id/tvDeleted"
@@ -48,12 +44,13 @@
     <android.support.v7.widget.CardView
         android:id="@+id/cvAccount"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        card_view:cardUseCompatPadding="true">
 
         <TextView
             android:id="@+id/tvLinkedAccount"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="60dp"
             android:drawableLeft="@drawable/ic_yodo_heart"
             android:drawableStart="@drawable/ic_yodo_heart"
             android:drawablePadding="20dp"

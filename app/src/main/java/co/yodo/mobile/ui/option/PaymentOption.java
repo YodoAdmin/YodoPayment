@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.SeekBar;
+import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,10 +37,9 @@ import co.yodo.mobile.utils.PipUtils;
  */
 public class PaymentOption extends IRequestOption {
     /** GUI Controllers */
+    private LinearLayout llTips;
+    private TextView tvTips;
     private SeekBar sbTips;
-
-    /** Temporal */
-    private int mTempTip = 0;
 
     /** Header, SKS data and account separators */
     private static final String HDR_SEP = ",";
@@ -54,9 +55,6 @@ public class PaymentOption extends IRequestOption {
      */
     public PaymentOption( final BaseActivity activity ) {
         super( activity );
-
-        // Get text for tips
-        //mTipText = this.activity.getString( R.string.text_tip );
 
         // Dialog
         final View layout = buildLayout();
@@ -102,11 +100,9 @@ public class PaymentOption extends IRequestOption {
             }
         };
 
-        setupGUI( layout );
-
         alertDialog = AlertDialogHelper.create(
                 this.activity,
-                layout,
+                setupGUI( layout ),
                 buildOnClick( okClick )
         );
     }
@@ -115,26 +111,32 @@ public class PaymentOption extends IRequestOption {
     public void execute() {
         alertDialog.show();
         clearGUI();
-        //sbTips.setProgress( 0 );
+        sbTips.setProgress( 0 );
+
+        if( PrefUtils.isTipping( activity ) ) {
+            llTips.setVisibility( View.VISIBLE );
+        } else {
+            llTips.setVisibility( View.GONE );
+        }
     }
 
     /**
      * Setups other components for the option
      * @param layout The layout of the option
      */
-    private void setupGUI( View layout ) {
-        // Set other components
-        /*final LinearLayout llTips = (LinearLayout) layout.findViewById( R.id.llTips );
-        final TextView tvTips = (TextView) layout.findViewById( R.id.tvTips );
-        sbTips = (SeekBar) layout.findViewById( R.id.sbTips );
+    private View setupGUI( View layout ) {
+        final String tipText = activity.getString( R.string.text_tip );
 
-        llTips.setVisibility( View.VISIBLE );
-        tvTips.setText( String.format( mTipText, 0 ) );
+        // Set other components
+        llTips = (LinearLayout ) layout.findViewById( R.id.llTips );
+        sbTips = (SeekBar) layout.findViewById( R.id.sbTips );
+        tvTips = (TextView) layout.findViewById( R.id.tvTips );
+
+        tvTips.setText( String.format( tipText, 0 ) );
         sbTips.setOnSeekBarChangeListener( new SeekBar.OnSeekBarChangeListener() {
             @Override
             public void onProgressChanged( SeekBar seekBar, int progressValue, boolean fromUser ) {
-                tvTips.setText( String.format( mTipText, progressValue ) );
-                mTempTip = progressValue;
+                tvTips.setText( String.format( tipText, progressValue ) );
             }
 
             @Override
@@ -144,7 +146,9 @@ public class PaymentOption extends IRequestOption {
             @Override
             public void onStopTrackingTouch( SeekBar seekBar ) {
             }
-        } );*/
+        } );
+
+        return layout;
     }
 
     /**
@@ -161,6 +165,7 @@ public class PaymentOption extends IRequestOption {
                         progressManager.destroy();
                         final String code = response.getCode();
                         final String userCode = otp + SKS_SEP + hardwareToken;
+                        final String tip = String.valueOf( sbTips.getProgress() );
 
                         switch( code ) {
                             case ServerResponse.AUTHORIZED:
@@ -176,7 +181,7 @@ public class PaymentOption extends IRequestOption {
                                             switch( type ) {
                                                 case HEART:
                                                     if( accounts.length > 1 ) {
-                                                        /*List<String> list = new ArrayList<>();
+                                                        List<String> list = new ArrayList<>();
                                                         for( String account : accounts ) {
                                                             list.add( PrefUtils.getNickname( account ) );
                                                         }
@@ -185,27 +190,22 @@ public class PaymentOption extends IRequestOption {
                                                             @Override
                                                             public void onClick( DialogInterface dialog, final int item ) {
                                                                 final String donor = TOTPUtils.sha1( accounts[item] );
-                                                                showSKS( "0", userCode + SKS_SEP + donor, type.getValue() );
+                                                                showSKS( tip, userCode + SKS_SEP + donor, type.getValue() );
                                                                 dialog.dismiss();
                                                             }
                                                         };
 
                                                         AlertDialogHelper.show(
                                                                 activity,
-                                                                R.string.text_options_select,
+                                                                R.string.text_accounts_select,
                                                                 list.toArray( new String[0] ),
                                                                 onClick
-                                                        );*/
-                                                    } else {
-                                                        showSKS( "0", userCode, type.getValue() );
+                                                        );
+                                                        return;
                                                     }
-
-                                                    break;
-
-                                                default:
-                                                    showSKS( "0", userCode, type.getValue() );
-                                                    break;
                                             }
+
+                                            showSKS( tip, userCode, type.getValue() );
                                         }
                                     };
 
@@ -216,79 +216,14 @@ public class PaymentOption extends IRequestOption {
                                 }
                                 break;
 
-                            case ServerResponse.ERROR_FAILED:
-                                showSKS( "0", userCode, Payment.YODO.getValue() );
+                            case ServerResponse.ERROR_NO_LINKS:
+                                showSKS( tip, userCode, Payment.YODO.getValue() );
                                 break;
 
                             default:
                                 handleServerError();
                                 break;
                         }
-
-                        // SKS - User data
-                        /*final String originalCode =
-                                tempPIP + SKS_SEP +
-                                        hardwareToken;
-
-                        // Identifier for a normal payment
-                        final String yodoPayment  = getString( R.string.account_yodo );
-                        final String heartPayment = getString( R.string.account_yodo_heart );
-
-                        switch( code ) {
-                            case ServerResponse.AUTHORIZED:
-                                final String from = response.getParams().getLinkedFrom();
-
-                                // If we have a link show the options
-                                if( from != null && !from.isEmpty() ) {
-                                    View.OnClickListener onClick = new View.OnClickListener() {
-                                        @Override
-                                        public void onClick( View v ) {
-                                            final ImageView accountImage = (ImageView) v;
-                                            final String paymentType = accountImage.getContentDescription().toString();
-                                            final String[] accounts = from.split( "-" );
-
-                                            if( paymentType.equals( heartPayment ) && accounts.length > 1 ) {
-                                                List<String> list = new ArrayList<>();
-
-                                                for( String account : accounts ) {
-                                                    final String nickname = PrefUtils.getNickname( context, account );
-                                                    if( nickname != null )
-                                                        list.add( nickname );
-                                                    else
-                                                        list.add( account );
-                                                }
-
-                                                DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
-                                                    public void onClick( DialogInterface dialog, final int item ) {
-                                                        final String donor = TOTPUtils.sha1( accounts[item] );
-                                                        showSKS( originalCode + SKS_SEP + donor, paymentType );
-                                                        dialog.dismiss();
-                                                    }
-                                                };
-
-                                                AlertDialogHelper.newInstance( context, R.string.linking_menu, list.toArray( new String[0] ), onClick ).show();
-                                            } else {
-                                                showSKS( originalCode, paymentType );
-                                            }
-                                        }
-                                    };
-
-                                    new PaymentDialog.Builder( context )
-                                            .cancelable( true )
-                                            .action( onClick )
-                                            .build();
-                                }
-                                // We are only acting as donor, so show normal SKS
-                                else {
-                                    showSKS( originalCode, yodoPayment );
-                                }
-
-                                break;
-
-                            // We don't have links
-                            case ServerResponse.ERROR_FAILED:
-                                showSKS( originalCode, yodoPayment );
-                                break;*/
                     }
 
                     @Override

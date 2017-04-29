@@ -40,7 +40,7 @@ public class RegistrationActivityTest  {
      */
     @Test
     public void testPIPInput() throws Exception {
-        onView( withId( R.id.text_pip ) )
+        onView( withId( R.id.tietPip ) )
                 .perform( typeText( shortPIP ), closeSoftKeyboard() );
 
         /*onView( withId( R.id.registerPipButton ) )
@@ -57,7 +57,7 @@ public class RegistrationActivityTest  {
      */
     @Test
     public void testNoPIP() throws Exception {
-        onView( withId( R.id.text_confirm_pip ) )
+        onView( withId( R.id.tietConfirmPip ) )
                 .perform( typeText( newPIP ), closeSoftKeyboard() );
 
         /*onView( withId( R.id.registerPipButton ) )
@@ -75,10 +75,10 @@ public class RegistrationActivityTest  {
      */
     @Test
     public void testConfirmationPIPInput() throws Exception {
-        onView( withId( R.id.text_pip ) )
+        onView( withId( R.id.tietPip ) )
                 .perform( typeText( newPIP ), closeSoftKeyboard() );
 
-        onView( withId( R.id.text_confirm_pip ) )
+        onView( withId( R.id.tietConfirmPip ) )
                 .perform( typeText( wrongPIP ), closeSoftKeyboard() );
 
         /*onView( withId( R.id.registerPipButton ) )

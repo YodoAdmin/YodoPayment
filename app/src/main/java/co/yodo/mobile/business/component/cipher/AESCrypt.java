@@ -9,7 +9,7 @@ import javax.crypto.SecretKey;
 import javax.crypto.spec.IvParameterSpec;
 import javax.crypto.spec.SecretKeySpec;
 
-import co.yodo.mobile.helper.CryptUtils;
+import co.yodo.mobile.utils.CryptUtils;
 
 /**
  * Created by hei on 15/07/16.

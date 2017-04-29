@@ -13,8 +13,6 @@ import co.yodo.mobile.business.network.ApiClient;
 import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.business.network.request.LinkRequest;
 import co.yodo.mobile.helper.AlertDialogHelper;
-import co.yodo.mobile.helper.FormatUtils;
-import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.ui.BaseActivity;
 import co.yodo.mobile.ui.option.contract.IRequestOption;
 import co.yodo.mobile.utils.ErrorUtils;
@@ -34,7 +32,7 @@ public class LinkAccountOption extends IRequestOption {
         // Build dialog
         LayoutInflater inflater = (LayoutInflater) this.activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
         final View layout = inflater.inflate( R.layout.dialog_with_code, new LinearLayout( this.activity ), false );
-        etInput = (TextInputEditText) layout.findViewById( R.id.text_linking_code );
+        etInput = (TextInputEditText) layout.findViewById( R.id.tietLinkingCode );
         tilPip = (TextInputLayout) etInput.getParent().getParent();
         final View.OnClickListener okClick = new View.OnClickListener() {
             @Override

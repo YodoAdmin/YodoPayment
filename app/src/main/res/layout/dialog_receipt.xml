@@ -7,23 +7,23 @@
     android:padding="5dp" >
 
     <TextView
-        style="@style/ReceiptLayout"
+        style="@style/llReceipt"
         android:id="@+id/descriptionText"
         android:textStyle="bold"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <TextView
-        style="@style/ReceiptLayout"
+        style="@style/llReceipt"
         android:id="@+id/createdText"
         android:textAppearance="?android:attr/textAppearanceSmall" />
 
     <LinearLayout
-        style="@style/ReceiptLayout"
+        style="@style/llReceipt"
         android:id="@+id/totalLayout"
         android:orientation="horizontal" >
 
         <TextView
-            android:id="@+id/paidView"
+            android:id="@+id/tvPaidLabel"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="@string/text.receipt.total"
@@ -31,118 +31,118 @@
             android:textStyle="bold" />
 
         <TextView
+            android:id="@+id/tvPaidText"
             style="@style/ReceiptInfo"
-            android:id="@+id/paidText"
             android:textAppearance="?android:attr/textAppearanceLarge"
             android:textStyle="bold" />
 
     </LinearLayout>
 
     <LinearLayout
-        style="@style/ReceiptLayout"
-        android:id="@+id/authNumberLayout"
+        android:id="@+id/llAuthNumber"
+        style="@style/llReceipt"
         android:orientation="horizontal" >
 
         <TextView
+            android:id="@+id/tvAuthNumberLabel"
             style="@style/ReceiptLabel"
-            android:id="@+id/authNumberView"
             android:text="@string/text.receipt.auth" />
 
         <TextView
-            style="@style/ReceiptInfo"
-            android:id="@+id/authNumberText" />
+            android:id="@+id/tvAuthNumberText"
+            style="@style/ReceiptInfo"/>
 
     </LinearLayout>
 
     <LinearLayout
-        style="@style/ReceiptLayout"
-        android:id="@+id/accountsLayout"
+        android:id="@+id/llAccounts"
+        style="@style/llReceipt"
         android:orientation="vertical" >
 
         <LinearLayout
-            android:id="@+id/donorAccountLayout"
+            android:id="@+id/llDonorAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal"
             android:visibility="gone">
 
             <TextView
+                android:id="@+id/tvDonorLabel"
                 style="@style/ReceiptLabel"
-                android:id="@+id/tvDonorView"
                 android:text="@string/text.receipt.donor"/>
 
             <TextView
-                style="@style/ReceiptInfo"
-                android:id="@+id/tvDonorText" />
+                android:id="@+id/tvDonorText"
+                style="@style/ReceiptInfo"/>
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/receiverAccountLayout"
+            android:id="@+id/llReceiverAccount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
 
             <TextView
+                android:id="@+id/tvReceiverLabel"
                 style="@style/ReceiptLabel"
-                android:id="@+id/tvReceiverView"
                 android:text="@string/text.receipt.recipient"/>
 
             <TextView
-                style="@style/ReceiptInfo"
-                android:id="@+id/tvReceiverText" />
+                android:id="@+id/tvReceiverText"
+                style="@style/ReceiptInfo"/>
 
         </LinearLayout>
 
     </LinearLayout>
 
     <LinearLayout
-        style="@style/ReceiptLayout"
+        style="@style/llReceipt"
         android:id="@+id/userDataLayout"
-        android:orientation="vertical" >
+        android:orientation="vertical">
 
         <LinearLayout
-            android:id="@+id/cashTenderLayout"
+            android:id="@+id/llCashTender"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:orientation="horizontal" >
+            android:orientation="horizontal">
 
             <TextView
+                android:id="@+id/tvCashTenderLabel"
                 style="@style/ReceiptLabel"
-                android:id="@+id/cashTenderView"
-                android:text="@string/text.receipt.cash.tender" />
+                android:text="@string/text.receipt.cash.tender"/>
 
             <TextView
-                style="@style/ReceiptInfo"
-                android:id="@+id/cashTenderText" />
+                android:id="@+id/tvCashTenderText"
+                style="@style/ReceiptInfo"/>
 
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/cashBackLayout"
+            android:id="@+id/llCashBack"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal" >
 
             <TextView
+                android:id="@+id/tvCashBackLabel"
                 style="@style/ReceiptLabel"
-                android:id="@+id/cashBackView"
                 android:text="@string/text.receipt.cash.back" />
 
             <TextView
-                style="@style/ReceiptInfo"
-                android:id="@+id/cashBackText" />
+                android:id="@+id/tvCashBackText"
+                style="@style/ReceiptInfo"/>
 
         </LinearLayout>
 
     </LinearLayout>
 
     <LinearLayout
-        style="@style/ReceiptLayout"
+        style="@style/llReceipt"
         android:weightSum="2" >
 
         <ImageView
-            android:id="@+id/saveButton"
+            android:id="@+id/ivSave"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_receipt_save"
@@ -151,7 +151,7 @@
             android:visibility="gone"/>
 
         <ImageView
-            android:id="@+id/deleteButton"
+            android:id="@+id/ivDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:src="@drawable/ic_receipt_delete"

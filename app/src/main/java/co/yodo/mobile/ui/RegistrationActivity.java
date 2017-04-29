@@ -11,14 +11,12 @@ import android.view.View;
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import co.yodo.mobile.R;
 import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.helper.EulaHelper;
 import co.yodo.mobile.helper.PrefUtils;
-import co.yodo.mobile.ui.fragments.RegistrationBiometricFragment;
+import co.yodo.mobile.ui.fragments.BiometricFragment;
 import co.yodo.mobile.ui.fragments.InputPipFragment;
-import co.yodo.mobile.utils.GuiUtils;
 
 public class RegistrationActivity extends BaseActivity {
     /** The application context */
@@ -26,7 +24,7 @@ public class RegistrationActivity extends BaseActivity {
     Context context;
 
     /** GUI Controllers */
-    @BindView( R.id.button_register )
+    @BindView( R.id.acbRegister )
     AppCompatButton registerButton;
 
     /** Fragment tags */
@@ -39,7 +37,6 @@ public class RegistrationActivity extends BaseActivity {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        //GUIUtils.setLanguage( RegistrationActivity.this );
         setContentView( R.layout.activity_registration );
 
         setupGUI( savedInstanceState );
@@ -57,46 +54,13 @@ public class RegistrationActivity extends BaseActivity {
         return super.onOptionsItemSelected( item );
     }
 
-    /**
-     * The next button for the registration, handles several actions depending
-     * in the current fragment
-     * @param view, The view, not used
-     */
-    public void next( View view ) {
-        Fragment currentFragment = fragmentManager.findFragmentById( R.id.fragment_container );
-        if( currentFragment.getTag().equals( TAG_REG_PIP ) ) {
-            final String pip = ( (InputPipFragment ) currentFragment ).validatePIP();
-            if( pip != null ) {
-                RegistrationBiometricFragment bioFragment = RegistrationBiometricFragment.newInstance(
-                        hardwareToken,
-                        pip
-                );
-                fragmentManager.beginTransaction()
-                        .replace( R.id.fragment_container, bioFragment, TAG_REG_BIO )
-                        .addToBackStack( null )
-                        .commit();
-            }
-        } else {
-            RegistrationBiometricFragment bioFragment = ( ( RegistrationBiometricFragment ) currentFragment );
-            final String authNumber = PrefUtils.getAuthNumber();
-            if( authNumber == null ) {
-                bioFragment.validateBioAndRegister();
-            } else {
-                bioFragment.updateBiometricToken( authNumber );
-            }
-        }
-    }
-
-    /**
-     * Configures the main GUI Controllers
-     */
-    private void setupGUI( final Bundle savedInstanceState ) {
+    @Override
+    protected void setupGUI( final Bundle savedInstanceState ) {
+        super.setupGUI( savedInstanceState );
         // Injection
-        ButterKnife.bind( this );
         YodoApplication.getComponent().inject( this );
 
-        // Setup the action bar and fragment manager
-        GuiUtils.setActionBar( this );
+        // Setup the fragment manager
         fragmentManager = getSupportFragmentManager();
 
         // Show the terms to the user
@@ -117,7 +81,7 @@ public class RegistrationActivity extends BaseActivity {
                     if( PrefUtils.getAuthNumber() == null ) {
                         fragment = new InputPipFragment();
                     } else {
-                        fragment = new RegistrationBiometricFragment();
+                        fragment = new BiometricFragment();
                     }
                     fragmentManager.beginTransaction()
                             .add( R.id.fragment_container, fragment, TAG_REG_PIP )
@@ -125,5 +89,35 @@ public class RegistrationActivity extends BaseActivity {
                 }
             }
         } );
+    }
+
+    /**
+     * The next button for the registration, handles several actions depending
+     * in the current fragment
+     * @param view, The view, not used
+     */
+    public void next( View view ) {
+        Fragment currentFragment = fragmentManager.findFragmentById( R.id.fragment_container );
+        if( currentFragment.getTag().equals( TAG_REG_PIP ) ) {
+            final String pip = ( (InputPipFragment ) currentFragment ).validatePIP();
+            if( pip != null ) {
+                BiometricFragment bioFragment = BiometricFragment.newInstance(
+                        hardwareToken,
+                        pip
+                );
+                fragmentManager.beginTransaction()
+                        .replace( R.id.fragment_container, bioFragment, TAG_REG_BIO )
+                        .addToBackStack( null )
+                        .commit();
+            }
+        } else {
+            BiometricFragment bioFragment = ( ( BiometricFragment ) currentFragment );
+            final String authNumber = PrefUtils.getAuthNumber();
+            if( authNumber == null ) {
+                bioFragment.validateBioAndRegister();
+            } else {
+                bioFragment.updateBiometricToken( authNumber );
+            }
+        }
     }
 }

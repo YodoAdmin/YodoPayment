@@ -5,7 +5,7 @@
 
     <!-- header -->
     <LinearLayout
-        android:id="@+id/layout_header"
+        android:id="@+id/llHeader"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true" >
@@ -35,19 +35,19 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/layout_account_data"
+            android:id="@+id/llAccountData"
             style="@style/HeaderLayoutTheme" >
 
             <TextView
-                android:id="@+id/text_account_number"
+                android:id="@+id/tvAccountNumber"
                 style="@style/UserDataTextTheme"/>
 
             <TextView
-                android:id="@+id/text_account_date"
+                android:id="@+id/tvAccountDate"
                 style="@style/UserDataTextTheme"/>
 
             <TextView
-                android:id="@+id/text_account_balance"
+                android:id="@+id/tvAccountBalance"
                 style="@style/UserDataTextTheme"/>
 
         </LinearLayout>
@@ -70,28 +70,28 @@
 
     <!-- main payment button -->
     <LinearLayout
-        android:id="@+id/layout_buttons"
+        android:id="@+id/llButtons"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:weightSum="3">
 
         <ImageView
-            android:id="@+id/image_payment"
+            android:id="@+id/ivPayment"
             style="@style/MainButtonTheme"
             android:contentDescription="@string/text.desc"
             android:onClick="payment"
             android:src="@drawable/ic_golden_coins"/>
 
         <ImageView
-            android:id="@+id/image_coupons"
+            android:id="@+id/ivCoupons"
             style="@style/MainButtonTheme"
             android:contentDescription="@string/text.desc"
             android:onClick="coupons"
             android:src="@drawable/ic_coupon"/>
 
         <ImageView
-            android:id="@+id/image_social"
+            android:id="@+id/ivSocial"
             style="@style/MainButtonTheme"
             android:contentDescription="@string/text.desc"
             android:onClick="network"
@@ -102,17 +102,17 @@
 
     <!-- start ads view -->
     <RelativeLayout
-        android:id="@+id/advertisingLayout"
+        android:id="@+id/rlAdvertising"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/layout_header"
-        android:layout_above="@id/layout_buttons"
+        android:layout_below="@id/llHeader"
+        android:layout_above="@id/llButtons"
         android:layout_gravity="center"
         android:layout_margin="10dp"
         android:orientation="vertical">
 
         <it.sephiroth.android.library.imagezoom.ImageViewTouch
-            android:id="@+id/image_promotion"
+            android:id="@+id/ivtPromotion"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:contentDescription="@string/text.desc"/>

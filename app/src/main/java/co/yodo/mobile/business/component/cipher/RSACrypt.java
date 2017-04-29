@@ -11,7 +11,7 @@ import java.security.spec.X509EncodedKeySpec;
 
 import javax.crypto.Cipher;
 
-import co.yodo.mobile.helper.CryptUtils;
+import co.yodo.mobile.utils.CryptUtils;
 
 /**
  * Created by hei on 15/07/16.

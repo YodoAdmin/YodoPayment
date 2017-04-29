@@ -6,7 +6,7 @@
     tools:context="co.yodo.mobile.ui.RegistrationActivity">
 
     <android.support.v7.widget.AppCompatButton
-        android:id="@+id/button_register"
+        android:id="@+id/acbRegister"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -20,6 +20,6 @@
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/button_register"/>
+        android:layout_above="@+id/acbRegister"/>
 
 </RelativeLayout>

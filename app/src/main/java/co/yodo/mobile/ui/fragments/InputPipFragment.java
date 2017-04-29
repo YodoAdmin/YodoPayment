@@ -26,10 +26,10 @@ public class InputPipFragment extends Fragment {
     Context context;
 
     /** GUI Controllers */
-    @BindView( R.id.text_pip )
+    @BindView( R.id.tietPip )
     TextInputEditText etPip;
 
-    @BindView( R.id.text_confirm_pip )
+    @BindView( R.id.tietConfirmPip )
     TextInputEditText etPipConfirm;
 
     @Override

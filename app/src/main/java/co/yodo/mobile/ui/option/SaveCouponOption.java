@@ -11,10 +11,14 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.UUID;
 
+import javax.inject.Inject;
+
 import co.yodo.mobile.R;
+import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.model.db.Coupon;
 import co.yodo.mobile.ui.BaseActivity;
+import co.yodo.mobile.helper.ProgressDialogHelper;
 import co.yodo.mobile.ui.option.contract.IOption;
 import co.yodo.mobile.helper.AlertDialogHelper;
 import co.yodo.mobile.utils.GuiUtils;
@@ -25,8 +29,18 @@ import it.sephiroth.android.library.imagezoom.ImageViewTouch;
  * Implements the Save Coupon Option for the Main Activity
  */
 public class SaveCouponOption extends IOption {
+    /** Progress dialog for the requests */
+    @Inject
+    protected ProgressDialogHelper progressManager;
+
     /** GUI controllers */
     private ImageViewTouch ivtPromotion;
+
+    /** Extension of the promotions */
+    private static final String IMAGE_EXT = ".png";
+
+    /** OnClick action */
+    private final DialogInterface.OnClickListener onClick;
 
     /**
      * Sets up the main elements of the options
@@ -34,18 +48,19 @@ public class SaveCouponOption extends IOption {
      */
     public SaveCouponOption( BaseActivity activity ) {
         super( activity );
-    }
 
-    @Override
-    public void execute() {
-         DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
+        // Injection
+        YodoApplication.getComponent().inject( this );
+
+        // Create the dialog
+        onClick = new DialogInterface.OnClickListener() {
             @Override
             public void onClick( DialogInterface dialog, int item ) {
                 // Gets the external storage
-                File directory = new File( Environment.getExternalStorageDirectory(), AppConfig.COUPONS_FOLDER );
+                final File directory = new File( Environment.getExternalStorageDirectory(), AppConfig.COUPONS_FOLDER );
                 boolean success = true;
 
-                // Verify if the directory exists
+                // Verify if the directory exists or create it
                 if( !directory.exists() ) {
                     success = directory.mkdir();
                 }
@@ -56,29 +71,36 @@ public class SaveCouponOption extends IOption {
                     return;
                 }
 
-                // Get the number of files and add one to the add
-                final Drawable drawable = ivtPromotion.getDrawable();
-                if( drawable != null ) {
-                    File image = new File( directory, UUID.randomUUID().toString() + ".png" );
-                    final CharSequence description = ivtPromotion.getContentDescription();
-                    Bitmap bitmap = GuiUtils.drawableToBitmap( drawable );
+                new Thread( new Runnable() {
+                    public void run() {
+                        // Get the number of files and add one to the add
+                        final Drawable drawable = ivtPromotion.getDrawable();
+                        if( drawable != null ) {
+                            File image = new File( directory, UUID.randomUUID().toString() + IMAGE_EXT );
+                            Bitmap bitmap = GuiUtils.drawableToBitmap( drawable );
+                            final CharSequence description = ivtPromotion.getContentDescription();
 
-                    try {
-                        FileOutputStream outStream = new FileOutputStream( image );
-                        bitmap.compress( Bitmap.CompressFormat.PNG, 100, outStream );
+                            try {
+                                FileOutputStream outStream = new FileOutputStream( image );
+                                bitmap.compress( Bitmap.CompressFormat.PNG, 100, outStream );
 
-                        outStream.flush();
-                        outStream.close();
+                                outStream.flush();
+                                outStream.close();
 
-                        Coupon coupon = new Coupon( image.getPath(), description.toString() );
-                        coupon.save();
-                    } catch( IOException e ) {
-                        e.printStackTrace();
+                                Coupon coupon = new Coupon( image.getPath(), description.toString() );
+                                coupon.save();
+                            } catch( IOException e ) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
-                }
+                } ).start();
             }
         };
+    }
 
+    @Override
+    public void execute() {
         AlertDialogHelper.show(
                 activity,
                 R.string.text_promotion,

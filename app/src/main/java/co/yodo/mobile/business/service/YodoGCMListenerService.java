@@ -18,7 +18,7 @@ import co.yodo.mobile.R;
 import co.yodo.mobile.helper.FormatUtils;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.model.db.Receipt;
-import co.yodo.mobile.ui.MainActivity;
+import co.yodo.mobile.ui.PaymentActivity;
 import timber.log.Timber;
 
 public class YodoGCMListenerService extends GcmListenerService {
@@ -77,7 +77,7 @@ public class YodoGCMListenerService extends GcmListenerService {
             ) );
         }
 
-        Intent intent = new Intent( this, MainActivity.class );
+        Intent intent = new Intent( this, PaymentActivity.class );
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this,
                 0,

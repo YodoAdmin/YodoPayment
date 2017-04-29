@@ -7,7 +7,7 @@ import java.security.NoSuchAlgorithmException;
 import javax.crypto.spec.SecretKeySpec;
 
 import co.yodo.mobile.business.component.cipher.AESCrypt;
-import co.yodo.mobile.helper.CryptUtils;
+import co.yodo.mobile.utils.CryptUtils;
 
 /**
  * Created by hei on 16/08/16.

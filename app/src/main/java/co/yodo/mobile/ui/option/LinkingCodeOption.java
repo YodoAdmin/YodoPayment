@@ -62,8 +62,8 @@ public class LinkingCodeOption extends IRequestOption {
                                             dialog.setContentView( R.layout.dialog_linking_code );
 
                                             // Setup the elements
-                                            TextView codeText = (TextView) dialog.findViewById( R.id.text_code );
-                                            ImageView codeImage = (ImageView) dialog.findViewById( R.id.image_copy );
+                                            TextView codeText = (TextView) dialog.findViewById( R.id.tvCode );
+                                            ImageView codeImage = (ImageView) dialog.findViewById( R.id.ivCopy );
                                             codeText.setText( linking_code );
 
                                             codeImage.setOnClickListener( new View.OnClickListener() {

@@ -11,14 +11,17 @@ import co.yodo.mobile.business.injection.module.CipherModule;
 import co.yodo.mobile.business.injection.module.JobsModule;
 import co.yodo.mobile.business.injection.scope.ApplicationScope;
 import co.yodo.mobile.business.service.RegistrationIntentService;
+import co.yodo.mobile.ui.CouponsActivity;
 import co.yodo.mobile.ui.LinkedAccountsActivity;
-import co.yodo.mobile.ui.MainActivity;
+import co.yodo.mobile.ui.PaymentActivity;
 import co.yodo.mobile.ui.ReceiptsActivity;
 import co.yodo.mobile.ui.RegistrationActivity;
 import co.yodo.mobile.ui.ResetPipActivity;
 import co.yodo.mobile.ui.SplashActivity;
+import co.yodo.mobile.ui.adapter.CouponsAdapter;
 import co.yodo.mobile.ui.fragments.InputPipFragment;
-import co.yodo.mobile.ui.fragments.RegistrationBiometricFragment;
+import co.yodo.mobile.ui.fragments.BiometricFragment;
+import co.yodo.mobile.ui.option.SaveCouponOption;
 import co.yodo.mobile.ui.option.contract.IRequestOption;
 import dagger.Component;
 
@@ -31,20 +34,23 @@ public interface GraphComponent {
     // Injects to the Activities
     void inject( SplashActivity activity );
     void inject( RegistrationActivity activity );
-    void inject( MainActivity activity );
+    void inject( PaymentActivity activity );
     void inject( ResetPipActivity activity );
     void inject( ReceiptsActivity activity );
+    void inject( CouponsActivity activity );
     void inject( LinkedAccountsActivity activity );
 
     /** Inject to fragments */
     void inject( InputPipFragment fragment );
-    void inject( RegistrationBiometricFragment fragment );
+    void inject( BiometricFragment fragment );
 
     // Injects to the Services
     void inject( RegistrationIntentService service );
 
     // Injects to the Components
     void inject( IRequestOption option );
+    void inject( CouponsAdapter adapter );
+    void inject( SaveCouponOption option );
 
     // Provides the map of executable jobs
     Map<String, Provider<Job>> provideJobs();

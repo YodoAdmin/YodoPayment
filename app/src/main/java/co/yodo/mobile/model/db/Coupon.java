@@ -18,13 +18,13 @@ public class Coupon extends SugarRecord {
 	@SuppressWarnings("unused")
 	public Coupon() {}
 
-	public Coupon( String description, String url ) {
+	public Coupon( String url, String description ) {
 		// Date formatter
 		SimpleDateFormat sdf = new SimpleDateFormat( DATE_FORMAT, Locale.US );
 
 		// Set coupon data
-		this.description = description;
 		this.url = url;
+		this.description = description;
 		this.created = sdf.format( new Date() );
 	}
 
@@ -32,16 +32,12 @@ public class Coupon extends SugarRecord {
 	    return description;
 	}
 
-	public void setDescription(String description) {
+	public void setDescription( String description ) {
 	    this.description = description;
 	}
 	
 	public String getUrl() {
 	    return url;
-	}
-
-	public void setUrl( String url ) {
-	    this.url = url;
 	}
 	
 	public String getCreated() {

@@ -12,11 +12,20 @@
     <color name="colorProgressBar">#9e9e9e</color>
     <color name="colorSeparator">#616161</color>
 
+    <!-- Intro -->
+    <color name="colorIntro1">#212121</color>
+    <color name="colorIntro2">#3F51B5</color>
+    <color name="colorIntro3">#009688</color>
+    <color name="colorIntro4">#607D8B</color>
+
     <!--  Reset pip -->
     <color name="colorForgotPip">#757575</color>
 
     <!-- Navigation -->
     <color name="colorNavigationButton">#9e9e9e</color>
+
+    <!-- Receipts -->
+    <color name="colorSelected"> #9e9e9e</color>
 
     <!-- Linked accounts -->
     <color name="colorDeleted">#930913</color>

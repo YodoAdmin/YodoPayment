@@ -57,8 +57,8 @@ public class PaymentDialog extends IDialog {
             super( context, R.layout.dialog_payment, R.style.AppCompatAlertDialogStyle );
 
             // Data
-            this.ivYodoPayment = ( ImageView ) this.dialog.findViewById( R.id.image_yodo );
-            this.ivHeartPayment = ( ImageView ) this.dialog.findViewById( R.id.image_heart );
+            this.ivYodoPayment = ( ImageView ) this.dialog.findViewById( R.id.ivYodo );
+            this.ivHeartPayment = ( ImageView ) this.dialog.findViewById( R.id.ivHeart );
 
             // Set types
             this.ivYodoPayment.setTag( Payment.YODO );

@@ -47,19 +47,19 @@ public class ReceiptDialog extends IDialog {
             // Data
             this.tvDescription      = (TextView) this.dialog.findViewById( R.id.descriptionText );
             this.tvCreated          = (TextView) this.dialog.findViewById( R.id.createdText );
-            this.tvTotalAmount      = (TextView) this.dialog.findViewById( R.id.paidText );
-            this.tvAuthnumber       = (TextView) this.dialog.findViewById( R.id.authNumberText );
-            this.tvTenderAmount     = (TextView) this.dialog.findViewById( R.id.cashTenderText );
-            this.tvCashbackAmount   = (TextView) this.dialog.findViewById( R.id.cashBackText );
+            this.tvTotalAmount      = (TextView) this.dialog.findViewById( R.id.tvPaidText );
+            this.tvAuthnumber       = (TextView) this.dialog.findViewById( R.id.tvAuthNumberText );
+            this.tvTenderAmount     = (TextView) this.dialog.findViewById( R.id.tvCashTenderText );
+            this.tvCashbackAmount   = (TextView) this.dialog.findViewById( R.id.tvCashBackText );
             this.tvDonorAccount     = (TextView) this.dialog.findViewById( R.id.tvDonorText );
             this.tvRecipientAccount = (TextView) this.dialog.findViewById( R.id.tvReceiverText );
 
             // Layout
-            this.llDonor = (LinearLayout) this.dialog.findViewById( R.id.donorAccountLayout );
+            this.llDonor = (LinearLayout) this.dialog.findViewById( R.id.llDonorAccount );
 
             // Buttons
-            this.ivSave   = (ImageView) this.dialog.findViewById( R.id.saveButton );
-            this.ivDelete = (ImageView) this.dialog.findViewById( R.id.deleteButton );
+            this.ivSave   = (ImageView) this.dialog.findViewById( R.id.ivSave );
+            this.ivDelete = (ImageView) this.dialog.findViewById( R.id.ivDelete );
         }
 
         @Override

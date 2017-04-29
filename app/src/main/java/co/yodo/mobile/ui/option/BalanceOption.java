@@ -14,6 +14,7 @@ import co.yodo.mobile.ui.BaseActivity;
 import co.yodo.mobile.ui.option.contract.IRequestOption;
 import co.yodo.mobile.utils.ErrorUtils;
 import co.yodo.mobile.utils.PipUtils;
+import timber.log.Timber;
 
 /**
  * Created by hei on 14/06/16.
@@ -33,11 +34,13 @@ public class BalanceOption extends IRequestOption {
             @Override
             public void onClick( View view  ) {
                 if( PipUtils.validate( activity, etInput, null ) ) {
-                    final String pip = TOTPUtils.defaultOTP( etInput.getText().toString() );
+                    final String otp = TOTPUtils.defaultOTP( etInput.getText().toString() );
+
+                    Timber.i("OTP: " + otp);
 
                     progressManager.create( activity );
                     requestManager.invoke(
-                            new QueryRequest( hardwareToken, pip ),
+                            new QueryRequest( hardwareToken, otp ),
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse( ServerResponse response ) {

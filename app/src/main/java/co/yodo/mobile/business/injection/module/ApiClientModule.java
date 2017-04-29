@@ -2,7 +2,7 @@ package co.yodo.mobile.business.injection.module;
 
 import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.business.injection.scope.ApplicationScope;
-import co.yodo.mobile.ui.notification.ProgressDialogHelper;
+import co.yodo.mobile.helper.ProgressDialogHelper;
 import dagger.Module;
 import dagger.Provides;
 import okhttp3.OkHttpClient;

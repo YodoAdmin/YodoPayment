@@ -12,7 +12,7 @@ import java.io.FileReader;
 import java.io.IOException;
 
 import co.yodo.mobile.business.component.Intents;
-import co.yodo.mobile.helper.CryptUtils;
+import co.yodo.mobile.utils.CryptUtils;
 import timber.log.Timber;
 import visidon.Lib.VerificationAPI;
 

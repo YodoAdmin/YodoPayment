@@ -26,7 +26,7 @@ public class RegistrationTestRule<A extends RegistrationActivity> extends Activi
     protected void beforeActivityLaunched() {
         super.beforeActivityLaunched();
         mCtx = InstrumentationRegistry.getTargetContext();
-        PrefUtils.clearPrefConfig();
+        PrefUtils.clearPrefConfig(mCtx);
 
         // Set preferences
         PrefUtils.saveEulaAccepted( true );
@@ -36,6 +36,6 @@ public class RegistrationTestRule<A extends RegistrationActivity> extends Activi
     @Override
     protected void afterActivityFinished() {
         super.afterActivityFinished();
-        PrefUtils.clearPrefConfig();
+        PrefUtils.clearPrefConfig(mCtx);
     }
 }

@@ -1,6 +1,8 @@
 package co.yodo.mobile.utils;
 
+import android.annotation.SuppressLint;
 import android.app.Activity;
+import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.pm.PackageManager;
@@ -9,6 +11,7 @@ import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.telephony.TelephonyManager;
 import android.widget.Toast;
 
 import com.google.android.gms.common.ConnectionResult;
@@ -30,6 +33,37 @@ import co.yodo.mobile.ui.notification.ToastMaster;
  * google services or logger
  */
 public class SystemUtils {
+    /**
+     * Generates the mobile hardware identifier either
+     * from the Phone (IMEI) or the Bluetooth (MAC)
+     * @param c The Context of the Android system.
+     * @return A new hardware token
+     */
+    @SuppressLint( "HardwareIds" )
+    public static String generateHardwareToken( Context c ) {
+        String hardwareToken = null;
+
+        TelephonyManager telephonyManager  = (TelephonyManager) c.getSystemService( Context.TELEPHONY_SERVICE );
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+
+        // Try to get the IMEI
+        if( telephonyManager != null ) {
+            String tempMAC = telephonyManager.getDeviceId();
+            if( tempMAC != null )
+                hardwareToken = tempMAC.replace( "/", "" );
+        }
+
+        // Try to get the Bluetooth identifier if this device doesn't have IMEI
+        if( hardwareToken == null && bluetoothAdapter != null ) {
+            if( bluetoothAdapter.isEnabled() ) {
+                String tempMAC = bluetoothAdapter.getAddress();
+                hardwareToken = tempMAC.replaceAll( ":", "" );
+            }
+        }
+
+        return hardwareToken;
+    }
+
     /**
      * Method to verify google play services on the device
      * @param activity The activity that
@@ -164,9 +198,10 @@ public class SystemUtils {
 
     /**
      * Clears all the stored information
+     * @param context The application context
      */
-    public static void clearUserData() {
-        PrefUtils.clearPrefConfig();
+    public static void clearUserData( Context context ) {
+        PrefUtils.clearPrefConfig( context );
         Receipt.deleteAll( Receipt.class );
         Coupon.deleteAll( Coupon.class );
         SystemUtils.deleteDir(

@@ -17,7 +17,7 @@ import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.business.network.ApiClient;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.ui.BaseActivity;
-import co.yodo.mobile.ui.notification.ProgressDialogHelper;
+import co.yodo.mobile.helper.ProgressDialogHelper;
 
 /**
  * Created by hei on 04/08/16.
@@ -64,7 +64,7 @@ public abstract class IRequestOption extends IOption {
         final View layout = inflater.inflate( R.layout.dialog_with_pip, new LinearLayout( activity ), false );
 
         // GUI setup
-        etInput = (EditText) layout.findViewById( R.id.text_pip );
+        etInput = (EditText) layout.findViewById( R.id.tietPip );
         tilPip = (TextInputLayout) etInput.getParent().getParent();
 
         return layout;

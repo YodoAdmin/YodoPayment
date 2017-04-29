@@ -1,10 +1,8 @@
 package co.yodo.mobile.ui.adapter;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.graphics.Typeface;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
@@ -21,113 +19,52 @@ import com.amulyakhare.textdrawable.TextDrawable;
 import com.amulyakhare.textdrawable.util.ColorGenerator;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import co.yodo.mobile.R;
-import co.yodo.mobile.model.db.Receipt;
 import co.yodo.mobile.helper.FormatUtils;
+import co.yodo.mobile.model.db.Receipt;
+import co.yodo.mobile.ui.dialog.ReceiptDialog;
+import timber.log.Timber;
 
 public class ReceiptsAdapter extends RecyclerView.Adapter<ReceiptsAdapter.ReceiptViewHolder> implements Filterable {
     /** Application Context */
-	private Context context;
-    private List<Receipt> originalData = new ArrayList<>();
-    private List<Receipt> filteredData = new ArrayList<>();
-    private SparseBooleanArray mSelectedItemsIds;
+    private List<Receipt> originalData;
+    private List<Receipt> filteredData;
+    private List<Receipt> selectedData;
+    //private SparseBooleanArray selectedItemsIds;
 
     /** Animations for multiple selection */
     private Animation anim_in;
     private Animation anim_out;
 
-    /** Declare the color generator and drawable builder */
-    private ColorGenerator mColorGenerator = ColorGenerator.MATERIAL;
-    private TextDrawable.IBuilder mDrawableBuilder;
+    /** Long click listener */
+    private OnLongClickListener listener;
 
-    public ReceiptsAdapter( Context context, List<Receipt> data ) {
-        mDrawableBuilder = TextDrawable.builder()
-                .beginConfig()
-                    .bold()
-                    .withBorder( 4 )
-                .endConfig().rect();
-        mSelectedItemsIds = new SparseBooleanArray();
+    /** Compare receipts */
+    private static Comparator<Receipt> ReceiptsComparator = new Comparator<Receipt>() {
+        @Override
+        public int compare( Receipt o1, Receipt o2 ) {
+            return o2.getCreated().compareTo( o1.getCreated() );
+        }
+    };
+
+    public ReceiptsAdapter( Context context, OnLongClickListener listener ) {
+        //selectedItemsIds = new SparseBooleanArray();
 
         anim_in  = AnimationUtils.loadAnimation( context, R.anim.to_middle );
         anim_out = AnimationUtils.loadAnimation( context, R.anim.from_middle );
 
-        this.context = context;
-        this.originalData = data;
-        this.filteredData = data ;
+        // Setup data
+        this.originalData = new ArrayList<>();
+        this.filteredData = new ArrayList<>();
+        this.selectedData = new ArrayList<>();
+        this.listener = listener;
     }
- 
-    /*@NonNull
-    @Override
-    public View getView( final int position, View convertView, @NonNull ViewGroup parent ) {
-        View row = convertView;
-        final ViewHolder holder;
- 
-        if( row == null ) {
-            LayoutInflater inflater = ((Activity) context).getLayoutInflater();
-            row = inflater.inflate( layoutResourceId, parent, false );
-            holder = new ViewHolder( row );
-
-            holder.created     = (TextView) row.findViewById( R.id.createdView );
-            holder.description = (TextView) row.findViewById( R.id.descriptionView );
-            holder.total       = (TextView) row.findViewById( R.id.totalView );
-
-            row.setTag( holder );
-        } else {
-            holder = (ViewHolder) row.getTag();
-        }
-
-        // Fills the holder with the item data
-        Receipt item = filteredData.get( position );
-
-        final String total = String.format( "%s %s %s",
-                context.getString( R.string.text_receipt_total ),
-                FormatUtils.truncateDecimal( item.getTotalAmount() ),
-                FormatUtils.replaceNull( item.getTCurrency() )
-        );
-
-        holder.created.setText( FormatUtils.UTCtoCurrent( context, item.getCreated() ) );
-        holder.description.setText( item.getDescription() );
-        holder.total.setText( total );
-
-        // If it is opened, change the text style
-        if( item.isOpened() ) {
-            holder.description.setTypeface( Typeface.DEFAULT );
-            holder.created.setTypeface( Typeface.DEFAULT );
-        } else {
-            holder.description.setTypeface( Typeface.DEFAULT_BOLD );
-            holder.created.setTypeface( Typeface.DEFAULT_BOLD );
-        }
-
-        // If it is selected choose a check image, else the default
-        if( item.isChecked ) {
-            holder.descIcon.setImageDrawable( mDrawableBuilder.build( " ", 0xff616161 ) );
-            holder.view.setBackgroundColor( ContextCompat.getColor( context, R.color.colorGreySoft ) );
-            holder.checkIcon.setVisibility( View.VISIBLE );
-        }
-        else {
-            TextDrawable drawable = mDrawableBuilder.build(
-                    String.valueOf( item.getDescription().charAt( 0 ) ),
-                    mColorGenerator.getColor( item.getDescription() )
-            );
-            holder.descIcon.setImageDrawable( drawable );
-            holder.view.setBackgroundColor( Color.TRANSPARENT );
-            holder.checkIcon.setVisibility( View.GONE );
-        }
-
-        return row;
-    }*/
-
-    /**
-     * Gets an item by its position
-     * @param position The position of the item
-     * @return The item in the filtered list
-     */
-    /*public Receipt getItem( int position ) {
-        return filteredData.get( position );
-    }*/
 
     @Override
     public ReceiptViewHolder onCreateViewHolder( ViewGroup parent, int viewType ) {
@@ -136,45 +73,35 @@ public class ReceiptsAdapter extends RecyclerView.Adapter<ReceiptsAdapter.Receip
     }
 
     @Override
-    public void onBindViewHolder( ReceiptViewHolder holder, int position ) {
+    public void onBindViewHolder( final ReceiptViewHolder holder, int position ) {
         // Fills the holder with the item data
-        Receipt item = filteredData.get( position );
+        final Receipt receipt = filteredData.get( position );
 
-        final String total = String.format( "%s %s %s",
-                context.getString( R.string.text_receipt_total ),
-                FormatUtils.truncateDecimal( item.getTotalAmount() ),
-                FormatUtils.replaceNull( item.getTCurrency() )
-        );
+        holder.cvReceipt.setOnClickListener( new View.OnClickListener() {
+            @Override
+            public void onClick( View v ) {
+                if( !receipt.isOpened() ) {
+                    receipt.setOpened( true );
+                    receipt.save();
+                }
 
-        holder.created.setText( FormatUtils.UTCtoCurrent( context, item.getCreated() ) );
-        holder.description.setText( item.getDescription() );
-        holder.total.setText( total );
+                Context context = v.getContext();
+                buildReceiptDialog( context, receipt );
+                notifyItemChanged( holder.getAdapterPosition() );
+            }
+        } );
 
-        // If it is opened, change the text style
-        if( item.isOpened() ) {
-            holder.description.setTypeface( Typeface.DEFAULT );
-            holder.created.setTypeface( Typeface.DEFAULT );
-        } else {
-            holder.description.setTypeface( Typeface.DEFAULT_BOLD );
-            holder.created.setTypeface( Typeface.DEFAULT_BOLD );
-        }
-
-        // If it is selected choose a check image, else the default
-        if( item.isChecked ) {
-            holder.descIcon.setImageDrawable( mDrawableBuilder.build( " ", 0xff616161 ) );
-            //holder.view.setBackgroundColor( ContextCompat.getColor( context, R.color.colorGreySoft ) );
-            holder.checkIcon.setVisibility( View.VISIBLE );
-        }
-        else {
-            TextDrawable drawable = mDrawableBuilder.build(
-                    String.valueOf( item.getDescription().charAt( 0 ) ),
-                    mColorGenerator.getColor( item.getDescription() )
-            );
-            holder.descIcon.setImageDrawable( drawable );
-            //holder.view.setBackgroundColor( Color.TRANSPARENT );
-            holder.checkIcon.setVisibility( View.GONE );
-        }
-
+        holder.bind( receipt );
+        holder.itemView.setOnLongClickListener( new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick( View v ) {
+                receipt.setChecked( !receipt.isChecked );
+                toggleSelection( receipt );
+                updateCheckedState( holder, receipt );
+                listener.OnLongClick();
+                return true;
+            }
+        } );
     }
 
     @Override
@@ -182,12 +109,60 @@ public class ReceiptsAdapter extends RecyclerView.Adapter<ReceiptsAdapter.Receip
         return filteredData.size();
     }
 
-    public long getItemId( int position) {
-        return position;
+    public void onAttachedToRecyclerView( RecyclerView recyclerView ) {
+        super.onAttachedToRecyclerView( recyclerView );
     }
 
-    public void onAttachedToRecyclerView(RecyclerView recyclerView) {
-        super.onAttachedToRecyclerView(recyclerView);
+    /**
+     * Add a receipt to both lists
+     * @param receipt The receipt
+     */
+    public void add( Receipt receipt ) {
+        originalData.add( receipt );
+        filteredData.add( receipt );
+    }
+
+    /**
+     * Add a list of receipts to both lists
+     * @param receipts The list of receipts
+     */
+    public void addAll( List<Receipt> receipts ) {
+        originalData.addAll( receipts );
+        filteredData.addAll( receipts );
+    }
+
+    /**
+     * Removes a receipt from both lists
+     * @param receipt The receipt
+     */
+    public void remove( Receipt receipt ) {
+        originalData.remove( receipt );
+        filteredData.remove( receipt );
+    }
+
+    /**
+     * Removes a list of receipts from both lists
+     * @param receipts The list of receipts
+     */
+    public void removeAll( List<Receipt> receipts ) {
+        originalData.removeAll( receipts );
+        filteredData.removeAll( receipts );
+    }
+
+    /**
+     * Sorts all the data filtered/original
+     */
+    public void sort() {
+        Collections.sort( originalData, ReceiptsAdapter.ReceiptsComparator );
+        Collections.sort( filteredData, ReceiptsAdapter.ReceiptsComparator );
+    }
+
+    /**
+     * Clears all the data
+     */
+    public void clear() {
+        originalData.clear();
+        filteredData.clear();
     }
 
     /**
@@ -195,7 +170,7 @@ public class ReceiptsAdapter extends RecyclerView.Adapter<ReceiptsAdapter.Receip
      * @param holder The The holder for the item
      * @param item The receipt item
      */
-    /*public void updateCheckedState( final ViewHolder holder, final Receipt item ) {
+    private void updateCheckedState( final ReceiptViewHolder holder, final Receipt item ) {
         Animation.AnimationListener animListener = new Animation.AnimationListener() {
             @Override
             public void onAnimationStart( Animation animation ) {
@@ -212,67 +187,46 @@ public class ReceiptsAdapter extends RecyclerView.Adapter<ReceiptsAdapter.Receip
         };
 
         if( item.isChecked ) {
-            holder.descIcon.clearAnimation();
-            holder.descIcon.setAnimation( anim_out );
-            holder.descIcon.startAnimation( anim_out );
+            holder.ivIconDescription.clearAnimation();
+            holder.ivIconDescription.setAnimation( anim_out );
+            holder.ivIconDescription.startAnimation( anim_out );
         }
         else {
-            holder.descIcon.clearAnimation();
-            holder.descIcon.setAnimation( anim_in );
-            holder.descIcon.startAnimation( anim_in );
+            holder.ivIconDescription.clearAnimation();
+            holder.ivIconDescription.setAnimation( anim_in );
+            holder.ivIconDescription.startAnimation( anim_in );
         }
 
         anim_in.setAnimationListener( animListener );
         anim_out.setAnimationListener( animListener );
-    }*/
+    }
 
     /**
      * removes all the selected items
      * @return The removed elements
      */
-    /*public List<Receipt> removeSelected() {
-        List<Receipt> removed = new ArrayList<>( mSelectedItemsIds.size() );
-        for( int i = (mSelectedItemsIds.size() - 1); i >= 0; i-- ) {
-            Receipt item = getItem( mSelectedItemsIds.keyAt( i ) );
-            if( item != null )
-                item.setChecked( false );
-            // Remove selected items following the ids
-            removed.add( item );
-            //remove( item );
+    public List<Receipt> removeSelected() {
+        for( Receipt receipt : selectedData ) {
+            receipt.setChecked( false );
+            receipt.delete();
+            remove( receipt );
         }
-        mSelectedItemsIds.clear();
 
-        return removed;
+        List<Receipt> copy = new ArrayList<>( selectedData );
+        selectedData.clear();
+        return copy;
     }
-
-    public Receipt getSelected() {
-        return getItem( mSelectedItemsIds.keyAt( 0 ) );
-    }*/
-
-    /*public void addReceipt( Receipt receipt ) {
-        originalData.add( receipt );
-        filteredData.add( receipt );
-        add( receipt );
-    }*/
 
     /**
      * Change the state of an item (selected or not)
-     * @param position The position of the item
+     * @param receipt The item selected
      */
-    public void toggleSelection( int position ) {
-        selectView( position, !mSelectedItemsIds.get( position ) );
-    }
-
-    /**
-     * Add the item to the list of deleted items or remove it
-     * @param position The position of the item
-     * @param value True for delete, false for remove from the list
-     */
-    private void selectView( int position, boolean value ) {
-        if( value )
-            mSelectedItemsIds.put( position, true );
-        else
-            mSelectedItemsIds.delete( position );
+    private void toggleSelection( Receipt receipt ) {
+        if( !selectedData.contains( receipt ) ) {
+            selectedData.add( receipt );
+        } else {
+            selectedData.remove( receipt );
+        }
     }
 
     /**
@@ -280,21 +234,25 @@ public class ReceiptsAdapter extends RecyclerView.Adapter<ReceiptsAdapter.Receip
      * @return the number of deleted items
      */
     public int getSelectedCount() {
-        return mSelectedItemsIds.size();
+        return selectedData.size();
+    }
+
+    /** Gets the selected item */
+    public Receipt getSelected() {
+        return ( selectedData.size() == 1 ) ? selectedData.get( 0 ) : null;
     }
 
     /**
      * Clears the items selected to delete
-     * by removing them from the list of mSelectedItemsIds
+     * by removing them from the list of selectedItemsIds
      */
-    /*public void clearDeleteList() {
-        for( int i = (mSelectedItemsIds.size() - 1); i >= 0; i-- ) {
-            Receipt receipt = getItem( mSelectedItemsIds.keyAt( i ) );
-            if( receipt != null )
-                receipt.setChecked( !receipt.isChecked );
+    public void clearSelected() {
+        for( Receipt receipt : selectedData ) {
+            receipt.setChecked( false );
+            receipt.save();
         }
-        mSelectedItemsIds.clear();
-    }*/
+        selectedData.clear();
+    }
 
     @Override
     public Filter getFilter() {
@@ -310,8 +268,9 @@ public class ReceiptsAdapter extends RecyclerView.Adapter<ReceiptsAdapter.Receip
 
             for( int i = 0; i < originalData.size(); i++ ) {
                 Receipt item = originalData.get( i );
-                if( item.getDescription().toLowerCase().contains( filterString ) )
+                if( item.getDescription().toLowerCase().contains( filterString ) ) {
                     filterList.add( item );
+                }
             }
 
             results.values = filterList;
@@ -326,42 +285,104 @@ public class ReceiptsAdapter extends RecyclerView.Adapter<ReceiptsAdapter.Receip
         }
     };
 
-    public static Comparator<Receipt> ReceiptsComparator = new Comparator<Receipt>() {
-        @Override
-        public int compare( Receipt o1, Receipt o2 ) {
-            return o2.getCreated().compareTo( o1.getCreated() );
-        }
-    };
+    /**
+     * Builds the dialog for the receipt
+     * @param receipt The receipt data
+     */
+    private void buildReceiptDialog( Context context, Receipt receipt ) {
+        // The receipt dialog formats the values
+        new ReceiptDialog.Builder( context )
+                .cancelable( true )
+                .description( receipt.getDescription() )
+                .created( receipt.getCreated() )
+                .total( receipt.getTotalAmount(), receipt.getTCurrency() )
+                .authnumber( receipt.getAuthNumber() )
+                .donor( receipt.getDonorAccount() )
+                .recipient( receipt.getRecipientAccount() )
+                .tender( receipt.getTenderAmount(), receipt.getDCurrency())
+                .cashback( receipt.getCashBackAmount(), receipt.getTCurrency() )
+                .build();
+    }
 
     /** Holder for the receipts */
     static class ReceiptViewHolder extends RecyclerView.ViewHolder {
-        /** GUI Controllers */
-        /*CardView entryLayout;
-        ImageView officeImageView;
-        TextView nameTextView;
-        TextView documentIdTextView;
-        ImageView signatureImageView;*/
-        private View view;
-        private TextView created;
-        private TextView description;
-        private TextView total;
-        private ImageView descIcon;
-        private ImageView checkIcon;
+        /** View context */
+        private Context context;
 
-        ReceiptViewHolder( View itemView) {
+        /** GUI Controllers */
+        @BindView( R.id.cvReceipt )
+        CardView cvReceipt;
+
+        @BindView( R.id.tvCreated )
+        TextView tvCreated;
+
+        @BindView( R.id.tvDescription )
+        TextView tvDescription;
+
+        @BindView( R.id.tvTotal )
+        TextView tvTotal;
+
+        @BindView( R.id.ivIconDescription )
+        ImageView ivIconDescription;
+
+        @BindView( R.id.ivIconSelection)
+        ImageView ivIconSelection;
+
+        /** Declare the color generator and drawable builder */
+        private static ColorGenerator colorGenerator = ColorGenerator.MATERIAL;
+        private static TextDrawable.IBuilder drawableBuilder = TextDrawable.builder()
+                .beginConfig()
+                    .bold()
+                    .withBorder( 4 )
+                .endConfig().rect();
+
+        ReceiptViewHolder( View itemView ) {
             super( itemView );
 
-            /*entryLayout = (CardView) itemView.findViewById(R.id.layout_entry);
-            officeImageView = (ImageView) itemView.findViewById(R.id.image_branch_office);
-            nameTextView = (TextView) itemView.findViewById(R.id.text_full_name);
-            documentIdTextView = (TextView) itemView.findViewById(R.id.entry_document_id);
-            signatureImageView = (ImageView) itemView.findViewById(R.id.image_signature);*/
-            created = (TextView) itemView.findViewById( R.id.createdView );
-            description = (TextView) itemView.findViewById( R.id.descriptionView );
-            total = (TextView) itemView.findViewById( R.id.totalView );
-            descIcon  = (ImageView) itemView.findViewById( R.id.desc_icon );
-            checkIcon = (ImageView) itemView.findViewById( R.id.check_icon );
+            // Injection
+            ButterKnife.bind( this, itemView );
+
+            // Get context
+            context = itemView.getContext();
+        }
+
+        void bind( Receipt receipt ) {
+            final String total = String.format( "%s %s %s",
+                    context.getString( R.string.text_receipt_total ),
+                    FormatUtils.truncateDecimal( receipt.getTotalAmount() ),
+                    FormatUtils.replaceNull( receipt.getTCurrency() )
+            );
+
+            tvCreated.setText( FormatUtils.UTCtoCurrent( context, receipt.getCreated() ) );
+            tvDescription.setText( receipt.getDescription() );
+            tvTotal.setText( total );
+
+            // If it is opened, change the text style
+            if( receipt.isOpened() ) {
+                tvDescription.setTypeface( Typeface.DEFAULT );
+                tvCreated.setTypeface( Typeface.DEFAULT );
+            } else {
+                tvDescription.setTypeface( Typeface.DEFAULT_BOLD );
+                tvCreated.setTypeface( Typeface.DEFAULT_BOLD );
+            }
+
+            // If it is selected choose a check image, else the default
+            if( receipt.isChecked ) {
+                ivIconDescription.setImageDrawable( drawableBuilder.build( " ", 0xff616161 ) );
+                ivIconSelection.setVisibility( View.VISIBLE );
+            }
+            else {
+                TextDrawable drawable = drawableBuilder.build(
+                        String.valueOf( receipt.getDescription().charAt( 0 ) ),
+                        colorGenerator.getColor( receipt.getDescription() )
+                );
+                ivIconDescription.setImageDrawable( drawable );
+                ivIconSelection.setVisibility( View.GONE );
+            }
         }
     }
 
+    public interface OnLongClickListener {
+        void OnLongClick();
+    }
 }

@@ -38,7 +38,7 @@ import android.widget.TextView;
 import java.io.IOException;
 import java.util.List;
 
-import co.yodo.mobile.helper.CryptUtils;
+import co.yodo.mobile.utils.CryptUtils;
 import timber.log.Timber;
 import visidon.Lib.Parameters;
 import visidon.Lib.VerificationAPI;

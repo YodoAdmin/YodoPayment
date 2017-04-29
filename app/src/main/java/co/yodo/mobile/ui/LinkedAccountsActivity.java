@@ -16,7 +16,6 @@ import java.util.List;
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import co.yodo.mobile.R;
 import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.business.network.ApiClient;
@@ -25,8 +24,7 @@ import co.yodo.mobile.business.network.request.DeLinkRequest;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.model.dtos.ErrorEvent;
 import co.yodo.mobile.model.dtos.LinkedAccount;
-import co.yodo.mobile.ui.adapter.LinkedAccountsAdapter;
-import co.yodo.mobile.utils.GuiUtils;
+import co.yodo.mobile.ui.adapter.AccountsAdapter;
 
 /**
  * Created by luis on 20/02/15.
@@ -52,8 +50,8 @@ public class LinkedAccountsActivity extends BaseActivity {
     private String pip;
 
     /** Recycler view adapters */
-    private LinkedAccountsAdapter toAdapter;
-    private LinkedAccountsAdapter fromAdapter;
+    private AccountsAdapter toAdapter;
+    private AccountsAdapter fromAdapter;
 
     /** Data to display */
     private final List<LinkedAccount> toAccounts = new ArrayList<>();
@@ -70,10 +68,9 @@ public class LinkedAccountsActivity extends BaseActivity {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        //GUIUtils.setLanguage( DeLinkActivity.this );
         setContentView( R.layout.activity_linked_accounts );
 
-        setupGUI();
+        setupGUI( savedInstanceState );
         updateData();
     }
 
@@ -100,11 +97,11 @@ public class LinkedAccountsActivity extends BaseActivity {
     /**
      * Starts the activity with the required values
      * @param context The application context
-     * @param from The accounts that gives money to the account
      * @param to The accounts that the account give money to
+     * @param from The accounts that gives money to the account
      * @param pip The pip
      */
-    public static void newInstance( Context context, String from, String to, String pip ) {
+    public static void newInstance( Context context, String to, String from, String pip ) {
         Intent i = new Intent( context, LinkedAccountsActivity.class );
         i.putExtra( BUNDLE_ACC_TO, to );
         i.putExtra( BUNDLE_ACC_FROM, from );
@@ -115,19 +112,17 @@ public class LinkedAccountsActivity extends BaseActivity {
     /**
      * Configures the main GUI Controllers
      */
-    private void setupGUI() {
+    @Override
+    protected void setupGUI( Bundle savedInstanceState ) {
+        super.setupGUI( savedInstanceState );
         // Injection
-        ButterKnife.bind( this );
         YodoApplication.getComponent().inject( this );
-
-        // Setup the toolbar
-        GuiUtils.setActionBar( this );
     }
 
     @Override
     public void updateData() {
         super.updateData();
-
+        // Get values from main activity
         final Bundle extras = getIntent().getExtras();
         if( extras == null ) {
             finish();
@@ -145,8 +140,8 @@ public class LinkedAccountsActivity extends BaseActivity {
             rvAccountsTo.setLayoutManager( new LinearLayoutManager( context ) );
             rvAccountsFrom.setLayoutManager( new LinearLayoutManager( context ) );
 
-            toAdapter = new LinkedAccountsAdapter( toAccounts );
-            fromAdapter = new LinkedAccountsAdapter( fromAccounts );
+            toAdapter = new AccountsAdapter( toAccounts );
+            fromAdapter = new AccountsAdapter( fromAccounts );
 
             rvAccountsTo.setAdapter( toAdapter );
             rvAccountsFrom.setAdapter( fromAdapter );
@@ -179,7 +174,7 @@ public class LinkedAccountsActivity extends BaseActivity {
      * @param adapter The adapter of the recycler view
      * @param accounts The list of accounts
      */
-    private void setSwipeListener( RecyclerView rvAccounts, final LinkedAccountsAdapter adapter, final List<LinkedAccount> accounts ) {
+    private void setSwipeListener( RecyclerView rvAccounts, final AccountsAdapter adapter, final List<LinkedAccount> accounts ) {
         ItemTouchHelper.SimpleCallback ithCallback = new ItemTouchHelper.SimpleCallback( 0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT ) {
             @Override
             public boolean onMove( RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target ) {

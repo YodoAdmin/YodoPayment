@@ -1,11 +1,21 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
 
     <ListPreference
-        android:key="SPCurrentLanguage"
-        android:title="@string/config_pref_languages"
+        android:key="SPREF_LANGUAGE"
+        android:title="@string/text.config.languages"
         android:summary="%s"
         android:entries="@array/languages_options"
         android:entryValues="@array/languages_options_values"
         android:defaultValue="en"/>
+
+    <PreferenceCategory android:title="@string/text.config.interface.category">
+
+        <CheckBoxPreference
+            android:key="SPREF_TIPPING"
+            android:title="@string/text.config.tip"
+            android:summary="@string/text.config.tip.summary"
+            android:defaultValue="true"/>
+
+    </PreferenceCategory>
 
 </PreferenceScreen>

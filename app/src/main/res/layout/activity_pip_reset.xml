@@ -7,7 +7,7 @@
     tools:context=".ui.ResetPipActivity" >
 
     <LinearLayout
-        android:id="@+id/layout_reset_pip_options"
+        android:id="@+id/llResetPipOptions"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
@@ -15,14 +15,14 @@
         android:weightSum="2" >
 
         <android.support.v7.widget.AppCompatButton
-            android:id="@+id/button_reset_pip"
+            android:id="@+id/acbResetPip"
             style="@style/ResetButton"
             android:onClick="resetPip"
             android:text="@string/text.pip.reset"
             app:backgroundTint="@color/colorPrimaryRed"/>
 
         <android.support.v7.widget.AppCompatButton
-            android:id="@+id/button_forgot_pip"
+            android:id="@+id/acbForgotPip"
             style="@style/ResetButton"
             android:onClick="forgotPip"
             android:text="@string/text.forgot.pip"
@@ -34,6 +34,6 @@
         android:id="@+id/fragment_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_above="@+id/layout_reset_pip_options"/>
+        android:layout_above="@+id/llResetPipOptions"/>
 
 </RelativeLayout>

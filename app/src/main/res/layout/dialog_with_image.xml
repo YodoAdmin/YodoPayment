@@ -6,7 +6,7 @@
     android:keepScreenOn="true">
 
     <ImageView
-        android:id="@+id/sks"
+        android:id="@+id/ivSks"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:contentDescription="@string/text.desc"/>

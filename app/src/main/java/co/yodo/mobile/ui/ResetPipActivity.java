@@ -12,7 +12,6 @@ import android.widget.Toast;
 
 import javax.inject.Inject;
 
-import butterknife.ButterKnife;
 import co.yodo.mobile.R;
 import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.business.component.Intents;
@@ -22,12 +21,11 @@ import co.yodo.mobile.business.network.request.QueryRequest;
 import co.yodo.mobile.business.network.request.ResetPIPRequest;
 import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.ui.fragments.InputPipFragment;
-import co.yodo.mobile.ui.notification.ProgressDialogHelper;
+import co.yodo.mobile.helper.ProgressDialogHelper;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.option.ResetPipOption;
 import co.yodo.mobile.ui.option.factory.OptionsFactory;
 import co.yodo.mobile.utils.ErrorUtils;
-import co.yodo.mobile.utils.GuiUtils;
 import co.yodo.mobile.utils.SystemUtils;
 
 public class ResetPipActivity extends BaseActivity {
@@ -62,7 +60,6 @@ public class ResetPipActivity extends BaseActivity {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        //GUIUtils.setLanguage( this );
         setContentView( R.layout.activity_pip_reset );
 
         setupGUI( savedInstanceState );
@@ -139,6 +136,30 @@ public class ResetPipActivity extends BaseActivity {
         }
     }
 
+    @Override
+    protected void setupGUI( Bundle savedInstanceState ) {
+        super.setupGUI( savedInstanceState );
+        // Injection
+        YodoApplication.getComponent().inject( this );
+
+        // Options
+        optsFactory = new OptionsFactory( this );
+
+        // Check that the activity is using the layout version with
+        // the fragment_container FrameLayout
+        if (findViewById(R.id.fragment_container) != null) {
+            if (savedInstanceState != null) {
+                return;
+            }
+
+            // Create a new Fragment to be placed in the activity layout
+            currentFragment = new InputPipFragment();
+            getSupportFragmentManager().beginTransaction()
+                    .add( R.id.fragment_container, currentFragment )
+                    .commit();
+        }
+    }
+
     /**
      * Action that validates the input of the PIP,
      * and starts the reset PIP process
@@ -172,35 +193,6 @@ public class ResetPipActivity extends BaseActivity {
             if( cameraPermission ) {
                 startRecognition();
             }
-        }
-    }
-
-    /**
-     * Configures the main GUI Controllers
-     */
-    private void setupGUI( Bundle savedInstanceState ) {
-        // Injection
-        ButterKnife.bind( this );
-        YodoApplication.getComponent().inject( this );
-
-        // Setup the toolbar
-        GuiUtils.setActionBar( this );
-
-        // Options
-        optsFactory = new OptionsFactory( this );
-
-        // Check that the activity is using the layout version with
-        // the fragment_container FrameLayout
-        if (findViewById(R.id.fragment_container) != null) {
-            if (savedInstanceState != null) {
-                return;
-            }
-
-            // Create a new Fragment to be placed in the activity layout
-            currentFragment = new InputPipFragment();
-            getSupportFragmentManager().beginTransaction()
-                    .add( R.id.fragment_container, currentFragment )
-                    .commit();
         }
     }
 

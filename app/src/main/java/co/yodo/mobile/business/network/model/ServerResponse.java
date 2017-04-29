@@ -16,6 +16,7 @@ public class ServerResponse implements Serializable {
     public static final String ERROR_NO_BALANCE     = "ER21";
     public static final String ERROR_INCORRECT_PIP  = "ER22";
     public static final String ERROR_NOT_REGISTERED = "ER24";
+    public static final String ERROR_NO_LINKS       = "ER101";
 
     /** Param keys */
     public static final String LOGO         = "logo";

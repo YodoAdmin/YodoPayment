@@ -52,7 +52,10 @@ public class OptionsFactory {
     }
 
     public IOption getOption( Option option ) {
-        PrefUtils.setSubscribing( activity, false );
+        // Stop the subscribing for any option except coupons
+        if( option != Option.COUPONS ) {
+            PrefUtils.setSubscribing( activity, false );
+        }
 
         switch( option ) {
             case PAYMENT:

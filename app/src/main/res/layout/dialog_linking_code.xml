@@ -20,13 +20,13 @@
         tools:ignore="UseCompoundDrawables">
 
         <TextView
-            android:id="@+id/text_code"
+            android:id="@+id/tvCode"
             style="@style/LinkingCodeTextTheme"
             android:textStyle="bold"
             android:textAppearance="?android:attr/textAppearanceLarge" />
 
         <ImageView
-            android:id="@+id/image_copy"
+            android:id="@+id/ivCopy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"

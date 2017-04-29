@@ -1,5 +1,6 @@
 package co.yodo.mobile.ui;
 
+import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
@@ -9,15 +10,18 @@ import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
 
+import butterknife.ButterKnife;
 import co.yodo.mobile.R;
 import co.yodo.mobile.business.service.YodoGCMListenerService;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.model.db.Receipt;
 import co.yodo.mobile.model.dtos.ErrorEvent;
+import co.yodo.mobile.ui.dialog.PaymentDialog;
 import co.yodo.mobile.ui.dialog.ReceiptDialog;
 import co.yodo.mobile.ui.dialog.contract.IDialog;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.utils.ErrorUtils;
+import co.yodo.mobile.utils.GuiUtils;
 
 /**
  * Created by hei on 08/03/17.
@@ -31,6 +35,12 @@ public class BaseActivity extends AppCompatActivity {
     private IDialog dialog;
 
     @Override
+    protected void onCreate( Bundle savedInstanceState ) {
+        super.onCreate( savedInstanceState );
+        GuiUtils.setLanguage( this );
+    }
+
+    @Override
     public void onStart() {
         super.onStart();
         EventBus.getDefault().register( this );
@@ -40,6 +50,17 @@ public class BaseActivity extends AppCompatActivity {
     public void onStop() {
         super.onStop();
         EventBus.getDefault().unregister( this );
+    }
+
+    /**
+     * Setups the GUI controllers
+     */
+    protected void setupGUI( Bundle savedInstanceState ) {
+        // Injection
+        ButterKnife.bind( this );
+
+        // Setup the toolbar
+        GuiUtils.setActionBar( this );
     }
 
     /**
@@ -72,6 +93,8 @@ public class BaseActivity extends AppCompatActivity {
         final View.OnClickListener onSave = new View.OnClickListener() {
             @Override
             public void onClick( View v ) {
+                onSaveReceipt( receipt );
+
                 // Show a notification which can reverse the save
                 Snackbar.make( findViewById( android.R.id.content ), R.string.text_receipt_saved, Snackbar.LENGTH_LONG )
                         .setAction( R.string.text_undo, new View.OnClickListener() {
@@ -88,7 +111,7 @@ public class BaseActivity extends AppCompatActivity {
         final View.OnClickListener onDelete = new View.OnClickListener() {
             @Override
             public void onClick( View v ) {
-                receipt.delete();
+                onDeleteReceipt( receipt );
 
                 // Show a notification which can reverse the delete
                 Snackbar.make( findViewById( android.R.id.content ), R.string.text_receipt_deleted, Snackbar.LENGTH_LONG )
@@ -116,6 +139,13 @@ public class BaseActivity extends AppCompatActivity {
                 .save( onSave )
                 .delete( onDelete )
                 .build();
+    }
+
+    public void onDeleteReceipt( Receipt receipt ) {
+        receipt.delete();
+    }
+
+    public void onSaveReceipt( Receipt receipt ) {
     }
 
     @SuppressWarnings( "unused" )
@@ -147,7 +177,9 @@ public class BaseActivity extends AppCompatActivity {
         }
 
         // Update the GUI
-        updateData();
         buildReceiptDialog( receipt );
+        if( this instanceof PaymentActivity ) {
+            updateData();
+        }
     }
 }

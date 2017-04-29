@@ -48,10 +48,10 @@ public class ResetPIPActivityTest {
         /*onView( withId( R.id.etNewPip ) )
                 .perform( typeText( newPIP ), closeSoftKeyboard() );*/
 
-        onView( withId( R.id.text_confirm_pip ) )
+        onView( withId( R.id.tietConfirmPip ) )
                 .perform( scrollTo(), typeText( newPIP ), closeSoftKeyboard() );
 
-        onView( withId( R.id.button_reset_pip ) )
+        onView( withId( R.id.acbResetPip ) )
                 .perform( click() );
 
         onView( withText( R.string.error_pip_length ) )
@@ -68,7 +68,7 @@ public class ResetPIPActivityTest {
         /*onView( withId( R.id.etNewPip ) )
                 .perform( typeText( shortPIP ), closeSoftKeyboard() );*/
 
-        onView( withId( R.id.button_reset_pip ) )
+        onView( withId( R.id.acbResetPip ) )
                 .perform( click() );
 
         onView( withText( R.string.error_pip_length ) )
@@ -86,10 +86,10 @@ public class ResetPIPActivityTest {
         /*onView( withId( R.id.etNewPip ) )
                 .perform( typeText( newPIP ), closeSoftKeyboard() );*/
 
-        onView( withId( R.id.text_confirm_pip ) )
+        onView( withId( R.id.tietConfirmPip ) )
                 .perform( scrollTo(), typeText( shortPIP ), closeSoftKeyboard() );
 
-        onView( withId( R.id.button_reset_pip ) )
+        onView( withId( R.id.acbResetPip ) )
                 .perform( click() );
 
         onView( withText( R.string.error_pip_match ) )
@@ -104,10 +104,10 @@ public class ResetPIPActivityTest {
      */
     @Test
     public void testNoNewPIPInput() throws Exception {
-        onView( withId( R.id.text_confirm_pip ) )
+        onView( withId( R.id.tietConfirmPip ) )
                 .perform( scrollTo(), typeText( newPIP ), closeSoftKeyboard() );
 
-        onView( withId( R.id.button_reset_pip ) )
+        onView( withId( R.id.acbResetPip ) )
                 .perform( click() );
 
         onView( withText( R.string.error_pip_length ) )
@@ -126,10 +126,10 @@ public class ResetPIPActivityTest {
         /*onView( withId( R.id.etNewPip ) )
                 .perform( typeText( newPIP ), closeSoftKeyboard() );*/
 
-        onView( withId( R.id.text_confirm_pip ) )
+        onView( withId( R.id.tietConfirmPip ) )
                 .perform( scrollTo(), typeText( newPIP ), closeSoftKeyboard() );
 
-        onView( withId( R.id.button_reset_pip ) )
+        onView( withId( R.id.acbResetPip ) )
                 .perform( click() );
 
         onView( withText( ServerResponse.ERROR_INCORRECT_PIP ) )
@@ -147,7 +147,7 @@ public class ResetPIPActivityTest {
         /*onView( withId( R.id.etNewPip ) )
                 .perform( typeText( shortPIP ), closeSoftKeyboard() );*/
 
-        onView( withId( R.id.button_forgot_pip ) )
+        onView( withId( R.id.acbForgotPip ) )
                 .perform( click() );
 
         onView( withText( R.string.error_pip_length ) )
@@ -166,10 +166,10 @@ public class ResetPIPActivityTest {
         /*onView( withId( R.id.etNewPip ) )
                 .perform( typeText( newPIP ), closeSoftKeyboard() );*/
 
-        onView( withId( R.id.text_confirm_pip ) )
+        onView( withId( R.id.tietConfirmPip ) )
                 .perform( typeText( shortPIP ), closeSoftKeyboard() );
 
-        onView( withId( R.id.button_forgot_pip ) )
+        onView( withId( R.id.acbForgotPip ) )
                 .perform( click() );
 
         onView( withText( R.string.error_pip_match ) )
@@ -188,10 +188,10 @@ public class ResetPIPActivityTest {
          /*onView( withId( R.id.etNewPip ) )
                 .perform( typeText( newPIP ), closeSoftKeyboard() );*/
 
-        onView( withId( R.id.text_confirm_pip ) )
+        onView( withId( R.id.tietConfirmPip ) )
                 .perform( scrollTo(), typeText( newPIP ), closeSoftKeyboard() );
 
-        onView( withId( R.id.button_forgot_pip ) )
+        onView( withId( R.id.acbForgotPip ) )
                 .perform( click() );
 
         onView( withText( ServerResponse.ERROR_FAILED ) )

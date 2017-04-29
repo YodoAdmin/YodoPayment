@@ -15,10 +15,9 @@ public class SettingsActivity extends BaseActivity {
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        //GUIUtils.setLanguage( SettingsActivity.this );
         setContentView( R.layout.activity_settings );
 
-        setupGUI();
+        setupGUI( savedInstanceState );
     }
 
     @Override
@@ -35,9 +34,9 @@ public class SettingsActivity extends BaseActivity {
     /**
      * Configures the main GUI Controllers
      */
-    private void setupGUI() {
-        // Setup the toolbar
-        GuiUtils.setActionBar( this );
+    @Override
+    protected void setupGUI( Bundle savedInstanceState ) {
+        super.setupGUI( savedInstanceState );
 
         // Sets the fragment content
         getFragmentManager().beginTransaction().replace( R.id.content, new PrefsFragmentInner() ).commit();
@@ -72,8 +71,8 @@ public class SettingsActivity extends BaseActivity {
         @Override
         public void onSharedPreferenceChanged( SharedPreferences sharedPreferences, String key ) {
             // If the user changed the language, then restart the app
-            if( key.equals( AppConfig.SPREF_CURRENT_LANGUAGE ) ) {
-                Intent i = new Intent( getActivity(), MainActivity.class );
+            if( key.equals( AppConfig.SPREF_LANGUAGE ) ) {
+                Intent i = new Intent( getActivity(), PaymentActivity.class );
                 i.setFlags( Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK );
                 startActivity( i );
                 getActivity().finish();

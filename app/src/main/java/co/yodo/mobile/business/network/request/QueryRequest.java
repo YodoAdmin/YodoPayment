@@ -10,6 +10,7 @@ import co.yodo.mobile.business.network.request.contract.IRequest;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import timber.log.Timber;
 
 /**
  * Created by hei on 12/06/16.

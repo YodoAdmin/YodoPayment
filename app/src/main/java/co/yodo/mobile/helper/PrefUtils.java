@@ -1,10 +1,7 @@
 package co.yodo.mobile.helper;
 
-import android.annotation.SuppressLint;
-import android.bluetooth.BluetoothAdapter;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.telephony.TelephonyManager;
 
 import com.orhanobut.hawk.Hawk;
 
@@ -13,74 +10,6 @@ import com.orhanobut.hawk.Hawk;
  * Utilities for the App, Mainly shared preferences
  */
 public class PrefUtils {
-    /**
-     * A helper class just o obtain the config file for the Shared Preferences
-     * using the default values for this Shared Preferences app.
-     * @param c The Context of the Android system.
-     * @return Returns the shared preferences with the default values.
-     */
-    private static SharedPreferences getSPrefConfig( Context c ) {
-        return c.getSharedPreferences( AppConfig.SHARED_PREF_FILE, Context.MODE_PRIVATE );
-    }
-
-    /**
-     * Register a listener for the preferences
-     * @param c The Context of the Android system
-     * @param listener The listener that will be registered to the preferences
-     */
-    public static void registerSPListener( Context c, SharedPreferences.OnSharedPreferenceChangeListener listener ) {
-        getSPrefConfig( c ).registerOnSharedPreferenceChangeListener( listener );
-    }
-
-    /**
-     * Unregisters a listener to the preferences
-     * @param c The Context of the Android system
-     * @param listener The listener that will be unregistered to the preferences
-     */
-    public static void unregisterSPListener( Context c, SharedPreferences.OnSharedPreferenceChangeListener listener ) {
-        getSPrefConfig( c ).unregisterOnSharedPreferenceChangeListener( listener );
-    }
-
-    /**
-     * Clear all the preferences
-     * @return True if it was a success otherwise false
-     */
-    public static boolean clearPrefConfig() {
-        return Hawk.deleteAll();
-        //return getSPrefConfig( c ).edit().clear().commit();
-    }
-
-    /**
-     * Generates the mobile hardware identifier either
-     * from the Phone (IMEI) or the Bluetooth (MAC)
-     * @param c The Context of the Android system.
-     * @return A new hardware token
-     */
-    @SuppressLint( "HardwareIds" )
-    public static String generateHardwareToken( Context c ) {
-        String hardwareToken = null;
-
-        TelephonyManager telephonyManager  = (TelephonyManager) c.getSystemService( Context.TELEPHONY_SERVICE );
-        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-
-        // Try to get the IMEI
-        if( telephonyManager != null ) {
-            String tempMAC = telephonyManager.getDeviceId();
-            if( tempMAC != null )
-                hardwareToken = tempMAC.replace( "/", "" );
-        }
-
-        // Try to get the Bluetooth identifier if this device doesn't have IMEI
-        if( hardwareToken == null && bluetoothAdapter != null ) {
-            if( bluetoothAdapter.isEnabled() ) {
-                String tempMAC = bluetoothAdapter.getAddress();
-                hardwareToken = tempMAC.replaceAll( ":", "" );
-            }
-        }
-
-        return hardwareToken;
-    }
-
     /**
      * Saves the hardware token in the preferences
      * @param hardwareToken The hardware token
@@ -105,7 +34,7 @@ public class PrefUtils {
      *         false The flag was not saved successfully.
      */
     public static Boolean saveEulaAccepted( Boolean flag ) {
-        return Hawk.put( AppConfig.SPREF_EULA_ACCEPTED, flag );
+        return Hawk.put( AppConfig.SPREF_EULA, flag );
     }
 
     /**
@@ -114,7 +43,7 @@ public class PrefUtils {
      *         false The user didn't accept the EULA.
      */
     static Boolean isEulaAccepted() {
-        return Hawk.get( AppConfig.SPREF_EULA_ACCEPTED, false );
+        return Hawk.get( AppConfig.SPREF_EULA, false );
     }
 
     /**
@@ -165,7 +94,7 @@ public class PrefUtils {
      *         false The flag was not saved successfully.
      */
     public static boolean saveBalance( String balance ) {
-        return Hawk.put( AppConfig.SPREF_CURRENT_BALANCE, balance );
+        return Hawk.put( AppConfig.SPREF_BALANCE, balance );
     }
 
     /**
@@ -173,7 +102,7 @@ public class PrefUtils {
      * @return String It returns the balance
      */
     public static String getCurrentBalance() {
-        return Hawk.get( AppConfig.SPREF_CURRENT_BALANCE, "*.**" );
+        return Hawk.get( AppConfig.SPREF_BALANCE, "*.**" );
     }
 
     /**
@@ -203,27 +132,31 @@ public class PrefUtils {
     }
 
     /**
-     * It saves the current language
+     * A helper class just o obtain the config file for the Shared Preferences
+     * using the default values for this Shared Preferences app.
      * @param c The Context of the Android system.
-     * @param language It is the language used by the app
-     * @return true  The flag was saved successfully.
-     *         false The flag was not saved successfully.
+     * @return Returns the shared preferences with the default values.
      */
-    static boolean saveLanguage( Context c, String language ) {
-        SharedPreferences config = getSPrefConfig( c );
-        SharedPreferences.Editor writer = config.edit();
-        writer.putString( AppConfig.SPREF_CURRENT_LANGUAGE, language );
-        return writer.commit();
+    private static SharedPreferences getSPrefConfig( Context c ) {
+        return c.getSharedPreferences( AppConfig.SHARED_PREF_FILE, Context.MODE_PRIVATE );
     }
 
     /**
-     * It gets the language
+     * Register a listener for the preferences
      * @param c The Context of the Android system
-     * @return String It returns the language
+     * @param listener The listener that will be registered to the preferences
      */
-    static String getLanguage( Context c ) {
-        SharedPreferences config = getSPrefConfig( c );
-        return config.getString( AppConfig.SPREF_CURRENT_LANGUAGE, null );
+    public static void registerSPListener( Context c, SharedPreferences.OnSharedPreferenceChangeListener listener ) {
+        getSPrefConfig( c ).registerOnSharedPreferenceChangeListener( listener );
+    }
+
+    /**
+     * Unregisters a listener to the preferences
+     * @param c The Context of the Android system
+     * @param listener The listener that will be unregistered to the preferences
+     */
+    public static void unregisterSPListener( Context c, SharedPreferences.OnSharedPreferenceChangeListener listener ) {
+        getSPrefConfig( c ).unregisterOnSharedPreferenceChangeListener( listener );
     }
 
     /**
@@ -252,13 +185,37 @@ public class PrefUtils {
     }
 
     /**
+     * It saves the current language
+     * @param c The Context of the Android system.
+     * @param language It is the language used by the app
+     * @return true  The flag was saved successfully.
+     *         false The flag was not saved successfully.
+     */
+    public static boolean saveLanguage( Context c, String language ) {
+        SharedPreferences config = getSPrefConfig( c );
+        SharedPreferences.Editor writer = config.edit();
+        writer.putString( AppConfig.SPREF_LANGUAGE, language );
+        return writer.commit();
+    }
+
+    /**
+     * It gets the language
+     * @param c The Context of the Android system
+     * @return String It returns the language
+     */
+    public static String getLanguage( Context c ) {
+        SharedPreferences config = getSPrefConfig( c );
+        return config.getString( AppConfig.SPREF_LANGUAGE, null );
+    }
+
+    /**
      * Get the current task for the subscription
      * @param c The Context of the Android system
      * @return The task
      */
     public static Boolean isSubscribing( Context c ) {
         SharedPreferences config = getSPrefConfig( c );
-        return config.getBoolean( AppConfig.SPREF_SUBSCRIPTION_TASK, false );
+        return config.getBoolean( AppConfig.SPREF_SUBSCRIPTION, false );
     }
 
     /**
@@ -271,7 +228,27 @@ public class PrefUtils {
     public static boolean setSubscribing( Context c, Boolean value ) {
         SharedPreferences config = getSPrefConfig( c );
         SharedPreferences.Editor writer = config.edit();
-        writer.putBoolean( AppConfig.SPREF_SUBSCRIPTION_TASK, value );
+        writer.putBoolean( AppConfig.SPREF_SUBSCRIPTION, value );
         return writer.commit();
+    }
+
+    /**
+     * Get the current task for the subscription
+     * @param c The Context of the Android system
+     * @return The task
+     */
+    public static Boolean isTipping( Context c ) {
+        SharedPreferences config = getSPrefConfig( c );
+        return config.getBoolean( AppConfig.SPREF_TIPPING, true );
+    }
+
+    /**
+     * Clear all the preferences
+     * @param context The application context
+     * @return True if it was a success otherwise false
+     */
+    public static boolean clearPrefConfig( Context context ) {
+        Hawk.deleteAll();
+        return getSPrefConfig( context ).edit().clear().commit();
     }
 }

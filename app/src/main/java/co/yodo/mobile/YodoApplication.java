@@ -59,21 +59,21 @@ public class YodoApplication extends SugarApp {
                 .build();
 
         // Init secure preferences
-        Hawk.init(this).build();
+        Hawk.init( this ).build();
 
         // Init timber
-        if (BuildConfig.DEBUG) {
+        if( BuildConfig.DEBUG ) {
             // Debug
             Timber.plant( new Timber.DebugTree() {
                 // Adds the line number
                 @Override
                 protected String createStackElementTag(StackTraceElement element) {
-                    return super.createStackElementTag(element) + ':' + element.getLineNumber();
+                    return super.createStackElementTag( element ) + ':' + element.getLineNumber();
                 }
             });
         } else {
             // Release
-            Timber.plant(new CrashReportingTree());
+            Timber.plant( new CrashReportingTree() );
         }
 
         // Init jobs manager

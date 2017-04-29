@@ -5,13 +5,21 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.ContextWrapper;
+import android.content.res.Configuration;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.util.DisplayMetrics;
 import android.view.View;
+
+import java.util.Locale;
+
+import co.yodo.mobile.R;
+import co.yodo.mobile.helper.PrefUtils;
 
 /**
  * Created by hei on 10/06/16.
@@ -25,7 +33,7 @@ public class GuiUtils {
      */
     public static void copyCode( Context c, String text ) {
         ClipboardManager clipboard = (ClipboardManager) c.getSystemService( Context.CLIPBOARD_SERVICE );
-        ClipData clip = ClipData.newPlainText( "Copied", text );
+        ClipData clip = ClipData.newPlainText( c.getString( R.string.text_link_account_copied ), text );
         clipboard.setPrimaryClip( clip );
     }
 
@@ -33,7 +41,7 @@ public class GuiUtils {
      * Sets the stored language for the application
      * @param ac The Context of the Android system.
      */
-    /*public static void setLanguage( Context ac ) {
+    public static void setLanguage( Context ac ) {
         final String language = PrefUtils.getLanguage( ac );
         if( language != null ) {
             Locale appLoc = new Locale( language );
@@ -50,7 +58,7 @@ public class GuiUtils {
             final String appLang = ac.getResources().getConfiguration().locale.getLanguage();
             PrefUtils.saveLanguage( ac, appLang );
         }
-    }*/
+    }
 
     /**
      * Gets a drawable from the bitmap

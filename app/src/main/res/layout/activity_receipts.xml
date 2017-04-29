@@ -1,12 +1,11 @@
 <RelativeLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    style="@style/GeneralLayoutTheme"
     tools:context="co.yodo.mobile.ui.CouponsActivity">
 
     <android.support.v7.widget.RecyclerView
-        android:id="@+id/layout_receipts"
+        android:id="@+id/rvReceipts"
         android:layout_width="match_parent"
         android:layout_height="match_parent"/>
 

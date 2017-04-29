@@ -11,12 +11,12 @@ import android.view.ViewGroup;
  * Created by hei on 12/08/16.
  * Slide for the tutorial
  */
-public class TutoSlide extends Fragment {
+public class TutorialSlide extends Fragment {
     private static final String ARG_LAYOUT_RES_ID = "layoutResId";
     private int layoutResId;
 
-    public static TutoSlide newInstance( int layoutResId ) {
-        TutoSlide slide = new TutoSlide();
+    public static TutorialSlide newInstance( int layoutResId ) {
+        TutorialSlide slide = new TutorialSlide();
 
         Bundle args = new Bundle();
         args.putInt( ARG_LAYOUT_RES_ID, layoutResId );
@@ -29,7 +29,7 @@ public class TutoSlide extends Fragment {
     public void onCreate( @Nullable Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
 
-        if(getArguments() != null && getArguments().containsKey( ARG_LAYOUT_RES_ID ) )
+        if( getArguments() != null && getArguments().containsKey( ARG_LAYOUT_RES_ID ) )
             layoutResId = getArguments().getInt( ARG_LAYOUT_RES_ID );
     }
 

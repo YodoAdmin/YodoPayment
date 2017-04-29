@@ -48,7 +48,7 @@ public class CloseAccountOption extends IRequestOption {
                                         case ServerResponse.AUTHORIZED:
                                             // Destroy the dialog and clears the saved data
                                             alertDialog.dismiss();
-                                            SystemUtils.clearUserData();
+                                            SystemUtils.clearUserData( activity );
 
                                             // Setups the AlertDialog
                                             DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
