@@ -10,10 +10,10 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import co.yodo.mobile.network.model.ServerResponse;
+import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.rule.MainTestRule;
 import co.yodo.mobile.ui.CouponsActivity;
-import co.yodo.mobile.ui.MainActivity;
+import co.yodo.mobile.ui.PaymentActivity;
 import co.yodo.mobile.ui.SettingsActivity;
 
 import static android.support.test.espresso.Espresso.onView;
@@ -48,7 +48,7 @@ public class MainContentActivityTest {
     private static final String wrongPIP = "----";
 
     @Rule
-    public MainTestRule mActivityRule = new MainTestRule<>( MainActivity.class );
+    public MainTestRule mActivityRule = new MainTestRule<>( PaymentActivity.class );
 
     /**
      * Tests when the user inserts a short PIP to
@@ -62,9 +62,9 @@ public class MainContentActivityTest {
                 .perform( click() );
 
         // Check if the dialog appeared
-        onView( withText( R.string.input_pip ) )
+        /*onView( withText( R.string.input_pip ) )
                 .inRoot( isDialog() )
-                .check( matches( isDisplayed() ) );
+                .check( matches( isDisplayed() ) );*/
 
         // Insert a short PIP in the EditText
         onView( withClassName( endsWith( "EditText" ) ) )
@@ -87,13 +87,13 @@ public class MainContentActivityTest {
                 .perform( click() );
 
         // There should be an error for the PIP
-        onView( withText( R.string.pip_short ) )
+        onView( withText( R.string.error_pip_length ) )
                 .inRoot( withDecorView( not( mActivityRule.getActivity().getWindow().getDecorView() ) ) )
                 .check( matches( isDisplayed() ) );
 
         // The dialog should not be visible any more
-        onView( withText( R.string.input_pip ) )
-                .check( doesNotExist() );
+        /*onView( withText( R.string.input_pip ) )
+                .check( doesNotExist() );*/
     }
 
     /**
@@ -108,9 +108,9 @@ public class MainContentActivityTest {
                 .perform( click() );
 
         // Check if the dialog appeared
-        onView( withText( R.string.input_pip ) )
+        /*onView( withText( R.string.input_pip ) )
                 .inRoot( isDialog() )
-                .check( matches( isDisplayed() ) );
+                .check( matches( isDisplayed() ) );*/
 
         // Insert a correct PIP in the EditText
         onView( withClassName( endsWith( "EditText" ) ) )
@@ -143,7 +143,7 @@ public class MainContentActivityTest {
     public void testCoupon() throws Exception {
         Intents.init();
 
-        onView( withId( R.id.ivCoupon ) )
+        onView( withId( R.id.ivCoupons ) )
                 .perform( click() );
 
         intended( hasComponent( CouponsActivity.class.getName() ) );
@@ -157,10 +157,10 @@ public class MainContentActivityTest {
      */
     @Test
     public void testNetwork() throws Exception {
-        onView( withId( R.id.ivNetwork ) )
+        onView( withId( R.id.ivSocial ) )
                 .perform( click() );
 
-        onView( allOf( withId( android.support.design.R.id.snackbar_text ), withText( R.string.no_available ) ) )
+        onView( allOf( withId( android.support.design.R.id.snackbar_text ), withText( R.string.error_available ) ) )
                 .check( matches( isDisplayed() ) );
     }
 

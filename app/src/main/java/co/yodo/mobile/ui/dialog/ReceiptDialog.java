@@ -45,26 +45,26 @@ public class ReceiptDialog extends IDialog {
             super( context, R.layout.dialog_receipt );
 
             // Data
-            this.tvDescription      = (TextView) this.mDialog.findViewById( R.id.descriptionText );
-            this.tvCreated          = (TextView) this.mDialog.findViewById( R.id.createdText );
-            this.tvTotalAmount      = (TextView) this.mDialog.findViewById( R.id.paidText );
-            this.tvAuthnumber       = (TextView) this.mDialog.findViewById( R.id.authNumberText );
-            this.tvTenderAmount     = (TextView) this.mDialog.findViewById( R.id.cashTenderText );
-            this.tvCashbackAmount   = (TextView) this.mDialog.findViewById( R.id.cashBackText );
-            this.tvDonorAccount     = (TextView) this.mDialog.findViewById( R.id.tvDonorText );
-            this.tvRecipientAccount = (TextView) this.mDialog.findViewById( R.id.tvReceiverText );
+            this.tvDescription      = (TextView) this.dialog.findViewById( R.id.descriptionText );
+            this.tvCreated          = (TextView) this.dialog.findViewById( R.id.createdText );
+            this.tvTotalAmount      = (TextView) this.dialog.findViewById( R.id.tvPaidText );
+            this.tvAuthnumber       = (TextView) this.dialog.findViewById( R.id.tvAuthNumberText );
+            this.tvTenderAmount     = (TextView) this.dialog.findViewById( R.id.tvCashTenderText );
+            this.tvCashbackAmount   = (TextView) this.dialog.findViewById( R.id.tvCashBackText );
+            this.tvDonorAccount     = (TextView) this.dialog.findViewById( R.id.tvDonorText );
+            this.tvRecipientAccount = (TextView) this.dialog.findViewById( R.id.tvReceiverText );
 
             // Layout
-            this.llDonor = (LinearLayout) this.mDialog.findViewById( R.id.donorAccountLayout );
+            this.llDonor = (LinearLayout) this.dialog.findViewById( R.id.llDonorAccount );
 
             // Buttons
-            this.ivSave   = (ImageView) this.mDialog.findViewById( R.id.saveButton );
-            this.ivDelete = (ImageView) this.mDialog.findViewById( R.id.deleteButton );
+            this.ivSave   = (ImageView) this.dialog.findViewById( R.id.ivSave );
+            this.ivDelete = (ImageView) this.dialog.findViewById( R.id.ivDelete );
         }
 
         @Override
         public Builder cancelable( boolean cancelable ) {
-            this.mCancelable = cancelable;
+            this.cancelable = cancelable;
             return this;
         }
 
@@ -75,7 +75,7 @@ public class ReceiptDialog extends IDialog {
 
         public Builder created( String created ) {
             tvCreated.setText(
-                    FormatUtils.UTCtoCurrent( this.mContext, created )
+                    FormatUtils.UTCtoCurrent( this.context, created )
             );
             return this;
         }
@@ -134,7 +134,7 @@ public class ReceiptDialog extends IDialog {
                 @Override
                 public void onClick( View v ) {
                     onClick.onClick( v );
-                    mDialog.dismiss();
+                    dialog.dismiss();
                 }
             } );
             return this;
@@ -146,7 +146,7 @@ public class ReceiptDialog extends IDialog {
                 @Override
                 public void onClick( View v ) {
                     onClick.onClick( v );
-                    mDialog.dismiss();
+                    dialog.dismiss();
                 }
             } );
             return this;

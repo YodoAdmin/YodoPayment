@@ -4,7 +4,7 @@ import static org.junit.Assert.*;
 
 import org.junit.Test;
 
-import co.yodo.mobile.helper.CryptUtils;
+import co.yodo.mobile.utils.CryptUtils;
 
 /**
  * Created by hei on 10/06/16.

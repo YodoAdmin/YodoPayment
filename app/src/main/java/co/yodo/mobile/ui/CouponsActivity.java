@@ -1,51 +1,47 @@
 package co.yodo.mobile.ui;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.support.v4.app.LoaderManager;
 import android.support.v4.content.AsyncTaskLoader;
 import android.support.v4.content.Loader;
-import android.support.v7.app.AppCompatActivity;
-import android.view.ContextMenu;
-import android.view.MenuInflater;
+import android.support.v7.widget.GridLayoutManager;
+import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.helper.ItemTouchHelper;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.ProgressBar;
 
 import java.io.File;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
+import javax.inject.Inject;
+
+import butterknife.BindView;
+import butterknife.ButterKnife;
 import co.yodo.mobile.R;
-import co.yodo.mobile.database.CouponsDataSource;
-import co.yodo.mobile.database.model.Coupon;
-import co.yodo.mobile.helper.GUIUtils;
-import co.yodo.mobile.helper.SystemUtils;
-import co.yodo.mobile.ui.adapter.CouponsGridViewAdapter;
-import co.yodo.mobile.ui.dialog.CouponDialog;
+import co.yodo.mobile.YodoApplication;
+import co.yodo.mobile.model.db.Coupon;
+import co.yodo.mobile.ui.adapter.CouponsAdapter;
+import co.yodo.mobile.utils.GuiUtils;
+import timber.log.Timber;
 
-public class CouponsActivity extends AppCompatActivity implements
-        AdapterView.OnItemClickListener,
-        LoaderManager.LoaderCallbacks<List<Coupon>>{
-    /** DEBUG */
-    @SuppressWarnings( "unused" )
-    private final static String TAG = CouponsActivity.class.getSimpleName();
-
+public class CouponsActivity extends BaseActivity implements LoaderManager.LoaderCallbacks<List<Coupon>>{
     /** The context object */
-    private Context ac;
-
-    /** Database */
-    private CouponsDataSource couponsdb;
+    @Inject
+    Context context;
 
     /** GUI Controllers */
-    private ProgressBar pbLoading;
-    private GridView gvCoupons;
-    private CouponsGridViewAdapter cgvAdapter;
+    @BindView( R.id.pbLoading )
+    ProgressBar pbLoading;
+
+    @BindView( R.id.rvCoupons )
+    RecyclerView rvCoupons;
+
+    /** Coupons data and adapter */
+    private final List<Coupon> coupons = new ArrayList<>();
+    private CouponsAdapter adapter;
 
     /** Identifier for the loader */
     private static final int THE_LOADER = 0x01;
@@ -53,27 +49,30 @@ public class CouponsActivity extends AppCompatActivity implements
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        GUIUtils.setLanguage( CouponsActivity.this );
         setContentView( R.layout.activity_coupons );
 
-        setupGUI();
+        setupGUI( savedInstanceState );
         updateData();
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
+    public void onDestroy() {
+        super.onDestroy();
 
-        if( couponsdb != null )
-            couponsdb.open();
-    }
+        new Thread( new Runnable() {
+            public void run() {
+                // Remove the pendant coupons
+                for( Coupon coupon : adapter.getCouponsPendingRemoval() ) {
+                    File file = new File( coupon.getUrl() );
+                    coupon.delete();
 
-    @Override
-    public void onPause() {
-        super.onPause();
-
-        if( couponsdb != null )
-            couponsdb.close();
+                    // Try to delete the file from the memory
+                    if( !file.delete() ) {
+                        Timber.e( "Error at deleting the coupon file: " + coupon.getUrl() );
+                    }
+                }
+            }
+        } ).start();
     }
 
     @Override
@@ -88,115 +87,93 @@ public class CouponsActivity extends AppCompatActivity implements
     }
 
     @Override
-    public void onCreateContextMenu(ContextMenu menu, View v, ContextMenu.ContextMenuInfo menuInfo) {
-        super.onCreateContextMenu(menu, v, menuInfo);
-
-        if( v.getId() == R.id.couponsGrid ) {
-            MenuInflater inflater = getMenuInflater();
-            inflater.inflate( R.menu.menu_coupons, menu );
-        }
+    protected void setupGUI( Bundle savedInstanceState ) {
+        super.setupGUI( savedInstanceState );
+        // Injection
+        YodoApplication.getComponent().inject( this );
     }
 
     @Override
-    public boolean onContextItemSelected(MenuItem item) {
-        AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo) item.getMenuInfo();
-        switch( item.getItemId() ) {
-            case R.id.delete:
-                Coupon coupon = cgvAdapter.getItem( info.position );
-                List<Coupon> values = cgvAdapter.getValues();
+    public void updateData() {
+        GridLayoutManager glManager = new GridLayoutManager( CouponsActivity.this, 3 );
+        rvCoupons.setLayoutManager( glManager );
 
-                File file = new File( coupon.getUrl() );
-                boolean delete = file.delete();
+        adapter = new CouponsAdapter( coupons );
+        rvCoupons.setAdapter( adapter );
 
-                if( !delete )
-                    SystemUtils.iLogger( TAG, "File not found" );
+        ItemTouchHelper.SimpleCallback ithCallback = new ItemTouchHelper.SimpleCallback( 0, ItemTouchHelper.LEFT | ItemTouchHelper.RIGHT ) {
+            @Override
+            public boolean onMove( RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder, RecyclerView.ViewHolder target ) {
+                return false;
+            }
 
-                couponsdb.deleteCoupon( coupon );
-                values.remove( info.position );
-                cgvAdapter.notifyDataSetChanged();
-                return true;
+            @Override
+            public int getSwipeDirs( RecyclerView recyclerView, RecyclerView.ViewHolder viewHolder ) {
+                return super.getSwipeDirs( recyclerView, viewHolder );
+            }
 
-            default:
-                return super.onContextItemSelected(item);
-        }
-    }
+            @Override
+            public void onSwiped( RecyclerView.ViewHolder viewHolder, int swipeDir ) {
+                final int swipedPosition = viewHolder.getAdapterPosition();
+                if( !adapter.isPendingRemoval( swipedPosition ) ) {
+                    adapter.pendingRemoval( swipedPosition );
+                } else {
+                    Coupon coupon = coupons.get( swipedPosition );
+                    File file = new File( coupon.getUrl() );
+                    coupon.delete();
 
-    private void setupGUI() {
-        // get the context
-        ac = CouponsActivity.this;
+                    // Try to delete the file from the memory
+                    if( !file.delete() ) {
+                        Timber.e( "Error at deleting the coupon file: " + coupon.getUrl() );
+                    }
 
-        // Bootstrap
-        couponsdb = CouponsDataSource.getInstance( ac );
-        couponsdb.open();
+                    adapter.remove( swipedPosition );
+                }
+            }
+        };
 
-        // GUI Controllers
-        pbLoading = (ProgressBar ) findViewById( R.id.pbLoading );
-        gvCoupons = (GridView) findViewById( R.id.couponsGrid );
+        // Attach the listener to delete entries
+        ItemTouchHelper itemTouchHelper = new ItemTouchHelper( ithCallback );
+        itemTouchHelper.attachToRecyclerView( rvCoupons );
 
-        // Setup the toolbar
-        GUIUtils.setActionBar( this, R.string.title_activity_coupons );
-    }
-
-    private void updateData() {
-        gvCoupons.setOnItemClickListener( this );
-        cgvAdapter = new CouponsGridViewAdapter( ac, R.layout.row_grid_coupons, new ArrayList<Coupon>() );
         getSupportLoaderManager().initLoader( THE_LOADER, null, this ).forceLoad();
     }
 
     @Override
-    public void onItemClick( AdapterView<?> parent, View view, int position, long id ) {
-        Coupon coupon = cgvAdapter.getItem( position );
-        Bitmap image = BitmapFactory.decodeFile( coupon.getUrl() );
-
-        new CouponDialog.Builder( ac )
-                .cancelable( true )
-                .image( image )
-                .build();
-    }
-
-    @Override
     public Loader<List<Coupon>> onCreateLoader( int id, Bundle args ) {
-        return new LoadTask( this, couponsdb );
+        return new LoadTask( this );
     }
 
     @Override
     public void onLoadFinished( Loader<List<Coupon>> loader, List<Coupon> data ) {
-        SystemUtils.iLogger( TAG, Collections.singletonList( data ).toString() );
-        cgvAdapter.addAll( data );
-        gvCoupons.setAdapter( cgvAdapter );
-        registerForContextMenu( gvCoupons );
+        coupons.addAll( data );
+        adapter.notifyDataSetChanged();
 
         pbLoading.setVisibility( View.GONE );
-        gvCoupons.setVisibility( View.VISIBLE );
+        rvCoupons.setVisibility( View.VISIBLE );
 
         getSupportLoaderManager().destroyLoader( THE_LOADER );
     }
 
     @Override
     public void onLoaderReset( Loader<List<Coupon>> loader ) {
-        gvCoupons.setAdapter( null );
     }
 
     /**
      * Loads the receipts from the database
      */
     private static class LoadTask extends AsyncTaskLoader<List<Coupon>> {
-        /** Receipts database */
-        private CouponsDataSource mCouponsdb;
-
         /**
          * Sets the receipts from the caller
          * @param context The activity context
-         * @param coupondb The coupons database
          */
-        LoadTask( Context context, CouponsDataSource coupondb ) {
+        LoadTask( Context context) {
             super( context );
-            this.mCouponsdb = coupondb;
         }
 
         @Override
         public List<Coupon> loadInBackground() {
-            return mCouponsdb.getAllCoupons();
+            return Coupon.listAll( Coupon.class );
         }
     }
 }

@@ -10,7 +10,7 @@ import android.view.Window;
  */
 public abstract class IDialog {
     /** Dialog to be build */
-    protected final Dialog mDialog;
+    protected final Dialog dialog;
 
     /**
      * Constructor that shows the dialog
@@ -18,24 +18,24 @@ public abstract class IDialog {
      * @param builder The DialogBuilder
      */
     protected IDialog( DialogBuilder builder ) {
-        this.mDialog = builder.mDialog;
-        this.mDialog.setCancelable( builder.mCancelable );
-        this.mDialog.setCanceledOnTouchOutside( builder.mCancelable );
-        this.mDialog.show();
+        this.dialog = builder.dialog;
+        this.dialog.setCancelable( builder.cancelable );
+        this.dialog.setCanceledOnTouchOutside( builder.cancelable );
+        this.dialog.show();
     }
 
     /**
      * Show the inner dialog
      */
     public void show() {
-        this.mDialog.show();
+        this.dialog.show();
     }
 
     /**
      * Dismiss the inner dialog
      */
     public void dismiss() {
-        this.mDialog.dismiss();
+        this.dialog.dismiss();
     }
 
     /**
@@ -43,13 +43,13 @@ public abstract class IDialog {
      */
     protected static abstract class DialogBuilder {
         /** Context object */
-        protected final Context mContext;
+        protected final Context context;
 
         /** Dialog to be build */
-        protected final Dialog mDialog;
+        protected final Dialog dialog;
 
         /** Optional parameters */
-        protected boolean mCancelable = false;
+        protected boolean cancelable = false;
 
         /**
          * Builder constructor with the mandatory elements
@@ -57,10 +57,10 @@ public abstract class IDialog {
          * @param layout The layout for the dialog
          */
         protected DialogBuilder( Context context, int layout ) {
-            this.mContext = context;
-            mDialog = new Dialog( this.mContext );
-            mDialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
-            mDialog.setContentView( layout );
+            this.context = context;
+            dialog = new Dialog( this.context );
+            dialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
+            dialog.setContentView( layout );
         }
 
         /**
@@ -69,10 +69,10 @@ public abstract class IDialog {
          * @param layout The layout for the dialog
          */
         protected DialogBuilder( Context context, int layout, int style ) {
-            this.mContext = context;
-            mDialog = new Dialog( this.mContext, style );
-            mDialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
-            mDialog.setContentView( layout );
+            this.context = context;
+            dialog = new Dialog( this.context, style );
+            dialog.requestWindowFeature( Window.FEATURE_NO_TITLE );
+            dialog.setContentView( layout );
         }
 
         /**

@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/llNavigation"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_gravity="start"
+    android:background="@color/colorInnerLayout">
+
+    <LinearLayout
+        android:id="@+id/llNavigationPanel"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <ImageView
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_margin="10dp"
+            android:contentDescription="@string/text.desc"
+            android:src="@drawable/ic_yodo_logo"/>
+
+        <Button
+            android:id="@+id/bResetPip"
+            style="@style/MenuButtonTheme"
+            android:drawableLeft="@mipmap/ic_settings_black"
+            android:drawableStart="@mipmap/ic_settings_black"
+            android:onClick="resetPip"
+            android:text="@string/text.pip.reset"/>
+
+        <Button
+            android:id="@+id/bRceipts"
+            style="@style/MenuButtonTheme"
+            android:drawableLeft="@mipmap/ic_receipt_black"
+            android:drawableStart="@mipmap/ic_receipt_black"
+            android:onClick="receipts"
+            android:text="@string/text.receipts"/>
+
+        <Button
+            android:id="@+id/bLinks"
+            style="@style/MenuButtonTheme"
+            android:drawableLeft="@mipmap/ic_link_black"
+            android:drawableStart="@mipmap/ic_link_black"
+            android:onClick="linkAccountsClick"
+            android:text="@string/text.links"/>
+
+        <View style="@style/SeparatorView" />
+
+        <TextView
+            style="@style/MenuTextTheme"
+            android:text="@string/text.tools" />
+
+        <Button
+            android:id="@+id/bBalance"
+            style="@style/MenuButtonTheme"
+            android:drawableLeft="@mipmap/ic_account_balance_black"
+            android:drawableStart="@mipmap/ic_account_balance_black"
+            android:onClick="balance"
+            android:text="@string/text.balance"/>
+
+        <Button
+            android:id="@+id/bCloseAccount"
+            style="@style/MenuButtonTheme"
+            android:drawableLeft="@mipmap/ic_delete_forever_black"
+            android:drawableStart="@mipmap/ic_delete_forever_black"
+            android:onClick="closeAccount"
+            android:text="@string/text.close.account"/>
+
+        <!-- Used just to load the style of the last button -->
+        <Button style="@style/MenuButtonTheme"/>
+
+    </LinearLayout>
+
+</ScrollView>

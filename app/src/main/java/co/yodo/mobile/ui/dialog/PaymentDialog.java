@@ -12,6 +12,26 @@ import co.yodo.mobile.ui.dialog.contract.IDialog;
  * builds a payment dialog to choose the method of payment
  */
 public class PaymentDialog extends IDialog {
+    /** Payment types */
+    public enum Payment {
+        YODO        ( "0" ),
+        CREDIT_VISA ( "1" ),
+        STATIC      ( "2" ),
+        HEART       ( "3" ),
+        DEBIT_VISA  ( "4" ),
+        PAYPAL      ( "5" );
+
+        private final String value;
+
+        Payment( String value ) {
+            this.value = value;
+        }
+
+        public String getValue() {
+            return this.value;
+        }
+    }
+
     /**
      * Constructor that shows the dialog
      * based in the DialogBuilder
@@ -35,25 +55,31 @@ public class PaymentDialog extends IDialog {
          */
         public Builder( Context context ) {
             super( context, R.layout.dialog_payment, R.style.AppCompatAlertDialogStyle );
+
             // Data
-            this.ivYodoPayment = ( ImageView ) this.mDialog.findViewById( R.id.ivYodoPayment );
-            this.ivHeartPayment = ( ImageView ) this.mDialog.findViewById( R.id.ivHeartPayment );
+            this.ivYodoPayment = ( ImageView ) this.dialog.findViewById( R.id.ivYodo );
+            this.ivHeartPayment = ( ImageView ) this.dialog.findViewById( R.id.ivHeart );
+
+            // Set types
+            this.ivYodoPayment.setTag( Payment.YODO );
+            this.ivHeartPayment.setTag( Payment.HEART );
         }
 
         @Override
         public Builder cancelable( boolean cancelable ) {
-            this.mCancelable = cancelable;
+            this.cancelable = cancelable;
             return this;
         }
 
-        public Builder action( final View.OnClickListener onClick ) {
+        public Builder action( final OnClickListener onClick ) {
             View.OnClickListener action = new View.OnClickListener() {
                 @Override
-                public void onClick( View v ) {
-                    onClick.onClick( v );
-                    mDialog.dismiss();
+                public void onClick( View paymentImage ) {
+                    onClick.onClick( (Payment) paymentImage.getTag() );
+                    dialog.dismiss();
                 }
             };
+
             this.ivYodoPayment.setOnClickListener( action );
             this.ivHeartPayment.setOnClickListener( action );
             return this;
@@ -63,5 +89,13 @@ public class PaymentDialog extends IDialog {
         public PaymentDialog build() {
             return new PaymentDialog( this );
         }
+    }
+
+    public interface OnClickListener {
+        /**
+         * Let the listener know the payment method selected
+         * @param type The selected payment method
+         */
+        void onClick( Payment type );
     }
 }

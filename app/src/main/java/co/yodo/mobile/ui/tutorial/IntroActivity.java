@@ -1,5 +1,6 @@
 package co.yodo.mobile.ui.tutorial;
 
+import android.Manifest;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.view.View;
@@ -7,7 +8,7 @@ import android.view.View;
 import com.github.paolorotolo.appintro.AppIntro;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.ui.tutorial.slides.TutoSlide;
+import co.yodo.mobile.ui.tutorial.slides.TutorialSlide;
 
 /**
  * Created by hei on 12/08/16.
@@ -17,10 +18,12 @@ public class IntroActivity extends AppIntro {
     @Override
     public void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        addSlide( TutoSlide.newInstance( R.layout.intro1 ) );
-        addSlide( TutoSlide.newInstance( R.layout.intro2 ) );
-        addSlide( TutoSlide.newInstance( R.layout.intro3 ) );
-        addSlide( TutoSlide.newInstance( R.layout.intro4 ) );
+
+        // Set slides
+        addSlide( TutorialSlide.newInstance( R.layout.fragment_intro_1 ) );
+        addSlide( TutorialSlide.newInstance( R.layout.fragment_intro_2 ) );
+        addSlide( TutorialSlide.newInstance( R.layout.fragment_intro_3 ) );
+        addSlide( TutorialSlide.newInstance( R.layout.fragment_intro_4 ) );
 
         setZoomAnimation();
     }
@@ -35,7 +38,7 @@ public class IntroActivity extends AppIntro {
         finish();
     }
 
-    public void getStarted( View v ){
+    public void getStarted( View v ) {
         finish();
     }
 }
