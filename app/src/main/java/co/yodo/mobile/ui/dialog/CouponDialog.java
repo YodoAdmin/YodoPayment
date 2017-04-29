@@ -31,13 +31,13 @@ public class CouponDialog extends IDialog {
         private ImageView ivCoupon;
 
         public Builder( Context context ) {
-            super( context, R.layout.dialog_sks );
+            super( context, R.layout.dialog_with_image );
             // Data
-            this.ivCoupon = (ImageView) mDialog.findViewById( R.id.sks );
+            this.ivCoupon = (ImageView) dialog.findViewById( R.id.ivSks );
             this.ivCoupon.setOnTouchListener( new View.OnTouchListener() {
                 @Override
                 public boolean onTouch( View v, MotionEvent event ) {
-                    mDialog.dismiss();
+                    dialog.dismiss();
                     return false;
                 }
             } );
@@ -45,7 +45,7 @@ public class CouponDialog extends IDialog {
 
         @Override
         public Builder cancelable( boolean cancelable ) {
-            this.mCancelable = cancelable;
+            this.cancelable = cancelable;
             return this;
         }
 

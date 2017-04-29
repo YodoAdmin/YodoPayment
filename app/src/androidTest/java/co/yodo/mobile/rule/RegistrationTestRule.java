@@ -26,16 +26,16 @@ public class RegistrationTestRule<A extends RegistrationActivity> extends Activi
     protected void beforeActivityLaunched() {
         super.beforeActivityLaunched();
         mCtx = InstrumentationRegistry.getTargetContext();
-        PrefUtils.clearPrefConfig( mCtx );
+        PrefUtils.clearPrefConfig(mCtx);
 
         // Set preferences
-        PrefUtils.saveEulaAccepted( mCtx, true );
-        PrefUtils.saveHardwareToken( mCtx, fHardwareToken );
+        PrefUtils.saveEulaAccepted( true );
+        PrefUtils.saveHardwareToken( fHardwareToken );
     }
 
     @Override
     protected void afterActivityFinished() {
         super.afterActivityFinished();
-        PrefUtils.clearPrefConfig( mCtx );
+        PrefUtils.clearPrefConfig(mCtx);
     }
 }

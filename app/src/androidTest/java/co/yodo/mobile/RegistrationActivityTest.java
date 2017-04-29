@@ -1,7 +1,6 @@
 package co.yodo.mobile;
 
 import android.support.test.runner.AndroidJUnit4;
-import android.text.InputType;
 
 import org.junit.Rule;
 import org.junit.Test;
@@ -16,10 +15,8 @@ import static android.support.test.espresso.action.ViewActions.closeSoftKeyboard
 import static android.support.test.espresso.action.ViewActions.typeText;
 import static android.support.test.espresso.assertion.ViewAssertions.matches;
 import static android.support.test.espresso.matcher.RootMatchers.withDecorView;
-import static android.support.test.espresso.matcher.ViewMatchers.isChecked;
 import static android.support.test.espresso.matcher.ViewMatchers.isDisplayed;
 import static android.support.test.espresso.matcher.ViewMatchers.withId;
-import static android.support.test.espresso.matcher.ViewMatchers.withInputType;
 import static android.support.test.espresso.matcher.ViewMatchers.withText;
 import static org.hamcrest.core.IsNot.not;
 
@@ -43,13 +40,13 @@ public class RegistrationActivityTest  {
      */
     @Test
     public void testPIPInput() throws Exception {
-        onView( withId( R.id.etPip ) )
+        onView( withId( R.id.tietPip ) )
                 .perform( typeText( shortPIP ), closeSoftKeyboard() );
 
-        onView( withId( R.id.registerPipButton ) )
-                .perform( click() );
+        /*onView( withId( R.id.registerPipButton ) )
+                .perform( click() );*/
 
-        onView( withText( R.string.pip_short ) )
+        onView( withText( R.string.error_pip_length ) )
                 .inRoot( withDecorView( not( mActivityRule.getActivity().getWindow().getDecorView() ) ) )
                 .check( matches( isDisplayed() ) );
     }
@@ -60,13 +57,13 @@ public class RegistrationActivityTest  {
      */
     @Test
     public void testNoPIP() throws Exception {
-        onView( withId( R.id.etConfirmPip ) )
+        onView( withId( R.id.tietConfirmPip ) )
                 .perform( typeText( newPIP ), closeSoftKeyboard() );
 
-        onView( withId( R.id.registerPipButton ) )
-                .perform( click() );
+        /*onView( withId( R.id.registerPipButton ) )
+                .perform( click() );*/
 
-        onView( withText( R.string.pip_short ) )
+        onView( withText( R.string.error_pip_length ) )
                 .inRoot( withDecorView( not( mActivityRule.getActivity().getWindow().getDecorView() ) ) )
                 .check( matches( isDisplayed() ) );
     }
@@ -78,16 +75,16 @@ public class RegistrationActivityTest  {
      */
     @Test
     public void testConfirmationPIPInput() throws Exception {
-        onView( withId( R.id.etPip ) )
+        onView( withId( R.id.tietPip ) )
                 .perform( typeText( newPIP ), closeSoftKeyboard() );
 
-        onView( withId( R.id.etConfirmPip ) )
+        onView( withId( R.id.tietConfirmPip ) )
                 .perform( typeText( wrongPIP ), closeSoftKeyboard() );
 
-        onView( withId( R.id.registerPipButton ) )
-                .perform( click() );
+        /*onView( withId( R.id.registerPipButton ) )
+                .perform( click() );*/
 
-        onView( withText( R.string.pip_different ) )
+        onView( withText( R.string.error_pip_match ) )
                 .inRoot( withDecorView( not( mActivityRule.getActivity().getWindow().getDecorView() ) ) )
                 .check( matches( isDisplayed() ) );
     }

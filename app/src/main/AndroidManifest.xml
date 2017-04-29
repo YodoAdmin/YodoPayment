@@ -4,12 +4,12 @@
 
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.GET_TASKS" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.BLUETOOTH" />
     <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
     <uses-permission android:name="cco.yodo.mobile.permission.C2D_MESSAGE" />
@@ -21,152 +21,154 @@
     <uses-feature android:name="android.hardware.camera.front" />
 
     <application
+        android:name=".YodoApplication"
         android:allowBackup="true"
-        android:fullBackupContent="false"
-        android:icon="@drawable/ic_launcher"
+        android:fullBackupContent="@xml/backup_config"
+        android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:largeHeap="true"
-        android:theme="@style/AppTheme" android:name=".YodoApplication">
+        android:supportsRtl="true"
+        android:theme="@style/AppTheme">
 
         <meta-data
             android:name="com.google.android.nearby.messages.API_KEY"
             android:value="AIzaSyAYpz-7ntQwogET5W7wExJcciBhZ9QL1C8"/>
 
+        <meta-data
+            android:name="DATABASE"
+            android:value="yodo_payment.db" />
+        <meta-data
+            android:name="VERSION"
+            android:value="5" />
+        <meta-data
+            android:name="QUERY_LOG"
+            android:value="true" />
+        <meta-data
+            android:name="DOMAIN_PACKAGE_NAME"
+            android:value="co.yodo.mobile.model.db" />
+
         <activity
             android:name=".ui.SplashActivity"
             android:label="@string/app_name"
             android:screenOrientation="sensorPortrait"
+            android:windowSoftInputMode="stateAlwaysHidden"
             android:theme="@style/SplashTheme">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
 
-                <category android:name="android.intent.category.LAUNCHER" />
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN"/>
+
+                <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
+        </activity>
+
+        <activity
+            android:name=".ui.RegistrationActivity"
+            android:label="@string/title.activity.registration"
+            android:screenOrientation="sensorPortrait">
+        </activity>
+
+        <activity
+            android:name=".ui.CameraActivity"
+            android:screenOrientation="sensorLandscape">
+        </activity>
+
+        <activity
+            android:name=".ui.PaymentActivity"
+            android:label="@string/title.activity.main"
+            android:launchMode="singleTop"
+            android:screenOrientation="sensorPortrait">
+        </activity>
+
+        <activity
+            android:name=".ui.SettingsActivity"
+            android:label="@string/title.activity.settings"
+            android:theme="@style/AppTheme.Settings"
+            android:screenOrientation="sensorPortrait">
+        </activity>
+
+        <activity
+            android:name=".ui.ResetPipActivity"
+            android:label="@string/title.activity.pip.reset"
+            android:screenOrientation="sensorPortrait">
+        </activity>
+
+        <activity
+            android:name=".ui.CouponsActivity"
+            android:label="@string/title.activity.coupons"
+            android:screenOrientation="sensorPortrait">
+        </activity>
+
+        <activity
+            android:name=".ui.ReceiptsActivity"
+            android:label="@string/title.activity.receipts"
+            android:screenOrientation="sensorPortrait">
+
+            <intent-filter>
+                <action android:name="android.intent.action.SEARCH"/>
+            </intent-filter>
+
+            <meta-data
+                android:name="android.app.searchable"
+                android:resource="@xml/searchable"/>
+
+        </activity>
+
+        <activity
+            android:name=".ui.LinkedAccountsActivity"
+            android:label="@string/title.activity.linked.accounts"
+            android:screenOrientation="sensorPortrait">
         </activity>
 
         <!-- START BroadcastReceivers -->
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
             android:exported="true"
-            android:permission="com.google.android.c2dm.permission.SEND" >
+            android:permission="com.google.android.c2dm.permission.SEND">
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.REGISTRATION" />
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.REGISTRATION"/>
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
 
-                <category android:name="co.yodo.mobile" />
+                <category android:name="co.yodo.mobile"/>
             </intent-filter>
         </receiver>
 
         <receiver
-            android:name=".broadcastreceiver.HeartbeatReceiver"
-            android:exported="false" />
+            android:name=".business.broadcastreceiver.HeartbeatReceiver"
+            android:exported="false"/>
         <!-- END BroadcastReceivers -->
 
         <!-- Start Services -->
         <service
-            android:name=".service.YodoGCMListenerService"
-            android:exported="false" >
+            android:name=".business.service.YodoGCMListenerService"
+            android:exported="false">
+
             <intent-filter>
-                <action android:name="com.google.android.c2dm.intent.RECEIVE" />
+                <action android:name="com.google.android.c2dm.intent.RECEIVE"/>
             </intent-filter>
+
         </service>
 
         <service
-            android:name=".service.YodoIDListenerService"
-            android:exported="false" >
+            android:name=".business.service.YodoIDListenerService"
+            android:exported="false">
+
             <intent-filter>
-                <action android:name="com.google.android.gms.iid.InstanceID" />
+                <action android:name="com.google.android.gms.iid.InstanceID"/>
             </intent-filter>
+
         </service>
 
         <service
-            android:name=".service.RegistrationIntentService"
-            android:exported="false" >
+            android:name=".business.service.RegistrationIntentService"
+            android:exported="false">
         </service>
         <!-- End Services -->
-
-        <activity
-            android:name=".ui.RegistrationActivity"
-            android:label="@string/title_activity_registration"
-            android:screenOrientation="sensorPortrait" >
-        </activity>
-
-        <activity
-            android:name=".ui.RegistrationBiometricActivity"
-            android:label="@string/title_activity_registration_biometric"
-            android:screenOrientation="sensorPortrait" >
-        </activity>
-
-        <activity
-            android:name=".ui.CameraActivity"
-            android:label="@string/title_activity_camera"
-            android:screenOrientation="sensorLandscape" >
-        </activity>
-
-        <activity
-            android:name=".ui.MainActivity"
-            android:label="@string/title_activity_main"
-            android:screenOrientation="sensorPortrait" >
-        </activity>
-
-        <activity
-            android:name=".ui.SettingsActivity"
-            android:label="@string/title_activity_settings"
-            android:theme="@style/AppTheme.Settings" >
-        </activity>
-
-        <activity
-            android:name=".ui.ResetPIPActivity"
-            android:label="@string/title_activity_pip_reset"
-            android:screenOrientation="sensorPortrait" >
-        </activity>
-
-        <activity
-            android:name=".ui.CouponsActivity"
-            android:label="@string/title_activity_coupons" >
-        </activity>
-
-        <activity
-            android:name=".ui.ReceiptsActivity"
-            android:label="@string/title_activity_receipts"
-            android:parentActivityName=".ui.MainActivity"
-            android:launchMode="singleTop">
-
-            <intent-filter>
-                <action android:name="android.intent.action.SEARCH" />
-            </intent-filter>
-
-            <meta-data
-                android:name="android.app.searchable"
-                android:resource="@xml/searchable" />
-
-            <!-- The meta-data element is needed for versions lower than 4.1 -->
-            <meta-data
-                android:name="android.support.PARENT_ACTIVITY"
-                android:value=".ui.MainActivity" />
-
-        </activity>
-
-        <activity
-            android:name=".ui.DeLinkActivity"
-            android:label="@string/title_activity_de_link" >
-        </activity>
 
         <!-- Intro -->
         <activity
             android:name=".ui.tutorial.IntroActivity"
             android:screenOrientation="sensorPortrait" >
         </activity>
-
-        <!-- Providers -->
-        <!--
-        <provider
-            android:name=".database.provider.YodoProvider"
-            android:authorities="${applicationId}.provider"
-            android:exported="false"
-            android:syncable="true" >
-        </provider>
-        -->
 
     </application>
 

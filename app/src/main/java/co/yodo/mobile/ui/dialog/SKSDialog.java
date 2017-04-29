@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.os.Handler;
 import android.view.KeyEvent;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ImageView;
 
@@ -17,15 +18,6 @@ import co.yodo.mobile.ui.dialog.contract.IDialog;
  * builds a sks dialog from data
  */
 public class SKSDialog extends IDialog {
-    /** Brightness to set after show */
-    private final float mBrightness;
-
-    /** Time to dismiss the dialog */
-    private final int mTime;
-
-    /** Handler for the dismiss */
-    private final Handler mHandler;
-
     /**
      * Constructor that shows the dialog
      * based in the DialogBuilder
@@ -33,37 +25,46 @@ public class SKSDialog extends IDialog {
      */
     private SKSDialog( Builder builder ) {
         super( builder );
-        // Data
-        this.mBrightness = builder.mBrightness;
-        this.mTime = builder.mTime;
+        // Brightness to set after show
+        float brightness = builder.brightness;
+
+        //Time to dismiss the dialog
+        int timeToDismiss = builder.timeToDismiss;
+
+        // Verify the window
+        final Window window = this.dialog.getWindow();
+        if( window == null ) {
+            throw new NullPointerException( "Window shouldn't be null" );
+        }
 
         // Get the current brightness
-        final WindowManager.LayoutParams lp = this.mDialog.getWindow().getAttributes();
+        final WindowManager.LayoutParams lp = this.dialog.getWindow().getAttributes();
         final float brightnessNow = lp.screenBrightness;
 
         // Set the brightness
-        lp.screenBrightness = this.mBrightness;
-        mDialog.getWindow().setAttributes( lp );
+        lp.screenBrightness = brightness;
+        window.setAttributes( lp );
 
         // Set onDismiss listener to restore brightness
-        this.mDialog.setOnDismissListener( new DialogInterface.OnDismissListener() {
+        this.dialog.setOnDismissListener( new DialogInterface.OnDismissListener() {
             @Override
             public void onDismiss( DialogInterface dialog ) {
                 lp.screenBrightness = brightnessNow;
-                mDialog.getWindow().setAttributes( lp );
+                window.setAttributes( lp );
             }
         });
 
         // Create dismiss handler
-        this.mHandler = new Handler();
-        if( this.mTime >= 0 ) {
-            this.mHandler.postDelayed( new Runnable() {
+        Handler handler = new Handler();
+        if( timeToDismiss >= 0 ) {
+            handler.postDelayed( new Runnable() {
                 @Override
                 public void run() {
-                    if( mDialog.isShowing() )
-                        mDialog.dismiss();
+                    if( dialog.isShowing() ) {
+                        dialog.dismiss();
+                    }
                 }
-            }, this.mTime );
+            }, timeToDismiss );
         }
     }
 
@@ -75,24 +76,24 @@ public class SKSDialog extends IDialog {
         private ImageView ivCode;
 
         /** Brightness to set after show */
-        private float mBrightness;
+        private float brightness;
 
         /** Time to dismiss the dialog */
-        private int mTime = -1; // Negative - No dismiss
+        private int timeToDismiss = -1; // Negative - No dismiss
 
         /**
          * Builder constructor with the mandatory elements
          * @param context The application context
          */
         public Builder( Context context ) {
-            super( context, R.layout.dialog_sks );
+            super( context, R.layout.dialog_with_image );
             // Data
-            this.ivCode = (ImageView) mDialog.findViewById( R.id.sks );
+            this.ivCode = (ImageView) dialog.findViewById( R.id.ivSks );
         }
 
         @Override
         public Builder cancelable( boolean cancelable ) {
-            this.mCancelable = cancelable;
+            this.cancelable = cancelable;
             return this;
         }
 
@@ -102,17 +103,17 @@ public class SKSDialog extends IDialog {
         }
 
         public Builder brightness( float brightness ) {
-            this.mBrightness = brightness;
+            this.brightness = brightness;
             return this;
         }
 
         public Builder dismiss( int time ) {
-            this.mTime = time;
+            this.timeToDismiss = time;
             return this;
         }
 
         public Builder dismissKey( final int key ) {
-            this.mDialog.setOnKeyListener( new Dialog.OnKeyListener() {
+            this.dialog.setOnKeyListener( new Dialog.OnKeyListener() {
                 @Override
                 public boolean onKey( DialogInterface dialog, int keyCode, KeyEvent event ) {
                     if( key == keyCode )

@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/GeneralLayoutTheme" >
+
+    <!-- header -->
+    <LinearLayout
+        android:id="@+id/llHeader"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true" >
+
+        <!-- logo -->
+        <ImageView
+            style="@style/LogoImageTheme"
+            android:contentDescription="@string/text.desc"
+            android:onClick="hideUserData"
+            android:src="@mipmap/ic_launcher"/>
+
+        <!-- data -->
+        <LinearLayout style="@style/HeaderLayoutTheme" >
+
+            <TextView
+                style="@style/UserInfoTextTheme"
+                android:text="@string/text.user.account"/>
+
+            <TextView
+                style="@style/UserInfoTextTheme"
+                android:text="@string/text.user.date" />
+
+            <TextView
+                style="@style/UserInfoTextTheme"
+                android:text="@string/text.user.balance" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/llAccountData"
+            style="@style/HeaderLayoutTheme" >
+
+            <TextView
+                android:id="@+id/tvAccountNumber"
+                style="@style/UserDataTextTheme"/>
+
+            <TextView
+                android:id="@+id/tvAccountDate"
+                style="@style/UserDataTextTheme"/>
+
+            <TextView
+                android:id="@+id/tvAccountBalance"
+                style="@style/UserDataTextTheme"/>
+
+        </LinearLayout>
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <ImageButton
+            android:id="@+id/ibSubscription"
+            style="@style/LogoImageTheme"
+            android:background="@null"
+            android:contentDescription="@string/text.desc"
+            android:onClick="startPromotions"
+            android:src="@mipmap/ic_nearby"/>
+
+    </LinearLayout>
+    <!-- end header -->
+
+    <!-- main payment button -->
+    <LinearLayout
+        android:id="@+id/llButtons"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:weightSum="3">
+
+        <ImageView
+            android:id="@+id/ivPayment"
+            style="@style/MainButtonTheme"
+            android:contentDescription="@string/text.desc"
+            android:onClick="payment"
+            android:src="@drawable/ic_golden_coins"/>
+
+        <ImageView
+            android:id="@+id/ivCoupons"
+            style="@style/MainButtonTheme"
+            android:contentDescription="@string/text.desc"
+            android:onClick="coupons"
+            android:src="@drawable/ic_coupon"/>
+
+        <ImageView
+            android:id="@+id/ivSocial"
+            style="@style/MainButtonTheme"
+            android:contentDescription="@string/text.desc"
+            android:onClick="network"
+            android:src="@drawable/ic_sns"/>
+
+    </LinearLayout>
+    <!-- end main payment button -->
+
+    <!-- start ads view -->
+    <RelativeLayout
+        android:id="@+id/rlAdvertising"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/llHeader"
+        android:layout_above="@id/llButtons"
+        android:layout_gravity="center"
+        android:layout_margin="10dp"
+        android:orientation="vertical">
+
+        <it.sephiroth.android.library.imagezoom.ImageViewTouch
+            android:id="@+id/ivtPromotion"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:contentDescription="@string/text.desc"/>
+
+    </RelativeLayout>
+    <!-- end ads view -->
+
+</RelativeLayout>

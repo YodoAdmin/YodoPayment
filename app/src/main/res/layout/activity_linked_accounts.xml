@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    style="@style/GeneralLayoutTheme"
+    android:orientation="vertical"
+    tools:context="co.yodo.mobile.ui.LinkedAccountsActivity">
+
+    <LinearLayout style="@style/LinkedAccountsLayoutTheme">
+
+        <TextView
+            android:id="@+id/toView"
+            style="@style/LinkedAccountTextTheme"
+            android:text="@string/text.account.to" />
+
+        <View style="@style/SeparatorView" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/layout_accounts_to"
+            style="@style/RecyclerLayoutTheme"/>
+
+    </LinearLayout>
+
+    <LinearLayout style="@style/LinkedAccountsLayoutTheme">
+
+        <TextView
+            android:id="@+id/fromView"
+            style="@style/LinkedAccountTextTheme"
+            android:text="@string/text.account.from" />
+
+        <View style="@style/SeparatorView" />
+
+        <android.support.v7.widget.RecyclerView
+            android:id="@+id/layout_accounts_from"
+            style="@style/RecyclerLayoutTheme"/>
+
+    </LinearLayout>
+
+</LinearLayout>

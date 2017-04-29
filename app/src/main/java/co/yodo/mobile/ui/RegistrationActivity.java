@@ -1,102 +1,46 @@
 package co.yodo.mobile.ui;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v7.widget.AppCompatButton;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.CheckBox;
-import android.widget.EditText;
-import android.widget.RelativeLayout;
-import android.widget.Toast;
-
-import org.greenrobot.eventbus.EventBus;
-import org.greenrobot.eventbus.Subscribe;
-import org.greenrobot.eventbus.ThreadMode;
 
 import javax.inject.Inject;
 
 import butterknife.BindView;
-import butterknife.ButterKnife;
 import co.yodo.mobile.R;
 import co.yodo.mobile.YodoApplication;
-import co.yodo.mobile.broadcastreceiver.BroadcastMessage;
-import co.yodo.mobile.component.Intents;
-import co.yodo.mobile.helper.AppConfig;
-import co.yodo.mobile.helper.EulaUtils;
-import co.yodo.mobile.helper.GUIUtils;
+import co.yodo.mobile.helper.EulaHelper;
 import co.yodo.mobile.helper.PrefUtils;
-import co.yodo.mobile.network.ApiClient;
-import co.yodo.mobile.network.model.ServerResponse;
-import co.yodo.mobile.network.request.RegisterRequest;
-import co.yodo.mobile.service.RegistrationIntentService;
-import co.yodo.mobile.service.model.GCMResponse;
-import co.yodo.mobile.ui.notification.ProgressDialogHelper;
-import co.yodo.mobile.ui.notification.ToastMaster;
-import co.yodo.mobile.ui.notification.YodoHandler;
-import co.yodo.mobile.ui.validator.PIPValidator;
+import co.yodo.mobile.ui.fragments.BiometricFragment;
+import co.yodo.mobile.ui.fragments.InputPipFragment;
 
-public class
-RegistrationActivity extends AppCompatActivity implements EulaUtils.OnEulaAgreedTo, ApiClient.RequestsListener {
-    /** DEBUG */
-    @SuppressWarnings( "unused" )
-    private static final String TAG = RegistrationActivity.class.getSimpleName();
-
-    /** The context object */
-    private Context ac;
-
-    /** Account identifier */
-    private String mHardwareToken;
-
-    /** Messages Handler */
-    private YodoHandler mHandlerMessages;
-
-    /** Manager for the server requests */
+public class RegistrationActivity extends BaseActivity {
+    /** The application context */
     @Inject
-    ApiClient mRequestManager;
-
-    /** Progress dialog for the requests */
-    @Inject
-    ProgressDialogHelper mProgressManager;
-
-    /** PIP validator */
-    @Inject
-    PIPValidator mPipValidator;
+    Context context;
 
     /** GUI Controllers */
-    @BindView( R.id.etPip )
-    EditText etPip;
+    @BindView( R.id.acbRegister )
+    AppCompatButton registerButton;
 
-    @BindView( R.id.etConfirmPip )
-    EditText etConfirmPip;
+    /** Fragment tags */
+    private static final String TAG_REG_PIP = "TAG_REG_PIP";
+    private static final String TAG_REG_BIO = "TAG_REG_BIO";
 
-    @BindView( R.id.rlRegistration )
-    RelativeLayout rlRegistration;
-
-    /** Response codes for the server requests */
-    private static final int REG_REQ = 0x00;
+    /** Fragment handler */
+    private FragmentManager fragmentManager;
 
     @Override
     protected void onCreate( Bundle savedInstanceState ) {
         super.onCreate( savedInstanceState );
-        GUIUtils.setLanguage( RegistrationActivity.this );
         setContentView( R.layout.activity_registration );
 
-        setupGUI();
+        setupGUI( savedInstanceState );
         updateData();
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        EventBus.getDefault().register( this );
-    }
-
-    @Override
-    public void onStop() {
-        EventBus.getDefault().unregister( this );
-        super.onStop();
     }
 
     @Override
@@ -104,140 +48,76 @@ RegistrationActivity extends AppCompatActivity implements EulaUtils.OnEulaAgreed
         int itemId = item.getItemId();
         switch( itemId ) {
             case android.R.id.home:
-                finish();
+                onBackPressed();
                 break;
         }
         return super.onOptionsItemSelected( item );
     }
 
-    /**
-     * Configures the main GUI Controllers
-     */
-    private void setupGUI() {
-        // Get the context
-        ac = RegistrationActivity.this;
-        mHandlerMessages = new YodoHandler( this );
-
+    @Override
+    protected void setupGUI( final Bundle savedInstanceState ) {
+        super.setupGUI( savedInstanceState );
         // Injection
-        ButterKnife.bind( this );
         YodoApplication.getComponent().inject( this );
 
-        // Register listener for requests
-        mRequestManager.setListener( this );
-
-        // Setup the toolbar
-        GUIUtils.setActionBar( this, R.string.title_activity_registration );
+        // Setup the fragment manager
+        fragmentManager = getSupportFragmentManager();
 
         // Show the terms to the user
-        if( EulaUtils.show( this ) )
-            rlRegistration.setVisibility( View.GONE );
-    }
+        EulaHelper.show( this, new EulaHelper.EulaCallback() {
+            @Override
+            public void onEulaAgreedTo() {
+                registerButton.setVisibility( View.VISIBLE );
 
-    /**
-     * Sets the main values
-     */
-    private void updateData() {
-        // Gets the hardware token - account identifier
-        mHardwareToken = PrefUtils.getHardwareToken( ac );
-        if( mHardwareToken == null ) {
-            ToastMaster.makeText( ac, R.string.message_no_hardware, Toast.LENGTH_LONG ).show();
-            finish();
-        }
-    }
+                // Check that the activity is using the layout version with
+                // the fragment_container FrameLayout
+                if (findViewById(R.id.fragment_container) != null) {
+                    if (savedInstanceState != null) {
+                        return;
+                    }
 
-    /**
-     * Show the passwords
-     * @param v, the view of the checkbox
-     */
-    public void showPasswordClick( View v ) {
-        GUIUtils.showPassword( (CheckBox) v, etPip );
-        GUIUtils.showPassword( (CheckBox) v, etConfirmPip );
-    }
-
-    /**
-     * Realize a registration request
-     * @param v View of the button, not used
-     */
-    public void registrationClick( View v ) {
-        // Validates the PIP and its confirmation
-        try {
-            if( !mPipValidator.validate( etPip ) || !mPipValidator.validate( etConfirmPip ) )
-                return;
-
-            if( mPipValidator.validate( etPip, etConfirmPip ) ) {
-                // Request an authentication
-                final String pip = etPip.getText().toString();
-
-                mProgressManager.createProgressDialog( ac );
-                mRequestManager.invoke( new RegisterRequest(
-                        REG_REQ,
-                        mHardwareToken,
-                        pip
-                ) );
+                    // Create a new Fragment to be placed in the activity layout
+                    Fragment fragment;
+                    if( PrefUtils.getAuthNumber() == null ) {
+                        fragment = new InputPipFragment();
+                    } else {
+                        fragment = new BiometricFragment();
+                    }
+                    fragmentManager.beginTransaction()
+                            .add( R.id.fragment_container, fragment, TAG_REG_PIP )
+                            .commit();
+                }
             }
-        } catch( NoSuchFieldException e ) {
-            e.printStackTrace();
-        }
-    }
-
-    @Override
-    public void onEulaAgreedTo() {
-        rlRegistration.setVisibility( View.VISIBLE );
-    }
-
-    @Override
-    public void onPrepare() {
-    }
-
-    @Override
-    public void onResponse( int responseCode, ServerResponse response ) {
-        mProgressManager.destroyProgressDialog();
-        String code, message;
-
-        switch( responseCode ) {
-            case REG_REQ:
-                code = response.getCode();
-
-                // If the auth is correct, let's continue with the registration
-                if( code.equals( ServerResponse.AUTHORIZED_REGISTRATION ) ) {
-                    // Save the authnumber for later use (i.e. biometric registration), and balance
-                    PrefUtils.saveAuthNumber( ac, response.getAuthNumber() );
-                    PrefUtils.saveBalance( ac, AppConfig.DEFAULT_BALANCE );
-
-                    Intent intent = new Intent( ac, RegistrationIntentService.class );
-                    intent.putExtra( BroadcastMessage.EXTRA_HARDWARE_TOKEN, mHardwareToken );
-                    startService( intent );
-                }
-                // There was an error during the process
-                else {
-                    message = response.getMessage();
-                    YodoHandler.sendMessage( mHandlerMessages, code, message );
-                }
-
-                break;
-        }
+        } );
     }
 
     /**
-     * Message received from the service that registers the gcm token
+     * The next button for the registration, handles several actions depending
+     * in the current fragment
+     * @param view, The view, not used
      */
-    @SuppressWarnings("unused")
-    @Subscribe( sticky = true, threadMode = ThreadMode.MAIN )
-    public void onResponseEvent( GCMResponse response ) {
-        EventBus.getDefault().removeStickyEvent( response );
-        boolean sentToken = PrefUtils.isGCMTokenSent( ac );
-        finish();
-        // The gcm token has been sent
-        if( sentToken ) {
-            // Now we have to register the biometric token
-            final String authNumber = PrefUtils.getAuthNumber( ac );
-            Intent intent = new Intent( ac, RegistrationBiometricActivity.class );
-            intent.putExtra( Intents.AUTH_NUMBER, authNumber );
-            startActivity( intent );
-        }
-        // Something failed
-        else {
-            Toast.makeText( ac, R.string.error_gcm_registration, Toast.LENGTH_SHORT ).show();
+    public void next( View view ) {
+        Fragment currentFragment = fragmentManager.findFragmentById( R.id.fragment_container );
+        if( currentFragment.getTag().equals( TAG_REG_PIP ) ) {
+            final String pip = ( (InputPipFragment ) currentFragment ).validatePIP();
+            if( pip != null ) {
+                BiometricFragment bioFragment = BiometricFragment.newInstance(
+                        hardwareToken,
+                        pip
+                );
+                fragmentManager.beginTransaction()
+                        .replace( R.id.fragment_container, bioFragment, TAG_REG_BIO )
+                        .addToBackStack( null )
+                        .commit();
+            }
+        } else {
+            BiometricFragment bioFragment = ( ( BiometricFragment ) currentFragment );
+            final String authNumber = PrefUtils.getAuthNumber();
+            if( authNumber == null ) {
+                bioFragment.validateBioAndRegister();
+            } else {
+                bioFragment.updateBiometricToken( authNumber );
+            }
         }
     }
 }

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Main Button -->
+    <style name="MainButtonTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:gravity">center</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:paddingRight">10dp</item>
+    </style>
+
+    <!-- Menu Button -->
+    <style name="MenuButtonTheme">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">@drawable/bg_highlight_button</item>
+        <item name="android:drawablePadding">30dp</item>
+        <item name="android:gravity">start|center_vertical</item>
+        <item name="android:paddingLeft">20dp</item>
+        <item name="android:maxLines">1</item>
+    </style>
+
+    <!-- Reset Button -->
+    <style name="ResetButton">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_weight">1</item>
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+</resources>
