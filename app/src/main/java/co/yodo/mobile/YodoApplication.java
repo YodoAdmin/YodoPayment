@@ -33,8 +33,8 @@ public class YodoApplication extends SugarApp {
     private static final String PROD_IP  = "http://50.56.180.133";   // Production
     private static final String DEMO_IP  = "http://162.244.228.84";  // Demo
     private static final String DEV_IP   = "http://162.244.228.78";  // Development
-    private static final String LOCAL_IP = "http://192.168.1.38";    // Local
-    public static final String IP = DEV_IP;
+    private static final String LOCAL_IP = "http://192.168.0.18";    // Local
+    public static final String IP = DEMO_IP;
 
     /** Component that build the dependencies */
     private static GraphComponent component;

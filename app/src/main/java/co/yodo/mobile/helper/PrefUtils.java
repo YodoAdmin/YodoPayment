@@ -141,6 +141,10 @@ public class PrefUtils {
         return c.getSharedPreferences( AppConfig.SHARED_PREF_FILE, Context.MODE_PRIVATE );
     }
 
+    private static SharedPreferences getHawkSPrefConfig( Context c ) {
+        return c.getSharedPreferences( "Hawk2", Context.MODE_PRIVATE );
+    }
+
     /**
      * Register a listener for the preferences
      * @param c The Context of the Android system
@@ -148,6 +152,7 @@ public class PrefUtils {
      */
     public static void registerSPListener( Context c, SharedPreferences.OnSharedPreferenceChangeListener listener ) {
         getSPrefConfig( c ).registerOnSharedPreferenceChangeListener( listener );
+        getHawkSPrefConfig( c ).registerOnSharedPreferenceChangeListener( listener );
     }
 
     /**
@@ -157,6 +162,7 @@ public class PrefUtils {
      */
     public static void unregisterSPListener( Context c, SharedPreferences.OnSharedPreferenceChangeListener listener ) {
         getSPrefConfig( c ).unregisterOnSharedPreferenceChangeListener( listener );
+        getHawkSPrefConfig( c ).unregisterOnSharedPreferenceChangeListener( listener );
     }
 
     /**
