@@ -10,6 +10,7 @@ import co.yodo.mobile.business.network.request.contract.IRequest;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import timber.log.Timber;
 
 /**
  * Created by hei on 12/06/16.
@@ -59,6 +60,7 @@ public class DeLinkRequest extends IRequest {
     @Override
     public void execute( RSACrypt cipher, ApiClient manager, ApiClient.RequestCallback callback ) {
         // Generate AES Key
+        Timber.i(formattedUsrData);
         SecretKeySpec key = AESCrypt.generateKey();
         encyptedData = AESCrypt.encrypt( formattedUsrData, key );
         encyptedKey = cipher.encrypt( AESCrypt.encodeKey( key ) );

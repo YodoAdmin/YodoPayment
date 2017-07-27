@@ -176,6 +176,7 @@
     <string name="error.pip.length">The PIP must contain at least 4 digits</string>
     <string name="error.pip">Incorrect PIP. Try again</string>
     <string name="error.linking.code">Incorrect linking code. Try again</string>
+    <string name="error.already.linked">There accounts are already linked</string>
     <string name="error.biometric">Sorry, seems that you don\'t have a biometric token</string>
     <string name="error.promotion.save">Error saving coupon</string>
     <string name="error.linked.accounts">There are no linked accounts</string>

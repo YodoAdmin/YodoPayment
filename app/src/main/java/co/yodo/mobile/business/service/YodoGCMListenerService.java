@@ -69,7 +69,8 @@ public class YodoGCMListenerService extends GcmListenerService {
      */
     private synchronized void sendNotification( Receipt receipt ) {
         // We only update the balance if we paid the receipt
-        if( receipt.getDonorAccount() == null ) {
+        String donor = receipt.getDonorAccount();
+        if( donor == null || donor.equals(PrefUtils.getHardwareToken()) ) {
             // Trim the balance
             PrefUtils.saveBalance( String.format( "%s %s",
                     FormatUtils.truncateDecimal( receipt.getBalanceAmount() ),

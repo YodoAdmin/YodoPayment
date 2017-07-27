@@ -165,7 +165,7 @@ public class PaymentOption extends IRequestOption {
                         progressManager.destroy();
                         final String code = response.getCode();
                         final String userCode = otp + SKS_SEP + hardwareToken;
-                        final String tip = String.valueOf( sbTips.getProgress() );
+                        final String tip = String.valueOf(sbTips.getProgress());
 
                         switch( code ) {
                             case ServerResponse.AUTHORIZED:
@@ -190,7 +190,7 @@ public class PaymentOption extends IRequestOption {
                                                             @Override
                                                             public void onClick( DialogInterface dialog, final int item ) {
                                                                 final String donor = TOTPUtils.sha1( accounts[item] );
-                                                                showSKS( tip, userCode + SKS_SEP + donor, type.getValue() );
+                                                                showSKS(tip, userCode + SKS_SEP + donor, type.getValue());
                                                                 dialog.dismiss();
                                                             }
                                                         };
@@ -213,6 +213,8 @@ public class PaymentOption extends IRequestOption {
                                             .cancelable( true )
                                             .action( onClick )
                                             .build();
+                                } else {
+                                    showSKS( tip, userCode, Payment.YODO.getValue() );
                                 }
                                 break;
 

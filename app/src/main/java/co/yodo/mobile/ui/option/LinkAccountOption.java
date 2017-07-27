@@ -59,6 +59,10 @@ public class LinkAccountOption extends IRequestOption {
                                         ).show();
                                         break;
 
+                                    case ServerResponse.ERROR_ALREADY_LINKED:
+                                        tilPip.setError( activity.getString( R.string.error_already_linked ) );
+                                        break;
+
                                     default:
                                         tilPip.setError( activity.getString( R.string.error_linking_code ) );
                                         break;

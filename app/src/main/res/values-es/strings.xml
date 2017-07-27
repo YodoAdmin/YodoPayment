@@ -114,15 +114,6 @@
         <item>Ruso</item>-->
     </string-array>
 
-    <string-array name="languages_options_values" translatable="false">
-        <item>en</item>
-        <item>es</item>
-        <!--<item>zh</item>
-        <item>ja</item>
-        <item>fr</item>
-        <item>ru</item>-->
-    </string-array>
-
     <string name="text.config.interface.category">Interfaz</string>
     <string name="text.config.languages">Lenguaje</string>
     <string name="text.config.tip">Visibilidad del tip</string>
@@ -165,6 +156,7 @@
     <string name="error.pip.length">El PIP debe contener al menos 4 dígitos</string>
     <string name="error.pip">PIP incorrecto. Intente de nuevo</string>
     <string name="error.linking.code">Código de unión incorrecto. Intente de nuevo</string>
+    <string name="error.already.linked">Las cuentas ya están unidas</string>
     <string name="error.biometric">Lo sentimos, parece que no tiene un token biométrico</string>
     <string name="error.promotion.save">Error salvando el cupón</string>
     <string name="error.linked.accounts">No tiene cuentas unidas</string>

@@ -18,6 +18,7 @@ import javax.inject.Inject;
 import butterknife.BindView;
 import co.yodo.mobile.R;
 import co.yodo.mobile.YodoApplication;
+import co.yodo.mobile.business.component.totp.TOTPUtils;
 import co.yodo.mobile.business.network.ApiClient;
 import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.business.network.request.DeLinkRequest;
@@ -195,7 +196,7 @@ public class LinkedAccountsActivity extends BaseActivity {
                     final LinkedAccount account = accounts.get( swipedPosition );
                     adapter.remove( swipedPosition );
                     requestManager.invoke(
-                            new DeLinkRequest( hardwareToken, pip, account.getHardwareToken(), account.getRequestST() ),
+                            new DeLinkRequest( hardwareToken, TOTPUtils.defaultOTP(pip), account.getHardwareToken(), account.getRequestST() ),
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse( ServerResponse response ) {
@@ -237,7 +238,7 @@ public class LinkedAccountsActivity extends BaseActivity {
     private void removeAccountsRemote( List<LinkedAccount> removed ) {
         for( LinkedAccount account : removed ) {
             requestManager.invoke(
-                    new DeLinkRequest( hardwareToken, pip, account.getHardwareToken(), account.getRequestST() ),
+                    new DeLinkRequest( hardwareToken, TOTPUtils.defaultOTP(pip), account.getHardwareToken(), account.getRequestST() ),
                     new ApiClient.RequestCallback() {
                         @Override
                         public void onResponse( ServerResponse response ) {
