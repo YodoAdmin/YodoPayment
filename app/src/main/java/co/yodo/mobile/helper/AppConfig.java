@@ -45,7 +45,7 @@ public class AppConfig {
     /* The current user balance.
      * type -- String
      */
-    static final String SPREF_BALANCE = "SPREF_BALANCE";
+    public static final String SPREF_BALANCE = "SPREF_BALANCE";
 
     /* Registration authnumber
 	 * type -- String

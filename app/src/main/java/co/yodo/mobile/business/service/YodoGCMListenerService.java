@@ -8,17 +8,21 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
+import android.text.Html;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
+import org.json.JSONObject;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.helper.FormatUtils;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.model.db.Receipt;
+import co.yodo.mobile.model.dtos.Transfer;
 import co.yodo.mobile.ui.PaymentActivity;
+import co.yodo.mobile.utils.GuiUtils;
 import timber.log.Timber;
 
 public class YodoGCMListenerService extends GcmListenerService {
@@ -45,9 +49,21 @@ public class YodoGCMListenerService extends GcmListenerService {
         Timber.i( message );
 
         try {
+            JSONObject json = new JSONObject( message );
+            final String type = json.getString("type");
+            if (type.equals("transfer")) {
+                Transfer transfer = Transfer.fromJSON(message);
+                sendTransferNotification( transfer );
+                return;
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        try {
             Receipt receipt = Receipt.fromJSON( message );
             receipt.save();
-            sendNotification( receipt );
+            sendReceiptNotification( receipt );
             EventBus.getDefault().postSticky( receipt );
         } catch( JSONException | NullPointerException e ) {
             e.printStackTrace();
@@ -64,19 +80,51 @@ public class YodoGCMListenerService extends GcmListenerService {
 
     /**
      * Create and show a simple notification containing the received GCM message.
-     *
-     * @param receipt GCM message received as a ServerResponse
+     * @param receipt GCM message received as a Receipt
      */
-    private synchronized void sendNotification( Receipt receipt ) {
+    private synchronized void sendReceiptNotification(Receipt receipt ) {
         // We only update the balance if we paid the receipt
         if( receipt.getDonorAccount() == null ) {
-            // Trim the balance
-            PrefUtils.saveBalance( String.format( "%s %s",
-                    FormatUtils.truncateDecimal( receipt.getBalanceAmount() ),
-                    receipt.getCurrency()
-            ) );
+            final String balance = receipt.getBalanceAmount();
+            final String currency = receipt.getCurrency();
+            updateBalance(balance, currency);
         }
 
+        final String text = FormatUtils.truncateDecimal( receipt.getTotalAmount() ) + " " +  receipt.getTCurrency();
+        NotificationCompat.Builder builder = getNotificationBuilder()
+                .setContentTitle( getString( R.string.text_receipt_notification_title ) )
+                .setContentText( getString( R.string.text_receipt_notification_text, text ) );
+
+        notificationManager.notify( RECEIPT_NOTIFICATION_ID, builder.build() );
+    }
+
+    /**
+     * Create and show a simple notification containing the received GCM message.
+     * @param transfer GCM message received as a Transfer
+     */
+    private synchronized void sendTransferNotification(Transfer transfer) {
+        final String balance = transfer.getAccountBalance();
+        final String currency = transfer.getAccountCurrency();
+        updateBalance(balance, currency);
+
+        final String temp = FormatUtils.truncateDecimal( transfer.getAmount() ) + " " +  transfer.getCurrency();
+        final String from = getString( R.string.text_transfer_notification_from, transfer.getFrom() );
+        final String amount = getString( R.string.text_transfer_notification_amount, temp );
+        NotificationCompat.Builder builder = getNotificationBuilder()
+                .setContentTitle( getString( R.string.text_transfer_notification_title ) )
+                .setStyle(new NotificationCompat.InboxStyle()
+                        .addLine(from)
+                        .addLine(amount)
+                );
+
+        notificationManager.notify( RECEIPT_NOTIFICATION_ID, builder.build() );
+    }
+
+    /**
+     * Sets the basic attributes for the notification
+     * @return The notification builder
+     */
+    private NotificationCompat.Builder getNotificationBuilder() {
         Intent intent = new Intent( this, PaymentActivity.class );
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this,
@@ -85,17 +133,12 @@ public class YodoGCMListenerService extends GcmListenerService {
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
-        final String text = FormatUtils.truncateDecimal( receipt.getTotalAmount() ) + " " +  receipt.getTCurrency();
         final Uri defaultSoundUri = RingtoneManager.getDefaultUri( RingtoneManager.TYPE_NOTIFICATION );
-        NotificationCompat.Builder builder = new NotificationCompat.Builder( this )
+        return new NotificationCompat.Builder( this )
                 .setSmallIcon( getNotificationIcon() )
-                .setContentTitle( getString( R.string.text_receipt_new_title ) )
-                .setContentText( getString( R.string.text_receipt_new_text, text ) )
                 .setAutoCancel( true )
                 .setSound( defaultSoundUri )
                 .setContentIntent( pendingIntent );
-
-        notificationManager.notify( RECEIPT_NOTIFICATION_ID, builder.build() );
     }
 
     /**
@@ -105,5 +148,12 @@ public class YodoGCMListenerService extends GcmListenerService {
     private int getNotificationIcon() {
         boolean useWhiteIcon = (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.LOLLIPOP);
         return useWhiteIcon ? R.mipmap.ic_notification : R.mipmap.ic_launcher;
+    }
+
+    private void updateBalance(String balance, String currency) {
+        // Trim the balance
+        PrefUtils.saveBalance( String.format( "%s %s",
+                FormatUtils.truncateDecimal( balance ), currency
+        ) );
     }
 }

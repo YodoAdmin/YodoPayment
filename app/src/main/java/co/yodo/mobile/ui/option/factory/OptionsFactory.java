@@ -8,6 +8,7 @@ import co.yodo.mobile.ui.option.CloseAccountOption;
 import co.yodo.mobile.ui.option.LinkedAccountsOption;
 import co.yodo.mobile.ui.option.LinkAccountOption;
 import co.yodo.mobile.ui.option.LinkingCodeOption;
+import co.yodo.mobile.ui.option.ExchP2POption;
 import co.yodo.mobile.ui.option.PaymentOption;
 import co.yodo.mobile.ui.option.ResetPipOption;
 import co.yodo.mobile.ui.option.SaveCouponOption;
@@ -25,6 +26,7 @@ public class OptionsFactory {
     public enum Option {
         PAYMENT,
         COUPONS,
+        P2P,
         ABOUT,
         BALANCE,
         RESET_PIP,
@@ -37,6 +39,7 @@ public class OptionsFactory {
     /** Options */
     private SaveCouponOption saveCouponOption = null;
     private AboutOption aboutOption = null;
+    private ExchP2POption p2pOption = null;
 
     /** Options that executes a request */
     private PaymentOption paymentOption = null;
@@ -69,6 +72,12 @@ public class OptionsFactory {
                     saveCouponOption = new SaveCouponOption( activity );
                 }
                 return saveCouponOption;
+
+            case P2P:
+                if( p2pOption == null ) {
+                    p2pOption = new ExchP2POption( activity );
+                }
+                return p2pOption;
 
             case ABOUT:
                 if( aboutOption == null ) {

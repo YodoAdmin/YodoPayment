@@ -82,6 +82,11 @@
         <item>Linked accounts</item>
     </string-array>
 
+    <!-- P2P messages -->
+    <string name="text.transfer.account">Destination Account</string>
+    <string name="text.transfer.amount">Transfer Amount</string>
+    <string name="text.transfer.successful">Successful Transaction!</string>
+
     <!-- About messages -->
     <string name="text.about.email" translatable="false">support@yodo.co</string>
     <string name="text.about">Please use the email below to contact us. We\'ll do everything we can to respond quickly. We will never sell or distribute personal information you provide.</string>
@@ -99,8 +104,13 @@
     <string name="text.receipt.cash.back">Cash Back:</string>
     <string name="text.receipt.deleted">Receipt Deleted</string>
     <string name="text.receipt.saved">Receipt Saved</string>
-    <string name="text.receipt.new.title">New Receipt</string>
-    <string name="text.receipt.new.text">Total: %1$s</string>
+    <string name="text.receipt.notification.title">New Receipt</string>
+    <string name="text.receipt.notification.text">Total: %1$s</string>
+
+    <!-- Transfer Messages -->
+    <string name="text.transfer.notification.title">New P2P Transaction</string>
+    <string name="text.transfer.notification.from">From: %1$s</string>
+    <string name="text.transfer.notification.amount">Amount: %1$s</string>
 
     <!-- Linking Messages -->
     <string name="text.link.code">Linking Code: </string>
@@ -179,6 +189,7 @@
     <string name="error.biometric">Sorry, seems that you don\'t have a biometric token</string>
     <string name="error.promotion.save">Error saving coupon</string>
     <string name="error.linked.accounts">There are no linked accounts</string>
+    <string name="error.insufficient.funds">Insufficient funds</string>
 
     <!-- Network errors -->
     <string name="error.network">Seems that you don\'t have an Internet connection</string>
