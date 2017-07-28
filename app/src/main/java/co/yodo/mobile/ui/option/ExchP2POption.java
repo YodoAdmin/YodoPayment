@@ -174,6 +174,14 @@ public class ExchP2POption extends IRequestOption {
                                             );
                                             break;
 
+                                        case ServerResponse.ERROR_AMOUNT_EXCEEDED:
+                                            ErrorUtils.handleError(
+                                                    activity,
+                                                    activity.getString( R.string.error_exceeded_funds ),
+                                                    false
+                                            );
+                                            break;
+
                                         default:
                                             ErrorUtils.handleError(
                                                     activity,

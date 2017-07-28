@@ -1,0 +1,46 @@
+{
+  "project_info": {
+    "project_number": "790185809792",
+    "firebase_url": "https://yodopay-59447.firebaseio.com",
+    "project_id": "yodopay-59447",
+    "storage_bucket": "yodopay-59447.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:790185809792:android:6397a87138f43ade",
+        "android_client_info": {
+          "package_name": "co.yodo.mobile.demo"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "790185809792-295857kur7r8v46q2ur3qf7a47ohj2fu.apps.googleusercontent.com",
+          "client_type": 3
+        },
+        {
+          "client_id": "790185809792-3sgd18qrmra96p8cp7i6g5mq9nmrshjh.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCt96BPEM20kjaSyVINPrpiEOwlgtGYYYA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

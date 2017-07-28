@@ -190,6 +190,7 @@
     <string name="error.promotion.save">Error saving coupon</string>
     <string name="error.linked.accounts">There are no linked accounts</string>
     <string name="error.insufficient.funds">Insufficient funds</string>
+    <string name="error.exceeded.funds">Destination account balance exceeded</string>
 
     <!-- Network errors -->
     <string name="error.network">Seems that you don\'t have an Internet connection</string>
