@@ -54,7 +54,7 @@ public class YodoApplication extends SugarApp {
                 .build();
 
         component = DaggerGraphComponent.builder()
-                .applicationComponent( appComponent )=
+                .applicationComponent( appComponent )
                 .apiClientModule( new ApiClientModule( IP ) )
                 .build();
 
