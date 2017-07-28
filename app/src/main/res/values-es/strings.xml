@@ -75,6 +75,11 @@
     <!-- About messages -->
     <string name="text.about">Utilice el correo electrónico para ponerse en contacto con nosotros. Nosotros haremos todo lo posible para responder con rapidez. Tenga la seguridad, nunca vamos a vender o distribuir información personal que proporcione.</string>
 
+    <!-- P2P messages -->
+    <string name="text.transfer.account">Destination Account</string>
+    <string name="text.transfer.amount">Transfer Amount</string>
+    <string name="text.transfer.successful">Successful Transaction!</string>
+
     <!-- Reset pip Messages -->
     <string name="text.forgot.pip">Olvidó su PIP?</string>
     <string name="text.update.successful">Actualización exitosa</string>
@@ -88,8 +93,13 @@
     <string name="text.receipt.cash.back">Cambio:</string>
     <string name="text.receipt.deleted">Recibo Borrado</string>
     <string name="text.receipt.saved">Recibo Salvado</string>
-    <string name="text.receipt.new.title">Nuevo Recibo</string>
-    <string name="text.receipt.new.text">Total: %1$s</string>
+    <string name="text.receipt.notification.title">Nuevo Recibo</string>
+    <string name="text.receipt.notification.text">Total: %1$s</string>
+
+    <!-- Transfer Messages -->
+    <string name="text.transfer.notification.title">New P2P Transaction</string>
+    <string name="text.transfer.notification.from">From: %1$s</string>
+    <string name="text.transfer.notification.amount">Amount: %1$s</string>
 
     <!-- Linking Messages -->
     <string name="text.link.code">Código de Unión: </string>
@@ -160,6 +170,8 @@
     <string name="error.biometric">Lo sentimos, parece que no tiene un token biométrico</string>
     <string name="error.promotion.save">Error salvando el cupón</string>
     <string name="error.linked.accounts">No tiene cuentas unidas</string>
+    <string name="error.insufficient.funds">Fondos insuficientes</string>
+    <string name="error.exceeded.funds">La cuenta destino, excedió su balance límite</string>
 
     <!-- Network errors -->
     <string name="error.network">Para que no tiene conexión a Internet</string>

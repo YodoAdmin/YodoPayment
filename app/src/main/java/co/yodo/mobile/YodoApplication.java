@@ -12,6 +12,7 @@ import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
 import co.yodo.mobile.business.injection.component.ApplicationComponent;
+
 import co.yodo.mobile.business.injection.component.DaggerApplicationComponent;
 import co.yodo.mobile.business.injection.component.DaggerGraphComponent;
 import co.yodo.mobile.business.injection.component.GraphComponent;

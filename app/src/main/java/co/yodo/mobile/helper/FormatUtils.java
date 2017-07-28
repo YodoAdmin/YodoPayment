@@ -107,7 +107,7 @@ public class FormatUtils {
      * Compress a string before being send to the cloud
      * @param srcTxt The original String
      * @return The compressed String
-     * @throws IOException
+     * @throws IOException error for transform
      */
     public static String compressString( String srcTxt ) throws IOException {
         ByteArrayOutputStream rstBao = new ByteArrayOutputStream();

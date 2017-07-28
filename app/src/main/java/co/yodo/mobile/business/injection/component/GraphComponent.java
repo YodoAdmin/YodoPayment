@@ -11,6 +11,7 @@ import co.yodo.mobile.business.injection.module.CipherModule;
 import co.yodo.mobile.business.injection.module.JobsModule;
 import co.yodo.mobile.business.injection.scope.ApplicationScope;
 import co.yodo.mobile.business.service.RegistrationIntentService;
+import co.yodo.mobile.business.service.YodoInstanceIDService;
 import co.yodo.mobile.ui.CouponsActivity;
 import co.yodo.mobile.ui.LinkedAccountsActivity;
 import co.yodo.mobile.ui.PaymentActivity;
@@ -46,6 +47,7 @@ public interface GraphComponent {
 
     // Injects to the Services
     void inject( RegistrationIntentService service );
+    void inject( YodoInstanceIDService service );
 
     // Injects to the Components
     void inject( IRequestOption option );

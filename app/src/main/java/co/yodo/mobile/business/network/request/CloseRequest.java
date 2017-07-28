@@ -35,7 +35,7 @@ public class CloseRequest extends IRequest {
     }
 
     /** Sub-type of the request */
-    private final CloseST mRequestST;
+    private final CloseST requestST;
 
     /** Interface for the CLOSE requests */
     interface IApiEndpoint {
@@ -54,7 +54,7 @@ public class CloseRequest extends IRequest {
                 hardwareToken + USR_SEP +
                 System.currentTimeMillis() / 1000L + REQ_SEP +
                 "0" + REQ_SEP + "0"; // Mock GPS, not needed any more
-        this.mRequestST = CloseST.CLIENT;
+        this.requestST = CloseST.CLIENT;
     }
 
     @Override
@@ -67,7 +67,7 @@ public class CloseRequest extends IRequest {
         // Encrypting to newInstance request
         final String encryptedClientData = encyptedKey + REQ_SEP + encyptedData;
         final String requestData = buildRequest( CLOSE_RT,
-                mRequestST.getValue(),
+                requestST.getValue(),
                 encryptedClientData
         );
 

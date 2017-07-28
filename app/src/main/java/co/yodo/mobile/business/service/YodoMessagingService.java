@@ -6,11 +6,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
-import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.text.Html;
 
-import com.google.android.gms.gcm.GcmListenerService;
+import com.google.firebase.messaging.FirebaseMessagingService;
+import com.google.firebase.messaging.RemoteMessage;
 
 import org.greenrobot.eventbus.EventBus;
 import org.json.JSONException;
@@ -22,10 +21,13 @@ import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.model.db.Receipt;
 import co.yodo.mobile.model.dtos.Transfer;
 import co.yodo.mobile.ui.PaymentActivity;
-import co.yodo.mobile.utils.GuiUtils;
 import timber.log.Timber;
 
-public class YodoGCMListenerService extends GcmListenerService {
+/**
+ * Created by yodop on 2017-07-27.
+ * Any message handling beyond receiving notifications on apps in the background.
+ */
+public class YodoMessagingService extends FirebaseMessagingService {
     /** Notification for arriving messages */
     private NotificationManager notificationManager;
     private static final int RECEIPT_NOTIFICATION_ID = 0;
@@ -36,37 +38,41 @@ public class YodoGCMListenerService extends GcmListenerService {
         notificationManager = (NotificationManager) getSystemService( Context.NOTIFICATION_SERVICE );
     }
 
-    /**
-     * Called when message is received.
-     *
-     * @param from SenderID of the sender.
-     * @param data Data bundle containing message data as key/value pairs.
-     *             For Set of keys use data.keySet().
-     */
     @Override
-    public void onMessageReceived( String from, Bundle data ) {
-        String message = data.getString( "message" );
-        Timber.i( message );
+    public void onMessageReceived(RemoteMessage remoteMessage) {
+        // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
+        Timber.d("From: " + remoteMessage.getFrom());
 
-        try {
-            JSONObject json = new JSONObject( message );
-            final String type = json.getString("type");
-            if (type.equals("transfer")) {
-                Transfer transfer = Transfer.fromJSON(message);
-                sendTransferNotification( transfer );
-                return;
+        // Check if message contains a data payload.
+        if (remoteMessage.getData().size() > 0) {
+            Timber.d("Message data payload: " + remoteMessage.getData());
+            String message = remoteMessage.getData().get("message");
+
+            try {
+                JSONObject json = new JSONObject( message );
+                final String type = json.getString("type");
+                if (type.equals("transfer")) {
+                    Transfer transfer = Transfer.fromJSON(message);
+                    sendTransferNotification( transfer );
+                    return;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
+
+            try {
+                Receipt receipt = Receipt.fromJSON( message );
+                receipt.save();
+                sendReceiptNotification( receipt );
+                EventBus.getDefault().postSticky( receipt );
+            } catch( JSONException | NullPointerException e ) {
+                e.printStackTrace();
+            }
         }
 
-        try {
-            Receipt receipt = Receipt.fromJSON( message );
-            receipt.save();
-            sendReceiptNotification( receipt );
-            EventBus.getDefault().postSticky( receipt );
-        } catch( JSONException | NullPointerException e ) {
-            e.printStackTrace();
+        // Check if message contains a notification payload.
+        if (remoteMessage.getNotification() != null) {
+            Timber.d("Message Notification Body: " + remoteMessage.getNotification().getBody());
         }
     }
 
