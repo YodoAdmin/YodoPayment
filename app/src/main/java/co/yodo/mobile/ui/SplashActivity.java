@@ -9,6 +9,8 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
+import com.google.firebase.iid.FirebaseInstanceId;
+
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
@@ -21,11 +23,14 @@ import co.yodo.mobile.business.network.ApiClient;
 import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.business.network.request.AuthenticateRequest;
 import co.yodo.mobile.business.service.RegistrationIntentService;
+import co.yodo.mobile.business.service.YodoIDListenerService;
+import co.yodo.mobile.business.service.YodoInstanceIDService;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.model.dtos.GCMResponse;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.utils.ErrorUtils;
 import co.yodo.mobile.utils.SystemUtils;
+import timber.log.Timber;
 
 public class SplashActivity extends AppCompatActivity {
     /** The application context */
@@ -107,6 +112,7 @@ public class SplashActivity extends AppCompatActivity {
     private void setupGUI() {
         // Injection
         YodoApplication.getComponent().inject( this );
+        Timber.d(FirebaseInstanceId.getInstance().getToken());
     }
 
     /**

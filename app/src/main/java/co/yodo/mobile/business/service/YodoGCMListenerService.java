@@ -17,12 +17,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import co.yodo.mobile.R;
+import co.yodo.mobile.helper.AlertDialogHelper;
 import co.yodo.mobile.helper.FormatUtils;
 import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.model.db.Receipt;
 import co.yodo.mobile.model.dtos.Transfer;
 import co.yodo.mobile.ui.PaymentActivity;
 import co.yodo.mobile.utils.GuiUtils;
+import co.yodo.mobile.utils.JsonUtils;
 import timber.log.Timber;
 
 public class YodoGCMListenerService extends GcmListenerService {
@@ -45,27 +47,35 @@ public class YodoGCMListenerService extends GcmListenerService {
      */
     @Override
     public void onMessageReceived( String from, Bundle data ) {
-        String message = data.getString( "message" );
-        Timber.i( message );
-
         try {
-            JSONObject json = new JSONObject( message );
-            final String type = json.getString("type");
-            if (type.equals("transfer")) {
-                Transfer transfer = Transfer.fromJSON(message);
-                sendTransferNotification( transfer );
+            String message = data.getString("message");
+            Timber.i(message);
+
+            if (!JsonUtils.isValidJson(message)) {
                 return;
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-        try {
-            Receipt receipt = Receipt.fromJSON( message );
-            receipt.save();
-            sendReceiptNotification( receipt );
-            EventBus.getDefault().postSticky( receipt );
-        } catch( JSONException | NullPointerException e ) {
+            try {
+                JSONObject json = new JSONObject( message );
+                final String type = json.getString("type");
+                if (type.equals("transfer")) {
+                    Transfer transfer = Transfer.fromJSON(message);
+                    sendTransferNotification( transfer );
+                    return;
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            try {
+                Receipt receipt = Receipt.fromJSON( message );
+                receipt.save();
+                sendReceiptNotification( receipt );
+                EventBus.getDefault().postSticky( receipt );
+            } catch( JSONException e ) {
+                e.printStackTrace();
+            }
+        } catch(NullPointerException e) {
             e.printStackTrace();
         }
     }

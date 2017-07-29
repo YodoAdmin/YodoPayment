@@ -21,6 +21,7 @@ import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.model.db.Receipt;
 import co.yodo.mobile.model.dtos.Transfer;
 import co.yodo.mobile.ui.PaymentActivity;
+import co.yodo.mobile.utils.JsonUtils;
 import timber.log.Timber;
 
 /**
@@ -45,34 +46,45 @@ public class YodoMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
-            Timber.d("Message data payload: " + remoteMessage.getData());
-            String message = remoteMessage.getData().get("message");
-
             try {
-                JSONObject json = new JSONObject( message );
-                final String type = json.getString("type");
-                if (type.equals("transfer")) {
-                    Transfer transfer = Transfer.fromJSON(message);
-                    sendTransferNotification( transfer );
+                Timber.d("Message data payload: " + remoteMessage.getData());
+                String message = remoteMessage.getData().get("message");
+
+                if (!JsonUtils.isValidJson(message)) {
                     return;
                 }
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
 
-            try {
-                Receipt receipt = Receipt.fromJSON( message );
-                receipt.save();
-                sendReceiptNotification( receipt );
-                EventBus.getDefault().postSticky( receipt );
-            } catch( JSONException | NullPointerException e ) {
+                try {
+                    JSONObject json = new JSONObject(message);
+                    final String type = json.getString("type");
+                    if (type.equals("transfer")) {
+                        Transfer transfer = Transfer.fromJSON(message);
+                        sendTransferNotification(transfer);
+                        return;
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+
+                try {
+                    Receipt receipt = Receipt.fromJSON(message);
+                    receipt.save();
+                    sendReceiptNotification(receipt);
+                    EventBus.getDefault().postSticky(receipt);
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            } catch (NullPointerException e) {
                 e.printStackTrace();
             }
         }
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
-            Timber.d("Message Notification Body: " + remoteMessage.getNotification().getBody());
+            final String notification =  remoteMessage.getNotification().getBody();
+            Timber.d("Message Notification Body: " + notification);
+            NotificationCompat.Builder builder = getNotificationBuilder().setContentText(notification);
+            notificationManager.notify(RECEIPT_NOTIFICATION_ID, builder.build());
         }
     }
 

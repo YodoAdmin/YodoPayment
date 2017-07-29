@@ -163,6 +163,7 @@
             android:exported="false">
         </service>
 
+        <!--
         <service
             android:name=".business.service.YodoMessagingService"
             android:exported="false">
@@ -172,6 +173,7 @@
             </intent-filter>
 
         </service>
+        -->
 
         <service
             android:name=".business.service.YodoInstanceIDService"

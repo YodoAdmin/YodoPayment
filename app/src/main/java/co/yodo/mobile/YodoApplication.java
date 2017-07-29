@@ -19,6 +19,7 @@ import co.yodo.mobile.business.injection.component.GraphComponent;
 import co.yodo.mobile.business.injection.module.ApiClientModule;
 import co.yodo.mobile.business.injection.module.ApplicationModule;
 import co.yodo.mobile.business.jobs.JobHandler;
+import co.yodo.mobile.business.network.Config;
 import timber.log.Timber;
 
 @ReportsCrashes(formUri = "http://198.101.209.120/MAB-LAB/report/report.php",
@@ -30,13 +31,6 @@ import timber.log.Timber;
                 resToastText = R.string.error_crash_toast
 )
 public class YodoApplication extends SugarApp {
-    /** Switch server IP address */
-    private static final String PROD_IP  = "http://50.56.180.133";   // Production
-    private static final String DEMO_IP  = "http://162.244.228.84";  // Demo
-    private static final String DEV_IP   = "http://162.244.228.78";  // Development
-    private static final String LOCAL_IP = "http://192.168.1.38";    // Local
-    public static final String IP = DEMO_IP;
-
     /** Component that build the dependencies */
     private static GraphComponent component;
 
@@ -56,7 +50,7 @@ public class YodoApplication extends SugarApp {
 
         component = DaggerGraphComponent.builder()
                 .applicationComponent( appComponent )
-                .apiClientModule( new ApiClientModule( IP ) )
+                .apiClientModule( new ApiClientModule( Config.IP ) )
                 .build();
 
         // Init secure preferences
@@ -128,9 +122,7 @@ public class YodoApplication extends SugarApp {
      *         L  - local
      */
     public static String getSwitch() {
-        return ( IP.equals( PROD_IP ) ) ? "P" :
-               ( IP.equals( DEMO_IP ) ) ? "E" :
-               ( IP.equals( DEV_IP ) ) ? "D" : "L";
+        return Config.getServerIdentifier();
     }
 
     public static GraphComponent getComponent() {

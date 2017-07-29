@@ -8,6 +8,7 @@ import javax.crypto.spec.SecretKeySpec;
 import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.business.component.cipher.AESCrypt;
 import co.yodo.mobile.business.component.cipher.RSACrypt;
+import co.yodo.mobile.business.network.Config;
 import co.yodo.mobile.helper.AppConfig;
 import co.yodo.mobile.business.network.ApiClient;
 import co.yodo.mobile.business.network.model.ServerResponse;
@@ -162,7 +163,7 @@ public class RegisterRequest extends IRequest {
 
                 iCaller = manager.create( IApiEndpoint.class );
                 Call<ResponseBody> jsonRequest = iCaller.register(
-                        YodoApplication.IP + ":8081/yodo",
+                        Config.IP + ":8081/yodo",
                         PROTOCOL_VERSION,
                         REG_RT + REQ_SEP + requestST.getValue(),
                         formattedUsrData
