@@ -55,9 +55,9 @@ public class RegistrationIntentService extends IntentService {
         try {
             String hardwareToken = intent.getStringExtra( BUNDLE_HARDWARE_TOKEN );
             // This call goes out to the network to retrieve the token
-            //InstanceID instanceID = InstanceID.getInstance( this );
-            //String token = instanceID.getToken( getString( R.string.gcm_defaultSenderId ), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null ) ;
-            String token = FirebaseInstanceId.getInstance().getToken();
+            InstanceID instanceID = InstanceID.getInstance( this );
+            String token = instanceID.getToken( getString( R.string.gcm_defaultSenderId ), GoogleCloudMessaging.INSTANCE_ID_SCOPE, null ) ;
+            //String token = FirebaseInstanceId.getInstance().getToken();
             Timber.i( "GCM Registration Token: " + token );
 
             // Send the GCM token to the server

@@ -12,10 +12,10 @@
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="com.google.android.c2dm.permission.RECEIVE" />
-    <uses-permission android:name="cco.yodo.mobile.permission.C2D_MESSAGE" />
+    <uses-permission android:name="${applicationId}.permission.C2D_MESSAGE" />
 
     <permission
-        android:name="co.yodo.mobile.permission.C2D_MESSAGE"
+        android:name="${applicationId}.permission.C2D_MESSAGE"
         android:protectionLevel="signature" />
 
     <uses-feature android:name="android.hardware.camera.front" />
@@ -37,12 +37,15 @@
         <meta-data
             android:name="DATABASE"
             android:value="yodo_payment.db" />
+
         <meta-data
             android:name="VERSION"
             android:value="5" />
+
         <meta-data
             android:name="QUERY_LOG"
             android:value="true" />
+
         <meta-data
             android:name="DOMAIN_PACKAGE_NAME"
             android:value="co.yodo.mobile.model.db" />
@@ -119,6 +122,11 @@
             android:screenOrientation="sensorPortrait">
         </activity>
 
+        <activity
+            android:name=".ui.tutorial.IntroActivity"
+            android:screenOrientation="sensorPortrait" >
+        </activity>
+
         <!-- START BroadcastReceivers -->
         <receiver
             android:name="com.google.android.gms.gcm.GcmReceiver"
@@ -173,7 +181,6 @@
             </intent-filter>
 
         </service>
-        -->
 
         <service
             android:name=".business.service.YodoInstanceIDService"
@@ -184,13 +191,8 @@
             </intent-filter>
 
         </service>
+        -->
         <!-- End Services -->
-
-        <!-- Intro -->
-        <activity
-            android:name=".ui.tutorial.IntroActivity"
-            android:screenOrientation="sensorPortrait" >
-        </activity>
 
     </application>
 

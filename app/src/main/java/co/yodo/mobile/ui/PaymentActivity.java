@@ -21,6 +21,7 @@ import android.widget.TextView;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.nearby.messages.Message;
 import com.google.android.gms.nearby.messages.MessageListener;
+import com.google.firebase.iid.FirebaseInstanceId;
 import com.squareup.picasso.Picasso;
 
 import javax.inject.Inject;
@@ -144,11 +145,12 @@ public class PaymentActivity extends BaseActivity implements
     };
 
     @Override
-    protected void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-        setContentView( R.layout.activity_main );
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
-        setupGUI( savedInstanceState );
+        setupGUI(savedInstanceState);
+        Timber.i(FirebaseInstanceId.getInstance().getToken());
     }
 
     @Override
