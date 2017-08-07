@@ -9,8 +9,8 @@ android {
         applicationId "co.yodo"
         minSdkVersion 15
         targetSdkVersion 25
-        versionCode 27
-        versionName "2.3.2"
+        versionCode 28
+        versionName "2.3.3"
 
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
