@@ -21,7 +21,7 @@ import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.business.network.request.AuthenticateRequest;
 import co.yodo.mobile.business.network.request.QueryRequest;
 import co.yodo.mobile.helper.AlertDialogHelper;
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.ui.BaseActivity;
 import co.yodo.mobile.ui.dialog.PaymentDialog;
 import co.yodo.mobile.ui.dialog.PaymentDialog.Payment;
@@ -71,7 +71,7 @@ public class PaymentOption extends IRequestOption {
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse( ServerResponse response ) {
-                                    progressManager.destroy();
+                                    progressManager.dismiss();
                                     final String code = response.getCode();
 
                                     switch( code ) {
@@ -113,7 +113,7 @@ public class PaymentOption extends IRequestOption {
         clearGUI();
         sbTips.setProgress( 0 );
 
-        if( PrefUtils.isTipping( activity ) ) {
+        if( PreferencesHelper.isTipping( activity ) ) {
             llTips.setVisibility( View.VISIBLE );
         } else {
             llTips.setVisibility( View.GONE );
@@ -162,7 +162,7 @@ public class PaymentOption extends IRequestOption {
                 new ApiClient.RequestCallback() {
                     @Override
                     public void onResponse( ServerResponse response ) {
-                        progressManager.destroy();
+                        progressManager.dismiss();
                         final String code = response.getCode();
                         final String userCode = otp + SKS_SEP + hardwareToken;
                         final String tip = String.valueOf(sbTips.getProgress());
@@ -183,7 +183,7 @@ public class PaymentOption extends IRequestOption {
                                                     if( accounts.length > 1 ) {
                                                         List<String> list = new ArrayList<>();
                                                         for( String account : accounts ) {
-                                                            list.add( PrefUtils.getNickname( account ) );
+                                                            list.add( PreferencesHelper.getNickname( account ) );
                                                         }
 
                                                         DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
@@ -276,7 +276,7 @@ public class PaymentOption extends IRequestOption {
      * let's show the correct message
      */
     private void handleApiError( String message ) {
-        progressManager.destroy();
+        progressManager.dismiss();
         ErrorUtils.handleError(
                 activity,
                 message,

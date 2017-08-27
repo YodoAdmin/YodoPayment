@@ -8,8 +8,8 @@ import android.preference.PreferenceManager;
 import android.view.MenuItem;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.helper.AppConfig;
-import co.yodo.mobile.utils.GuiUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
+import co.yodo.mobile.utils.AppConfig;
 
 public class SettingsActivity extends BaseActivity {
     @Override
@@ -48,7 +48,7 @@ public class SettingsActivity extends BaseActivity {
             super.onCreate( savedInstanceState );
 
             PreferenceManager prefMgr = getPreferenceManager();
-            prefMgr.setSharedPreferencesName( AppConfig.SHARED_PREF_FILE );
+            prefMgr.setSharedPreferencesName( PreferencesHelper.PREF_USER_FILE);
             prefMgr.setSharedPreferencesMode( MODE_PRIVATE );
 
             addPreferencesFromResource( R.xml.config_prefs );

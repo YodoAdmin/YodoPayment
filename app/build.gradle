@@ -10,7 +10,7 @@ android {
         minSdkVersion 15
         targetSdkVersion 25
         versionCode 29
-        versionName "2.3.4"
+        versionName "2.3.5"
 
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -42,7 +42,7 @@ android {
 
 ext {
     supportVersion = '25.3.1'
-    googleServicesVersion = '11.0.2'
+    googleServicesVersion = '11.0.4'
 }
 
 dependencies {
@@ -60,9 +60,11 @@ dependencies {
     compile 'com.google.code.gson:gson:2.7'
     compile "com.google.android.gms:play-services-gcm:$googleServicesVersion"
     compile "com.google.android.gms:play-services-nearby:$googleServicesVersion"
+    compile "com.google.android.gms:play-services-auth:$googleServicesVersion"
 
     // -- Firebase --
     compile "com.google.firebase:firebase-messaging:$googleServicesVersion"
+    compile "com.google.firebase:firebase-auth:$googleServicesVersion"
 
     // -- Networking --
     compile 'com.squareup.retrofit2:retrofit:2.1.0'

@@ -19,7 +19,7 @@ import co.yodo.mobile.business.network.request.AuthenticateRequest;
 import co.yodo.mobile.business.network.request.ExchRequest;
 import co.yodo.mobile.helper.AlertDialogHelper;
 import co.yodo.mobile.helper.FormatUtils;
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.ui.BaseActivity;
 import co.yodo.mobile.ui.option.contract.IRequestOption;
 import co.yodo.mobile.utils.ErrorUtils;
@@ -57,7 +57,7 @@ public class ExchP2POption extends IRequestOption {
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse(ServerResponse response) {
-                                    progressManager.destroy();
+                                    progressManager.dismiss();
                                     final String code = response.getCode();
 
                                     switch( code ) {
@@ -81,7 +81,7 @@ public class ExchP2POption extends IRequestOption {
 
                                 @Override
                                 public void onError(String message) {
-                                    progressManager.destroy();
+                                    progressManager.dismiss();
                                     ErrorUtils.handleError(
                                             activity,
                                             message,
@@ -146,7 +146,7 @@ public class ExchP2POption extends IRequestOption {
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse(ServerResponse response) {
-                                    progressManager.destroy();
+                                    progressManager.dismiss();
                                     final String code = response.getCode();
 
                                     switch( code ) {
@@ -159,7 +159,7 @@ public class ExchP2POption extends IRequestOption {
                                             ).show();
 
                                             // Trim the balance
-                                            PrefUtils.saveBalance( String.format( "%s %s",
+                                            PreferencesHelper.saveBalance( String.format( "%s %s",
                                                     FormatUtils.truncateDecimal( response.getParams().getBalance() ),
                                                     response.getParams().getCurrency()
                                             ) );
@@ -193,7 +193,7 @@ public class ExchP2POption extends IRequestOption {
 
                                 @Override
                                 public void onError(String message) {
-                                    progressManager.destroy();
+                                    progressManager.dismiss();
                                     ErrorUtils.handleError(
                                             activity,
                                             message,

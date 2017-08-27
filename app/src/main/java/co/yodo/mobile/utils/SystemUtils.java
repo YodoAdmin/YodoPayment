@@ -21,8 +21,7 @@ import java.io.File;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.helper.AlertDialogHelper;
-import co.yodo.mobile.helper.AppConfig;
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.model.db.Coupon;
 import co.yodo.mobile.model.db.Receipt;
 import co.yodo.mobile.ui.notification.ToastMaster;
@@ -201,7 +200,7 @@ public class SystemUtils {
      * @param context The application context
      */
     public static void clearUserData( Context context ) {
-        PrefUtils.clearPrefConfig( context );
+        PreferencesHelper.clearPrefConfig( context );
         Receipt.deleteAll( Receipt.class );
         Coupon.deleteAll( Coupon.class );
         SystemUtils.deleteDir(

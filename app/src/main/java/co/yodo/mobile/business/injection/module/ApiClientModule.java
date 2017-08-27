@@ -1,6 +1,6 @@
 package co.yodo.mobile.business.injection.module;
 
-import co.yodo.mobile.helper.AppConfig;
+import co.yodo.mobile.utils.AppConfig;
 import co.yodo.mobile.business.injection.scope.ApplicationScope;
 import co.yodo.mobile.helper.ProgressDialogHelper;
 import dagger.Module;

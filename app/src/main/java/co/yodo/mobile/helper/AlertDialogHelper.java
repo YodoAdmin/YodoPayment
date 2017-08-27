@@ -21,15 +21,15 @@ public class AlertDialogHelper {
      * @param message A message to show
      * @param onClick click for the positive button
      */
-    public static void show( Activity ac, String title, String message, DialogInterface.OnClickListener onClick ) {
-        AlertDialog.Builder builder = new AlertDialog.Builder( ac );
-        if( title != null ) {
-            builder.setTitle( title );
+    public static void show(Activity ac, String title, String message, DialogInterface.OnClickListener onClick) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ac);
+        if (title != null) {
+            builder.setTitle(title);
         }
 
-        builder.setMessage( message );
-        builder.setCancelable( false );
-        builder.setPositiveButton( ac.getString( R.string.text_ok ), onClick );
+        builder.setMessage(message);
+        builder.setCancelable(false);
+        builder.setPositiveButton(ac.getString( R.string.text_ok), onClick);
         builder.show();
     }
 
@@ -49,32 +49,37 @@ public class AlertDialogHelper {
      * @param message A message to show
      * @param onClick Action for the selection
      */
-    public static void show( Activity ac, Integer title, Integer message, View layout,
-                             DialogInterface.OnClickListener onClick ) {
-        AlertDialog.Builder builder = new AlertDialog.Builder( ac );
+    public static AlertDialog show(Activity ac, Integer title, Integer message, View layout,
+                             DialogInterface.OnClickListener onClick) {
+        AlertDialog.Builder builder = new AlertDialog.Builder(ac);
 
-        if( title != null )
-            builder.setTitle( title );
+        if (title != null) {
+            builder.setTitle(title);
+        }
 
-        if( message != null )
-            builder.setMessage( message );
+        if (message != null) {
+            builder.setMessage(message);
+        }
 
-        if( layout != null )
-            builder.setView( layout );
+        if (layout != null) {
+            builder.setView(layout);
+        }
 
-        builder.setCancelable( false );
-        builder.setPositiveButton( R.string.text_ok, onClick );
+        builder.setCancelable(false);
+        builder.setPositiveButton(R.string.text_ok, onClick);
 
-        if( onClick != null ) {
-            builder.setNegativeButton( R.string.text_cancel, null );
+        if (onClick != null) {
+            builder.setNegativeButton(R.string.text_cancel, null);
         }
 
         final AlertDialog dialog = builder.show();
 
         final Window window = dialog.getWindow();
-        if( window != null ) {
-            window.setSoftInputMode( WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE );
+        if (window != null) {
+            window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
         }
+
+        return dialog;
     }
 
     /**
@@ -83,7 +88,7 @@ public class AlertDialogHelper {
      * @param message A message to show
      * @param onClick Action for the ok click
      */
-    public static void show( Activity ac, Integer message, DialogInterface.OnClickListener onClick ) {
+    public static void show(Activity ac, Integer message, DialogInterface.OnClickListener onClick) {
         show( ac, null, message, null, onClick );
     }
 
@@ -93,8 +98,8 @@ public class AlertDialogHelper {
      * @param layout The layout to display
      * @param onClick Action for the ok click
      */
-    public static void show( Activity ac, View layout, DialogInterface.OnClickListener onClick ) {
-        show( ac, null, null, layout, onClick );
+    public static AlertDialog show(Activity ac, View layout, DialogInterface.OnClickListener onClick) {
+        return show( ac, null, null, layout, onClick );
     }
 
     /**

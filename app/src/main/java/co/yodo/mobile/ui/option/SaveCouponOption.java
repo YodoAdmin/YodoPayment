@@ -15,7 +15,7 @@ import javax.inject.Inject;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.YodoApplication;
-import co.yodo.mobile.helper.AppConfig;
+import co.yodo.mobile.utils.AppConfig;
 import co.yodo.mobile.model.db.Coupon;
 import co.yodo.mobile.ui.BaseActivity;
 import co.yodo.mobile.helper.ProgressDialogHelper;

@@ -19,8 +19,8 @@ import co.yodo.mobile.business.network.ApiClient;
 import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.business.network.request.QueryRequest;
 import co.yodo.mobile.business.network.request.ResetPIPRequest;
-import co.yodo.mobile.helper.AppConfig;
-import co.yodo.mobile.ui.fragments.InputPipFragment;
+import co.yodo.mobile.utils.AppConfig;
+import co.yodo.mobile.ui.registration.InputPipFragment;
 import co.yodo.mobile.helper.ProgressDialogHelper;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.option.ResetPipOption;
@@ -85,11 +85,11 @@ public class ResetPipActivity extends BaseActivity {
                 if( resultCode == RESULT_OK ) {
                     progressManager.create( ResetPipActivity.this );
                     requestManager.invoke(
-                            new ResetPIPRequest( hardwareToken, authNumber, newPip, ResetPIPRequest.ResetST.PIP_BIO ),
+                            new ResetPIPRequest(uuidToken, authNumber, newPip, ResetPIPRequest.ResetST.PIP_BIO ),
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse( ServerResponse response ) {
-                                    progressManager.destroy();
+                                    progressManager.dismiss();
                                     final String code = response.getCode();
 
                                     switch( code ) {
@@ -203,11 +203,11 @@ public class ResetPipActivity extends BaseActivity {
         // Request the biometric token
         progressManager.create( this );
         requestManager.invoke(
-                new QueryRequest( hardwareToken, QueryRequest.Record.BIOMETRIC ),
+                new QueryRequest(uuidToken, QueryRequest.Record.BIOMETRIC ),
                 new ApiClient.RequestCallback() {
                     @Override
                     public void onResponse( ServerResponse response ) {
-                        progressManager.destroy();
+                        progressManager.dismiss();
                         final String code = response.getCode();
 
                         switch( code ) {
@@ -253,7 +253,7 @@ public class ResetPipActivity extends BaseActivity {
      * @param message The message to display
      */
     private void handleApiError( String message ) {
-        progressManager.destroy();
+        progressManager.dismiss();
         ErrorUtils.handleError(
                 ResetPipActivity.this,
                 message,

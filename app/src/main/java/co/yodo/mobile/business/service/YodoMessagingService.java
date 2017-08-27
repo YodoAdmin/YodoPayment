@@ -17,7 +17,7 @@ import org.json.JSONObject;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.helper.FormatUtils;
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.model.db.Receipt;
 import co.yodo.mobile.model.dtos.Transfer;
 import co.yodo.mobile.ui.PaymentActivity;
@@ -170,7 +170,7 @@ public class YodoMessagingService extends FirebaseMessagingService {
 
     private void updateBalance(String balance, String currency) {
         // Trim the balance
-        PrefUtils.saveBalance( String.format( "%s %s",
+        PreferencesHelper.saveBalance( String.format( "%s %s",
                 FormatUtils.truncateDecimal( balance ), currency
         ) );
     }

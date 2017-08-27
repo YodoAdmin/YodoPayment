@@ -20,6 +20,6 @@ public class Config {
      *         L  - local
      */
     public static String getServerIdentifier() {
-        return ( IP.equals( DEMO_IP ) ) ? "E" : ( IP.equals( DEV_IP ) ) ? "D" : "L";
+        return (IP.equals(DEMO_IP)) ? "E" : (IP.equals(DEV_IP)) ? "D" : "L";
     }
 }

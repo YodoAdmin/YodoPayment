@@ -1,11 +1,7 @@
 <resources>
 
     <!-- Base application theme. -->
-    <style name="AppTheme" parent="AppTheme.Base">
-        <!-- Customize your theme here. -->
-    </style>
-
-    <style name="AppTheme.Base" parent="Theme.AppCompat.Light.DarkActionBar">
+    <style name="YodoUI" parent="Theme.AppCompat.Light.DarkActionBar">
         <item name="colorPrimary">@color/colorPrimaryRed</item>
         <item name="colorPrimaryDark">@color/colorPrimaryRedDark</item>
         <item name="colorAccent">@color/colorAccent</item>
@@ -17,7 +13,7 @@
         <item name="android:windowBackground">@drawable/bg_splash</item>
     </style>
 
-    <style name="AppTheme.Settings" parent="AppTheme.Base">
+    <style name="AppTheme.Settings" parent="YodoUI">
         <item name="android:alertDialogTheme">@style/AppTheme.SettingsAlertDialog</item>
     </style>
 

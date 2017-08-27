@@ -8,7 +8,6 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
-import android.text.Html;
 
 import com.google.android.gms.gcm.GcmListenerService;
 
@@ -17,13 +16,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.helper.AlertDialogHelper;
 import co.yodo.mobile.helper.FormatUtils;
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.model.db.Receipt;
 import co.yodo.mobile.model.dtos.Transfer;
 import co.yodo.mobile.ui.PaymentActivity;
-import co.yodo.mobile.utils.GuiUtils;
 import co.yodo.mobile.utils.JsonUtils;
 import timber.log.Timber;
 
@@ -162,7 +159,7 @@ public class YodoGCMListenerService extends GcmListenerService {
 
     private void updateBalance(String balance, String currency) {
         // Trim the balance
-        PrefUtils.saveBalance( String.format( "%s %s",
+        PreferencesHelper.saveBalance( String.format( "%s %s",
                 FormatUtils.truncateDecimal( balance ), currency
         ) );
     }

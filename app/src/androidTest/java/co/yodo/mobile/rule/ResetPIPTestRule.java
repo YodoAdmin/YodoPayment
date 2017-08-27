@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.ui.ResetPipActivity;
 
 /**
@@ -26,15 +26,15 @@ public class ResetPIPTestRule<A extends ResetPipActivity> extends ActivityTestRu
     protected void beforeActivityLaunched() {
         super.beforeActivityLaunched();
         mCtx = InstrumentationRegistry.getTargetContext();
-        PrefUtils.clearPrefConfig(mCtx);
+        PreferencesHelper.clearPrefConfig(mCtx);
 
         // Set preferences
-        PrefUtils.saveHardwareToken( fHardwareToken );
+        PreferencesHelper.saveHardwareToken( fHardwareToken );
     }
 
     @Override
     protected void afterActivityFinished() {
         super.afterActivityFinished();
-        PrefUtils.clearPrefConfig(mCtx);
+        PreferencesHelper.clearPrefConfig(mCtx);
     }
 }

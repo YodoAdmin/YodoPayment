@@ -1,4 +1,4 @@
-package co.yodo.mobile.ui.fragments;
+package co.yodo.mobile.ui.registration;
 
 import android.Manifest;
 import android.app.Activity;
@@ -31,7 +31,7 @@ import co.yodo.mobile.business.network.ApiClient;
 import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.business.network.request.RegisterRequest;
 import co.yodo.mobile.business.service.RegistrationIntentService;
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.ui.PaymentActivity;
 import co.yodo.mobile.utils.SystemUtils;
 import co.yodo.mobile.model.dtos.GCMResponse;
@@ -46,9 +46,9 @@ import static android.app.Activity.RESULT_OK;
  * Created by hei on 05/03/17.
  * Registration of the Biometric token
  */
-public class BiometricFragment extends Fragment {
+public class InputBiometricFragment extends Fragment {
     /** Bundle keys */
-    private static final String ARG_HARDWARE = "ARG_HARDWARE";
+    private static final String ARG_UUID = "ARG_UUID";
     private static final String ARG_PIP = "ARG_PIP";
 
     /** The application context */
@@ -86,19 +86,19 @@ public class BiometricFragment extends Fragment {
      * @param pip The pip as parameter
      * @return The fragment
      */
-    public static BiometricFragment newInstance( String hardwareToken, String pip ) {
-        BiometricFragment fragment = new BiometricFragment();
+    public static InputBiometricFragment newInstance(String hardwareToken, String pip ) {
+        InputBiometricFragment fragment = new InputBiometricFragment();
         Bundle args = new Bundle();
-        args.putString( ARG_HARDWARE, hardwareToken );
-        args.putString( ARG_PIP, pip );
-        fragment.setArguments( args );
+        args.putString(ARG_UUID, hardwareToken);
+        args.putString(ARG_PIP, pip);
+        fragment.setArguments(args);
         return fragment;
     }
 
     @Override
     public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate( R.layout.fragment_biometric, container, false );
+        View view = inflater.inflate( R.layout.fragment_input_biometric, container, false );
 
         // Injection
         ButterKnife.bind( this, view );
@@ -123,31 +123,31 @@ public class BiometricFragment extends Fragment {
     }
 
     @Override
-    public void onRequestPermissionsResult( int requestCode, @NonNull String permissions[], @NonNull int[] grantResults ) {
-        switch( requestCode ) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        switch (requestCode) {
             // Permission for the camera
             case PERMISSIONS_REQUEST_CAMERA:
                 // If request is cancelled, the result arrays are empty.
-                if( grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED ) {
+                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
                     // Permission Granted
                     showCamera();
                 }
                 break;
 
             default:
-                super.onRequestPermissionsResult( requestCode, permissions, grantResults );
+                super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
     }
 
     @Override
-    public void onActivityResult( int requestCode, int resultCode, Intent data ) {
+    public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult( requestCode, resultCode, data );
-        switch( requestCode ) {
-            case( RESULT_CAMERA_ACTIVITY ) :
+        switch (requestCode) {
+            case (RESULT_CAMERA_ACTIVITY ) :
                 // Just trained the biometric recognition, let's save the token
-                if( resultCode == RESULT_OK ) {
-                    biometricToken = data.getStringExtra( Intents.RESULT_FACE );
-                    ToastMaster.makeText( context, R.string.text_face_successful, Toast.LENGTH_LONG ).show();
+                if (resultCode == RESULT_OK) {
+                    biometricToken = data.getStringExtra(Intents.RESULT_FACE);
+                    ToastMaster.makeText(context, R.string.text_face_successful, Toast.LENGTH_LONG).show();
                 }
                 break;
         }
@@ -160,7 +160,7 @@ public class BiometricFragment extends Fragment {
     public void validateBioAndRegister() {
         if( biometricToken != null ) {
             // Register the user
-            progressManager.create( activity, R.string.text_register_pip );
+            progressManager.create(activity, R.string.text_register_pip);
             requestManager.invoke(
                     new RegisterRequest( hardwareToken, pip ),
                     new ApiClient.RequestCallback() {
@@ -171,7 +171,7 @@ public class BiometricFragment extends Fragment {
                             if( code.equals( ServerResponse.AUTHORIZED_REGISTRATION ) ) {
                                 // Time to update the biometric token
                                 final String authNumber = response.getAuthNumber();
-                                PrefUtils.saveAuthNumber( authNumber );
+                                PreferencesHelper.saveAuthNumber( authNumber );
                                 updateBiometricToken( authNumber );
                             }
                             else {
@@ -208,7 +208,7 @@ public class BiometricFragment extends Fragment {
                         if( code.equals( ServerResponse.AUTHORIZED ) ) {
                             // Successfully registered the biometric token
                             progressManager.create( activity, R.string.text_register_gcm );
-                            PrefUtils.saveAuthNumber( null );
+                            PreferencesHelper.saveAuthNumber( null );
                             RegistrationIntentService.newInstance( context, hardwareToken );
                         }
                         else {
@@ -237,7 +237,7 @@ public class BiometricFragment extends Fragment {
             @Override
             public void onClick( View v ) {
                 boolean cameraPermission = SystemUtils.requestPermission(
-                        BiometricFragment.this,
+                        InputBiometricFragment.this,
                         R.string.text_permission_camera,
                         Manifest.permission.CAMERA,
                         PERMISSIONS_REQUEST_CAMERA
@@ -254,7 +254,7 @@ public class BiometricFragment extends Fragment {
      */
     private void updateData() {
         if( getArguments() != null ) {
-            hardwareToken = getArguments().getString( ARG_HARDWARE );
+            hardwareToken = getArguments().getString(ARG_UUID);
             pip = getArguments().getString( ARG_PIP );
         } else {
             ToastMaster.makeText( context, R.string.error_hardware, Toast.LENGTH_LONG ).show();
@@ -275,7 +275,7 @@ public class BiometricFragment extends Fragment {
      * @param message, The message to show
      */
     private void handleError( String message ) {
-        progressManager.destroy();
+        progressManager.dismiss();
         ErrorUtils.handleError(
                 activity,
                 message,
@@ -291,10 +291,10 @@ public class BiometricFragment extends Fragment {
     @Subscribe( sticky = true, threadMode = ThreadMode.MAIN )
     public void onResponseEvent( GCMResponse response ) {
         EventBus.getDefault().removeStickyEvent( response );
-        progressManager.destroy();
+        progressManager.dismiss();
 
         // Verify the registration of the GCM token
-        boolean sentToken = PrefUtils.isGCMTokenSent();
+        boolean sentToken = PreferencesHelper.isGCMTokenSent();
         if( sentToken ) {
             // The gcm token has been sent
             Intent intent = new Intent( context, PaymentActivity.class );

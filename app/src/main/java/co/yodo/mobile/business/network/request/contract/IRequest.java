@@ -2,6 +2,7 @@ package co.yodo.mobile.business.network.request.contract;
 
 import co.yodo.mobile.business.component.cipher.RSACrypt;
 import co.yodo.mobile.business.network.ApiClient;
+import timber.log.Timber;
 
 /**
  * Created by hei on 10/06/16.
@@ -37,12 +38,14 @@ public abstract class IRequest {
      * @param pUserData Encrypted user's data
      * @return The request string that is send to the server
      */
-    protected static String buildRequest( String pRequestType, String pSubType, String pUserData ) {
-        return PROTOCOL_VERSION + REQ_SEP +
-               pRequestType     + REQ_SEP +
-               pSubType         + REQ_SEP +
-               pUserData;
+    protected static String buildRequest(String pRequestType, String pSubType, String pUserData) {
+        final String request = PROTOCOL_VERSION + REQ_SEP +
+                               pRequestType     + REQ_SEP +
+                               pSubType         + REQ_SEP +
+                               pUserData;
+        Timber.i(request);
+        return request;
     }
 
-    public abstract void execute( RSACrypt cipher, ApiClient manager, ApiClient.RequestCallback callback );
+    public abstract void execute(RSACrypt cipher, ApiClient manager, ApiClient.RequestCallback callback);
 }

@@ -4,8 +4,8 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 
-import co.yodo.mobile.helper.PrefUtils;
-import co.yodo.mobile.ui.RegistrationActivity;
+import co.yodo.mobile.helper.PreferencesHelper;
+import co.yodo.mobile.ui.registration.RegistrationActivity;
 
 /**
  * Created by hei on 13/06/16.
@@ -26,16 +26,16 @@ public class RegistrationTestRule<A extends RegistrationActivity> extends Activi
     protected void beforeActivityLaunched() {
         super.beforeActivityLaunched();
         mCtx = InstrumentationRegistry.getTargetContext();
-        PrefUtils.clearPrefConfig(mCtx);
+        PreferencesHelper.clearPrefConfig(mCtx);
 
         // Set preferences
-        PrefUtils.saveEulaAccepted( true );
-        PrefUtils.saveHardwareToken( fHardwareToken );
+        PreferencesHelper.saveEulaAccepted( true );
+        PreferencesHelper.saveHardwareToken( fHardwareToken );
     }
 
     @Override
     protected void afterActivityFinished() {
         super.afterActivityFinished();
-        PrefUtils.clearPrefConfig(mCtx);
+        PreferencesHelper.clearPrefConfig(mCtx);
     }
 }

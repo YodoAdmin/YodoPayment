@@ -7,12 +7,9 @@ import org.greenrobot.eventbus.EventBus;
 
 import javax.inject.Inject;
 
-import co.yodo.mobile.R;
 import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.business.network.ApiClient;
-import co.yodo.mobile.business.network.model.ServerResponse;
-import co.yodo.mobile.business.network.request.RegisterRequest;
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.model.dtos.GCMResponse;
 import timber.log.Timber;
 
@@ -58,7 +55,7 @@ public class YodoInstanceIDService extends FirebaseInstanceIdService {
     private void sendRegistrationToServer(String token) {
         // Send the GCM token to the server
         /*requestManager.invoke(
-                new RegisterRequest( hardwareToken, token, RegisterRequest.RegST.GCM ),
+                new RegisterRequest( uuidToken, token, RegisterRequest.RegST.GCM ),
                 new ApiClient.RequestCallback() {
                     @Override
                     public void onResponse( ServerResponse response ) {
@@ -89,7 +86,7 @@ public class YodoInstanceIDService extends FirebaseInstanceIdService {
      * @param message The error message to be displayed
      */
     private void handleApiError( String message ) {
-        PrefUtils.saveGCMTokenSent( false );
+        PreferencesHelper.saveGCMTokenSent( false );
 
         // Notify UI that registration has completed, so the progress indicator can be hidden.
         GCMResponse notify = new GCMResponse( message );

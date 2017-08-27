@@ -5,18 +5,133 @@ import android.content.SharedPreferences;
 
 import com.orhanobut.hawk.Hawk;
 
+import co.yodo.mobile.BuildConfig;
+import co.yodo.mobile.YodoApplication;
+import co.yodo.mobile.utils.AppConfig;
+
 /**
  * Created by luis on 15/12/14.
- * Utilities for the App, Mainly shared preferences
+ * Utilities for the App, Mainly shared userPreferences
  */
-public class PrefUtils {
+public class PreferencesHelper {
+    /** ID of the shared userPreferences file */
+    public static final String PREF_USER_FILE = "YodoPaymentSharedPref";
+    public static final String PREF_HAWK_FILE = "Hawk2";
+
+    /** Keys used with the Shared Preferences (SP) and default values */
+    private static final String SPREF_UUID_TOKEN     = "SPREF_UUID_TOKEN"; // UUID for auth
+    private static final String SPREF_PHONE_NUMBER   = "SPREF_PHONE_NUMBER"; // Phone number of the user
+    private static final String SPREF_HARDWARE_TOKEN = "SPREF_HARDWARE_TOKEN"; // Hardware token
+    private static final String SPREF_EULA           = "SPREF_EULA" + BuildConfig.VERSION_NAME; // Eula
+    private static final String SPREF_FIRST_LOGIN    = "SPREF_FIRST_LOGIN"; // First login
+    public static final String SPREF_BALANCE         = "SPREF_BALANCE"; // User balance
+    private static final String SPREF_AUTH_NUMBER    = "SPREF_AUTH_NUMBER"; // Auth registration number
+    private static final String SPREF_GCM_TOKEN      = "SPREF_GCM_TOKEN" + YodoApplication.getSwitch(); // GCM token
+    private static final String SPREF_NICKNAME       = "SPREF_NICKNAME"; // Nickname for the links
+    private static final String SPREF_TIPPING        = "SPREF_TIPPING"; // Tipping options
+    public static final String SPREF_LANGUAGE        = "SPREF_LANGUAGE"; // Language
+    public static final String SPREF_SUBSCRIPTION    = "SPREF_SUBSCRIPTION"; // Promotions
+
+    /** Helper instance */
+    private static PreferencesHelper instance;
+
+    /** Preferences instance */
+    private static SharedPreferences userPreferences;
+    private static SharedPreferences hawkPreferences;
+
+    /** Avoid instantiation */
+    private PreferencesHelper(Context context) {
+        Hawk.init(context).build();
+        userPreferences = context.getSharedPreferences(PREF_USER_FILE, Context.MODE_PRIVATE);
+        hawkPreferences = context.getSharedPreferences(PREF_HAWK_FILE, Context.MODE_PRIVATE);
+    }
+
     /**
-     * Saves the hardware token in the preferences
+     * Initialize the preference helper
+     * @param context The application context
+     * @return The Preferences helper
+     */
+    public static PreferencesHelper init(Context context) {
+        if (instance == null) {
+            instance = new PreferencesHelper(context.getApplicationContext());
+        }
+        return instance;
+    }
+
+    /**
+     * Register a listener for the userPreferences
+     * @param listener The listener that will be registered to the userPreferences
+     */
+    public static void registerListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
+        userPreferences.registerOnSharedPreferenceChangeListener(listener);
+        hawkPreferences.registerOnSharedPreferenceChangeListener(listener);
+    }
+
+    /**
+     * Unregisters a listener to the userPreferences
+     * @param listener The listener that will be unregistered to the userPreferences
+     */
+    public static void unregisterListener(SharedPreferences.OnSharedPreferenceChangeListener listener) {
+        userPreferences.unregisterOnSharedPreferenceChangeListener(listener);
+        hawkPreferences.unregisterOnSharedPreferenceChangeListener(listener);
+    }
+
+    /**
+     * Sets the uuid token for the account
+     * @param uuidToken The uuid received from the server
+     */
+    public static void setUuidToken(String uuidToken) {
+        Hawk.put(SPREF_UUID_TOKEN, uuidToken);
+    }
+
+    /**
+     * Gets the uuid token for the server authentication
+     * @return A String as the token
+     */
+    public static String getUuidToken() {
+        // Hardware token is for legacy authentication
+        String uuid = Hawk.get(SPREF_UUID_TOKEN);
+        return (uuid == null) ? (String) Hawk.get(SPREF_HARDWARE_TOKEN) : uuid;
+    }
+
+    /**
+     * Sets the phone number for the account
+     * @param phoneNumber The phone number validated from firebase
+     */
+    public static void setPhoneNumber(String phoneNumber) {
+        Hawk.put(SPREF_PHONE_NUMBER, phoneNumber);
+    }
+
+    /**
+     * Gets the user's phone number
+     * @return A String as the phone number
+     */
+    public static String getPhoneNumber() {
+        return Hawk.get(SPREF_PHONE_NUMBER);
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    /**
+     * Saves the hardware token in the userPreferences
      * @param hardwareToken The hardware token
      * @return If it was a success true otherwise false
      */
-    public static Boolean saveHardwareToken( String hardwareToken ) {
-        return Hawk.put( AppConfig.SPREF_HARDWARE_TOKEN, hardwareToken );
+    public static Boolean saveHardwareToken(String hardwareToken) {
+        return Hawk.put(SPREF_HARDWARE_TOKEN, hardwareToken);
     }
 
     /**
@@ -24,7 +139,7 @@ public class PrefUtils {
      * @return The stored token if exists
      */
     public static String getHardwareToken() {
-        return Hawk.get( AppConfig.SPREF_HARDWARE_TOKEN );
+        return Hawk.get(SPREF_HARDWARE_TOKEN);
     }
 
     /**
@@ -34,7 +149,7 @@ public class PrefUtils {
      *         false The flag was not saved successfully.
      */
     public static Boolean saveEulaAccepted( Boolean flag ) {
-        return Hawk.put( AppConfig.SPREF_EULA, flag );
+        return Hawk.put(SPREF_EULA, flag);
     }
 
     /**
@@ -43,7 +158,7 @@ public class PrefUtils {
      *         false The user didn't accept the EULA.
      */
     static Boolean isEulaAccepted() {
-        return Hawk.get( AppConfig.SPREF_EULA, false );
+        return Hawk.get(SPREF_EULA, false);
     }
 
     /**
@@ -54,9 +169,9 @@ public class PrefUtils {
      */
     public static Boolean saveAuthNumber( String authNumber ) {
         if( authNumber == null ) {
-            return Hawk.delete( AppConfig.SPREF_AUTH_NUMBER );
+            return Hawk.delete(SPREF_AUTH_NUMBER);
         }
-        return Hawk.put( AppConfig.SPREF_AUTH_NUMBER, authNumber );
+        return Hawk.put(SPREF_AUTH_NUMBER, authNumber);
     }
 
     /**
@@ -65,7 +180,7 @@ public class PrefUtils {
      *         null    If there is no value set;
      */
     public static String getAuthNumber() {
-        return Hawk.get( AppConfig.SPREF_AUTH_NUMBER );
+        return Hawk.get(SPREF_AUTH_NUMBER);
     }
 
     /**
@@ -75,7 +190,7 @@ public class PrefUtils {
      *         false The boolean was not saved successfully.
      */
     public static Boolean saveGCMTokenSent( boolean sent ) {
-        return Hawk.put( AppConfig.SPREF_TOKEN_TO_SERVER, sent );
+        return Hawk.put(SPREF_GCM_TOKEN, sent );
     }
 
     /**
@@ -84,7 +199,7 @@ public class PrefUtils {
      *         null    If there is no value set;
      */
     public static boolean isGCMTokenSent() {
-        return Hawk.get( AppConfig.SPREF_TOKEN_TO_SERVER, false );
+        return Hawk.get(SPREF_GCM_TOKEN, false );
     }
 
     /**
@@ -94,7 +209,7 @@ public class PrefUtils {
      *         false The flag was not saved successfully.
      */
     public static boolean saveBalance( String balance ) {
-        return Hawk.put( AppConfig.SPREF_BALANCE, balance );
+        return Hawk.put(SPREF_BALANCE, balance);
     }
 
     /**
@@ -102,7 +217,7 @@ public class PrefUtils {
      * @return String It returns the balance
      */
     public static String getCurrentBalance() {
-        return Hawk.get( AppConfig.SPREF_BALANCE, "*.**" );
+        return Hawk.get(SPREF_BALANCE, "*.**");
     }
 
     /**
@@ -113,9 +228,9 @@ public class PrefUtils {
      */
     public static boolean saveNickname( String hardware, String nickname ) {
         if( nickname == null ) {
-            return Hawk.delete( AppConfig.SPREF_NICKNAME + hardware );
+            return Hawk.delete(SPREF_NICKNAME + hardware);
         }
-        return Hawk.put( AppConfig.SPREF_NICKNAME + hardware, nickname );
+        return Hawk.put(SPREF_NICKNAME + hardware, nickname );
     }
 
     /**
@@ -125,8 +240,7 @@ public class PrefUtils {
      * the last 5 digits of the hardware token
      */
     public static String getNickname( String hardware ) {
-        return Hawk.get(
-                AppConfig.SPREF_NICKNAME + hardware,
+        return Hawk.get(SPREF_NICKNAME + hardware,
                 "...." + hardware.substring( hardware.length() - 6 )
         );
     }
@@ -135,35 +249,17 @@ public class PrefUtils {
      * A helper class just o obtain the config file for the Shared Preferences
      * using the default values for this Shared Preferences app.
      * @param c The Context of the Android system.
-     * @return Returns the shared preferences with the default values.
+     * @return Returns the shared userPreferences with the default values.
      */
     private static SharedPreferences getSPrefConfig( Context c ) {
-        return c.getSharedPreferences( AppConfig.SHARED_PREF_FILE, Context.MODE_PRIVATE );
+        return c.getSharedPreferences(PREF_USER_FILE, Context.MODE_PRIVATE);
     }
 
     private static SharedPreferences getHawkSPrefConfig( Context c ) {
         return c.getSharedPreferences( "Hawk2", Context.MODE_PRIVATE );
     }
 
-    /**
-     * Register a listener for the preferences
-     * @param c The Context of the Android system
-     * @param listener The listener that will be registered to the preferences
-     */
-    public static void registerSPListener( Context c, SharedPreferences.OnSharedPreferenceChangeListener listener ) {
-        getSPrefConfig( c ).registerOnSharedPreferenceChangeListener( listener );
-        getHawkSPrefConfig( c ).registerOnSharedPreferenceChangeListener( listener );
-    }
 
-    /**
-     * Unregisters a listener to the preferences
-     * @param c The Context of the Android system
-     * @param listener The listener that will be unregistered to the preferences
-     */
-    public static void unregisterSPListener( Context c, SharedPreferences.OnSharedPreferenceChangeListener listener ) {
-        getSPrefConfig( c ).unregisterOnSharedPreferenceChangeListener( listener );
-        getHawkSPrefConfig( c ).unregisterOnSharedPreferenceChangeListener( listener );
-    }
 
     /**
      * It saves if it is the first login.
@@ -175,7 +271,7 @@ public class PrefUtils {
     public static Boolean saveFirstLogin( Context c, Boolean flag ) {
         SharedPreferences config = getSPrefConfig( c );
         SharedPreferences.Editor writer = config.edit();
-        writer.putBoolean( AppConfig.SPREF_FIRST_LOGIN, flag );
+        writer.putBoolean( SPREF_FIRST_LOGIN, flag );
         return writer.commit();
     }
 
@@ -187,7 +283,7 @@ public class PrefUtils {
      */
     public static Boolean isFirstLogin( Context c ) {
         SharedPreferences config = getSPrefConfig( c );
-        return config.getBoolean( AppConfig.SPREF_FIRST_LOGIN, true );
+        return config.getBoolean( SPREF_FIRST_LOGIN, true );
     }
 
     /**
@@ -200,7 +296,7 @@ public class PrefUtils {
     public static boolean saveLanguage( Context c, String language ) {
         SharedPreferences config = getSPrefConfig( c );
         SharedPreferences.Editor writer = config.edit();
-        writer.putString( AppConfig.SPREF_LANGUAGE, language );
+        writer.putString( SPREF_LANGUAGE, language );
         return writer.commit();
     }
 
@@ -221,7 +317,7 @@ public class PrefUtils {
      */
     public static Boolean isSubscribing( Context c ) {
         SharedPreferences config = getSPrefConfig( c );
-        return config.getBoolean( AppConfig.SPREF_SUBSCRIPTION, false );
+        return config.getBoolean( SPREF_SUBSCRIPTION, false );
     }
 
     /**
@@ -234,7 +330,7 @@ public class PrefUtils {
     public static boolean setSubscribing( Context c, Boolean value ) {
         SharedPreferences config = getSPrefConfig( c );
         SharedPreferences.Editor writer = config.edit();
-        writer.putBoolean( AppConfig.SPREF_SUBSCRIPTION, value );
+        writer.putBoolean( SPREF_SUBSCRIPTION, value );
         return writer.commit();
     }
 
@@ -245,11 +341,11 @@ public class PrefUtils {
      */
     public static Boolean isTipping( Context c ) {
         SharedPreferences config = getSPrefConfig( c );
-        return config.getBoolean( AppConfig.SPREF_TIPPING, true );
+        return config.getBoolean( SPREF_TIPPING, true );
     }
 
     /**
-     * Clear all the preferences
+     * Clear all the userPreferences
      * @param context The application context
      * @return True if it was a success otherwise false
      */

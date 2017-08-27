@@ -1,4 +1,4 @@
-package co.yodo.mobile.ui.fragments;
+package co.yodo.mobile.ui.registration;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -26,20 +26,20 @@ public class InputPipFragment extends Fragment {
     Context context;
 
     /** GUI Controllers */
-    @BindView( R.id.tietPip )
+    @BindView(R.id.tietPip)
     TextInputEditText etPip;
 
-    @BindView( R.id.tietConfirmPip )
+    @BindView(R.id.tietConfirmPip)
     TextInputEditText etPipConfirm;
 
     @Override
-    public View onCreateView( LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate( R.layout.fragment_input_pip, container, false );
+        View view = inflater.inflate(R.layout.fragment_input_pip, container, false);
 
         // Injection
-        ButterKnife.bind( this, view );
-        YodoApplication.getComponent().inject( this );
+        ButterKnife.bind(this, view);
+        YodoApplication.getComponent().inject(this);
 
         return view;
     }

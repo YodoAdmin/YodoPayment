@@ -9,7 +9,8 @@ import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.business.network.request.QueryRequest;
 import co.yodo.mobile.helper.AlertDialogHelper;
 import co.yodo.mobile.helper.FormatUtils;
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
+import co.yodo.mobile.helper.ProgressDialogHelper;
 import co.yodo.mobile.ui.BaseActivity;
 import co.yodo.mobile.ui.option.contract.IRequestOption;
 import co.yodo.mobile.utils.ErrorUtils;
@@ -38,13 +39,13 @@ public class BalanceOption extends IRequestOption {
 
                     Timber.i("OTP: " + otp);
 
-                    progressManager.create( activity );
+                    ProgressDialogHelper.create( activity );
                     requestManager.invoke(
                             new QueryRequest( hardwareToken, otp ),
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse( ServerResponse response ) {
-                                    progressManager.destroy();
+                                    ProgressDialogHelper.dismiss();
                                     final String code = response.getCode();
 
                                     switch( code ) {
@@ -52,7 +53,7 @@ public class BalanceOption extends IRequestOption {
                                             alertDialog.dismiss();
 
                                             // Trim the balance
-                                            PrefUtils.saveBalance( String.format( "%s %s",
+                                            PreferencesHelper.saveBalance( String.format( "%s %s",
                                                     FormatUtils.truncateDecimal( response.getParams().getBalance() ),
                                                     response.getParams().getCurrency()
                                             ) );
@@ -83,7 +84,7 @@ public class BalanceOption extends IRequestOption {
 
                                 @Override
                                 public void onError( String message ) {
-                                    progressManager.destroy();
+                                    ProgressDialogHelper.dismiss();
                                     ErrorUtils.handleError(
                                             activity,
                                             message,

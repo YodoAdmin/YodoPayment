@@ -5,11 +5,10 @@ import java.util.Map;
 
 import javax.crypto.spec.SecretKeySpec;
 
-import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.business.component.cipher.AESCrypt;
 import co.yodo.mobile.business.component.cipher.RSACrypt;
 import co.yodo.mobile.business.network.Config;
-import co.yodo.mobile.helper.AppConfig;
+import co.yodo.mobile.utils.AppConfig;
 import co.yodo.mobile.business.network.ApiClient;
 import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.business.network.request.contract.IRequest;

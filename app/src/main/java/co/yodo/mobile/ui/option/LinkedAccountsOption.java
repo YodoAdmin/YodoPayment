@@ -41,7 +41,7 @@ public class LinkedAccountsOption extends IRequestOption {
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse( ServerResponse response ) {
-                                    progressManager.destroy();
+                                    progressManager.dismiss();
                                     final String code = response.getCode();
 
                                     switch( code ) {
@@ -84,7 +84,7 @@ public class LinkedAccountsOption extends IRequestOption {
 
                                 @Override
                                 public void onError( String message ) {
-                                    progressManager.destroy();
+                                    progressManager.dismiss();
                                     ErrorUtils.handleError(
                                             activity,
                                             message,

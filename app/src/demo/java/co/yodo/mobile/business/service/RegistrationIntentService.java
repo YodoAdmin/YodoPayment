@@ -6,7 +6,6 @@ import android.content.Intent;
 
 import com.google.android.gms.gcm.GoogleCloudMessaging;
 import com.google.android.gms.iid.InstanceID;
-import com.google.firebase.iid.FirebaseInstanceId;
 
 import org.greenrobot.eventbus.EventBus;
 
@@ -16,7 +15,7 @@ import co.yodo.mobile.R;
 import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.business.network.request.RegisterRequest;
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.business.network.ApiClient;
 import co.yodo.mobile.model.dtos.GCMResponse;
 import timber.log.Timber;
@@ -39,10 +38,10 @@ public class RegistrationIntentService extends IntentService {
     @Inject
     ApiClient requestManager;
 
-    public static void newInstance( Context context, String hardwareToken ) {
-        Intent intent = new Intent( context, RegistrationIntentService.class );
-        intent.putExtra( BUNDLE_HARDWARE_TOKEN, hardwareToken );
-        context.startService( intent );
+    public static void newInstance(Context context, String hardwareToken) {
+        Intent intent = new Intent(context, RegistrationIntentService.class);
+        intent.putExtra(BUNDLE_HARDWARE_TOKEN, hardwareToken);
+        context.startService(intent);
     }
 
     public RegistrationIntentService() {
@@ -69,7 +68,7 @@ public class RegistrationIntentService extends IntentService {
                             final String code = response.getCode();
                             if( code.equals( ServerResponse.AUTHORIZED ) ) {
                                 // If the token was successfully sent to the server
-                                PrefUtils.saveGCMTokenSent( true );
+                                PreferencesHelper.saveGCMTokenSent( true );
 
                                 // Notify UI that registration has completed, so the progress indicator can be hidden.
                                 GCMResponse notify = new GCMResponse( response.getMessage() );
@@ -99,7 +98,7 @@ public class RegistrationIntentService extends IntentService {
      * @param message The error message to be displayed
      */
     private void handleApiError( String message ) {
-        PrefUtils.saveGCMTokenSent( false );
+        PreferencesHelper.saveGCMTokenSent( false );
 
         // Notify UI that registration has completed, so the progress indicator can be hidden.
         GCMResponse notify = new GCMResponse( message );

@@ -31,14 +31,14 @@ public class EulaHelper {
     }
 
     public static void show( final Activity activity, final EulaCallback callback ) {
-        if( !PrefUtils.isEulaAccepted() ) {
+        if( !PreferencesHelper.isEulaAccepted() ) {
             final AlertDialog.Builder builder = new AlertDialog.Builder( activity );
             builder.setTitle( R.string.text_eula_title );
             builder.setCancelable( false );
 
             builder.setPositiveButton( R.string.text_eula_accept, new DialogInterface.OnClickListener() {
                 public void onClick( DialogInterface dialog, int which ) {
-                    PrefUtils.saveEulaAccepted( true );
+                    PreferencesHelper.saveEulaAccepted( true );
                     if( callback != null ) {
                         callback.onEulaAgreedTo();
                     }

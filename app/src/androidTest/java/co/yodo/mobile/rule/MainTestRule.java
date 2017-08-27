@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.test.InstrumentationRegistry;
 import android.support.test.rule.ActivityTestRule;
 
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.ui.PaymentActivity;
 
 /**
@@ -26,17 +26,17 @@ public class MainTestRule<A extends PaymentActivity> extends ActivityTestRule<A>
     protected void beforeActivityLaunched() {
         super.beforeActivityLaunched();
         mCtx = InstrumentationRegistry.getTargetContext();
-        PrefUtils.clearPrefConfig(mCtx);
+        PreferencesHelper.clearPrefConfig(mCtx);
 
         // Set preferences
-        PrefUtils.saveEulaAccepted( true );
-        PrefUtils.saveFirstLogin( mCtx, false );
-        PrefUtils.saveHardwareToken( fHardwareToken );
+        PreferencesHelper.saveEulaAccepted( true );
+        PreferencesHelper.saveFirstLogin( mCtx, false );
+        PreferencesHelper.saveHardwareToken( fHardwareToken );
     }
 
     @Override
     protected void afterActivityFinished() {
         super.afterActivityFinished();
-        PrefUtils.clearPrefConfig(mCtx);
+        PreferencesHelper.clearPrefConfig(mCtx);
     }
 }

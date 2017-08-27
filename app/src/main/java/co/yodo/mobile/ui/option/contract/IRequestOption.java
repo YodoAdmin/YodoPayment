@@ -15,7 +15,7 @@ import javax.inject.Inject;
 import co.yodo.mobile.R;
 import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.business.network.ApiClient;
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.ui.BaseActivity;
 import co.yodo.mobile.helper.ProgressDialogHelper;
 
@@ -48,7 +48,7 @@ public abstract class IRequestOption extends IOption {
         super( activity );
 
         // Gets request's data
-        this.hardwareToken = PrefUtils.getHardwareToken();
+        this.hardwareToken = PreferencesHelper.getHardwareToken();
 
         // Injection
         YodoApplication.getComponent().inject( this );

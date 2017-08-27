@@ -1,4 +1,4 @@
-package co.yodo.mobile.helper;
+package co.yodo.mobile.utils;
 
 import co.yodo.mobile.BuildConfig;
 import co.yodo.mobile.YodoApplication;
@@ -11,13 +11,14 @@ public class AppConfig {
     /** DEBUG flag */
     public static final boolean DEBUG = true;
 
-    /** ID of the shared preferences file */
-    public static final String SHARED_PREF_FILE = "YodoPaymentSharedPref";
+
 
     /**
      * Keys used with the Shared Preferences (SP) and default values.
      * {{ ======================================================================
      */
+
+
 
     /* Hardware token for the account
      * type -- String

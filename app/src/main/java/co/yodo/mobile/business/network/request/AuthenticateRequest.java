@@ -67,21 +67,21 @@ public class AuthenticateRequest extends IRequest {
     }
 
     @Override
-    public void execute( RSACrypt cipher, ApiClient manager, ApiClient.RequestCallback callback ) {
+    public void execute(RSACrypt cipher, ApiClient manager, ApiClient.RequestCallback callback) {
         // Generate the AES key
         SecretKeySpec key = AESCrypt.generateKey();
-        encyptedKey = cipher.encrypt( AESCrypt.encodeKey( key ) );
-        encyptedData = AESCrypt.encrypt( formattedUsrData, key );
+        encyptedKey = cipher.encrypt(AESCrypt.encodeKey(key));
+        encyptedData = AESCrypt.encrypt(formattedUsrData, key);
 
         // Encrypting to newInstance request
         final String encryptedClientData = encyptedKey + REQ_SEP + encyptedData;
-        final String requestData = buildRequest( AUTH_RT,
+        final String requestData = buildRequest(AUTH_RT,
                 requestST.getValue(),
                 encryptedClientData
         );
 
-        IApiEndpoint iCaller = manager.create( IApiEndpoint.class );
-        Call<ServerResponse> request = iCaller.authUser( requestData );
-        manager.sendXMLRequest( request, callback );
+        IApiEndpoint iCaller = manager.create(IApiEndpoint.class);
+        Call<ServerResponse> request = iCaller.authUser(requestData);
+        manager.sendXMLRequest(request, callback);
     }
 }

@@ -35,10 +35,10 @@ import co.yodo.mobile.business.network.ApiClient;
 import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.business.network.request.QueryRequest;
 import co.yodo.mobile.helper.AlertDialogHelper;
-import co.yodo.mobile.helper.AppConfig;
+import co.yodo.mobile.helper.PreferencesHelper;
+import co.yodo.mobile.utils.AppConfig;
 import co.yodo.mobile.helper.EulaHelper;
 import co.yodo.mobile.helper.FormatUtils;
-import co.yodo.mobile.helper.PrefUtils;
 import co.yodo.mobile.helper.ProgressDialogHelper;
 import co.yodo.mobile.ui.option.SaveCouponOption;
 import co.yodo.mobile.ui.option.factory.OptionsFactory;
@@ -117,7 +117,7 @@ public class PaymentActivity extends BaseActivity implements
         public void run() {
             if( currentMerchant != null ) {
                 requestManager.invoke(
-                        new QueryRequest( hardwareToken, currentMerchant, QueryRequest.Record.ADVERTISING ),
+                        new QueryRequest(uuidToken, currentMerchant, QueryRequest.Record.ADVERTISING ),
                         new ApiClient.RequestCallback() {
                             @Override
                             public void onResponse( ServerResponse response ) {
@@ -164,16 +164,16 @@ public class PaymentActivity extends BaseActivity implements
         super.onStart();
 
         // Set listener for preferences
-        PrefUtils.registerSPListener( context, this );
+        PreferencesHelper.registerListener(this );
     }
 
     @Override
     public void onStop() {
         // unsubscribe to the promotions
-        PrefUtils.setSubscribing( context, false );
+        PreferencesHelper.setSubscribing( context, false );
 
         // Unregister listener for preferences
-        PrefUtils.unregisterSPListener( context, this );
+        PreferencesHelper.unregisterListener(this );
         super.onStop();
     }
 
@@ -252,9 +252,18 @@ public class PaymentActivity extends BaseActivity implements
         super.updateData();
 
         // Set the account number and current date
-        tvAccountNumber.setText( hardwareToken );
+        tvAccountNumber.setText(uuidToken);
         tvAccountDate.setText( FormatUtils.getCurrentDate() );
-        tvAccountBalance.setText( PrefUtils.getCurrentBalance() );
+        tvAccountBalance.setText( PreferencesHelper.getCurrentBalance() );
+    }
+
+    /**
+     * Starts a new payment activity instance
+     * @param context The application context
+     */
+    public static void newInstance(Context context) {
+        Intent intent = new Intent(context, PaymentActivity.class);
+        context.startActivity(intent);
     }
 
     /**
@@ -276,10 +285,10 @@ public class PaymentActivity extends BaseActivity implements
      * @param v The view, used to change the icon
      */
     public void startPromotions( View v ) {
-        if( !PrefUtils.isSubscribing( context ) ) {
-            PrefUtils.setSubscribing( context, true );
+        if( !PreferencesHelper.isSubscribing( context ) ) {
+            PreferencesHelper.setSubscribing( context, true );
         } else {
-            PrefUtils.setSubscribing( context, false );
+            PreferencesHelper.setSubscribing( context, false );
         }
     }
 
@@ -394,11 +403,11 @@ public class PaymentActivity extends BaseActivity implements
         EulaHelper.show( this, null );
 
         // If it is the first login show the drawer open
-        if( PrefUtils.isFirstLogin( context ) ) {
+        if( PreferencesHelper.isFirstLogin( context ) ) {
             Intent intent = new Intent( context, IntroActivity.class );
             startActivity( intent );
 
-            PrefUtils.saveFirstLogin( context, false );
+            PreferencesHelper.saveFirstLogin( context, false );
         }
 
         // Set up the listeners for the drawable
@@ -443,7 +452,7 @@ public class PaymentActivity extends BaseActivity implements
      * publication action changes.
      */
     private void updateUI() {
-        Boolean subscriptionTask = PrefUtils.isSubscribing( context );
+        Boolean subscriptionTask = PreferencesHelper.isSubscribing( context );
         ibSubscription.setImageResource(
                 subscriptionTask ? R.mipmap.ic_cancel : R.mipmap.ic_nearby
         );
@@ -510,7 +519,7 @@ public class PaymentActivity extends BaseActivity implements
      * Invokes a pending task based on the subscription state.
      */
     private void executePendingSubscriptionTask() {
-        if( PrefUtils.isSubscribing( context ) ) {
+        if( PreferencesHelper.isSubscribing( context ) ) {
             promotionManager.subscribe();
         } else {
             promotionManager.unsubscribe();
