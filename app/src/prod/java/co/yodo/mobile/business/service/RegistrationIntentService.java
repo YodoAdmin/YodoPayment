@@ -32,7 +32,7 @@ public class RegistrationIntentService extends IntentService {
      * It is used to send the hardware token, to register the gcm_id
      * EXTRA - The name - String object.
      */
-    public static final String BUNDLE_HARDWARE_TOKEN = "BUNDLE_HARDWARE_TOKEN";
+    public static final String BUNDLE_HARDWARE_TOKEN = "BUNDLE_UUID";
 
     /** Manager for the server requests */
     @Inject

@@ -160,7 +160,6 @@
     <string name="error.required.field">Campo requerido</string>
     <string name="error.required.field.face">El token biométrico es un campo requerido</string>
     <string name="error.balance">Lo sentimos, parece que aún no dispone de un balance</string>
-    <string name="error.hardware">Debe encender su bluetooth primero</string>
     <string name="error.supported">Este dispositivo no es soportado</string>
     <string name="error.pip.match">Los PIP no son iguales</string>
     <string name="error.pip.length">El PIP debe contener al menos 4 dígitos</string>

@@ -49,7 +49,7 @@ public class YodoApplication extends SugarApp {
 
         component = DaggerGraphComponent.builder()
                 .applicationComponent(appComponent)
-                .apiClientModule(new ApiClientModule(Config.IP))
+                .apiClientModule(new ApiClientModule(Config.IP, true))
                 .build();
 
         // Init preferences
@@ -74,6 +74,21 @@ public class YodoApplication extends SugarApp {
         JobManager.create(this).addJobCreator(
                 new JobHandler(component.provideJobs())
         );
+    }
+
+    /**
+     * Returns an string that represents the server of the IP
+     * @return P  - production
+     *         De - demo
+     *         D  - development
+     *         L  - local
+     */
+    public static String getSwitch() {
+        return Config.getServerIdentifier();
+    }
+
+    public static GraphComponent getComponent() {
+        return component;
     }
 
     /** A tree which logs important information for crash reporting. */
@@ -111,20 +126,5 @@ public class YodoApplication extends SugarApp {
             }
 
         }
-    }
-
-    /**
-     * Returns an string that represents the server of the IP
-     * @return P  - production
-     *         De - demo
-     *         D  - development
-     *         L  - local
-     */
-    public static String getSwitch() {
-        return Config.getServerIdentifier();
-    }
-
-    public static GraphComponent getComponent() {
-        return component;
     }
 }

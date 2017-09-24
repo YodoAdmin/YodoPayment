@@ -22,6 +22,7 @@ import co.yodo.mobile.business.network.request.AuthenticateRequest;
 import co.yodo.mobile.business.network.request.QueryRequest;
 import co.yodo.mobile.helper.AlertDialogHelper;
 import co.yodo.mobile.helper.PreferencesHelper;
+import co.yodo.mobile.helper.ProgressDialogHelper;
 import co.yodo.mobile.ui.BaseActivity;
 import co.yodo.mobile.ui.dialog.PaymentDialog;
 import co.yodo.mobile.ui.dialog.PaymentDialog.Payment;
@@ -65,13 +66,13 @@ public class PaymentOption extends IRequestOption {
                     final String otp = TOTPUtils.defaultOTP( etInput.getText().toString() );
 
                     // Start the request
-                    progressManager.create( activity );
+                    ProgressDialogHelper.create( activity );
                     requestManager.invoke(
-                            new AuthenticateRequest( hardwareToken, otp ),
+                            new AuthenticateRequest(uuidToken, otp ),
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse( ServerResponse response ) {
-                                    progressManager.dismiss();
+                                    ProgressDialogHelper.dismiss();
                                     final String code = response.getCode();
 
                                     switch( code ) {
@@ -156,15 +157,15 @@ public class PaymentOption extends IRequestOption {
      * @param otp The user one time password, required for the request
      */
     private void requestLinkedAccounts( final String otp ) {
-        progressManager.create( activity );
+        ProgressDialogHelper.create( activity );
         requestManager.invoke(
-                new QueryRequest( hardwareToken, otp, QueryRequest.Record.LINKED_ACCOUNTS ),
+                new QueryRequest(uuidToken, otp, QueryRequest.Record.LINKED_ACCOUNTS ),
                 new ApiClient.RequestCallback() {
                     @Override
                     public void onResponse( ServerResponse response ) {
-                        progressManager.dismiss();
+                        ProgressDialogHelper.dismiss();
                         final String code = response.getCode();
-                        final String userCode = otp + SKS_SEP + hardwareToken;
+                        final String userCode = otp + SKS_SEP + uuidToken;
                         final String tip = String.valueOf(sbTips.getProgress());
 
                         switch( code ) {
@@ -242,21 +243,21 @@ public class PaymentOption extends IRequestOption {
      * @param code The code that contains the user data
      * @param paymentType The type of payment (e.g. yodo, heart)
      */
-    private void showSKS( String tip, String code, String paymentType ) {
+    private void showSKS(String tip, String code, String paymentType) {
         final String header = paymentType + HDR_SEP + tip;
-        final Bitmap sksCode = SKSCreater.createSKS( activity, header, code );
-        final IDialog dialog = new SKSDialog.Builder( activity )
-                .code( sksCode )
-                .brightness( 1.0f )
-                .dismiss( TIME_TO_DISMISS_SKS )
-                .dismissKey( KeyEvent.KEYCODE_BACK )
+        final Bitmap sksCode = SKSCreater.createSKS(activity, header, code);
+        final IDialog dialog = new SKSDialog.Builder(activity)
+                .code(sksCode)
+                .brightness(1.0f)
+                .dismiss(TIME_TO_DISMISS_SKS)
+                .dismissKey(KeyEvent.KEYCODE_BACK)
                 .build();
 
         // Sets the dialog to the activity for a future dismiss
-        activity.setDialog( dialog );
+        activity.setDialog(dialog);
 
         // It should fix the problem with the delay in the receipts
-        activity.sendBroadcast( new Intent( activity, HeartbeatReceiver.class ) );
+        activity.sendBroadcast(new Intent(activity, HeartbeatReceiver.class));
     }
 
     /**
@@ -276,7 +277,7 @@ public class PaymentOption extends IRequestOption {
      * let's show the correct message
      */
     private void handleApiError( String message ) {
-        progressManager.dismiss();
+        ProgressDialogHelper.dismiss();
         ErrorUtils.handleError(
                 activity,
                 message,

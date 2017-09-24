@@ -30,48 +30,48 @@ public class EulaHelper {
         void onEulaAgreedTo();
     }
 
-    public static void show( final Activity activity, final EulaCallback callback ) {
-        if( !PreferencesHelper.isEulaAccepted() ) {
-            final AlertDialog.Builder builder = new AlertDialog.Builder( activity );
-            builder.setTitle( R.string.text_eula_title );
-            builder.setCancelable( false );
+    public static void show(final Activity activity, final EulaCallback callback) {
+        if (!PreferencesHelper.isEulaAccepted()) {
+            final AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+            builder.setTitle(R.string.text_eula_title);
+            builder.setCancelable(false);
 
-            builder.setPositiveButton( R.string.text_eula_accept, new DialogInterface.OnClickListener() {
+            builder.setPositiveButton(R.string.text_eula_accept, new DialogInterface.OnClickListener() {
                 public void onClick( DialogInterface dialog, int which ) {
-                    PreferencesHelper.saveEulaAccepted( true );
-                    if( callback != null ) {
+                    PreferencesHelper.saveEulaAccepted(true);
+                    if (callback != null) {
                         callback.onEulaAgreedTo();
                     }
                 }
             } );
 
-            builder.setNegativeButton( R.string.text_eula_refuse, new DialogInterface.OnClickListener() {
+            builder.setNegativeButton(R.string.text_eula_refuse, new DialogInterface.OnClickListener() {
                 public void onClick( DialogInterface dialog, int which ) {
                     activity.finish();
                 }
             } );
 
             // Setup GUI
-            WebView eulaText = new WebView( activity );
+            WebView eulaText = new WebView(activity);
             String text = "<html><body>"
                     + "<p align=\"justify\">"
-                    + readEula( activity )
+                    + readEula(activity)
                     + "</p> "
                     + "</body></html>";
-            eulaText.loadData( text, "text/html", "UTF-8" );
-            builder.setView( eulaText );
+            eulaText.loadData(text, "text/html", "UTF-8");
+            builder.setView(eulaText);
 
             Rect displayRectangle = new Rect();
             Window window = activity.getWindow();
-            window.getDecorView().getWindowVisibleDisplayFrame( displayRectangle );
+            window.getDecorView().getWindowVisibleDisplayFrame(displayRectangle);
 
             AlertDialog alertDialog = builder.show();
             window = alertDialog.getWindow();
-            if( window != null ) {
-                window.setLayout( displayRectangle.width(), ( int ) ( displayRectangle.height() * 0.7f ) );
+            if (window != null) {
+                window.setLayout(displayRectangle.width(), (int) (displayRectangle.height() * 0.7f));
             }
         } else {
-            if( callback != null ) {
+            if (callback != null) {
                 callback.onEulaAgreedTo();
             }
         }
@@ -87,18 +87,18 @@ public class EulaHelper {
         BufferedReader in = null;
 
         try {
-            in = new BufferedReader( new InputStreamReader( context.getAssets().open( ASSET_EULA ) ) );
+            in = new BufferedReader(new InputStreamReader(context.getAssets().open(ASSET_EULA)));
             String line;
-            while( ( line = in.readLine() ) != null ) {
-                buffer.append( line ).append( '\n' );
+            while((line = in.readLine()) != null) {
+                buffer.append(line).append('\n');
             }
-        } catch( IOException e ) {
+        } catch(IOException e) {
             e.printStackTrace();
         } finally {
-            if( in != null ) {
+            if (in != null) {
                 try {
                     in.close();
-                } catch( IOException e ) {
+                } catch (IOException e) {
                     e.printStackTrace();
                 }
             }

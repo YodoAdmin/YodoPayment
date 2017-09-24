@@ -53,7 +53,7 @@ public class ExchP2POption extends IRequestOption {
 
                     progressManager.create(activity);
                     requestManager.invoke(
-                            new AuthenticateRequest(hardwareToken, pip),
+                            new AuthenticateRequest(uuidToken, pip),
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse(ServerResponse response) {
@@ -142,7 +142,7 @@ public class ExchP2POption extends IRequestOption {
                 if (!error) {
                     progressManager.create(activity);
                     requestManager.invoke(
-                            new ExchRequest(hardwareToken, transferAccount, transferAmount),
+                            new ExchRequest(uuidToken, transferAccount, transferAmount),
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse(ServerResponse response) {

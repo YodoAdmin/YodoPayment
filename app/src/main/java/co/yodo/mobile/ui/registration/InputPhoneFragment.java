@@ -3,6 +3,7 @@ package co.yodo.mobile.ui.registration;
 import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.content.ContextCompat;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +14,10 @@ import android.widget.TextView;
 
 import butterknife.BindView;
 import co.yodo.mobile.R;
+import co.yodo.mobile.helper.ImeHelper;
+import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.model.dtos.CountryInfo;
 import co.yodo.mobile.ui.fragments.BaseFragment;
-import co.yodo.mobile.ui.registration.RegistrationActivity;
 import co.yodo.mobile.ui.phone.CountryListSpinner;
 import co.yodo.mobile.utils.PhoneNumberUtils;
 
@@ -36,8 +38,6 @@ public class InputPhoneFragment extends BaseFragment implements View.OnClickList
     @BindView(R.id.tvPhoneNumberError) TextView tvPhoneNumberError;
     @BindView(R.id.tvPhoneTerms) TextView tvPhoneTerms;
     @BindView(R.id.bSendCode) Button bSendCode;
-
-    private static final int RC_PHONE_HINT = 22;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState ) {
@@ -69,6 +69,13 @@ public class InputPhoneFragment extends BaseFragment implements View.OnClickList
     protected void setupGUI(View view) {
         super.setupGUI(view);
 
+        ImeHelper.setImeOnDoneListener(etPhoneNumber, new ImeHelper.DonePressedListener() {
+            @Override
+            public void onDonePressed() {
+                onNext();
+            }
+        });
+
         setUpCountrySpinner();
         setupSendCodeButton();
         setupTerms();
@@ -76,9 +83,31 @@ public class InputPhoneFragment extends BaseFragment implements View.OnClickList
 
     @Override
     public void onClick(View view) {
-        String phoneNumber = getPseudoValidPhoneNumber();
+        onNext();
+    }
+
+    void setValidatedUI() {
+        bSendCode.setBackgroundColor(ContextCompat.getColor(context, R.color.green));
+        bSendCode.setTextColor(ContextCompat.getColor(context, R.color.colorTextWhite));
+        bSendCode.setText(R.string.text_phone_validated);
+        bSendCode.setEnabled(false);
+        etPhoneNumber.setEnabled(false);
+        clsCountries.setEnabled(false);
+    }
+
+    String validatePhoneNumber() {
+        final String phoneNumber = PreferencesHelper.getPhoneNumber();
         if (phoneNumber == null) {
             tvPhoneNumberError.setText(R.string.error_phone);
+        }
+        return phoneNumber;
+    }
+
+    /** Next step for the validation */
+    private void onNext() {
+        String phoneNumber = getPseudoValidPhoneNumber();
+        if (phoneNumber == null) {
+            tvPhoneNumberError.setText(R.string.error_phone_invalid);
         } else {
             showError(null);
             verifier.verifyPhoneNumber(phoneNumber, false);
@@ -132,51 +161,4 @@ public class InputPhoneFragment extends BaseFragment implements View.OnClickList
 
         return PhoneNumberUtils.formatPhoneNumber(everythingElse, countryInfo);
     }
-
-    /*private void showPhoneAutoCompleteHint() {
-        try {
-            startIntentSenderForResult(getPhoneHintIntent().getIntentSender(), RC_PHONE_HINT);
-        } catch (IntentSender.SendIntentException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private PendingIntent getPhoneHintIntent() {
-        GoogleApiClient client = new GoogleApiClient.Builder(getContext())
-                .addApi(Auth.CREDENTIALS_API)
-                .enableAutoManage(
-                        getActivity(),
-                        GoogleApiHelper.getSafeAutoManageId(),
-                        new GoogleApiClient.OnConnectionFailedListener() {
-                            @Override
-                            public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-                                Timber.e("Client connection failed: " + connectionResult.getErrorMessage());
-                            }
-                        })
-                .build();
-
-
-        HintRequest hintRequest = new HintRequest.Builder()
-                .setHintPickerConfig(
-                        new CredentialPickerConfig.Builder().setShowCancelButton(true).build())
-                .setPhoneNumberIdentifierSupported(true)
-                .setEmailAddressIdentifierSupported(false)
-                .build();
-
-        return Auth.CredentialsApi.getHintPickerIntent(client, hintRequest);
-    }
-
-    private void setPhoneNumber(PhoneNumber phoneNumber) {
-        if (PhoneNumber.isValid(phoneNumber)) {
-            etPhoneNumber.setText(phoneNumber.getPhoneNumber());
-            etPhoneNumber.setSelection(phoneNumber.getPhoneNumber().length());
-        }
-    }
-
-    private void setCountryCode(PhoneNumber phoneNumber) {
-        if (PhoneNumber.isCountryValid(phoneNumber)) {
-            clsCountries.setSelectedForCountry(new Locale("", phoneNumber.getCountryIso()),
-                    phoneNumber.getCountryCode());
-        }
-    }*/
 }

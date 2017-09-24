@@ -6,11 +6,13 @@ import java.util.Map;
 
 import javax.inject.Provider;
 
+import co.yodo.mobile.business.component.cipher.RSACrypt;
 import co.yodo.mobile.business.injection.module.ApiClientModule;
 import co.yodo.mobile.business.injection.module.CipherModule;
 import co.yodo.mobile.business.injection.module.FirebaseModule;
 import co.yodo.mobile.business.injection.module.JobsModule;
 import co.yodo.mobile.business.injection.scope.ApplicationScope;
+import co.yodo.mobile.business.network.encryption.HybridEncryption;
 import co.yodo.mobile.business.service.RegistrationIntentService;
 import co.yodo.mobile.business.service.YodoInstanceIDService;
 import co.yodo.mobile.ui.CouponsActivity;
@@ -54,7 +56,11 @@ public interface GraphComponent {
     void inject(IRequestOption option);
     void inject(CouponsAdapter adapter);
     void inject(SaveCouponOption option);
+    void inject(HybridEncryption encryption);
 
     // Provides the map of executable jobs
     Map<String, Provider<Job>> provideJobs();
+
+    // Provide the cipher
+    RSACrypt provideCipher();
 }

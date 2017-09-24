@@ -3,15 +3,13 @@ package co.yodo.mobile.business.network.request;
 import java.util.HashMap;
 import java.util.Map;
 
-import javax.crypto.spec.SecretKeySpec;
-
-import co.yodo.mobile.business.component.cipher.AESCrypt;
+import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.business.component.cipher.RSACrypt;
-import co.yodo.mobile.business.network.Config;
-import co.yodo.mobile.utils.AppConfig;
 import co.yodo.mobile.business.network.ApiClient;
+import co.yodo.mobile.business.network.Config;
+import co.yodo.mobile.business.network.encryption.IEncryption;
 import co.yodo.mobile.business.network.model.ServerResponse;
-import co.yodo.mobile.business.network.request.contract.IRequest;
+import co.yodo.mobile.utils.AppConfig;
 import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Field;
@@ -31,13 +29,14 @@ public class RegisterRequest extends IRequest {
 
     /** Register sub-types */
     public enum RegST {
-        CLIENT    ( "0" ),
-        BIOMETRIC ( "3" ),
-        GCM       ( "4" );
+        CLIENT    ("0"),
+        BIOMETRIC ("3"),
+        GCM       ("4"),
+        PHONE     ("10");
 
         private final String value;
 
-        RegST( String value ) {
+        RegST(String value) {
             this.value = value;
         }
 
@@ -58,15 +57,15 @@ public class RegisterRequest extends IRequest {
 
     /** Interface for the REG requests */
     interface IApiEndpoint {
-        @GET( YODO_ADDRESS + "{request}" )
-        Call<ServerResponse> register( @Path( "request" ) String request );
+        @GET(YODO_ADDRESS + "{request}")
+        Call<ServerResponse> register(@Path("request") String request);
 
         @FormUrlEncoded
         @POST
-        Call<ResponseBody> register( @Url String url,
-                @Field( "prt" ) String prt,
-                @Field( "req" ) String req,
-                @Field( "par" ) String par
+        Call<ResponseBody> register(@Url String url,
+                @Field("prt") String prt,
+                @Field("req") String req,
+                @Field("par") String par
         );
     }
 
@@ -76,7 +75,7 @@ public class RegisterRequest extends IRequest {
      * @param token The password of the user, biometric token or the gcm id
      * @param requestST The sub-type of the request
      */
-    public RegisterRequest( String userIdentifier, String token, RegST requestST ) {
+    public RegisterRequest(String userIdentifier, String token, RegST requestST) {
         this.userIdentifier = userIdentifier;
         this.token = token;
         this.requestST = requestST;
@@ -87,8 +86,8 @@ public class RegisterRequest extends IRequest {
      * @param userIdentifier The hardware token of the device, or the authnumber
      * @param token The password of the user, biometric token or the gcm id
      */
-    public RegisterRequest( String userIdentifier, String token ) {
-        this( userIdentifier, token, RegST.CLIENT );
+    public RegisterRequest(String userIdentifier, String token) {
+        this(userIdentifier, token, RegST.CLIENT);
     }
 
     /**
@@ -97,81 +96,83 @@ public class RegisterRequest extends IRequest {
      * @param iRegST Sub-type of the request
      * @return Map Request for getting the registration code
      */
-    private static Map<String, String> createJSONRequest( String sUsrData, String iRegST ) {
+    private static Map<String, String> createJSONRequest(String sUsrData, String iRegST) {
         Map<String, String> params = new HashMap<>();
         // The POST parameters:
-        params.put( "prt", PROTOCOL_VERSION );
-        params.put( "req", REG_RT + REQ_SEP + iRegST );
-        params.put( "par", sUsrData );
+        params.put("prt", PROTOCOL_VERSION);
+        params.put("req", REG_RT + REQ_SEP + iRegST);
+        params.put("par", sUsrData);
 
         return params;
     }
 
     @Override
-    public void execute( RSACrypt cipher, ApiClient manager, ApiClient.RequestCallback callback ) {
+    public void execute(IEncryption encryption, ApiClient manager, ApiClient.RequestCallback callback) {
         String encryptedClientData, requestData;
-        SecretKeySpec key = AESCrypt.generateKey();
-        encyptedKey = cipher.encrypt( AESCrypt.encodeKey( key ) );
+        RSACrypt cipher = YodoApplication.getComponent().provideCipher();
 
-        switch( this.requestST ) {
+        switch (this.requestST) {
             case CLIENT:
                 this.formattedUsrData =
                         AppConfig.YODO_BIOMETRIC + USR_SEP +
                         this.token + USR_SEP +
                         this.userIdentifier + USR_SEP +
                         System.currentTimeMillis() / 1000L;
-
-                encyptedData = AESCrypt.encrypt( formattedUsrData, key );
-
-                encryptedClientData =
-                        encyptedKey + REQ_SEP +
-                                encyptedData;
-
-                requestData = buildRequest( REG_RT,
+                encryptedClientData = encryption.apply(formattedUsrData);
+                requestData = buildRequest(REG_RT,
                         requestST.getValue(),
                         encryptedClientData
                 );
 
-                IApiEndpoint iCaller = manager.create( IApiEndpoint.class );
-                Call<ServerResponse> request = iCaller.register( requestData );
-                manager.sendXMLRequest( request, callback );
+                IApiEndpoint iCaller = manager.create(IApiEndpoint.class);
+                Call<ServerResponse> request = iCaller.register(requestData);
+                manager.sendXMLRequest(request, callback);
                 break;
 
             case BIOMETRIC:
-                this.formattedUsrData =
-                        this.userIdentifier + REQ_SEP +
-                        this.token;
-
-                requestData = buildRequest( REG_RT,
+                this.formattedUsrData = this.userIdentifier + REQ_SEP + this.token;
+                requestData = buildRequest(REG_RT,
                         requestST.getValue(),
                         formattedUsrData
                 );
 
-                iCaller = manager.create( IApiEndpoint.class );
-                request = iCaller.register( requestData );
-                manager.sendXMLRequest( request, callback );
+                iCaller = manager.create(IApiEndpoint.class );
+                request = iCaller.register(requestData);
+                manager.sendXMLRequest(request, callback);
                 break;
 
             case GCM:
-                encryptedClientData = cipher.encrypt( userIdentifier );
-
+                encryptedClientData = cipher.encrypt(userIdentifier);
                 this.formattedUsrData =
                         encryptedClientData + REQ_SEP +
                         this.token + REQ_SEP +
                         DEV_TYPE;
 
-                iCaller = manager.create( IApiEndpoint.class );
+                iCaller = manager.create(IApiEndpoint.class);
                 Call<ResponseBody> jsonRequest = iCaller.register(
                         Config.IP + ":8081/yodo",
                         PROTOCOL_VERSION,
                         REG_RT + REQ_SEP + requestST.getValue(),
                         formattedUsrData
                 );
-                manager.sendJSONRequest( jsonRequest, callback );
+                manager.sendJSONRequest(jsonRequest, callback);
+                break;
+
+            case PHONE:
+                this.formattedUsrData = this.userIdentifier + USR_SEP + this.token;
+                encryptedClientData = encryption.apply(formattedUsrData);
+                requestData = buildRequest(REG_RT,
+                        requestST.getValue(),
+                        encryptedClientData
+                );
+
+                iCaller = manager.create(IApiEndpoint.class );
+                request = iCaller.register(requestData);
+                manager.sendXMLRequest(request, callback);
                 break;
 
             default:
-                throw new IllegalArgumentException( "type no supported" );
+                throw new IllegalArgumentException("type no supported");
         }
     }
 }

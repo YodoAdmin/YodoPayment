@@ -26,35 +26,35 @@ public class BalanceOption extends IRequestOption {
      * Sets up the main elements of the options
      * @param activity The Activity to handle
      */
-    public BalanceOption( final BaseActivity activity ) {
-        super( activity );
+    public BalanceOption(final BaseActivity activity) {
+        super(activity);
 
         // Dialog
         final View layout = buildLayout();
         final View.OnClickListener okClick = new View.OnClickListener() {
             @Override
             public void onClick( View view  ) {
-                if( PipUtils.validate( activity, etInput, null ) ) {
-                    final String otp = TOTPUtils.defaultOTP( etInput.getText().toString() );
+                if (PipUtils.validate(activity, etInput, null)) {
+                    final String otp = TOTPUtils.defaultOTP(etInput.getText().toString());
 
                     Timber.i("OTP: " + otp);
 
-                    ProgressDialogHelper.create( activity );
+                    ProgressDialogHelper.create(activity);
                     requestManager.invoke(
-                            new QueryRequest( hardwareToken, otp ),
+                            new QueryRequest(uuidToken, otp),
                             new ApiClient.RequestCallback() {
                                 @Override
-                                public void onResponse( ServerResponse response ) {
+                                public void onResponse(ServerResponse response) {
                                     ProgressDialogHelper.dismiss();
                                     final String code = response.getCode();
 
-                                    switch( code ) {
+                                    switch (code) {
                                         case ServerResponse.AUTHORIZED_BALANCE:
                                             alertDialog.dismiss();
 
                                             // Trim the balance
-                                            PreferencesHelper.saveBalance( String.format( "%s %s",
-                                                    FormatUtils.truncateDecimal( response.getParams().getBalance() ),
+                                            PreferencesHelper.saveBalance(String.format("%s %s",
+                                                    FormatUtils.truncateDecimal(response.getParams().getBalance()),
                                                     response.getParams().getCurrency()
                                             ) );
                                             activity.updateData();
@@ -63,19 +63,19 @@ public class BalanceOption extends IRequestOption {
                                         case ServerResponse.ERROR_NO_BALANCE:
                                             ErrorUtils.handleError(
                                                     activity,
-                                                    activity.getString( R.string.error_balance ),
+                                                    activity.getString(R.string.error_balance),
                                                     false
                                             );
                                             break;
 
                                         case ServerResponse.ERROR_INCORRECT_PIP:
-                                            tilPip.setError( activity.getString( R.string.error_pip ) );
+                                            tilPip.setError( activity.getString(R.string.error_pip));
                                             break;
 
                                         default:
                                             ErrorUtils.handleError(
                                                     activity,
-                                                    activity.getString( R.string.error_server ),
+                                                    activity.getString(R.string.error_server),
                                                     false
                                             );
                                             break;
@@ -83,7 +83,7 @@ public class BalanceOption extends IRequestOption {
                                 }
 
                                 @Override
-                                public void onError( String message ) {
+                                public void onError(String message) {
                                     ProgressDialogHelper.dismiss();
                                     ErrorUtils.handleError(
                                             activity,
@@ -100,7 +100,7 @@ public class BalanceOption extends IRequestOption {
         alertDialog = AlertDialogHelper.create(
                 activity,
                 layout,
-                buildOnClick( okClick )
+                buildOnClick(okClick)
         );
     }
 

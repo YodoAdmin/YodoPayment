@@ -43,7 +43,7 @@ public class LinkAccountOption extends IRequestOption {
                 // Start the request, and set the listener to this object
                 ProgressDialogHelper.create(activity);
                 requestManager.invoke(
-                        new LinkRequest( hardwareToken, linkingCode ),
+                        new LinkRequest(uuidToken, linkingCode ),
                         new ApiClient.RequestCallback() {
                             @Override
                             public void onResponse( ServerResponse response ) {

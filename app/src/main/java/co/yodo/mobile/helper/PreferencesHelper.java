@@ -89,9 +89,10 @@ public class PreferencesHelper {
      * @return A String as the token
      */
     public static String getUuidToken() {
+        return Hawk.get(SPREF_UUID_TOKEN);
         // Hardware token is for legacy authentication
-        String uuid = Hawk.get(SPREF_UUID_TOKEN);
-        return (uuid == null) ? (String) Hawk.get(SPREF_HARDWARE_TOKEN) : uuid;
+        //String uuid = Hawk.get(SPREF_UUID_TOKEN);
+        //return (uuid == null) ? (String) Hawk.get(SPREF_HARDWARE_TOKEN) : uuid;
     }
 
     /**
@@ -110,8 +111,46 @@ public class PreferencesHelper {
         return Hawk.get(SPREF_PHONE_NUMBER);
     }
 
+    /**
+     * It saves if it is the user accepted the EULA.
+     * @param flag Value if accepted or not the EULA
+     * @return true  The flag was saved successfully.
+     *         false The flag was not saved successfully.
+     */
+    public static Boolean saveEulaAccepted(Boolean flag) {
+        return Hawk.put(SPREF_EULA, flag);
+    }
 
+    /**
+     * It gets if the user accepted the EULA.
+     * @return true  The user accepted the EULA.
+     *         false The user didn't accept the EULA.
+     */
+    static Boolean isEulaAccepted() {
+        return Hawk.get(SPREF_EULA, false);
+    }
 
+    /**
+     * It saves the authnumber of the pip registration to the Shared Preferences.
+     * @param authNumber The authNumber of the registration
+     * @return true  The account was saved successfully.
+     *         false The account was not saved successfully.
+     */
+    public static Boolean saveAuthNumber(String authNumber) {
+        if (authNumber == null) {
+            return Hawk.delete(SPREF_AUTH_NUMBER);
+        }
+        return Hawk.put(SPREF_AUTH_NUMBER, authNumber);
+    }
+
+    /**
+     * It gets authnumber of the pip registration
+     * @return String The authnumber of the pip registration
+     *         null    If there is no value set;
+     */
+    public static String getAuthNumber() {
+        return Hawk.get(SPREF_AUTH_NUMBER);
+    }
 
 
 
@@ -140,47 +179,6 @@ public class PreferencesHelper {
      */
     public static String getHardwareToken() {
         return Hawk.get(SPREF_HARDWARE_TOKEN);
-    }
-
-    /**
-     * It saves if it is the user accepted the EULA.
-     * @param flag Value if accepted or not the EULA
-     * @return true  The flag was saved successfully.
-     *         false The flag was not saved successfully.
-     */
-    public static Boolean saveEulaAccepted( Boolean flag ) {
-        return Hawk.put(SPREF_EULA, flag);
-    }
-
-    /**
-     * It gets if the user accepted the EULA.
-     * @return true  The user accepted the EULA.
-     *         false The user didn't accept the EULA.
-     */
-    static Boolean isEulaAccepted() {
-        return Hawk.get(SPREF_EULA, false);
-    }
-
-    /**
-     * It saves the authnumber of the pip registration to the Shared Preferences.
-     * @param authNumber The authNumber of the registration
-     * @return true  The account was saved successfully.
-     *         false The account was not saved successfully.
-     */
-    public static Boolean saveAuthNumber( String authNumber ) {
-        if( authNumber == null ) {
-            return Hawk.delete(SPREF_AUTH_NUMBER);
-        }
-        return Hawk.put(SPREF_AUTH_NUMBER, authNumber);
-    }
-
-    /**
-     * It gets authnumber of the pip registration
-     * @return String The authnumber of the pip registration
-     *         null    If there is no value set;
-     */
-    public static String getAuthNumber() {
-        return Hawk.get(SPREF_AUTH_NUMBER);
     }
 
     /**

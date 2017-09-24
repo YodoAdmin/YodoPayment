@@ -15,12 +15,18 @@ import co.yodo.mobile.helper.AlertDialogHelper;
 import co.yodo.mobile.model.dtos.FirebaseAuthError;
 import timber.log.Timber;
 
+import static android.text.TextUtils.isEmpty;
+
 /**
  * Created by hei on 03/03/17.
  * Handle errors and exceptions
  */
-
 public class ErrorUtils {
+    /**
+     * Avoid the creation of instances
+     */
+    private ErrorUtils() {}
+
     /**
      * Handle general errors
      * @param activity The activity
@@ -99,5 +105,27 @@ public class ErrorUtils {
                 break;
         }
         handleError(activity, message, false);
+    }
+
+    /**
+     * Verifies that a value is not null
+     * @param message The message word
+     * @param value The value to validate
+     */
+    public static void checkNull(String message, Object value) {
+        if (value == null) {
+            throw new NullPointerException(message + " should not be null");
+        }
+    }
+
+    /**
+     * Validates that a value is not null or empty
+     * @param message The message word
+     * @param value The value to validate
+     */
+    public static void checkNullOrEmpty(String message, String value) {
+        if (isEmpty(value)) {
+            throw new NullPointerException(message + " should not be null or empty");
+        }
     }
 }

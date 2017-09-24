@@ -11,14 +11,10 @@ public class AppConfig {
     /** DEBUG flag */
     public static final boolean DEBUG = true;
 
-
-
     /**
      * Keys used with the Shared Preferences (SP) and default values.
      * {{ ======================================================================
      */
-
-
 
     /* Hardware token for the account
      * type -- String

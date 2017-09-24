@@ -67,6 +67,7 @@ public class BaseActivity extends AppCompatActivity {
      * the activities that extend this class
      */
     public void updateData() {
+        uuidToken = PreferencesHelper.getUuidToken();
         // Gets the hardware token - account identifier
         /*uuidToken = PreferencesHelper.getHardwareToken();
         if (uuidToken == null ) {

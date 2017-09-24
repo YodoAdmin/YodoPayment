@@ -42,7 +42,7 @@ public class LinkingCodeOption extends IRequestOption {
 
                     progressManager.create( activity );
                     requestManager.invoke(
-                            new QueryRequest( hardwareToken, pip, QueryRequest.Record.LINKING_CODE ),
+                            new QueryRequest(uuidToken, pip, QueryRequest.Record.LINKING_CODE ),
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse( ServerResponse response ) {

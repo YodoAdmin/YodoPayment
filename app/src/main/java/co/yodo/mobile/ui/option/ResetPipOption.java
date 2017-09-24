@@ -36,7 +36,7 @@ public class ResetPipOption extends IRequestOption  {
 
                     progressManager.create( activity );
                     requestManager.invoke(
-                            new ResetPIPRequest( hardwareToken, pip, newPip ),
+                            new ResetPIPRequest(uuidToken, pip, newPip ),
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse( ServerResponse response ) {

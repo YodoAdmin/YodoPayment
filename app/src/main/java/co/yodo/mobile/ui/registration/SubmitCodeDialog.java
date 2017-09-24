@@ -84,6 +84,21 @@ class SubmitCodeDialog {
         return dialog != null && dialog.isShowing();
     }
 
+    /**
+     * Sets the confirmation code
+     * @param code The confirmation code
+     */
+    void setConfirmationCode(String code) {
+        etConfirmationCode.setText(code);
+    }
+
+    void dismiss() {
+        if (isShowing()) {
+            dialog.dismiss();
+            dialog = null;
+        }
+    }
+
     private void setupConfirmationCodeEditText() {
         etConfirmationCode.setText("------");
         BucketedTextChangeListener listener = createBucketedTextChangeListener();

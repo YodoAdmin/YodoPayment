@@ -39,8 +39,8 @@ public class RSACrypt {
 	 * Private constructor for the singleton
 	 * @param context The Android context for the application
      */
-	public RSACrypt( Context context ) {
-		mPubKey = readPublicKey( context );
+	public RSACrypt(Context context) {
+		mPubKey = readPublicKey(context);
 	}
 
 	/**
@@ -48,22 +48,22 @@ public class RSACrypt {
 	 * @param context    Context of the application
 	 * @return PublicKey The public key specified in PUBLIC_KEY
 	 */
-	private static PublicKey readPublicKey( Context context ) {
+	private static PublicKey readPublicKey(Context context) {
 		PublicKey pkPublic = null;
 
 		try {
 			AssetManager as = context.getAssets();
-			InputStream inFile = as.open( PUBLIC_KEY );
-			DataInputStream dis = new DataInputStream( inFile );
+			InputStream inFile = as.open(PUBLIC_KEY);
+			DataInputStream dis = new DataInputStream(inFile);
 
 			byte[] encodedKey = new byte[inFile.available()];
-			dis.readFully( encodedKey );
+			dis.readFully(encodedKey);
 			dis.close();
 
-			X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec( encodedKey );
-			KeyFactory kf = KeyFactory.getInstance( KEY_INSTANCE );
-			pkPublic = kf.generatePublic( publicKeySpec );
-		} catch( Exception e ) {
+			X509EncodedKeySpec publicKeySpec = new X509EncodedKeySpec(encodedKey);
+			KeyFactory kf = KeyFactory.getInstance(KEY_INSTANCE);
+			pkPublic = kf.generatePublic(publicKeySpec);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 
@@ -76,15 +76,15 @@ public class RSACrypt {
 	 * @param plainText The unencrypted string
 	 * @return String   The encrypted string in Hex
 	 */
-	public String encrypt( String plainText ) {
+	public String encrypt(String plainText) {
 		String encryptedData = null;
 
 		try {
-			final Cipher cipher = Cipher.getInstance( CIPHER_INSTANCE );
-			cipher.init( Cipher.ENCRYPT_MODE, mPubKey );
-			final byte[] cipherData = cipher.doFinal( plainText.getBytes( "UTF-8" ) );
-			encryptedData = CryptUtils.bytesToHex( cipherData );
-		} catch( Exception e ) {
+			final Cipher cipher = Cipher.getInstance(CIPHER_INSTANCE);
+			cipher.init(Cipher.ENCRYPT_MODE, mPubKey);
+			final byte[] cipherData = cipher.doFinal(plainText.getBytes("UTF-8"));
+			encryptedData = CryptUtils.bytesToHex(cipherData);
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 

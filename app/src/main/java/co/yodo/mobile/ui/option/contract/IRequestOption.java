@@ -26,7 +26,7 @@ import co.yodo.mobile.helper.ProgressDialogHelper;
  */
 public abstract class IRequestOption extends IOption {
     /** User identifier */
-    protected final String hardwareToken;
+    protected final String uuidToken;
 
     /** Manager for the server requests */
     @Inject
@@ -48,7 +48,8 @@ public abstract class IRequestOption extends IOption {
         super( activity );
 
         // Gets request's data
-        this.hardwareToken = PreferencesHelper.getHardwareToken();
+        //this.uuidToken = PreferencesHelper.getHardwareToken();
+        this.uuidToken = PreferencesHelper.getUuidToken();
 
         // Injection
         YodoApplication.getComponent().inject( this );
@@ -60,8 +61,8 @@ public abstract class IRequestOption extends IOption {
      */
     protected View buildLayout() {
         // Dialog
-        LayoutInflater inflater = (LayoutInflater) activity.getSystemService( Context.LAYOUT_INFLATER_SERVICE );
-        final View layout = inflater.inflate( R.layout.dialog_with_pip, new LinearLayout( activity ), false );
+        LayoutInflater inflater = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+        final View layout = inflater.inflate(R.layout.dialog_with_pip, new LinearLayout(activity), false);
 
         // GUI setup
         etInput = (EditText) layout.findViewById( R.id.tietPip );

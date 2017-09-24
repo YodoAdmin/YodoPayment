@@ -1,6 +1,5 @@
 package co.yodo.mobile.business.injection.module;
 
-import co.yodo.mobile.utils.AppConfig;
 import co.yodo.mobile.business.injection.scope.ApplicationScope;
 import co.yodo.mobile.helper.ProgressDialogHelper;
 import dagger.Module;
@@ -20,9 +19,11 @@ public class ApiClientModule {
 
     /** URL for the requests */
     private final String baseUrl;
+    private final boolean log;
 
-    public ApiClientModule( String baseUrl ) {
+    public ApiClientModule(String baseUrl, boolean log) {
         this.baseUrl = baseUrl;
+        this.log = log;
     }
 
     @Provides
@@ -30,22 +31,22 @@ public class ApiClientModule {
     HttpLoggingInterceptor providesInterceptor() {
         HttpLoggingInterceptor.Level DEBUG;
 
-        if( AppConfig.DEBUG ) {
+        if (log) {
             DEBUG = HttpLoggingInterceptor.Level.BODY;
         } else {
             DEBUG = HttpLoggingInterceptor.Level.NONE;
         }
 
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
-        logging.setLevel( DEBUG );
+        logging.setLevel(DEBUG);
         return logging;
     }
 
     @Provides
     @ApplicationScope
-    OkHttpClient providesOkHttpClient( HttpLoggingInterceptor logging ) {
+    OkHttpClient providesOkHttpClient(HttpLoggingInterceptor logging) {
         return new OkHttpClient.Builder()
-                .addInterceptor( logging )
+                .addInterceptor(logging)
                 .build();
     }
 
@@ -54,8 +55,8 @@ public class ApiClientModule {
     Retrofit providesRetrofit( OkHttpClient client ) {
         return new Retrofit.Builder()
                 .addConverterFactory( SimpleXmlConverterFactory.create() )
-                .baseUrl( baseUrl )
-                .client( client )
+                .baseUrl(baseUrl)
+                .client(client)
                 .build();
     }
 }

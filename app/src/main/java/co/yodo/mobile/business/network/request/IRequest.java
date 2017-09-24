@@ -1,7 +1,8 @@
-package co.yodo.mobile.business.network.request.contract;
+package co.yodo.mobile.business.network.request;
 
 import co.yodo.mobile.business.component.cipher.RSACrypt;
 import co.yodo.mobile.business.network.ApiClient;
+import co.yodo.mobile.business.network.encryption.IEncryption;
 import timber.log.Timber;
 
 /**
@@ -47,5 +48,5 @@ public abstract class IRequest {
         return request;
     }
 
-    public abstract void execute(RSACrypt cipher, ApiClient manager, ApiClient.RequestCallback callback);
+    public abstract void execute(IEncryption encryption, ApiClient manager, ApiClient.RequestCallback callback);
 }

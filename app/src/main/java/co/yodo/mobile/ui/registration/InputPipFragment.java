@@ -54,7 +54,7 @@ public class InputPipFragment extends Fragment {
     public String validatePIP() {
         String pip = null;
         // Validate the pip and confirmation
-        if( PipUtils.validate( context, etPip, etPipConfirm ) ) {
+        if (PipUtils.validate(context, etPip, etPipConfirm)) {
             pip = etPip.getText().toString();
         }
         return pip;

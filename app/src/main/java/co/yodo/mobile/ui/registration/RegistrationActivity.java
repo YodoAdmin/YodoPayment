@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatButton;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -128,7 +129,7 @@ public class RegistrationActivity extends BaseActivity {
     protected void setupGUI(final Bundle savedInstanceState) {
         super.setupGUI(savedInstanceState);
         // Injection
-        YodoApplication.getComponent().inject( this );
+        YodoApplication.getComponent().inject(this);
 
         // Setup the fragment manager
         fragmentManager = getSupportFragmentManager();
@@ -177,20 +178,16 @@ public class RegistrationActivity extends BaseActivity {
 
                 if (TextUtils.isEmpty(credential.getSmsCode())) {
                     signIn(credential);
-                } /*else {
+                } else {
                     //Show Fragment if it is not already visible
-                    showSubmitCodeFragment();
-                    SubmitConfirmationCodeFragment submitConfirmationCodeFragment =
-                            getSubmitConfirmationCodeFragment();
+                    showSubmitCodeDialog();
 
-
-                    showLoadingDialog(getString(R.string.fui_retrieving_sms));
-                    if (submitConfirmationCodeFragment != null) {
-                        submitConfirmationCodeFragment.setConfirmationCode(String.valueOf
-                                (phoneAuthCredential.getSmsCode()));
+                    ProgressDialogHelper.create(RegistrationActivity.this, R.string.text_phone_confirmation_retrieving);
+                    if (submitCodeDialog != null) {
+                        submitCodeDialog.setConfirmationCode(String.valueOf(credential.getSmsCode()));
                     }
-                    signIn(phoneAuthCredential);
-                }*/
+                    signIn(credential);
+                }
             }
 
             @Override
@@ -219,7 +216,12 @@ public class RegistrationActivity extends BaseActivity {
      */
     private void updateData(Bundle savedInstanceState) {
         verificationState = VerificationState.VERIFICATION_NOT_STARTED;
-        if (savedInstanceState != null && !savedInstanceState.isEmpty()) {
+
+        phoneNumber = PreferencesHelper.getPhoneNumber();
+        if (phoneNumber != null) {
+            verificationState = VerificationState.VERIFIED;
+        }
+        else if (savedInstanceState != null && !savedInstanceState.isEmpty()) {
             phoneNumber = savedInstanceState.getString(KEY_VERIFICATION_PHONE);
             if (savedInstanceState.getSerializable(KEY_STATE) != null) {
                 verificationState = (VerificationState) savedInstanceState.getSerializable(KEY_STATE);
@@ -263,17 +265,19 @@ public class RegistrationActivity extends BaseActivity {
         Fragment currentFragment = fragmentManager.findFragmentById(R.id.fragment_container);
         switch (currentFragment.getTag()) {
             case TAG_REG_PNE:
-                InputPipFragment pipFragment = new InputPipFragment();
-                fragmentManager.beginTransaction()
-                        .replace(R.id.fragment_container, pipFragment, TAG_REG_PIP)
-                        .commit();
+                if (((InputPhoneFragment) currentFragment).validatePhoneNumber() != null) {
+                    InputPipFragment pipFragment = new InputPipFragment();
+                    fragmentManager.beginTransaction()
+                            .replace(R.id.fragment_container, pipFragment, TAG_REG_PIP)
+                            .commit();
+                }
                 break;
 
             case TAG_REG_PIP:
                 final String pip = ((InputPipFragment) currentFragment).validatePIP();
                 if (pip != null) {
                     InputBiometricFragment bioFragment = InputBiometricFragment.newInstance(
-                            uuidToken,
+                            phoneNumber,
                             pip
                     );
                     fragmentManager.beginTransaction()
@@ -285,12 +289,7 @@ public class RegistrationActivity extends BaseActivity {
 
             default:
                 InputBiometricFragment bioFragment = ((InputBiometricFragment) currentFragment);
-                final String authNumber = PreferencesHelper.getAuthNumber();
-                if (authNumber == null) {
-                    bioFragment.validateBioAndRegister();
-                } else {
-                    bioFragment.updateBiometricToken(authNumber);
-                }
+                bioFragment.registerUser();
                 break;
         }
     }
@@ -322,23 +321,13 @@ public class RegistrationActivity extends BaseActivity {
                 .addOnSuccessListener(this, new OnSuccessListener<AuthResult>() {
                     @Override
                     public void onSuccess(final AuthResult authResult) {
-                        ProgressDialogHelper.dismiss();
                         PreferencesHelper.setPhoneNumber(authResult.getUser().getPhoneNumber());
+                        ProgressDialogHelper.dismiss();
+                        submitCodeDialog.dismiss();
                         verificationState = VerificationState.VERIFIED;
 
-
-                        /*completeLoadingDialog(getString(R.string.fui_verified));
-
-                        // Activity can be recreated before this message is handled
-                        mHandler.postDelayed(new Runnable() {
-                            @Override
-                            public void run() {
-                                if (!mIsDestroyed) {
-                                    dismissLoadingDialog();
-                                    finish(authResult.getUser());
-                                }
-                            }
-                        }, SHORT_DELAY_MILLIS);*/
+                        InputPhoneFragment currentFragment = (InputPhoneFragment) fragmentManager.findFragmentById(R.id.fragment_container);
+                        currentFragment.setValidatedUI();
                     }
                 })
                 .addOnFailureListener(this, new OnFailureListener() {

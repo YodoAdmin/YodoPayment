@@ -22,7 +22,7 @@ public class Transfer {
     private static final String JK_ACCOUNT = "account";
     private static final String JK_BALANCE = "balance";
 
-    private Transfer( Builder builder ) {
+    private Transfer(Builder builder) {
         this.from = builder.from;
         this.amount = builder.amount;
         this.currency = builder.currency;
@@ -41,10 +41,10 @@ public class Transfer {
         JSONObject account = root.getJSONObject(JK_ACCOUNT);
 
         return new Builder()
-                .from( root.getString(JK_FROM) )
-                .amount( root.getString(JK_AMOUNT) )
-                .currency( root.getString(JK_CURRENCY) )
-                .accountBalance( account.getString(JK_BALANCE), account.getString(JK_CURRENCY))
+                .from(root.getString(JK_FROM))
+                .amount(root.getString(JK_AMOUNT))
+                .currency(root.getString(JK_CURRENCY))
+                .accountBalance(account.getString(JK_BALANCE), account.getString(JK_CURRENCY))
                 .build();
     }
 
@@ -79,29 +79,29 @@ public class Transfer {
         private String accountBalance;
         private String accountCurrency;
 
-        Builder from( String from ) {
+        Builder from(String from) {
             this.from = from;
             return this;
         }
 
-        Builder amount( String amount ) {
+        Builder amount(String amount) {
             this.amount = amount;
             return this;
         }
 
-        Builder currency( String currency) {
+        Builder currency(String currency) {
             this.currency = currency;
             return this;
         }
 
-        Builder accountBalance( String balance, String currency ) {
+        Builder accountBalance(String balance, String currency) {
             this.accountBalance = balance;
             this.accountCurrency = currency;
             return this;
         }
 
         public Transfer build() {
-            return new Transfer( this );
+            return new Transfer(this);
         }
     }
 }

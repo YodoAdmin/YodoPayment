@@ -35,4 +35,7 @@
     <!-- Linked accounts -->
     <color name="colorDeleted">#930913</color>
 
+    <!-- Colors -->
+    <color name="green">#4caf50</color>
+
 </resources>

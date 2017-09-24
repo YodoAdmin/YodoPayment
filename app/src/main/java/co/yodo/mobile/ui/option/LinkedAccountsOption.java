@@ -37,7 +37,7 @@ public class LinkedAccountsOption extends IRequestOption {
 
                     progressManager.create( activity );
                     requestManager.invoke(
-                            new QueryRequest( hardwareToken, otp, QueryRequest.Record.LINKED_ACCOUNTS ),
+                            new QueryRequest(uuidToken, otp, QueryRequest.Record.LINKED_ACCOUNTS ),
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse( ServerResponse response ) {

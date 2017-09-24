@@ -41,10 +41,10 @@ public class LinkedAccountsActivity extends BaseActivity {
     ApiClient requestManager;
 
     /** GUI controllers */
-    @BindView( R.id.layout_accounts_to )
+    @BindView(R.id.layout_accounts_to)
     RecyclerView rvAccountsTo;
 
-    @BindView( R.id.layout_accounts_from )
+    @BindView(R.id.layout_accounts_from)
     RecyclerView rvAccountsFrom;
 
     /** Temporal pip */
@@ -67,9 +67,9 @@ public class LinkedAccountsActivity extends BaseActivity {
     private static final String ACC_SEP = "-";
 
     @Override
-    protected void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-        setContentView( R.layout.activity_linked_accounts );
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_linked_accounts);
 
         setupGUI( savedInstanceState );
         updateData();
@@ -80,19 +80,19 @@ public class LinkedAccountsActivity extends BaseActivity {
         super.onDestroy();
 
         // Remove the pendant accounts
-        removeAccountsRemote( toAdapter.getAccountsPendingRemoval() );
-        removeAccountsRemote( fromAdapter.getAccountsPendingRemoval() );
+        removeAccountsRemote(toAdapter.getAccountsPendingRemoval());
+        removeAccountsRemote(fromAdapter.getAccountsPendingRemoval());
     }
 
     @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-        switch( itemId ) {
+        switch (itemId) {
             case android.R.id.home:
                 finish();
                 break;
         }
-        return super.onOptionsItemSelected( item );
+        return super.onOptionsItemSelected(item);
     }
 
     /**

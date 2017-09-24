@@ -37,7 +37,7 @@ public class CloseAccountOption extends IRequestOption {
 
                     progressManager.create( activity, R.string.text_account_closing );
                     requestManager.invoke(
-                            new CloseRequest( hardwareToken, otp ),
+                            new CloseRequest(uuidToken, otp ),
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse( ServerResponse response ) {

@@ -272,10 +272,10 @@ public class PaymentActivity extends BaseActivity implements
      */
     public void hideUserData( View v ) {
         int visibility = llAccountData.getVisibility();
-        if( visibility == View.VISIBLE ) {
-            llAccountData.setVisibility( View.GONE );
+        if (visibility == View.VISIBLE) {
+            llAccountData.setVisibility(View.GONE);
         } else {
-            llAccountData.setVisibility( View.VISIBLE );
+            llAccountData.setVisibility(View.VISIBLE);
         }
     }
 
@@ -284,11 +284,11 @@ public class PaymentActivity extends BaseActivity implements
      * for advertisement
      * @param v The view, used to change the icon
      */
-    public void startPromotions( View v ) {
-        if( !PreferencesHelper.isSubscribing( context ) ) {
-            PreferencesHelper.setSubscribing( context, true );
+    public void startPromotions(View v) {
+        if (!PreferencesHelper.isSubscribing(context)) {
+            PreferencesHelper.setSubscribing(context, true);
         } else {
-            PreferencesHelper.setSubscribing( context, false );
+            PreferencesHelper.setSubscribing(context, false);
         }
     }
 

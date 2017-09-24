@@ -83,13 +83,13 @@ public class ResetPipActivity extends BaseActivity {
             case REQUEST_FACE_ACTIVITY:
                 // Successful recognition, let's change the PIP
                 if( resultCode == RESULT_OK ) {
-                    progressManager.create( ResetPipActivity.this );
+                    ProgressDialogHelper.create( ResetPipActivity.this );
                     requestManager.invoke(
                             new ResetPIPRequest(uuidToken, authNumber, newPip, ResetPIPRequest.ResetST.PIP_BIO ),
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse( ServerResponse response ) {
-                                    progressManager.dismiss();
+                                    ProgressDialogHelper.dismiss();
                                     final String code = response.getCode();
 
                                     switch( code ) {
@@ -201,13 +201,13 @@ public class ResetPipActivity extends BaseActivity {
      */
     private void startRecognition() {
         // Request the biometric token
-        progressManager.create( this );
+        ProgressDialogHelper.create( this );
         requestManager.invoke(
                 new QueryRequest(uuidToken, QueryRequest.Record.BIOMETRIC ),
                 new ApiClient.RequestCallback() {
                     @Override
                     public void onResponse( ServerResponse response ) {
-                        progressManager.dismiss();
+                        ProgressDialogHelper.dismiss();
                         final String code = response.getCode();
 
                         switch( code ) {
