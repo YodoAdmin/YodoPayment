@@ -4,7 +4,6 @@ import android.content.Context;
 import android.util.Log;
 
 import com.evernote.android.job.JobManager;
-import com.orhanobut.hawk.Hawk;
 import com.orm.SugarApp;
 
 import org.acra.ACRA;
@@ -12,7 +11,6 @@ import org.acra.ReportingInteractionMode;
 import org.acra.annotation.ReportsCrashes;
 
 import co.yodo.mobile.business.injection.component.ApplicationComponent;
-
 import co.yodo.mobile.business.injection.component.DaggerApplicationComponent;
 import co.yodo.mobile.business.injection.component.DaggerGraphComponent;
 import co.yodo.mobile.business.injection.component.GraphComponent;
@@ -20,6 +18,7 @@ import co.yodo.mobile.business.injection.module.ApiClientModule;
 import co.yodo.mobile.business.injection.module.ApplicationModule;
 import co.yodo.mobile.business.jobs.JobHandler;
 import co.yodo.mobile.business.network.Config;
+import co.yodo.mobile.helper.PreferencesHelper;
 import timber.log.Timber;
 
 @ReportsCrashes(formUri = "http://198.101.209.120/MAB-LAB/report/report.php",
@@ -35,9 +34,9 @@ public class YodoApplication extends SugarApp {
     private static GraphComponent component;
 
     @Override
-    protected void attachBaseContext( Context base ) {
-        super.attachBaseContext( base );
-        ACRA.init( this );
+    protected void attachBaseContext(Context base) {
+        super.attachBaseContext(base);
+        ACRA.init(this);
     }
 
 	@Override
@@ -45,36 +44,51 @@ public class YodoApplication extends SugarApp {
         super.onCreate();
 
         ApplicationComponent appComponent = DaggerApplicationComponent.builder()
-                .applicationModule( new ApplicationModule( this ) )
+                .applicationModule(new ApplicationModule(this))
                 .build();
 
         component = DaggerGraphComponent.builder()
-                .applicationComponent( appComponent )
-                .apiClientModule( new ApiClientModule( Config.IP ) )
+                .applicationComponent(appComponent)
+                .apiClientModule(new ApiClientModule(Config.IP, true))
                 .build();
 
-        // Init secure preferences
-        Hawk.init( this ).build();
+        // Init preferences
+        PreferencesHelper.init(this);
 
         // Init timber
-        if( BuildConfig.DEBUG ) {
+        if (BuildConfig.DEBUG) {
             // Debug
             Timber.plant( new Timber.DebugTree() {
                 // Adds the line number
                 @Override
                 protected String createStackElementTag(StackTraceElement element) {
-                    return super.createStackElementTag( element ) + ':' + element.getLineNumber();
+                    return super.createStackElementTag(element) + ':' + element.getLineNumber();
                 }
             });
         } else {
             // Release
-            Timber.plant( new CrashReportingTree() );
+            Timber.plant(new CrashReportingTree());
         }
 
         // Init jobs manager
-        JobManager.create( this ).addJobCreator(
-                new JobHandler( component.provideJobs() )
+        JobManager.create(this).addJobCreator(
+                new JobHandler(component.provideJobs())
         );
+    }
+
+    /**
+     * Returns an string that represents the server of the IP
+     * @return P  - production
+     *         De - demo
+     *         D  - development
+     *         L  - local
+     */
+    public static String getSwitch() {
+        return Config.getServerIdentifier();
+    }
+
+    public static GraphComponent getComponent() {
+        return component;
     }
 
     /** A tree which logs important information for crash reporting. */
@@ -112,20 +126,5 @@ public class YodoApplication extends SugarApp {
             }
 
         }
-    }
-
-    /**
-     * Returns an string that represents the server of the IP
-     * @return P  - production
-     *         De - demo
-     *         D  - development
-     *         L  - local
-     */
-    public static String getSwitch() {
-        return Config.getServerIdentifier();
-    }
-
-    public static GraphComponent getComponent() {
-        return component;
     }
 }

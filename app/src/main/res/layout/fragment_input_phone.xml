@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    android:id="@+id/rlBase"
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    style="@style/YodoUI.WrapperStyle">
+
+    <ImageView
+        style="@style/YodoUI.Logo.Registration"
+        android:layout_above="@+id/rlInputPhone"
+        android:contentDescription="@string/text.desc"/>
+
+    <RelativeLayout
+        android:id="@+id/rlInputPhone"
+        style="@style/InputPipLayoutTheme"
+        android:layout_centerInParent="true"
+        android:orientation="vertical">
+
+        <co.yodo.mobile.ui.phone.CountryListSpinner
+            android:id="@+id/clsCountries"
+            style="@style/YodoUI.CountrySpinner" />
+
+        <EditText
+            android:id="@+id/etPhoneNumber"
+            style="@style/YodoUI.TextInputEditText.PhoneField"
+            android:layout_toEndOf="@id/clsCountries"
+            android:layout_toRightOf="@id/clsCountries"
+            android:layout_alignBaseline="@id/clsCountries"
+            android:layout_gravity="end" />
+
+        <TextView
+            android:id="@+id/tvPhoneNumberError"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@id/etPhoneNumber"
+            android:layout_alignLeft="@id/etPhoneNumber"
+            android:layout_below="@id/etPhoneNumber"
+            android:paddingStart="2dp"
+            android:paddingEnd="2dp"
+            android:textColor="@color/colorError" />
+
+        <Button
+            android:id="@+id/bSendCode"
+            style="@style/YodoUI.VerifyPhoneButton"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentRight="true"
+            android:layout_below="@id/tvPhoneNumberError"
+            android:text="@string/text.phone.verify" />
+
+        <TextView
+            android:id="@+id/tvPhoneTerms"
+            style="@style/YodoUI.Text.BodyText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/field_padding_vert"
+            android:layout_below="@id/bSendCode"
+            android:textColor="?android:textColorTertiary"
+            android:textIsSelectable="false" />
+
+    </RelativeLayout>
+
+</RelativeLayout>

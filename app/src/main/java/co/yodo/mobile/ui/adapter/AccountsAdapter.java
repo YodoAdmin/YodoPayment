@@ -20,7 +20,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import co.yodo.mobile.R;
 import co.yodo.mobile.helper.AlertDialogHelper;
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.model.dtos.LinkedAccount;
 import co.yodo.mobile.utils.GuiUtils;
 
@@ -86,7 +86,7 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.LinkAc
                     final TextInputEditText etInput = (TextInputEditText) layout.findViewById( R.id.etNickname );
 
                     // Set nickname
-                    etInput.setText( PrefUtils.getNickname( account.getHardwareToken() ) );
+                    etInput.setText( PreferencesHelper.getNickname( account.getHardwareToken() ) );
                     etInput.setSelection( etInput.getText().length() );
 
                     // Prepare on click listener
@@ -100,8 +100,8 @@ public class AccountsAdapter extends RecyclerView.Adapter<AccountsAdapter.LinkAc
                             }
 
                             // Save the new nickname
-                            PrefUtils.saveNickname( account.getHardwareToken(), nickname );
-                            account.setNickname( PrefUtils.getNickname( account.getHardwareToken() ) );
+                            PreferencesHelper.saveNickname( account.getHardwareToken(), nickname );
+                            account.setNickname( PreferencesHelper.getNickname( account.getHardwareToken() ) );
                             notifyItemChanged( holder.getAdapterPosition() );
                         }
                     };

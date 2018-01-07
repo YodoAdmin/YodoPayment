@@ -22,18 +22,18 @@ public class PipUtils {
      * @param etPipConfirm The EditText to confirm the pip
      * @return true if the verification was successful, or false if something failed
      */
-    public static boolean validate( Context context, EditText etPip, EditText etPipConfirm ) {
+    public static boolean validate(Context context, EditText etPip, EditText etPipConfirm) {
         // Get PIP parents, reset and get value
         TextInputLayout pipLayout = (TextInputLayout) etPip.getParent().getParent();
-        pipLayout.setError( null );
+        pipLayout.setError(null);
         final String pip = etPip.getText().toString();
 
         // Get confirmation PIP parents, reset and get value
         TextInputLayout pipConfirmLayout = null;
         String pipConfirm = null;
-        if( etPipConfirm != null ) {
-            pipConfirmLayout = ( TextInputLayout ) etPipConfirm.getParent().getParent();
-            pipConfirmLayout.setError( null );
+        if (etPipConfirm != null) {
+            pipConfirmLayout = (TextInputLayout) etPipConfirm.getParent().getParent();
+            pipConfirmLayout.setError(null);
             pipConfirm = etPipConfirm.getText().toString();
         }
 
@@ -42,35 +42,35 @@ public class PipUtils {
         View focusView = null;
 
         // PIP validations
-        if( TextUtils.isEmpty( pip ) ) {
-            errorMessage = context.getString( R.string.error_required_field );
-        } else if( pip.length() < PIP_MIN_LENGTH ) {
-            errorMessage = context.getString( R.string.error_pip_length );
+        if (TextUtils.isEmpty(pip)) {
+            errorMessage = context.getString(R.string.error_required_field);
+        } else if (pip.length() < PIP_MIN_LENGTH) {
+            errorMessage = context.getString(R.string.error_pip_length);
         }
 
-        if( errorMessage != null ) {
-            pipLayout.setError( errorMessage );
+        if (errorMessage != null) {
+            pipLayout.setError(errorMessage);
             errorMessage = null;
             focusView = etPip;
             valid = false;
         }
 
         // PIP confirm validation
-        if( etPipConfirm != null ) {
-            if( TextUtils.isEmpty( pipConfirm ) ) {
-                errorMessage = context.getString( R.string.error_required_field );
-            } else if( !pip.equals( pipConfirm ) ) {
-                errorMessage = context.getString( R.string.error_pip_match );
+        if (etPipConfirm != null) {
+            if (TextUtils.isEmpty(pipConfirm)) {
+                errorMessage = context.getString(R.string.error_required_field);
+            } else if (!pip.equals(pipConfirm)) {
+                errorMessage = context.getString(R.string.error_pip_match);
             }
 
-            if( errorMessage != null ) {
-                pipConfirmLayout.setError( errorMessage );
+            if (errorMessage != null) {
+                pipConfirmLayout.setError(errorMessage);
                 focusView = etPipConfirm;
                 valid = false;
             }
         }
 
-        if( !valid ) {
+        if (!valid) {
             // There was an error
             focusView.requestFocus();
         }

@@ -1,12 +1,8 @@
 package co.yodo.mobile.business.network.request;
 
-import javax.crypto.spec.SecretKeySpec;
-
-import co.yodo.mobile.business.component.cipher.AESCrypt;
-import co.yodo.mobile.business.component.cipher.RSACrypt;
 import co.yodo.mobile.business.network.ApiClient;
+import co.yodo.mobile.business.network.encryption.IEncryption;
 import co.yodo.mobile.business.network.model.ServerResponse;
-import co.yodo.mobile.business.network.request.contract.IRequest;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
@@ -21,11 +17,11 @@ public class CloseRequest extends IRequest {
 
     /** Close sub-types */
     private enum CloseST {
-        CLIENT ( "1" );
+        CLIENT ("1");
 
         private final String value;
 
-        CloseST( String value ) {
+        CloseST(String value) {
             this.value = value;
         }
 
@@ -39,8 +35,8 @@ public class CloseRequest extends IRequest {
 
     /** Interface for the CLOSE requests */
     interface IApiEndpoint {
-        @GET( YODO_ADDRESS + "{request}" )
-        Call<ServerResponse> closeAcc( @Path( "request" ) String request );
+        @GET(YODO_ADDRESS + "{request}")
+        Call<ServerResponse> closeAcc(@Path("request") String request);
     }
 
     /**
@@ -48,7 +44,7 @@ public class CloseRequest extends IRequest {
      * @param hardwareToken The hardware token of the device
      * @param otp The one time password of the user
      */
-    public CloseRequest( String hardwareToken, String otp ) {
+    public CloseRequest(String hardwareToken, String otp) {
         this.formattedUsrData =
                 otp + USR_SEP +
                 hardwareToken + USR_SEP +
@@ -58,21 +54,16 @@ public class CloseRequest extends IRequest {
     }
 
     @Override
-    public void execute( RSACrypt cipher, ApiClient manager, ApiClient.RequestCallback callback ) {
-        // Generate the AES key
-        SecretKeySpec key = AESCrypt.generateKey();
-        encyptedData = AESCrypt.encrypt( formattedUsrData, key );
-        encyptedKey = cipher.encrypt( AESCrypt.encodeKey( key ) );
-
+    public void execute(IEncryption encryption, ApiClient manager, ApiClient.RequestCallback callback) {
         // Encrypting to newInstance request
-        final String encryptedClientData = encyptedKey + REQ_SEP + encyptedData;
+        final String encryptedClientData = encryption.apply(formattedUsrData);
         final String requestData = buildRequest( CLOSE_RT,
                 requestST.getValue(),
                 encryptedClientData
         );
 
-        IApiEndpoint iCaller = manager.create( IApiEndpoint.class );
-        Call<ServerResponse> request = iCaller.closeAcc( requestData );
-        manager.sendXMLRequest( request, callback );
+        IApiEndpoint iCaller = manager.create(IApiEndpoint.class);
+        Call<ServerResponse> request = iCaller.closeAcc(requestData);
+        manager.sendXMLRequest(request, callback);
     }
 }

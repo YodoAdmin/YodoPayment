@@ -1,5 +1,6 @@
 package co.yodo.mobile.utils;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -21,8 +22,7 @@ import java.io.File;
 
 import co.yodo.mobile.R;
 import co.yodo.mobile.helper.AlertDialogHelper;
-import co.yodo.mobile.helper.AppConfig;
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.model.db.Coupon;
 import co.yodo.mobile.model.db.Receipt;
 import co.yodo.mobile.ui.notification.ToastMaster;
@@ -39,25 +39,25 @@ public class SystemUtils {
      * @param c The Context of the Android system.
      * @return A new hardware token
      */
-    @SuppressLint( "HardwareIds" )
-    public static String generateHardwareToken( Context c ) {
+    @SuppressLint("HardwareIds")
+    public static String generateHardwareToken(Context c) {
         String hardwareToken = null;
 
-        TelephonyManager telephonyManager  = (TelephonyManager) c.getSystemService( Context.TELEPHONY_SERVICE );
+        TelephonyManager telephonyManager = (TelephonyManager) c.getSystemService(Context.TELEPHONY_SERVICE);
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         // Try to get the IMEI
-        if( telephonyManager != null ) {
+        if (telephonyManager != null && ActivityCompat.checkSelfPermission(c, Manifest.permission.READ_PHONE_STATE) == PackageManager.PERMISSION_GRANTED) {
             String tempMAC = telephonyManager.getDeviceId();
-            if( tempMAC != null )
-                hardwareToken = tempMAC.replace( "/", "" );
+            if (tempMAC != null)
+                hardwareToken = tempMAC.replace("/", "");
         }
 
         // Try to get the Bluetooth identifier if this device doesn't have IMEI
-        if( hardwareToken == null && bluetoothAdapter != null ) {
-            if( bluetoothAdapter.isEnabled() ) {
+        if (hardwareToken == null && bluetoothAdapter != null) {
+            if (bluetoothAdapter.isEnabled()) {
                 String tempMAC = bluetoothAdapter.getAddress();
-                hardwareToken = tempMAC.replaceAll( ":", "" );
+                hardwareToken = tempMAC.replaceAll(":", "");
             }
         }
 
@@ -69,15 +69,15 @@ public class SystemUtils {
      * @param activity The activity that
      * @param code The code for the activity result
      * */
-    public static boolean isGooglePlayServicesAvailable( Activity activity, int code ) {
+    public static boolean isGooglePlayServicesAvailable(Activity activity, int code) {
         GoogleApiAvailability apiAvailability = GoogleApiAvailability.getInstance();
-        int resultCode = apiAvailability.isGooglePlayServicesAvailable( activity );
+        int resultCode = apiAvailability.isGooglePlayServicesAvailable(activity);
 
-        if( resultCode != ConnectionResult.SUCCESS ) {
-            if( apiAvailability.isUserResolvableError( resultCode ) ) {
-                apiAvailability.getErrorDialog( activity, resultCode, code ).show();
+        if (resultCode != ConnectionResult.SUCCESS) {
+            if (apiAvailability.isUserResolvableError(resultCode)) {
+                apiAvailability.getErrorDialog(activity, resultCode, code).show();
             } else {
-                ToastMaster.makeText( activity, R.string.error_supported, Toast.LENGTH_LONG ).show();
+                ToastMaster.makeText(activity, R.string.error_supported, Toast.LENGTH_LONG).show();
                 activity.finish();
             }
             return false;
@@ -93,11 +93,11 @@ public class SystemUtils {
      * @param requestCode The request code for the result
      * @return If the permission was already allowed or not
      */
-    public static boolean requestPermission( final Activity ac, final int message, final String permission, final int requestCode ) {
+    public static boolean requestPermission(final Activity ac, final int message, final String permission, final int requestCode) {
         // Assume thisActivity is the current activity
-        int permissionCheck = ContextCompat.checkSelfPermission( ac, permission );
-        if( permissionCheck != PackageManager.PERMISSION_GRANTED ) {
-            if( ActivityCompat.shouldShowRequestPermissionRationale( ac, permission ) ) {
+        int permissionCheck = ContextCompat.checkSelfPermission(ac, permission);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            if (ActivityCompat.shouldShowRequestPermissionRationale(ac, permission)) {
                 DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick( DialogInterface dialog, int which ) {
@@ -116,7 +116,7 @@ public class SystemUtils {
                 );
             } else {
                 // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions( ac, new String[]{permission}, requestCode );
+                ActivityCompat.requestPermissions(ac, new String[]{permission}, requestCode);
             }
             return false;
         }
@@ -131,12 +131,12 @@ public class SystemUtils {
      * @param requestCode The request code for the result
      * @return If the permission was already allowed or not
      */
-    public static boolean requestPermission( final Fragment fr, final int message, final String permission, final int requestCode ) {
+    public static boolean requestPermission(final Fragment fr, final int message, final String permission, final int requestCode) {
         final Activity ac = fr.getActivity();
         // Assume thisActivity is the current activity
-        int permissionCheck = ContextCompat.checkSelfPermission( ac, permission );
-        if( permissionCheck != PackageManager.PERMISSION_GRANTED ) {
-            if( fr.shouldShowRequestPermissionRationale( permission ) ) {
+        int permissionCheck = ContextCompat.checkSelfPermission(ac, permission);
+        if (permissionCheck != PackageManager.PERMISSION_GRANTED) {
+            if (fr.shouldShowRequestPermissionRationale(permission)) {
                 DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick( DialogInterface dialog, int which ) {
@@ -154,7 +154,7 @@ public class SystemUtils {
                 );
             } else {
                 // No explanation needed, we can request the permission.
-                fr.requestPermissions( new String[]{permission}, requestCode );
+                fr.requestPermissions(new String[]{permission}, requestCode);
             }
             return false;
         }
@@ -166,12 +166,12 @@ public class SystemUtils {
      * @param dir The directory
      * @return True if it was success or false if not
      */
-    public static boolean deleteDir( File dir ) {
-        if( dir.isDirectory() ) {
+    public static boolean deleteDir(File dir) {
+        if (dir.isDirectory()) {
             String[] children = dir.list();
-            for( String aChildren : children ) {
-                boolean success = deleteDir( new File( dir, aChildren ) );
-                if( !success )
+            for (String aChildren : children) {
+                boolean success = deleteDir(new File(dir, aChildren));
+                if (!success)
                     return false;
             }
         }
@@ -186,11 +186,11 @@ public class SystemUtils {
      * @return A string with the contents
      */
     @SuppressWarnings( "unused" )
-    public static String bundleToString( Bundle bundle ) {
+    public static String bundleToString(Bundle bundle) {
         StringBuilder buf = new StringBuilder("Bundle { ");
 
-        for( String key : bundle.keySet() ) {
-            buf.append( " " ).append( key ).append( " => " ).append( bundle.get( key ) ).append( ";" );
+        for (String key : bundle.keySet()) {
+            buf.append(" ").append(key).append(" => ").append(bundle.get(key)).append(";");
         }
         buf.append(" } Bundle");
         return buf.toString();
@@ -200,12 +200,12 @@ public class SystemUtils {
      * Clears all the stored information
      * @param context The application context
      */
-    public static void clearUserData( Context context ) {
-        PrefUtils.clearPrefConfig( context );
-        Receipt.deleteAll( Receipt.class );
-        Coupon.deleteAll( Coupon.class );
+    public static void clearUserData(Context context) {
+        PreferencesHelper.clearPrefConfig(context);
+        Receipt.deleteAll(Receipt.class);
+        Coupon.deleteAll(Coupon.class);
         SystemUtils.deleteDir(
-                new File( Environment.getExternalStorageDirectory(), AppConfig.COUPONS_FOLDER )
+                new File(Environment.getExternalStorageDirectory(), AppConfig.COUPONS_FOLDER)
         );
     }
 }

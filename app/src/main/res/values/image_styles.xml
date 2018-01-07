@@ -1,11 +1,21 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <!-- Header Image -->
-    <style name="LogoImageTheme">
+    <!-- Main Logo -->
+    <style name="YodoUI.Logo">
         <item name="android:layout_width">wrap_content</item>
         <item name="android:layout_height">wrap_content</item>
         <item name="android:layout_gravity">center</item>
+    </style>
+
+    <!-- Registration logo -->
+    <style name="YodoUI.Logo.Registration">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_margin">20dp</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:src">@drawable/ic_yodo_logo</item>
     </style>
 
 </resources>

@@ -33,7 +33,18 @@
     <string name="text.eula.refuse">Rechazar</string>
 
     <!-- Registration Messages -->
-    <string name="text.pip.register">Ingrese su nuevo PIP secreto en ambos espacios (4–8 caracteres)</string>
+    <string name="text.currency.title">Seleccione su moneda</string>
+    <string name="text.phone.hint">Número Celular</string>
+    <string name="text.phone.verify">Verificar Número Celular</string>
+    <string name="text.phone.terms">Al presionar “%1$s”, un SMS puede llegar. Datos &amp; de mensajes pueden ser aplicados.</string>
+    <string name="text.phone.verifying">Enviando código…</string>
+    <string name="text.phone.resending">Re-enviando…</string>
+    <string name="text.phone.validated">Validado!</string>
+    <string name="text.phone.confirmation">Ingrese el código de 6 dígitos que enviamos</string>
+    <string name="text.phone.confirmation.resend">Re-enviar el código</string>
+    <string name="text.phone.confirmation.resend.time">Re-enviando en 0:%02d</string>
+    <string name="text.phone.confirmation.retrieving">Re-enviando sms…</string>
+    <string name="text.pip.register">Ingrese su nuevo PIP secreto en ambos espacios (4–8 caracteres). Si ya tiene una cuenta, ingrese su pip</string>
     <string name="text.face.successful">Operación Exitosa!</string>
     <string name="text.register.pip">Creando la cuenta…</string>
     <string name="text.register.bio">Actualizando el token biométrico…</string>
@@ -156,11 +167,10 @@
     <string name="error.unknown">Esto es embarazoso! Ocurrió un error en el proceso</string>
     <string name="error.available">Esta característica no esta disponible todavía</string>
     <string name="error.play.services">Google Play Services debe estar instalado</string>
-    <string name="error.gcm.registration">Disculpe no pudimos salvar su token, inténtelo más tarde o contacte a soporte</string>
+    <string name="error.wrong.field.format">El formato es incorrecto</string>
     <string name="error.required.field">Campo requerido</string>
     <string name="error.required.field.face">El token biométrico es un campo requerido</string>
     <string name="error.balance">Lo sentimos, parece que aún no dispone de un balance</string>
-    <string name="error.hardware">Debe encender su bluetooth primero</string>
     <string name="error.supported">Este dispositivo no es soportado</string>
     <string name="error.pip.match">Los PIP no son iguales</string>
     <string name="error.pip.length">El PIP debe contener al menos 4 dígitos</string>
@@ -173,8 +183,25 @@
     <string name="error.insufficient.funds">Fondos insuficientes</string>
     <string name="error.exceeded.funds">La cuenta destino, excedió su balance límite</string>
 
+    <!-- Phone errors -->
+    <string name="error.phone">Valida tu número primero</string>
+    <string name="error.phone.invalid">Ingresa tu número celular</string>
+    <string name="error.phone.confirmation">Código incorrecto. Intenta de nuevo.</string>
+    <string name="error.phone.session.expired">Este código ya no es válido</string>
+    <string name="error.phone.attempts">Este número celular ya ha sido usado muchas veces</string>
+    <string name="error.phone.quota">Hubo un problema verificando tu número</string>
+
+    <!-- Registration errors -->
+    <string name="error.currency">Necesita seleccionar una moneda primero</string>
+    <string name="error.gcm.registration">Disculpe no pudimos salvar su token, inténtelo más tarde o contacte a soporte</string>
+    <string name="error.user.registered">El cliente ya está registrado</string>
+
     <!-- Network errors -->
     <string name="error.network">Para que no tiene conexión a Internet</string>
     <string name="error.server">Lo sentimos, el servidor respondió con un error. Inténtelo más tarde o contacte a soporte</string>
+
+    <!-- P2P errors -->
+    <string name="error.account.primary">Hubo un problema con la cuenta primaria, quizás aún no tiene un balance</string>
+    <string name="error.account.secondary">Hubo un problema con la cuenta secundaria, quizás el número es incorrecto</string>
 
 </resources>

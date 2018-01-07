@@ -18,11 +18,12 @@ import android.text.Html;
 import android.text.Spanned;
 import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import java.util.Locale;
 
 import co.yodo.mobile.R;
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
 
 /**
  * Created by hei on 10/06/16.
@@ -54,7 +55,7 @@ public class GuiUtils {
      * @param ac The Context of the Android system.
      */
     public static void setLanguage( Context ac ) {
-        final String language = PrefUtils.getLanguage( ac );
+        final String language = PreferencesHelper.getLanguage( ac );
         if( language != null ) {
             Locale appLoc = new Locale( language );
             Locale.setDefault( appLoc );
@@ -68,7 +69,7 @@ public class GuiUtils {
             res.updateConfiguration( config, dm );
         } else {
             final String appLang = ac.getResources().getConfiguration().locale.getLanguage();
-            PrefUtils.saveLanguage( ac, appLang );
+            PreferencesHelper.saveLanguage( ac, appLang );
         }
     }
 
@@ -99,10 +100,11 @@ public class GuiUtils {
      * Sets the action bar and title to the activity
      * @param act      The activity to be updated
      */
-    public static void setActionBar( AppCompatActivity act ) {
+    public static void setActionBar(AppCompatActivity act) {
         ActionBar actionBar = act.getSupportActionBar();
-        if( actionBar != null )
-            actionBar.setDisplayHomeAsUpEnabled( true );
+        if (actionBar != null) {
+            actionBar.setDisplayHomeAsUpEnabled(true);
+        }
     }
 
     /**
@@ -119,5 +121,17 @@ public class GuiUtils {
             context = ( (ContextWrapper) context ).getBaseContext();
         }
         return null;
+    }
+
+    /**
+     * Hides the soft keyboard
+     * @param view The current focus
+     */
+    public static void hideSoftKeyboard(View view) {
+        if (view != null) {
+            Context context = view.getContext();
+            InputMethodManager imm = (InputMethodManager) context.getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+        }
     }
 }

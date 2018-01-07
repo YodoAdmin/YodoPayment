@@ -19,8 +19,8 @@ import co.yodo.mobile.business.network.ApiClient;
 import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.business.network.request.QueryRequest;
 import co.yodo.mobile.business.network.request.ResetPIPRequest;
-import co.yodo.mobile.helper.AppConfig;
-import co.yodo.mobile.ui.fragments.InputPipFragment;
+import co.yodo.mobile.utils.AppConfig;
+import co.yodo.mobile.ui.registration.InputPipFragment;
 import co.yodo.mobile.helper.ProgressDialogHelper;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.ui.option.ResetPipOption;
@@ -83,13 +83,13 @@ public class ResetPipActivity extends BaseActivity {
             case REQUEST_FACE_ACTIVITY:
                 // Successful recognition, let's change the PIP
                 if( resultCode == RESULT_OK ) {
-                    progressManager.create( ResetPipActivity.this );
+                    ProgressDialogHelper.create( ResetPipActivity.this );
                     requestManager.invoke(
-                            new ResetPIPRequest( hardwareToken, authNumber, newPip, ResetPIPRequest.ResetST.PIP_BIO ),
+                            new ResetPIPRequest(uuidToken, authNumber, newPip, ResetPIPRequest.ResetST.PIP_BIO ),
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse( ServerResponse response ) {
-                                    progressManager.destroy();
+                                    ProgressDialogHelper.dismiss();
                                     final String code = response.getCode();
 
                                     switch( code ) {
@@ -165,11 +165,11 @@ public class ResetPipActivity extends BaseActivity {
      * and starts the reset PIP process
      * @param v The view of the button
      */
-    public void resetPip( View v ) {
+    public void resetPip(View v) {
         final String pip = currentFragment.validatePIP();
-        if( pip != null ) {
-            ( (ResetPipOption) optsFactory.getOption( OptionsFactory.Option.RESET_PIP ) )
-                    .setNewPip( pip )
+        if (pip != null) {
+            ((ResetPipOption) optsFactory.getOption(OptionsFactory.Option.RESET_PIP))
+                    .setNewPip(pip)
                     .execute();
         }
     }
@@ -179,9 +179,9 @@ public class ResetPipActivity extends BaseActivity {
      * here the biometric token is used
      * @param v The view of the button
      */
-    public void forgotPip( View v ) {
+    public void forgotPip(View v) {
         final String pip = currentFragment.validatePIP();
-        if( pip != null ) {
+        if (pip != null) {
             newPip = pip;
             boolean cameraPermission = SystemUtils.requestPermission(
                     ResetPipActivity.this,
@@ -201,13 +201,13 @@ public class ResetPipActivity extends BaseActivity {
      */
     private void startRecognition() {
         // Request the biometric token
-        progressManager.create( this );
+        ProgressDialogHelper.create( this );
         requestManager.invoke(
-                new QueryRequest( hardwareToken, QueryRequest.Record.BIOMETRIC ),
+                new QueryRequest(uuidToken, QueryRequest.Record.BIOMETRIC ),
                 new ApiClient.RequestCallback() {
                     @Override
                     public void onResponse( ServerResponse response ) {
-                        progressManager.destroy();
+                        ProgressDialogHelper.dismiss();
                         final String code = response.getCode();
 
                         switch( code ) {
@@ -253,7 +253,7 @@ public class ResetPipActivity extends BaseActivity {
      * @param message The message to display
      */
     private void handleApiError( String message ) {
-        progressManager.destroy();
+        progressManager.dismiss();
         ErrorUtils.handleError(
                 ResetPipActivity.this,
                 message,

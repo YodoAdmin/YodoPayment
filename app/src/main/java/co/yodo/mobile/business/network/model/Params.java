@@ -5,31 +5,38 @@ import org.simpleframework.xml.Root;
 
 @Root( strict = false )
 public class Params {
-    @Element( name = "balance", required = false )
+    @Element(name = "uuid", required = false)
+    private String uuid;
+
+    @Element(name = "balance", required = false)
     private String balance;
 
-    @Element( name = "currency", required = false )
+    @Element(name = "currency", required = false)
     private String currency;
 
-    @Element( name = "linking_code", required = false )
+    @Element(name = "linking_code", required = false)
     private String linking_code;
 
-    @Element( name = "linked_accounts", required = false )
+    @Element(name = "linked_accounts", required = false)
     private String linked_accounts;
 
-    @Element( name = "to", required = false )
+    @Element(name = "to", required = false)
     private String linked_to;
 
-    @Element( name = "from", required = false )
+    @Element(name = "from", required = false)
     private String linked_from;
 
-    @Element( name = "url", required = false )
+    @Element(name = "url", required = false)
     private String url;
 
-    @Element( name = "BiometricToken", required = false )
+    @Element(name = "BiometricToken", required = false)
     private String biometric;
 
     /** Getters */
+    public String getUuid() {
+        return uuid;
+    }
+
     public String getBalance() {
         return balance;
     }
@@ -57,7 +64,6 @@ public class Params {
     public String getBiometricToken() {
         return biometric;
     }
-
     /************/
 
     @Override

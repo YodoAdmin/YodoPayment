@@ -12,7 +12,7 @@ import com.google.android.gms.nearby.messages.Strategy;
 import com.google.android.gms.nearby.messages.SubscribeCallback;
 import com.google.android.gms.nearby.messages.SubscribeOptions;
 
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
 import timber.log.Timber;
 
 /**
@@ -93,7 +93,7 @@ public class PromotionManager {
                             Timber.i( "subscribed successfully" );
                         } else {
                             Timber.i( "could not subscribe" );
-                            PrefUtils.setSubscribing( ac, false );
+                            PreferencesHelper.setSubscribing( ac, false );
                         }
                     }
                 });
@@ -117,7 +117,7 @@ public class PromotionManager {
                             Timber.i( "unsubscribed successfully" );
                         } else {
                             Timber.i( "could not unsubscribe" );
-                            PrefUtils.setSubscribing( ac, true );
+                            PreferencesHelper.setSubscribing( ac, true );
                         }
                     }
                 });

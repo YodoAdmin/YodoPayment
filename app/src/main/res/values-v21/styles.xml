@@ -1,6 +1,6 @@
 <resources>
 
-    <style name="AppTheme.Settings" parent="AppTheme.Base">
+    <style name="AppTheme.Settings" parent="YodoUI">
         <item name="android:alertDialogTheme">@style/AppCompatAlertDialogStyle</item>
     </style>
 

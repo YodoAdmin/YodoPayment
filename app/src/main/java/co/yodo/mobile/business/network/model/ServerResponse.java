@@ -16,8 +16,11 @@ public class ServerResponse implements Serializable {
     public static final String ERROR_ALREADY_LINKED     = "ER10";
     public static final String ERROR_NO_BALANCE         = "ER21";
     public static final String ERROR_INCORRECT_PIP      = "ER22";
+    public static final String ERROR_USER_REGISTERED    = "ER23";
     public static final String ERROR_NOT_REGISTERED     = "ER24";
     public static final String ERROR_NO_LINKS           = "ER101";
+    public static final String ERROR_PRIMARY_ACCOUNT    = "ER201";
+    public static final String ERROR_SECONDARY_ACCOUNT  = "ER202";
     public static final String ERROR_INSUFFICIENT_FUNDS = "ER203";
     public static final String ERROR_AMOUNT_EXCEEDED    = "ER204";
 
@@ -48,22 +51,22 @@ public class ServerResponse implements Serializable {
     public static final String TO   = "to";
     public static final String FROM = "from";
 
-    @Element( name = "code" )
+    @Element(name = "code")
     private String code;
 
-    @Element( name = "authNumber" )
+    @Element(name = "authNumber")
     private String authNumber;
 
-    @Element( name = "message", required = false )
+    @Element(name = "message", required = false)
     private String message;
 
     @Element
     private Params params;
 
-    @Element( name = "rtime" )
+    @Element(name = "rtime")
     private long rtime;
 
-    public void setCode( String code ) {
+    public void setCode(String code) {
         this.code = code;
     }
 
@@ -71,7 +74,7 @@ public class ServerResponse implements Serializable {
         return this.code;
     }
 
-    public void setAuthNumber( String authNumber ) {
+    public void setAuthNumber(String authNumber) {
         this.authNumber = authNumber;
     }
 
@@ -79,7 +82,7 @@ public class ServerResponse implements Serializable {
         return this.authNumber;
     }
 
-    public void setMessage( String message ) {
+    public void setMessage(String message) {
         this.message = message;
     }
 
@@ -99,11 +102,11 @@ public class ServerResponse implements Serializable {
         return this.rtime;
     }
 
-    public void setParams( Params params ) {
+    public void setParams(Params params) {
         this.params = params;
     }
 
-    public String getParam( String test ) { return ""; }
+    public String getParam(String test) { return ""; }
 
 	@Override
 	public String toString() {

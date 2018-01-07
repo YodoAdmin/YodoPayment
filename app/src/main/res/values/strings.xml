@@ -42,6 +42,18 @@
     <string name="text.eula.refuse">Refuse</string>
 
     <!-- Registration Messages -->
+    <string name="text.currency.title">Select your currency</string>
+    <string name="text.currency.hint" translatable="false">N/A</string>
+    <string name="text.phone.hint">Phone Number</string>
+    <string name="text.phone.verify">Verify Phone Number</string>
+    <string name="text.phone.terms">By tapping “%1$s”, an SMS may be sent. Message &amp; data rates may apply.</string>
+    <string name="text.phone.verifying">Sending code…</string>
+    <string name="text.phone.resending">Resending…</string>
+    <string name="text.phone.validated">Validated!</string>
+    <string name="text.phone.confirmation">Enter the 6-digit code we sent to</string>
+    <string name="text.phone.confirmation.resend">Resend Code</string>
+    <string name="text.phone.confirmation.resend.time">Resend code in 0:%02d</string>
+    <string name="text.phone.confirmation.retrieving">Retrieving sms…</string>
     <string name="text.pip.register">Enter your new secret PIP in both spaces (4–8 characters)</string>
     <string name="text.face.successful">Successful Operation!</string>
     <string name="text.register.pip">Creating the account…</string>
@@ -176,11 +188,10 @@
     <string name="error.unknown">This is embarrassing! An error occurred in the process</string>
     <string name="error.available">This feature is not available yet</string>
     <string name="error.play.services">Google Play Services must be installed</string>
-    <string name="error.gcm.registration">Sorry we couldn\'t save your GCM token, try again later or contact support</string>
+    <string name="error.wrong.field.format">The format is incorrect</string>
     <string name="error.required.field">Required field</string>
     <string name="error.required.field.face">The biometric token is a required field</string>
     <string name="error.balance">Sorry, seems that you don\'t have a balance</string>
-    <string name="error.hardware">You must turn on your bluetooth first</string>
     <string name="error.supported">This device is not supported</string>
     <string name="error.pip.match">PIPs do not match</string>
     <string name="error.pip.length">The PIP must contain at least 4 digits</string>
@@ -193,8 +204,25 @@
     <string name="error.insufficient.funds">Insufficient funds</string>
     <string name="error.exceeded.funds">Destination account balance exceeded</string>
 
+    <!-- Phone errors -->
+    <string name="error.phone">Validate your phone number first</string>
+    <string name="error.phone.invalid">Enter a valid phone number</string>
+    <string name="error.phone.confirmation">Wrong code. Try again.</string>
+    <string name="error.phone.session.expired">This code is no longer valid</string>
+    <string name="error.phone.attempts">This phone number has been used too many times</string>
+    <string name="error.phone.quota">There was a problem verifying your phone number</string>
+
+    <!-- Registration errors -->
+    <string name="error.currency">You need to select a currency first</string>
+    <string name="error.gcm.registration">Sorry we couldn\'t save your GCM token, try again later or contact support</string>
+    <string name="error.user.registered">The client is already registered</string>
+
     <!-- Network errors -->
     <string name="error.network">Seems that you don\'t have an Internet connection</string>
     <string name="error.server">Sorry, the server responded with an error. Try again later or contact support</string>
+
+    <!-- P2P errors -->
+    <string name="error.account.primary">There was a problem with the primary account, maybe you don\'t have a balance</string>
+    <string name="error.account.secondary">There was a problem with the secondary account, maybe the number is wrong</string>
 
 </resources>

@@ -13,6 +13,7 @@ import co.yodo.mobile.business.network.ApiClient;
 import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.business.network.request.LinkRequest;
 import co.yodo.mobile.helper.AlertDialogHelper;
+import co.yodo.mobile.helper.ProgressDialogHelper;
 import co.yodo.mobile.ui.BaseActivity;
 import co.yodo.mobile.ui.option.contract.IRequestOption;
 import co.yodo.mobile.utils.ErrorUtils;
@@ -40,13 +41,13 @@ public class LinkAccountOption extends IRequestOption {
                 final String linkingCode = etInput.getText().toString();
 
                 // Start the request, and set the listener to this object
-                progressManager.create( activity );
+                ProgressDialogHelper.create(activity);
                 requestManager.invoke(
-                        new LinkRequest( hardwareToken, linkingCode ),
+                        new LinkRequest(uuidToken, linkingCode ),
                         new ApiClient.RequestCallback() {
                             @Override
                             public void onResponse( ServerResponse response ) {
-                                progressManager.destroy();
+                                ProgressDialogHelper.dismiss();
                                 final String code = response.getCode();
 
                                 switch( code ) {
@@ -71,7 +72,7 @@ public class LinkAccountOption extends IRequestOption {
 
                             @Override
                             public void onError( String message ) {
-                                progressManager.destroy();
+                                ProgressDialogHelper.dismiss();
                                 ErrorUtils.handleError(
                                         activity,
                                         message,

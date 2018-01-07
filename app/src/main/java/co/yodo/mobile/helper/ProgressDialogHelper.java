@@ -13,46 +13,36 @@ import co.yodo.mobile.R;
  * Created by hei on 16/05/16.
  * Handles a progress dialog
  */
-public class ProgressDialogHelper {
+public final class ProgressDialogHelper {
     /** Progress dialog */
-    private ProgressDialog progressDialog = null;
-
-    /** GUI Controllers */
-    private TextView tvLoading;
+    private static ProgressDialog progressDialog = null;
 
     /**
      * Creates a new progress dialog on a respective activity
      * @param activity The activity that will show the dialog
      * @param message A custom message to show in progress bar
      */
-    public void create( Activity activity, String message ) {
-        if( progressDialog != null ) {
-            destroy();
+    public static void create(Activity activity, String message) {
+        dismiss();
+
+        if (progressDialog == null) {
+            // Generate the view
+            LayoutInflater inflater = activity.getLayoutInflater();
+            View view = inflater.inflate(R.layout.dialog_progress, new LinearLayout(activity), false);
+
+            // Create the dialog
+            progressDialog = new ProgressDialog(activity, R.style.TransparentProgressDialog);
+            progressDialog.setCancelable(false);
+
+            progressDialog.show();
+
+            if (message != null) {
+                TextView tvLoading = (TextView) view.findViewById(R.id.tvLoading);
+                tvLoading.setText(message);
+            }
+
+            progressDialog.setContentView(view);
         }
-
-        // Generate the view
-        LayoutInflater inflater = activity.getLayoutInflater();
-        View view = inflater.inflate( R.layout.dialog_progress, new LinearLayout( activity ), false );
-        tvLoading = (TextView) view.findViewById( R.id.tvLoading );
-
-        // Create the dialog
-        progressDialog = new ProgressDialog( activity, R.style.TransparentProgressDialog );
-        progressDialog.setCancelable( false );
-        progressDialog.show();
-
-        if( message != null ) {
-            tvLoading.setText( message );
-        }
-
-        progressDialog.setContentView( view );
-    }
-
-    /**
-     * Creates a new progress dialog on a respective activity
-     * @param activity The activity that will show the dialog
-     */
-    public void create( Activity activity ) {
-        create( activity, null );
     }
 
     /**
@@ -60,34 +50,31 @@ public class ProgressDialogHelper {
      * @param activity The activity that will show the dialog
      * @param message A custom message to show in progress bar
      */
-    public void create( Activity activity, int message ) {
-        create( activity, activity.getString( message ) );
+    public static void create(Activity activity, int message) {
+        create(activity, activity.getString(message));
     }
 
     /**
-     * Change the message of the dialog
-     * @param message The resource
+     * Creates a new progress dialog on a respective activity
+     * @param activity The activity that will show the dialog
      */
-    public void setMessage( int message ) {
-        if( tvLoading == null ) {
-            throw new ExceptionInInitializerError( "Progress dialog not created" );
-        }
-        tvLoading.setText( message );
+    public static void create(Activity activity) {
+        create(activity, null);
     }
 
     /**
      * Verifies if the dialog is being showed
      * @return A boolean that shows if the progress dialog is showing
      */
-    private boolean isShowing() {
+    private static boolean isShowing() {
         return progressDialog != null && progressDialog.isShowing();
     }
 
     /**
      * Destroys the current progress dialog
      */
-    public void destroy() {
-        if( isShowing() ) {
+    public static void dismiss() {
+        if (isShowing()) {
             progressDialog.dismiss();
         }
         progressDialog = null;

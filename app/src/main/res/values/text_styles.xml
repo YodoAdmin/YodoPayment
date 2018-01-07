@@ -1,5 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<resources>
+<resources xmlns:tools="http://schemas.android.com/tools">
+
+    <!-- Phone registration -->
+    <style name="YodoUI.Text">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="YodoUI.Text.T08" tools:ignore="UnusedResources">
+        <item name="android:textSize">16sp</item>
+        <item name="android:lineSpacingExtra">8sp</item>
+    </style>
+
+    <style name="YodoUI.TextInputEditText">
+        <item name="android:textSize">16sp</item>
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+    </style>
+
+    <style name="YodoUI.TextInputEditText.PhoneField">
+        <item name="android:hint">@string/text.phone.hint</item>
+        <item name="android:inputType">phone</item>
+        <item name="android:imeOptions">actionNext</item>
+        <item name="android:paddingBottom">16dp</item>
+        <item name="android:paddingTop">16dp</item>
+    </style>
+
+    <style name="YodoUI.Text.BodyText" parent="YodoUI.Text.T08">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingBottom">@dimen/body_padding_bottom</item>
+    </style>
 
     <!-- PIP Input -->
     <style name="PIPEditTextTheme">
@@ -21,6 +52,9 @@
         <item name="android:layout_height">wrap_content</item>
         <item name="android:singleLine">true</item>
         <item name="android:maxLines">1</item>
+        <item name="android:maxLength">20</item>
+        <item name="android:inputType">numberSigned</item>
+        <item name="android:digits">0123456789</item>
     </style>
 
     <!-- Header Info -->
@@ -32,8 +66,11 @@
 
     <!-- Header Data -->
     <style name="UserDataTextTheme">
-        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_width">match_parent</item>
         <item name="android:layout_height">wrap_content</item>
+        <item name="android:maxLength">16</item>
+        <item name="android:maxLines">1</item>
+        <item name="android:ellipsize">end</item>
     </style>
 
     <!-- Menu -->

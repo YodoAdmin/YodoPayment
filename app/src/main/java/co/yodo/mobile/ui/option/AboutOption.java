@@ -13,7 +13,7 @@ import co.yodo.mobile.BuildConfig;
 import co.yodo.mobile.R;
 import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.helper.AlertDialogHelper;
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.ui.BaseActivity;
 import co.yodo.mobile.ui.option.contract.IOption;
 
@@ -50,7 +50,7 @@ public class AboutOption extends IOption {
         TextView messageView = (TextView) layout.findViewById( R.id.tvMessage );
 
         // Get data
-        final String hardwareToken = PrefUtils.getHardwareToken();
+        final String hardwareToken = PreferencesHelper.getHardwareToken();
         final String message = activity.getString( R.string.text_version ) + " " +
                 BuildConfig.VERSION_NAME + "/" +
                 YodoApplication.getSwitch()    + "\n\n" +

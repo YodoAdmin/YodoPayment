@@ -11,7 +11,6 @@ import co.yodo.mobile.business.network.request.ResetPIPRequest;
 import co.yodo.mobile.helper.AlertDialogHelper;
 import co.yodo.mobile.ui.BaseActivity;
 import co.yodo.mobile.ui.notification.ToastMaster;
-import co.yodo.mobile.ui.option.contract.IOption;
 import co.yodo.mobile.ui.option.contract.IRequestOption;
 import co.yodo.mobile.utils.ErrorUtils;
 import co.yodo.mobile.utils.PipUtils;
@@ -37,11 +36,11 @@ public class ResetPipOption extends IRequestOption  {
 
                     progressManager.create( activity );
                     requestManager.invoke(
-                            new ResetPIPRequest( hardwareToken, pip, newPip ),
+                            new ResetPIPRequest(uuidToken, pip, newPip ),
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse( ServerResponse response ) {
-                                    progressManager.destroy();
+                                    progressManager.dismiss();
                                     final String code = response.getCode();
 
                                     switch( code ) {
@@ -67,7 +66,7 @@ public class ResetPipOption extends IRequestOption  {
 
                                 @Override
                                 public void onError( String message ) {
-                                    progressManager.destroy();
+                                    progressManager.dismiss();
                                     ErrorUtils.handleError(
                                             activity,
                                             message,

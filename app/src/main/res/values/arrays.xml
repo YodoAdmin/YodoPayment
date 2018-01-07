@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="array_currencies" translatable="false">
+        <item>MXN</item>
+        <item>CAD</item>
+        <item>USD</item>
+        <item>JPY</item>
+        <item>BRL</item>
+        <item>CNY</item>
+        <item>INR</item>
+        <item>EUR</item>
+        <item>PHP</item>
+        <item>RUB</item>
+        <item>UAH</item>
+        <item>PEN</item>
+    </string-array>
+
+</resources>

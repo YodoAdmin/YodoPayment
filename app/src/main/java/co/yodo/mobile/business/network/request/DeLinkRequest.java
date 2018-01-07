@@ -1,16 +1,11 @@
 package co.yodo.mobile.business.network.request;
 
-import javax.crypto.spec.SecretKeySpec;
-
-import co.yodo.mobile.business.component.cipher.AESCrypt;
-import co.yodo.mobile.business.component.cipher.RSACrypt;
 import co.yodo.mobile.business.network.ApiClient;
+import co.yodo.mobile.business.network.encryption.IEncryption;
 import co.yodo.mobile.business.network.model.ServerResponse;
-import co.yodo.mobile.business.network.request.contract.IRequest;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
-import timber.log.Timber;
 
 /**
  * Created by hei on 12/06/16.
@@ -22,12 +17,12 @@ public class DeLinkRequest extends IRequest {
 
     /** De-Link sub-types */
     public enum DeLinkST {
-        TO   ( "0" ),
-        FROM ( "1" );
+        TO   ("0"),
+        FROM ("1");
 
         private final String value;
 
-        DeLinkST( String value ) {
+        DeLinkST(String value) {
             this.value = value;
         }
 
@@ -41,8 +36,8 @@ public class DeLinkRequest extends IRequest {
 
     /** Interface for the DE_LINK requests */
     interface IApiEndpoint {
-        @GET( YODO_ADDRESS + "{request}" )
-        Call<ServerResponse> deLink( @Path( "request" ) String request );
+        @GET(YODO_ADDRESS + "{request}")
+        Call<ServerResponse> deLink(@Path("request") String request );
     }
 
     /**
@@ -52,21 +47,15 @@ public class DeLinkRequest extends IRequest {
      * @param linkedAccount The linked account number
      * @param requestST The type of the account/request (donor or recipient)
      */
-    public DeLinkRequest( String hardwareToken, String pip, String linkedAccount, DeLinkST requestST ) {
+    public DeLinkRequest(String hardwareToken, String pip, String linkedAccount, DeLinkST requestST) {
         this.formattedUsrData = hardwareToken + REQ_SEP + pip + REQ_SEP + linkedAccount;
         this.requestST = requestST;
     }
 
     @Override
-    public void execute( RSACrypt cipher, ApiClient manager, ApiClient.RequestCallback callback ) {
-        // Generate AES Key
-        Timber.i(formattedUsrData);
-        SecretKeySpec key = AESCrypt.generateKey();
-        encyptedData = AESCrypt.encrypt( formattedUsrData, key );
-        encyptedKey = cipher.encrypt( AESCrypt.encodeKey( key ) );
-
+    public void execute(IEncryption encryption, ApiClient manager, ApiClient.RequestCallback callback) {
         // Encrypting to newInstance request
-        final String encryptedClientData = encyptedKey + REQ_SEP + encyptedData;
+        final String encryptedClientData = encryption.apply(formattedUsrData);
         final String requestData = buildRequest( DELINK_RT,
                 requestST.getValue(),
                 encryptedClientData

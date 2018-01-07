@@ -18,7 +18,7 @@ public class Coupon extends SugarRecord {
 	@SuppressWarnings("unused")
 	public Coupon() {}
 
-	public Coupon( String url, String description ) {
+	public Coupon(String url, String description) {
 		// Date formatter
 		SimpleDateFormat sdf = new SimpleDateFormat( DATE_FORMAT, Locale.US );
 

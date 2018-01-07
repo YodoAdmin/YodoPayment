@@ -21,7 +21,8 @@ import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.business.network.request.AuthenticateRequest;
 import co.yodo.mobile.business.network.request.QueryRequest;
 import co.yodo.mobile.helper.AlertDialogHelper;
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
+import co.yodo.mobile.helper.ProgressDialogHelper;
 import co.yodo.mobile.ui.BaseActivity;
 import co.yodo.mobile.ui.dialog.PaymentDialog;
 import co.yodo.mobile.ui.dialog.PaymentDialog.Payment;
@@ -65,13 +66,13 @@ public class PaymentOption extends IRequestOption {
                     final String otp = TOTPUtils.defaultOTP( etInput.getText().toString() );
 
                     // Start the request
-                    progressManager.create( activity );
+                    ProgressDialogHelper.create( activity );
                     requestManager.invoke(
-                            new AuthenticateRequest( hardwareToken, otp ),
+                            new AuthenticateRequest(uuidToken, otp ),
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse( ServerResponse response ) {
-                                    progressManager.destroy();
+                                    ProgressDialogHelper.dismiss();
                                     final String code = response.getCode();
 
                                     switch( code ) {
@@ -113,7 +114,7 @@ public class PaymentOption extends IRequestOption {
         clearGUI();
         sbTips.setProgress( 0 );
 
-        if( PrefUtils.isTipping( activity ) ) {
+        if( PreferencesHelper.isTipping( activity ) ) {
             llTips.setVisibility( View.VISIBLE );
         } else {
             llTips.setVisibility( View.GONE );
@@ -155,41 +156,41 @@ public class PaymentOption extends IRequestOption {
      * Request the linked accounts (if any) to the server
      * @param otp The user one time password, required for the request
      */
-    private void requestLinkedAccounts( final String otp ) {
-        progressManager.create( activity );
+    private void requestLinkedAccounts(final String otp) {
+        ProgressDialogHelper.create(activity);
         requestManager.invoke(
-                new QueryRequest( hardwareToken, otp, QueryRequest.Record.LINKED_ACCOUNTS ),
+                new QueryRequest(uuidToken, otp, QueryRequest.Record.LINKED_ACCOUNTS),
                 new ApiClient.RequestCallback() {
                     @Override
-                    public void onResponse( ServerResponse response ) {
-                        progressManager.destroy();
+                    public void onResponse(ServerResponse response) {
+                        ProgressDialogHelper.dismiss();
                         final String code = response.getCode();
-                        final String userCode = otp + SKS_SEP + hardwareToken;
+                        final String userCode = otp + SKS_SEP + uuidToken;
                         final String tip = String.valueOf(sbTips.getProgress());
 
-                        switch( code ) {
+                        switch (code) {
                             case ServerResponse.AUTHORIZED:
                                 final String from = response.getParams().getLinkedFrom();
 
                                 // If we have a link show the options
-                                if( from != null && !from.isEmpty() ) {
+                                if (from != null && !from.isEmpty()) {
                                     PaymentDialog.OnClickListener onClick = new PaymentDialog.OnClickListener() {
                                         @Override
                                         public void onClick( final Payment type ) {
-                                            final String[] accounts = from.split( ACC_SEP );
+                                            final String[] accounts = from.split(ACC_SEP);
 
-                                            switch( type ) {
+                                            switch (type) {
                                                 case HEART:
-                                                    if( accounts.length > 1 ) {
+                                                    if (accounts.length > 1) {
                                                         List<String> list = new ArrayList<>();
-                                                        for( String account : accounts ) {
-                                                            list.add( PrefUtils.getNickname( account ) );
+                                                        for (String account : accounts) {
+                                                            list.add(PreferencesHelper.getNickname(account));
                                                         }
 
                                                         DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
                                                             @Override
                                                             public void onClick( DialogInterface dialog, final int item ) {
-                                                                final String donor = TOTPUtils.sha1( accounts[item] );
+                                                                final String donor = TOTPUtils.sha1(accounts[item]);
                                                                 showSKS(tip, userCode + SKS_SEP + donor, type.getValue());
                                                                 dialog.dismiss();
                                                             }
@@ -242,21 +243,21 @@ public class PaymentOption extends IRequestOption {
      * @param code The code that contains the user data
      * @param paymentType The type of payment (e.g. yodo, heart)
      */
-    private void showSKS( String tip, String code, String paymentType ) {
+    private void showSKS(String tip, String code, String paymentType) {
         final String header = paymentType + HDR_SEP + tip;
-        final Bitmap sksCode = SKSCreater.createSKS( activity, header, code );
-        final IDialog dialog = new SKSDialog.Builder( activity )
-                .code( sksCode )
-                .brightness( 1.0f )
-                .dismiss( TIME_TO_DISMISS_SKS )
-                .dismissKey( KeyEvent.KEYCODE_BACK )
+        final Bitmap sksCode = SKSCreater.createSKS(activity, header, code);
+        final IDialog dialog = new SKSDialog.Builder(activity)
+                .code(sksCode)
+                .brightness(1.0f)
+                .dismiss(TIME_TO_DISMISS_SKS)
+                .dismissKey(KeyEvent.KEYCODE_BACK)
                 .build();
 
         // Sets the dialog to the activity for a future dismiss
-        activity.setDialog( dialog );
+        activity.setDialog(dialog);
 
         // It should fix the problem with the delay in the receipts
-        activity.sendBroadcast( new Intent( activity, HeartbeatReceiver.class ) );
+        activity.sendBroadcast(new Intent(activity, HeartbeatReceiver.class));
     }
 
     /**
@@ -276,7 +277,7 @@ public class PaymentOption extends IRequestOption {
      * let's show the correct message
      */
     private void handleApiError( String message ) {
-        progressManager.destroy();
+        ProgressDialogHelper.dismiss();
         ErrorUtils.handleError(
                 activity,
                 message,

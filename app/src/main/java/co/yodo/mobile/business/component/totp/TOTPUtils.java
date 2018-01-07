@@ -56,13 +56,14 @@ public class TOTPUtils {
      * @param password The text - usually a password
      * @return The hash key for the text
      */
-    public static String sha1( String password ) {
+    public static String sha1(String password) {
         try {
-            MessageDigest crypt = MessageDigest.getInstance( "SHA-1" );
+            MessageDigest crypt = MessageDigest.getInstance("SHA-1");
             crypt.reset();
-            crypt.update( password.getBytes( "UTF-8" ) );
-            return new BigInteger( 1, crypt.digest() ).toString( 16 );
-        } catch( NoSuchAlgorithmException | UnsupportedEncodingException e ) {
+            crypt.update( password.getBytes("UTF-8"));
+            return convertToHex(crypt.digest());
+            //return new BigInteger(1, crypt.digest()).toString(16);
+        } catch(NoSuchAlgorithmException | UnsupportedEncodingException e) {
             e.printStackTrace();
         }
         return null;
@@ -79,8 +80,10 @@ public class TOTPUtils {
             throw new NullPointerException( "Null user pip" );
         }
 
+        /*Timber.i("Pip: " + pip);
+        Timber.i("Hash: " + hashPip);
         Timber.i("Time: " + System.currentTimeMillis());
-        Timber.i("Time: " + TOTPUtils.getTimeIndex());
+        Timber.i("Time: " + TOTPUtils.getTimeIndex());*/
 
         final int otp = TOTP.generateTOTP(
                 hashPip.getBytes(),
@@ -90,5 +93,18 @@ public class TOTPUtils {
         );
 
         return String.valueOf( otp );
+    }
+
+    private static String convertToHex(byte[] data) {
+        StringBuilder buf = new StringBuilder();
+        for (byte b : data) {
+            int halfbyte = (b >>> 4) & 0x0F;
+            int two_halfs = 0;
+            do {
+                buf.append((0 <= halfbyte) && (halfbyte <= 9) ? (char) ('0' + halfbyte) : (char) ('a' + (halfbyte - 10)));
+                halfbyte = b & 0x0F;
+            } while (two_halfs++ < 1);
+        }
+        return buf.toString();
     }
 }

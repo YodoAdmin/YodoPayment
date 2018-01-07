@@ -1,6 +1,6 @@
 package co.yodo.mobile.ui.option.factory;
 
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.ui.BaseActivity;
 import co.yodo.mobile.ui.option.AboutOption;
 import co.yodo.mobile.ui.option.BalanceOption;
@@ -57,7 +57,7 @@ public class OptionsFactory {
     public IOption getOption( Option option ) {
         // Stop the subscribing for any option except coupons
         if( option != Option.COUPONS ) {
-            PrefUtils.setSubscribing( activity, false );
+            PreferencesHelper.setSubscribing( activity, false );
         }
 
         switch( option ) {

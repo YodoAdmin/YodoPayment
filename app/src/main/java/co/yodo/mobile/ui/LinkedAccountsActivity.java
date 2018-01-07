@@ -22,7 +22,7 @@ import co.yodo.mobile.business.component.totp.TOTPUtils;
 import co.yodo.mobile.business.network.ApiClient;
 import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.business.network.request.DeLinkRequest;
-import co.yodo.mobile.helper.PrefUtils;
+import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.model.dtos.ErrorEvent;
 import co.yodo.mobile.model.dtos.LinkedAccount;
 import co.yodo.mobile.ui.adapter.AccountsAdapter;
@@ -41,10 +41,10 @@ public class LinkedAccountsActivity extends BaseActivity {
     ApiClient requestManager;
 
     /** GUI controllers */
-    @BindView( R.id.layout_accounts_to )
+    @BindView(R.id.layout_accounts_to)
     RecyclerView rvAccountsTo;
 
-    @BindView( R.id.layout_accounts_from )
+    @BindView(R.id.layout_accounts_from)
     RecyclerView rvAccountsFrom;
 
     /** Temporal pip */
@@ -67,9 +67,9 @@ public class LinkedAccountsActivity extends BaseActivity {
     private static final String ACC_SEP = "-";
 
     @Override
-    protected void onCreate( Bundle savedInstanceState ) {
-        super.onCreate( savedInstanceState );
-        setContentView( R.layout.activity_linked_accounts );
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_linked_accounts);
 
         setupGUI( savedInstanceState );
         updateData();
@@ -80,19 +80,19 @@ public class LinkedAccountsActivity extends BaseActivity {
         super.onDestroy();
 
         // Remove the pendant accounts
-        removeAccountsRemote( toAdapter.getAccountsPendingRemoval() );
-        removeAccountsRemote( fromAdapter.getAccountsPendingRemoval() );
+        removeAccountsRemote(toAdapter.getAccountsPendingRemoval());
+        removeAccountsRemote(fromAdapter.getAccountsPendingRemoval());
     }
 
     @Override
-    public boolean onOptionsItemSelected( MenuItem item ) {
+    public boolean onOptionsItemSelected(MenuItem item) {
         int itemId = item.getItemId();
-        switch( itemId ) {
+        switch (itemId) {
             case android.R.id.home:
                 finish();
                 break;
         }
-        return super.onOptionsItemSelected( item );
+        return super.onOptionsItemSelected(item);
     }
 
     /**
@@ -163,7 +163,7 @@ public class LinkedAccountsActivity extends BaseActivity {
         for( String account : data ) {
             if( account != null && account.length() > 0 ) {
                 LinkedAccount linked = new LinkedAccount( account, st );
-                linked.setNickname( PrefUtils.getNickname( account ) );
+                linked.setNickname( PreferencesHelper.getNickname( account ) );
                 accounts.add( linked );
             }
         }
@@ -196,7 +196,7 @@ public class LinkedAccountsActivity extends BaseActivity {
                     final LinkedAccount account = accounts.get( swipedPosition );
                     adapter.remove( swipedPosition );
                     requestManager.invoke(
-                            new DeLinkRequest( hardwareToken, TOTPUtils.defaultOTP(pip), account.getHardwareToken(), account.getRequestST() ),
+                            new DeLinkRequest(uuidToken, TOTPUtils.defaultOTP(pip), account.getHardwareToken(), account.getRequestST() ),
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse( ServerResponse response ) {
@@ -238,7 +238,7 @@ public class LinkedAccountsActivity extends BaseActivity {
     private void removeAccountsRemote( List<LinkedAccount> removed ) {
         for( LinkedAccount account : removed ) {
             requestManager.invoke(
-                    new DeLinkRequest( hardwareToken, TOTPUtils.defaultOTP(pip), account.getHardwareToken(), account.getRequestST() ),
+                    new DeLinkRequest(uuidToken, TOTPUtils.defaultOTP(pip), account.getHardwareToken(), account.getRequestST() ),
                     new ApiClient.RequestCallback() {
                         @Override
                         public void onResponse( ServerResponse response ) {
