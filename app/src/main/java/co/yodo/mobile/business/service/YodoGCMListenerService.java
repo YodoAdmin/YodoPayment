@@ -43,10 +43,10 @@ public class YodoGCMListenerService extends GcmListenerService {
      *             For Set of keys use data.keySet().
      */
     @Override
-    public void onMessageReceived( String from, Bundle data ) {
+    public void onMessageReceived(String from, Bundle data ) {
         try {
             String message = data.getString("message");
-            Timber.i(message);
+            Timber.e(message);
 
             if (!JsonUtils.isValidJson(message)) {
                 return;
@@ -81,8 +81,10 @@ public class YodoGCMListenerService extends GcmListenerService {
      * Dismiss the current notification
      */
     public static void cancelNotification( Context context ) {
-        NotificationManager nManager = (NotificationManager) context.getSystemService( Context.NOTIFICATION_SERVICE );
-        nManager.cancelAll();
+        NotificationManager nManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (nManager != null) {
+            nManager.cancelAll();
+        }
     }
 
     /**
@@ -114,17 +116,16 @@ public class YodoGCMListenerService extends GcmListenerService {
         final String currency = transfer.getAccountCurrency();
         updateBalance(balance, currency);
 
-        final String temp = FormatUtils.truncateDecimal( transfer.getAmount() ) + " " +  transfer.getCurrency();
-        final String from = getString( R.string.text_transfer_notification_from, transfer.getFrom() );
-        final String amount = getString( R.string.text_transfer_notification_amount, temp );
+        final String temp = FormatUtils.truncateDecimal(transfer.getAmount() ) + " " +  transfer.getCurrency();
+        final String from = getString(R.string.text_transfer_notification_from, transfer.getFrom());
+        final String amount = getString(R.string.text_transfer_notification_amount, temp);
         NotificationCompat.Builder builder = getNotificationBuilder()
-                .setContentTitle( getString( R.string.text_transfer_notification_title ) )
+                .setContentTitle(getString(R.string.text_transfer_notification_title))
                 .setStyle(new NotificationCompat.InboxStyle()
                         .addLine(from)
                         .addLine(amount)
                 );
-
-        notificationManager.notify( RECEIPT_NOTIFICATION_ID, builder.build() );
+        notificationManager.notify(RECEIPT_NOTIFICATION_ID, builder.build());
     }
 
     /**
@@ -140,12 +141,12 @@ public class YodoGCMListenerService extends GcmListenerService {
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
-        final Uri defaultSoundUri = RingtoneManager.getDefaultUri( RingtoneManager.TYPE_NOTIFICATION );
-        return new NotificationCompat.Builder( this )
-                .setSmallIcon( getNotificationIcon() )
-                .setAutoCancel( true )
-                .setSound( defaultSoundUri )
-                .setContentIntent( pendingIntent );
+        final Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+        return new NotificationCompat.Builder(this)
+                .setSmallIcon(getNotificationIcon())
+                .setAutoCancel(true)
+                .setSound(defaultSoundUri)
+                .setContentIntent(pendingIntent);
     }
 
     /**
@@ -159,8 +160,8 @@ public class YodoGCMListenerService extends GcmListenerService {
 
     private void updateBalance(String balance, String currency) {
         // Trim the balance
-        PreferencesHelper.saveBalance( String.format( "%s %s",
-                FormatUtils.truncateDecimal( balance ), currency
-        ) );
+        PreferencesHelper.saveBalance(String.format("%s %s",
+                FormatUtils.truncateDecimal(balance), currency
+        ));
     }
 }

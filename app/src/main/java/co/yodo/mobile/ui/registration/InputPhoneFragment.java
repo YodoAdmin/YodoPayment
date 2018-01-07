@@ -98,14 +98,15 @@ public class InputPhoneFragment extends BaseFragment implements View.OnClickList
     String validatePhoneNumber() {
         final String phoneNumber = PreferencesHelper.getPhoneNumber();
         if (phoneNumber == null) {
-            tvPhoneNumberError.setText(R.string.error_phone);
+            showError(getString(R.string.error_phone));
         }
+
         return phoneNumber;
     }
 
     /** Next step for the validation */
     private void onNext() {
-        String phoneNumber = getPseudoValidPhoneNumber();
+        final String phoneNumber = getPseudoValidPhoneNumber();
         if (phoneNumber == null) {
             tvPhoneNumberError.setText(R.string.error_phone_invalid);
         } else {
@@ -159,6 +160,6 @@ public class InputPhoneFragment extends BaseFragment implements View.OnClickList
             return null;
         }
 
-        return PhoneNumberUtils.formatPhoneNumber(everythingElse, countryInfo);
+        return PhoneNumberUtils.format(everythingElse, countryInfo);
     }
 }

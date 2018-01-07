@@ -33,13 +33,13 @@ import co.yodo.mobile.business.network.request.RegisterRequest;
 import co.yodo.mobile.business.service.RegistrationIntentService;
 import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.ui.PaymentActivity;
+import co.yodo.mobile.utils.PhoneNumberUtils;
 import co.yodo.mobile.utils.SystemUtils;
 import co.yodo.mobile.model.dtos.GCMResponse;
 import co.yodo.mobile.ui.CameraActivity;
 import co.yodo.mobile.helper.ProgressDialogHelper;
 import co.yodo.mobile.ui.notification.ToastMaster;
 import co.yodo.mobile.utils.ErrorUtils;
-import timber.log.Timber;
 
 import static android.app.Activity.RESULT_OK;
 
@@ -51,6 +51,7 @@ public class InputBiometricFragment extends Fragment {
     /** Bundle keys */
     private static final String ARG_PHONE = "ARG_PHONE";
     private static final String ARG_PIP = "ARG_PIP";
+    private static final String ARG_CURRENCY = "ARG_CURRENCY";
 
     /** The application context */
     @Inject
@@ -76,7 +77,9 @@ public class InputBiometricFragment extends Fragment {
     private String authNumber;
     private String phoneNumber;
     private String pip;
+    private String currency;
     private String biometricToken;
+    private String migrationToken = "";
 
     /** Request codes for the permissions */
     private static final int PERMISSIONS_REQUEST_CAMERA = 1;
@@ -89,11 +92,12 @@ public class InputBiometricFragment extends Fragment {
      * @param pip The pip as parameter
      * @return The fragment
      */
-    public static InputBiometricFragment newInstance(String hardwareToken, String pip ) {
+    public static InputBiometricFragment newInstance(String hardwareToken, String pip, String currency) {
         InputBiometricFragment fragment = new InputBiometricFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PHONE, hardwareToken);
         args.putString(ARG_PIP, pip);
+        args.putString(ARG_CURRENCY, currency);
         fragment.setArguments(args);
         return fragment;
     }
@@ -168,6 +172,7 @@ public class InputBiometricFragment extends Fragment {
         }
 
         if (authNumber == null || uuid == null) {
+            migrationToken = PreferencesHelper.getHardwareToken();
             validateBioAndRegister();
         } else {
             updateBiometricToken(authNumber, uuid);
@@ -182,7 +187,7 @@ public class InputBiometricFragment extends Fragment {
         // Register the user
         ProgressDialogHelper.create(activity, R.string.text_register_pip);
         requestManager.invoke(
-                new RegisterRequest(phoneNumber, pip, RegisterRequest.RegST.PHONE),
+                new RegisterRequest(PhoneNumberUtils.format(phoneNumber), pip, currency, migrationToken, RegisterRequest.RegST.PHONE),
                 new ApiClient.RequestCallback() {
                     @Override
                     public void onResponse(ServerResponse response) {
@@ -196,7 +201,7 @@ public class InputBiometricFragment extends Fragment {
 
                                 // Time to update the biometric token
                                 final String authNumber = response.getAuthNumber();
-                                PreferencesHelper.saveAuthNumber(authNumber);
+                                PreferencesHelper.setAuthNumber(authNumber);
                                 updateBiometricToken(authNumber, uuid);
                                 break;
 
@@ -234,7 +239,8 @@ public class InputBiometricFragment extends Fragment {
                         if (code.equals(ServerResponse.AUTHORIZED)) {
                             // Successfully registered the biometric token
                             ProgressDialogHelper.create(activity, R.string.text_register_gcm);
-                            PreferencesHelper.saveAuthNumber(null);
+                            PreferencesHelper.setAuthNumber(null);
+                            PreferencesHelper.setPhoneNumber(null);
                             RegistrationIntentService.newInstance(context, uuid);
                         }
                         else {
@@ -283,6 +289,7 @@ public class InputBiometricFragment extends Fragment {
         if (getArguments() != null) {
             phoneNumber = getArguments().getString(ARG_PHONE);
             pip = getArguments().getString(ARG_PIP);
+            currency = getArguments().getString(ARG_CURRENCY);
         } else {
             uuid = PreferencesHelper.getUuidToken();
             authNumber = PreferencesHelper.getAuthNumber();

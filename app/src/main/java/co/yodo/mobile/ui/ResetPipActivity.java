@@ -165,11 +165,11 @@ public class ResetPipActivity extends BaseActivity {
      * and starts the reset PIP process
      * @param v The view of the button
      */
-    public void resetPip( View v ) {
+    public void resetPip(View v) {
         final String pip = currentFragment.validatePIP();
-        if( pip != null ) {
-            ( (ResetPipOption) optsFactory.getOption( OptionsFactory.Option.RESET_PIP ) )
-                    .setNewPip( pip )
+        if (pip != null) {
+            ((ResetPipOption) optsFactory.getOption(OptionsFactory.Option.RESET_PIP))
+                    .setNewPip(pip)
                     .execute();
         }
     }
@@ -179,9 +179,9 @@ public class ResetPipActivity extends BaseActivity {
      * here the biometric token is used
      * @param v The view of the button
      */
-    public void forgotPip( View v ) {
+    public void forgotPip(View v) {
         final String pip = currentFragment.validatePIP();
-        if( pip != null ) {
+        if (pip != null) {
             newPip = pip;
             boolean cameraPermission = SystemUtils.requestPermission(
                     ResetPipActivity.this,

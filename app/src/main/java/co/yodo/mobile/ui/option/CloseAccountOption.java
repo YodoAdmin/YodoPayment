@@ -9,6 +9,7 @@ import co.yodo.mobile.business.network.ApiClient;
 import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.business.network.request.CloseRequest;
 import co.yodo.mobile.helper.AlertDialogHelper;
+import co.yodo.mobile.helper.ProgressDialogHelper;
 import co.yodo.mobile.ui.BaseActivity;
 import co.yodo.mobile.ui.option.contract.IRequestOption;
 import co.yodo.mobile.utils.ErrorUtils;
@@ -35,20 +36,20 @@ public class CloseAccountOption extends IRequestOption {
                 if( PipUtils.validate( activity, etInput, null ) ) {
                     final String otp = TOTPUtils.defaultOTP( etInput.getText().toString() );
 
-                    progressManager.create( activity, R.string.text_account_closing );
+                    ProgressDialogHelper.create( activity, R.string.text_account_closing );
                     requestManager.invoke(
                             new CloseRequest(uuidToken, otp ),
                             new ApiClient.RequestCallback() {
                                 @Override
                                 public void onResponse( ServerResponse response ) {
-                                    progressManager.dismiss();
+                                    ProgressDialogHelper.dismiss();
                                     final String code = response.getCode();
 
                                     switch( code ) {
                                         case ServerResponse.AUTHORIZED:
                                             // Destroy the dialog and clears the saved data
                                             alertDialog.dismiss();
-                                            SystemUtils.clearUserData( activity );
+                                            SystemUtils.clearUserData(activity);
 
                                             // Setups the AlertDialog
                                             DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {

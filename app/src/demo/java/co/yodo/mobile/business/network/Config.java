@@ -11,7 +11,7 @@ public class Config {
     private static final String LOCAL_IP = "http://192.168.1.38";    // Local
 
     /** IP used for requests */
-    public static final String IP = DEV_IP;
+    public static final String IP = DEMO_IP;
 
     /**
      * Returns an string that represents the server of the IP

@@ -253,8 +253,8 @@ public class PaymentActivity extends BaseActivity implements
 
         // Set the account number and current date
         tvAccountNumber.setText(uuidToken);
-        tvAccountDate.setText( FormatUtils.getCurrentDate() );
-        tvAccountBalance.setText( PreferencesHelper.getCurrentBalance() );
+        tvAccountDate.setText(FormatUtils.getCurrentDate());
+        tvAccountBalance.setText(PreferencesHelper.getCurrentBalance());
     }
 
     /**
@@ -263,6 +263,7 @@ public class PaymentActivity extends BaseActivity implements
      */
     public static void newInstance(Context context) {
         Intent intent = new Intent(context, PaymentActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 

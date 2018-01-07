@@ -19,6 +19,8 @@ public class ServerResponse implements Serializable {
     public static final String ERROR_USER_REGISTERED    = "ER23";
     public static final String ERROR_NOT_REGISTERED     = "ER24";
     public static final String ERROR_NO_LINKS           = "ER101";
+    public static final String ERROR_PRIMARY_ACCOUNT    = "ER201";
+    public static final String ERROR_SECONDARY_ACCOUNT  = "ER202";
     public static final String ERROR_INSUFFICIENT_FUNDS = "ER203";
     public static final String ERROR_AMOUNT_EXCEEDED    = "ER204";
 

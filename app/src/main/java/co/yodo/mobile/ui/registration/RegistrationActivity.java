@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.AppCompatButton;
 import android.text.TextUtils;
 import android.view.MenuItem;
@@ -154,7 +153,7 @@ public class RegistrationActivity extends BaseActivity {
                         currentFragment = TAG_REG_PNE;
                     }
                     else if (PreferencesHelper.getAuthNumber() == null) {
-                        fragment = new InputPipFragment();
+                        fragment = InputPipFragment.newInstance(true);
                         currentFragment = TAG_REG_PIP;
                     }
                     else {
@@ -235,6 +234,7 @@ public class RegistrationActivity extends BaseActivity {
      */
     public static void newInstance(Context context) {
         Intent intent = new Intent(context, RegistrationActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 
@@ -266,7 +266,7 @@ public class RegistrationActivity extends BaseActivity {
         switch (currentFragment.getTag()) {
             case TAG_REG_PNE:
                 if (((InputPhoneFragment) currentFragment).validatePhoneNumber() != null) {
-                    InputPipFragment pipFragment = new InputPipFragment();
+                    InputPipFragment pipFragment = InputPipFragment.newInstance(true);
                     fragmentManager.beginTransaction()
                             .replace(R.id.fragment_container, pipFragment, TAG_REG_PIP)
                             .commit();
@@ -274,11 +274,14 @@ public class RegistrationActivity extends BaseActivity {
                 break;
 
             case TAG_REG_PIP:
-                final String pip = ((InputPipFragment) currentFragment).validatePIP();
-                if (pip != null) {
+                InputPipFragment fragment = ((InputPipFragment) currentFragment);
+                final String pip = fragment.validatePIP();
+                final String currency = fragment.validateCurrency();
+                if (pip != null && currency != null) {
                     InputBiometricFragment bioFragment = InputBiometricFragment.newInstance(
                             phoneNumber,
-                            pip
+                            pip,
+                            currency
                     );
                     fragmentManager.beginTransaction()
                             .replace(R.id.fragment_container, bioFragment, TAG_REG_BIO)
@@ -323,7 +326,9 @@ public class RegistrationActivity extends BaseActivity {
                     public void onSuccess(final AuthResult authResult) {
                         PreferencesHelper.setPhoneNumber(authResult.getUser().getPhoneNumber());
                         ProgressDialogHelper.dismiss();
-                        submitCodeDialog.dismiss();
+                        if (submitCodeDialog != null) {
+                            submitCodeDialog.dismiss();
+                        }
                         verificationState = VerificationState.VERIFIED;
 
                         InputPhoneFragment currentFragment = (InputPhoneFragment) fragmentManager.findFragmentById(R.id.fragment_container);

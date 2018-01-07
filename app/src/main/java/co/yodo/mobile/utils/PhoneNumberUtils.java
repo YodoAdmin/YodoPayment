@@ -72,7 +72,7 @@ public final class PhoneNumberUtils {
      * @param countryInfo must have locale with ISO 3166 2-letter code for country
      */
     @Nullable
-    public static String formatPhoneNumber(@NonNull String phoneNumber, @NonNull CountryInfo countryInfo) {
+    public static String format(@NonNull String phoneNumber, @NonNull CountryInfo countryInfo) {
         return phoneNumber.startsWith("+")
                 ? phoneNumber
                 : ("+" + String.valueOf(countryInfo.countryCode)
@@ -82,7 +82,7 @@ public final class PhoneNumberUtils {
 
     /**
      * This method uses the country returned by  {@link #getCurrentCountryInfo(Context)} to format
-     * the phone number. Internall invokes {@link #formatPhoneNumber(String, CountryInfo)}
+     * the phone number. Internall invokes {@link #format(String, CountryInfo)}
      *
      * @param phoneNumber that may or may not itself have country code
      */
@@ -101,7 +101,7 @@ public final class PhoneNumberUtils {
                     .formatNumberToE164(phoneNumber, currentCountry.locale.getCountry());
         }
 
-        return formatPhoneNumber(phoneNumber, currentCountry);
+        return format(phoneNumber, currentCountry);
     }
 
     @NonNull
@@ -1335,6 +1335,10 @@ public final class PhoneNumberUtils {
         return countryIso == null
                 ? null
                 : CountryCodeByIsoMap.get(countryIso.toUpperCase(Locale.getDefault()));
+    }
+
+    public static String format(String phoneNumber) {
+        return phoneNumber.replace("+", "00");
     }
 
     private static String stripCountryCode(String phoneNumber, String countryCode) {

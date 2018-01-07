@@ -12,10 +12,18 @@
         android:layout_height="wrap_content"
         app:errorEnabled="true">
 
-        <android.support.design.widget.TextInputEditText
+        <co.yodo.mobile.ui.components.AutoCompletePrefixEditText
             android:id="@+id/tietTransferAccount"
             style="@style/P2PEditTextTheme"
+            android:tag="+"
+            android:completionThreshold="0"
             android:hint="@string/text.transfer.account" />
+
+        <!--<AutoCompleteTextView
+            android:id="@+id/tietTransferAccount"
+            style="@style/P2PEditTextTheme"
+            android:completionThreshold="0"
+            android:hint="@string/text.transfer.account" />-->
 
     </android.support.design.widget.TextInputLayout>
 

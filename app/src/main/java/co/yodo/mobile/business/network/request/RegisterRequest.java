@@ -51,6 +51,8 @@ public class RegisterRequest extends IRequest {
     /** Data for the request */
     private final String userIdentifier;
     private final String token;
+    private final String currency;
+    private final String migrationToken;
 
     /** Sub-type of the request */
     private final RegST requestST;
@@ -75,10 +77,22 @@ public class RegisterRequest extends IRequest {
      * @param token The password of the user, biometric token or the gcm id
      * @param requestST The sub-type of the request
      */
-    public RegisterRequest(String userIdentifier, String token, RegST requestST) {
+    public RegisterRequest(String userIdentifier, String token, String currency, String migrationToken, RegST requestST) {
         this.userIdentifier = userIdentifier;
         this.token = token;
+        this.currency = currency;
+        this.migrationToken = migrationToken;
         this.requestST = requestST;
+    }
+
+    /**
+     * Registers a new user with his/her pip
+     * @param userIdentifier The hardware token of the device, or the authnumber
+     * @param token The password of the user, biometric token or the gcm id
+     * @param requestST The sub-type of the request
+     */
+    public RegisterRequest(String userIdentifier, String token, RegST requestST) {
+        this(userIdentifier, token, null, null, requestST);
     }
 
     /**
@@ -159,7 +173,14 @@ public class RegisterRequest extends IRequest {
                 break;
 
             case PHONE:
-                this.formattedUsrData = this.userIdentifier + USR_SEP + this.token;
+                this.formattedUsrData = this.userIdentifier + USR_SEP +
+                        this.token + USR_SEP +
+                        this.currency;
+
+                if (!this.migrationToken.isEmpty()) {
+                    this.formattedUsrData += USR_SEP + this.migrationToken;
+                }
+
                 encryptedClientData = encryption.apply(formattedUsrData);
                 requestData = buildRequest(REG_RT,
                         requestST.getValue(),

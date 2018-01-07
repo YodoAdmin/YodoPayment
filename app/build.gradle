@@ -1,17 +1,13 @@
 apply plugin: 'com.android.application'
-apply plugin: 'com.neenbedankt.android-apt'
 
 android {
-    compileSdkVersion 25
-    buildToolsVersion "25.0.3"
-
+    compileSdkVersion 26
     defaultConfig {
         applicationId "co.yodo"
-        minSdkVersion 15
-        targetSdkVersion 25
-        versionCode 29
-        versionName "2.3.5"
-
+        minSdkVersion 16
+        targetSdkVersion 26
+        versionCode 36
+        versionName "2.4.4"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -19,18 +15,31 @@ android {
             abiFilters "armeabi", "armeabi-v7a"
         }
     }
+    //Signing configurations for build variants "release"
+    signingConfigs {
+        config {
+            storeFile file("/home/hei/AndroidStudioProjects/ProductionKeystore.renato")
+            storePassword "renato"
+            keyAlias "productionKey2"
+            keyPassword "yodo2014"
+        }
+    }
     buildTypes {
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            signingConfig signingConfigs.config
         }
     }
+    flavorDimensions "default"
     productFlavors {
         prod {
+            dimension "default"
             applicationId = "co.yodo"
         }
 
         demo {
+            dimension "default"
             applicationId = "co.yodo.mobile.demo"
         }
     }
@@ -40,78 +49,78 @@ android {
     }
 }
 
-ext {
-    supportVersion = '25.3.1'
-    googleServicesVersion = '11.0.4'
-}
+String supportVersion = '26.1.0'
+String googleServicesVersion = '11.6.2'
+String butterKnifeVersion = '8.7.0'
+String daggerVersion = '2.11'
 
 dependencies {
-    compile fileTree(dir: 'libs', include: ['*.jar'])
-
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    
     // -- Android --
-    compile "com.android.support:design:$supportVersion"
-    compile "com.android.support:appcompat-v7:$supportVersion"
-    compile "com.android.support:support-v4:$supportVersion"
-    compile "com.android.support:cardview-v7:$supportVersion"
-    compile "com.android.support:recyclerview-v7:$supportVersion"
+    implementation "com.android.support:design:$supportVersion"
+    implementation "com.android.support:appcompat-v7:$supportVersion"
+    implementation "com.android.support:support-v4:$supportVersion"
+    implementation "com.android.support:cardview-v7:$supportVersion"
+    implementation "com.android.support:recyclerview-v7:$supportVersion"
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
 
     // -- Google --
-    compile 'com.google.zxing:core:3.2.0'
-    compile 'com.google.code.gson:gson:2.7'
-    compile "com.google.android.gms:play-services-gcm:$googleServicesVersion"
-    compile "com.google.android.gms:play-services-nearby:$googleServicesVersion"
-    compile "com.google.android.gms:play-services-auth:$googleServicesVersion"
+    implementation 'com.google.zxing:core:3.3.0'
+    implementation 'com.google.code.gson:gson:2.8.0'
+    implementation "com.google.android.gms:play-services-gcm:$googleServicesVersion"
+    implementation "com.google.android.gms:play-services-nearby:$googleServicesVersion"
+    implementation "com.google.android.gms:play-services-auth:$googleServicesVersion"
 
     // -- Firebase --
-    compile "com.google.firebase:firebase-messaging:$googleServicesVersion"
-    compile "com.google.firebase:firebase-auth:$googleServicesVersion"
+    implementation "com.google.firebase:firebase-messaging:$googleServicesVersion"
+    implementation "com.google.firebase:firebase-auth:$googleServicesVersion"
 
     // -- Networking --
-    compile 'com.squareup.retrofit2:retrofit:2.1.0'
-    compile ('com.squareup.retrofit2:converter-simplexml:2.1.0') {
-        exclude group: 'xpp3', module: 'xpp3'
-        exclude group: 'stax', module: 'stax-api'
-        exclude group: 'stax', module: 'stax'
+    implementation 'com.squareup.retrofit2:retrofit:2.3.0'
+    implementation ('com.squareup.retrofit2:converter-simplexml:2.1.0') {
+        exclude module: 'stax-api'
+        exclude module: 'stax'
+        exclude module: 'xpp3'
     }
-    compile 'com.squareup.okhttp3:logging-interceptor:3.3.0'
-    compile 'com.squareup.picasso:picasso:2.1.0'
+    implementation 'com.squareup.okhttp3:logging-interceptor:3.8.0'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
 
     // -- Images others --
-    compile 'it.sephiroth.android.library.imagezoom:imagezoom:2.2.4'
-    compile 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
+    implementation 'it.sephiroth.android.library.imagezoom:imagezoom:2.2.5'
+    implementation 'com.amulyakhare:com.amulyakhare.textdrawable:1.0.1'
 
     // -- Tutorial --
-    compile 'com.github.paolorotolo:appintro:4.1.0'
+    implementation 'com.github.paolorotolo:appintro:4.1.0'
 
     // -- Event Bus --
-    compile 'org.greenrobot:eventbus:3.0.0'
+    implementation 'org.greenrobot:eventbus:3.1.1'
 
     // -- Views Injection --
-    compile 'com.jakewharton:butterknife:8.7.0'
-    apt 'com.jakewharton:butterknife-compiler:8.7.0'
+    implementation "com.jakewharton:butterknife:$butterKnifeVersion"
+    annotationProcessor "com.jakewharton:butterknife-compiler:$butterKnifeVersion"
 
     // -- Injection --
-    apt 'com.google.dagger:dagger-compiler:2.11'
-    compile 'com.google.dagger:dagger:2.11'
+    annotationProcessor "com.google.dagger:dagger-compiler:$daggerVersion"
+    implementation "com.google.dagger:dagger:$daggerVersion"
     provided 'javax.annotation:jsr250-api:1.0'
 
     // -- Database --
-    compile 'com.github.satyan:sugar:1.5'
+    implementation 'com.github.satyan:sugar:1.5'
 
     // -- Logging --
-    compile 'com.jakewharton.timber:timber:4.5.1'
+    implementation 'com.jakewharton.timber:timber:4.5.1'
 
     // -- Secure Preferences --
-    compile 'com.orhanobut:hawk:2.0.1'
+    implementation 'com.orhanobut:hawk:2.0.1'
 
     // -- Schedule Jobs
-    compile 'com.evernote:android-job:1.1.7'
+    implementation 'com.evernote:android-job:1.1.7'
 
     // -- ACRA --
-    compile 'ch.acra:acra:4.8.5'
+    implementation 'ch.acra:acra:4.8.5'
 
-////////////////////////////////////////////////////////////////////////////////////////////////////
-
+    ////////////////////////////////////////////////////////////////////////////////////////////////////
     // -- JUnit 4 framework --
     testCompile 'junit:junit:4.12'
 
@@ -119,16 +128,16 @@ dependencies {
     testCompile 'org.mockito:mockito-core:1.10.19'
 
     // -- Android testing --
-    androidTestCompile 'com.android.support:support-annotations:25.3.1'
-    androidTestCompile 'com.android.support.test:runner:0.5'
-    androidTestCompile 'com.android.support.test:rules:0.5'
+    androidTestCompile 'com.android.support:support-annotations:26.1.0'
+    androidTestCompile 'com.android.support.test:runner:1.0.1'
+    androidTestCompile 'com.android.support.test:rules:1.0.1'
 
     // -- Hamcrest library --
     androidTestCompile 'org.hamcrest:hamcrest-library:1.3'
 
     // -- UI testing with Espresso --
-    androidTestCompile 'com.android.support.test.espresso:espresso-core:2.2.2'
-    androidTestCompile 'com.android.support.test.espresso:espresso-intents:2.2.2'
+    androidTestCompile 'com.android.support.test.espresso:espresso-core:3.0.1'
+    androidTestCompile 'com.android.support.test.espresso:espresso-intents:3.0.1'
     androidTestCompile('com.android.support.test.espresso:espresso-contrib:2.2.1') {
         exclude group: 'com.android.support', module: 'appcompat'
         exclude group: 'com.android.support', module: 'support-v4'

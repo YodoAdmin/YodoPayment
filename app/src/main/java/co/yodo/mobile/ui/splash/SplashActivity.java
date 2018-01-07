@@ -4,17 +4,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
-import android.text.format.DateUtils;
 import android.widget.Toast;
 
 import org.greenrobot.eventbus.EventBus;
 import org.greenrobot.eventbus.Subscribe;
 import org.greenrobot.eventbus.ThreadMode;
-
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.Locale;
 
 import javax.inject.Inject;
 
@@ -23,7 +17,6 @@ import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.business.network.ApiClient;
 import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.business.network.request.AuthenticateRequest;
-import co.yodo.mobile.business.network.request.RegisterRequest;
 import co.yodo.mobile.business.service.RegistrationIntentService;
 import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.model.dtos.GCMResponse;
@@ -31,7 +24,6 @@ import co.yodo.mobile.ui.PaymentActivity;
 import co.yodo.mobile.ui.registration.RegistrationActivity;
 import co.yodo.mobile.utils.ErrorUtils;
 import co.yodo.mobile.utils.SystemUtils;
-import timber.log.Timber;
 
 public class SplashActivity extends AppCompatActivity {
     /** The application context */
@@ -87,6 +79,7 @@ public class SplashActivity extends AppCompatActivity {
      */
     public static void newInstance(Context context) {
         Intent intent = new Intent(context, SplashActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
         context.startActivity(intent);
     }
 
@@ -111,7 +104,6 @@ public class SplashActivity extends AppCompatActivity {
         // Verify Google Play Services
         if (hasServices) {
             final String uuidToken = PreferencesHelper.getUuidToken();
-            Timber.i(uuidToken);
             if (uuidToken != null) {
                 authenticateUser(uuidToken);
             } else {

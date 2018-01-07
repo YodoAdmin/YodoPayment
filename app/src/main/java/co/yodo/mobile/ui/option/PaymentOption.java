@@ -156,41 +156,41 @@ public class PaymentOption extends IRequestOption {
      * Request the linked accounts (if any) to the server
      * @param otp The user one time password, required for the request
      */
-    private void requestLinkedAccounts( final String otp ) {
-        ProgressDialogHelper.create( activity );
+    private void requestLinkedAccounts(final String otp) {
+        ProgressDialogHelper.create(activity);
         requestManager.invoke(
-                new QueryRequest(uuidToken, otp, QueryRequest.Record.LINKED_ACCOUNTS ),
+                new QueryRequest(uuidToken, otp, QueryRequest.Record.LINKED_ACCOUNTS),
                 new ApiClient.RequestCallback() {
                     @Override
-                    public void onResponse( ServerResponse response ) {
+                    public void onResponse(ServerResponse response) {
                         ProgressDialogHelper.dismiss();
                         final String code = response.getCode();
                         final String userCode = otp + SKS_SEP + uuidToken;
                         final String tip = String.valueOf(sbTips.getProgress());
 
-                        switch( code ) {
+                        switch (code) {
                             case ServerResponse.AUTHORIZED:
                                 final String from = response.getParams().getLinkedFrom();
 
                                 // If we have a link show the options
-                                if( from != null && !from.isEmpty() ) {
+                                if (from != null && !from.isEmpty()) {
                                     PaymentDialog.OnClickListener onClick = new PaymentDialog.OnClickListener() {
                                         @Override
                                         public void onClick( final Payment type ) {
-                                            final String[] accounts = from.split( ACC_SEP );
+                                            final String[] accounts = from.split(ACC_SEP);
 
-                                            switch( type ) {
+                                            switch (type) {
                                                 case HEART:
-                                                    if( accounts.length > 1 ) {
+                                                    if (accounts.length > 1) {
                                                         List<String> list = new ArrayList<>();
-                                                        for( String account : accounts ) {
-                                                            list.add( PreferencesHelper.getNickname( account ) );
+                                                        for (String account : accounts) {
+                                                            list.add(PreferencesHelper.getNickname(account));
                                                         }
 
                                                         DialogInterface.OnClickListener onClick = new DialogInterface.OnClickListener() {
                                                             @Override
                                                             public void onClick( DialogInterface dialog, final int item ) {
-                                                                final String donor = TOTPUtils.sha1( accounts[item] );
+                                                                final String donor = TOTPUtils.sha1(accounts[item]);
                                                                 showSKS(tip, userCode + SKS_SEP + donor, type.getValue());
                                                                 dialog.dismiss();
                                                             }

@@ -31,6 +31,7 @@ public class PreferencesHelper {
     private static final String SPREF_TIPPING        = "SPREF_TIPPING"; // Tipping options
     public static final String SPREF_LANGUAGE        = "SPREF_LANGUAGE"; // Language
     public static final String SPREF_SUBSCRIPTION    = "SPREF_SUBSCRIPTION"; // Promotions
+    private static final String SPREF_FCM_TOKEN = "SPREF_FCM_TOKEN";
 
     /** Helper instance */
     private static PreferencesHelper instance;
@@ -112,13 +113,29 @@ public class PreferencesHelper {
     }
 
     /**
+     * Saves the token once set
+     * @param fcmToken The string token
+     */
+    public static void setFcmToken(String fcmToken) {
+        Hawk.put(SPREF_FCM_TOKEN, fcmToken);
+    }
+
+    /**
+     * Gets the fcm token
+     * @return The String Token
+     */
+    public static String getFcmToken() {
+        return Hawk.get(SPREF_FCM_TOKEN, "");
+    }
+
+    /**
      * It saves if it is the user accepted the EULA.
      * @param flag Value if accepted or not the EULA
      * @return true  The flag was saved successfully.
      *         false The flag was not saved successfully.
      */
-    public static Boolean saveEulaAccepted(Boolean flag) {
-        return Hawk.put(SPREF_EULA, flag);
+    public static void saveEulaAccepted(Boolean flag) {
+        Hawk.put(SPREF_EULA, flag);
     }
 
     /**
@@ -136,7 +153,7 @@ public class PreferencesHelper {
      * @return true  The account was saved successfully.
      *         false The account was not saved successfully.
      */
-    public static Boolean saveAuthNumber(String authNumber) {
+    public static Boolean setAuthNumber(String authNumber) {
         if (authNumber == null) {
             return Hawk.delete(SPREF_AUTH_NUMBER);
         }
@@ -160,10 +177,6 @@ public class PreferencesHelper {
 
 
 
-
-
-
-
     /**
      * Saves the hardware token in the userPreferences
      * @param hardwareToken The hardware token
@@ -178,7 +191,7 @@ public class PreferencesHelper {
      * @return The stored token if exists
      */
     public static String getHardwareToken() {
-        return Hawk.get(SPREF_HARDWARE_TOKEN);
+        return Hawk.get(SPREF_HARDWARE_TOKEN, "");
     }
 
     /**
@@ -237,9 +250,9 @@ public class PreferencesHelper {
      * @return The nickname -- if it doesn't have a nickname, then it returns
      * the last 5 digits of the hardware token
      */
-    public static String getNickname( String hardware ) {
+    public static String getNickname(String hardware) {
         return Hawk.get(SPREF_NICKNAME + hardware,
-                "...." + hardware.substring( hardware.length() - 6 )
+                "...." + hardware.substring(hardware.length() - 6)
         );
     }
 
@@ -254,10 +267,8 @@ public class PreferencesHelper {
     }
 
     private static SharedPreferences getHawkSPrefConfig( Context c ) {
-        return c.getSharedPreferences( "Hawk2", Context.MODE_PRIVATE );
+        return c.getSharedPreferences("Hawk2", Context.MODE_PRIVATE);
     }
-
-
 
     /**
      * It saves if it is the first login.
@@ -266,11 +277,11 @@ public class PreferencesHelper {
      * @return true  The flag was saved successfully.
      *         false The flag was not saved successfully.
      */
-    public static Boolean saveFirstLogin( Context c, Boolean flag ) {
+    public static void saveFirstLogin(Context c, Boolean flag) {
         SharedPreferences config = getSPrefConfig( c );
         SharedPreferences.Editor writer = config.edit();
         writer.putBoolean( SPREF_FIRST_LOGIN, flag );
-        return writer.commit();
+        writer.apply();
     }
 
     /**
@@ -291,11 +302,11 @@ public class PreferencesHelper {
      * @return true  The flag was saved successfully.
      *         false The flag was not saved successfully.
      */
-    public static boolean saveLanguage( Context c, String language ) {
+    public static void saveLanguage( Context c, String language ) {
         SharedPreferences config = getSPrefConfig( c );
         SharedPreferences.Editor writer = config.edit();
         writer.putString( SPREF_LANGUAGE, language );
-        return writer.commit();
+        writer.apply();
     }
 
     /**
@@ -303,7 +314,7 @@ public class PreferencesHelper {
      * @param c The Context of the Android system
      * @return String It returns the language
      */
-    public static String getLanguage( Context c ) {
+    public static String getLanguage(Context c) {
         SharedPreferences config = getSPrefConfig( c );
         return config.getString( AppConfig.SPREF_LANGUAGE, null );
     }
@@ -325,11 +336,11 @@ public class PreferencesHelper {
      * @return true  The flag was saved successfully.
      *         false The flag was not saved successfully.
      */
-    public static boolean setSubscribing( Context c, Boolean value ) {
+    public static void setSubscribing( Context c, Boolean value ) {
         SharedPreferences config = getSPrefConfig( c );
         SharedPreferences.Editor writer = config.edit();
         writer.putBoolean( SPREF_SUBSCRIPTION, value );
-        return writer.commit();
+        writer.apply();
     }
 
     /**
@@ -337,18 +348,17 @@ public class PreferencesHelper {
      * @param c The Context of the Android system
      * @return The task
      */
-    public static Boolean isTipping( Context c ) {
-        SharedPreferences config = getSPrefConfig( c );
+    public static Boolean isTipping(Context c) {
+        SharedPreferences config = getSPrefConfig(c);
         return config.getBoolean( SPREF_TIPPING, true );
     }
 
     /**
      * Clear all the userPreferences
      * @param context The application context
-     * @return True if it was a success otherwise false
      */
-    public static boolean clearPrefConfig( Context context ) {
+    public static void clearPrefConfig(Context context) {
         Hawk.deleteAll();
-        return getSPrefConfig( context ).edit().clear().commit();
+        getSPrefConfig(context).edit().clear().apply();
     }
 }

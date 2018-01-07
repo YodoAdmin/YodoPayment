@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout
+    android:id="@+id/rlBase"
     xmlns:android="http://schemas.android.com/apk/res/android"
     style="@style/YodoUI.WrapperStyle">
 

@@ -75,23 +75,25 @@ public class Receipt extends SugarRecord {
      * @param message The json message
      * @return The parsed receipt
      */
-    public static Receipt fromJSON( String message ) throws JSONException {
+    public static Receipt fromJSON(String message) throws JSONException {
         String donor = null, receiver = null;
 
         // Get info
-        JSONArray temp = new JSONArray( message );
-        JSONObject info = temp.getJSONObject( 0 );
+        JSONArray temp = new JSONArray(message);
+        JSONObject info = temp.getJSONObject(0);
 
         // Get parent tags
-        JSONObject merchant = (JSONObject) info.get( YI );
-        JSONObject transaction = (JSONObject) info.get( YT );
+        JSONObject merchant = (JSONObject) info.get(YI);
+        JSONObject transaction = (JSONObject) info.get(YT);
 
         // Only for heart transactions
-        if( transaction.has( ACC ) )
-            donor = String.valueOf( transaction.get( ACC ) );
+        if (transaction.has(ACC)) {
+            donor = String.valueOf(transaction.get(ACC));
+        }
 
-        if( transaction.has( ACC_RECEIVER ) )
-            receiver = String.valueOf( transaction.get( ACC_RECEIVER ) );
+        if (transaction.has(ACC_RECEIVER)) {
+            receiver = String.valueOf(transaction.get(ACC_RECEIVER));
+        }
 
         return new Receipt.Builder()
                 .description( String.valueOf( merchant.get( DESCRIPTION ) ) )
@@ -134,19 +136,19 @@ public class Receipt extends SugarRecord {
     }
 
     public String getTotalAmount() {
-        return totalAmount.replaceAll( ",", "." );
+        return totalAmount.replaceAll(",", ".");
     }
 
     public String getTenderAmount() {
-        return tenderAmount.replaceAll( ",", "." );
+        return tenderAmount.replaceAll(",", ".");
     }
 
     public String getCashBackAmount() {
-        return cashBackAmount.replaceAll( ",", "." );
+        return cashBackAmount.replaceAll(",", ".");
     }
 
     public String getBalanceAmount() {
-        return balanceAmount.replaceAll( ",", "." );
+        return balanceAmount.replaceAll(",", ".");
     }
 
     public String getCurrency() {
@@ -183,7 +185,7 @@ public class Receipt extends SugarRecord {
 
     @Override
     public String toString() {
-        return String.format( "%s\nAU# %s\t\t%s\nTotal:\t\t%s %s\nCashTender:\t%s %s\nCashBack:\t%s %s\n\nDonor: %s\nRecipient: %s",
+        return String.format("%s\nAU# %s\t\t%s\nTotal:\t\t%s %s\nCashTender:\t%s %s\nCashBack:\t%s %s\n\nDonor: %s\nRecipient: %s",
                 getDescription(),
                 getAuthNumber() ,
                 getCreated(),

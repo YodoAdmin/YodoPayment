@@ -13,6 +13,7 @@ import org.greenrobot.eventbus.ThreadMode;
 import butterknife.ButterKnife;
 import co.yodo.mobile.R;
 import co.yodo.mobile.business.service.YodoGCMListenerService;
+import co.yodo.mobile.business.service.YodoMessagingService;
 import co.yodo.mobile.helper.PreferencesHelper;
 import co.yodo.mobile.model.db.Receipt;
 import co.yodo.mobile.model.dtos.ErrorEvent;
@@ -169,7 +170,8 @@ public class BaseActivity extends AppCompatActivity {
     public void onResponseEvent(final Receipt receipt) {
         // Remove any notification
         EventBus.getDefault().removeStickyEvent(receipt);
-        YodoGCMListenerService.cancelNotification(this);
+        //YodoGCMListenerService.cancelNotification(this);
+        YodoMessagingService.cancelNotification(this);
 
         if (dialog != null) {
             dialog.dismiss();
