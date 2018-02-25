@@ -129,9 +129,9 @@ public class PaymentOption extends IRequestOption {
         final String tipText = activity.getString( R.string.text_tip );
 
         // Set other components
-        llTips = (LinearLayout ) layout.findViewById( R.id.llTips );
-        sbTips = (SeekBar) layout.findViewById( R.id.sbTips );
-        tvTips = (TextView) layout.findViewById( R.id.tvTips );
+        llTips = layout.findViewById( R.id.llTips );
+        sbTips = layout.findViewById( R.id.sbTips );
+        tvTips = layout.findViewById( R.id.tvTips );
 
         tvTips.setText( String.format( tipText, 0 ) );
         sbTips.setOnSeekBarChangeListener( new SeekBar.OnSeekBarChangeListener() {

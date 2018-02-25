@@ -168,10 +168,10 @@ public class ExchP2POption extends IRequestOption {
                     tilTransferAccount.setError(activity.getString(R.string.error_required_field));
                     error = true;
                 }
-                else if (!transferAccount.matches(NUMBER_REGEX)) {
+                /*else if (!transferAccount.matches(NUMBER_REGEX)) {
                     tilTransferAccount.setError(activity.getString(R.string.error_wrong_field_format));
                     error = true;
-                }
+                }*/
 
                 if (transferAmount.isEmpty()) {
                     tilTransferAmount.setError(activity.getString(R.string.error_required_field));

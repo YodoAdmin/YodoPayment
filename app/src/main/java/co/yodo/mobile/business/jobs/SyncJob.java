@@ -49,7 +49,6 @@ public class SyncJob extends Job {
         new JobRequest.Builder( TAG )
                 .setExecutionWindow( 1_000L, 60_000L )
                 .setRequiredNetworkType( JobRequest.NetworkType.CONNECTED )
-                .setPersisted( true )
                 .setRequirementsEnforced( true )
                 .setExtras( extras )
                 .build()

@@ -1,0 +1,214 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <!-- Main Strings -->
+    <string name="text.loading">लोड डिंग…</string>
+    <string name="text.cancel">रद्द करें</string>
+    <string name="text.delete">इसे हटाएं</string>
+    <string name="text.deleted">हाटा दीया</string>
+    <string name="text.undo">UNDO</string> 
+    <string name="text.search">खोजें</string>
+    <string name="text.search.hint">खोजें.संकेत…</string>
+    <string name="text.warning">चेतावनी!</string>
+    <string name="text.version">संस्करण:</string>
+
+    <!-- Action Menu -->
+    <string name="action.settings">सेटिंग्स</string>
+    <string name="action.share">बटें</string>
+    <string name="action.about">Yodo के बारे में </string>
+
+    <!-- Tutorial -->
+    <string name="text.slide1.title">सरल उपयोग</string>
+    <string name="text.slide1.description">मुख्य उपकरण दिखाने के लिए स्क्रीन को दाईं ओर स्वाइप करें </string>
+    <string name="text.slide2.title">तेजी से भुगतान !</string>
+    <string name="text.slide2.description">बस QR कोड और सोने के सिक्कों के साथ बटन का उपयोग कर एक SKS कोड उत्पन्न</string>
+    <string name="text.slide3.title">प्रचार प्राप्त करें !</string>
+    <string name="text.slide3.description">निकटतम व्यापारी से प्रोन्नति प्राप्त करने के लिए दो तीरों के साथ आइकन दबाएँ</string>
+    <string name="text.slide4.title">Yodo आइकन के साथ अपनी जानकारी छुपाएं </string>
+    <string name="text.slide4.description">आरंभ करें </string>
+
+    <!-- Links Menu -->
+    <string name="action.nickname">उपनाम</string>
+    <string name="action.delink">अलग करें</string>
+
+    <!-- Eula Messages -->
+    <string name="text.eula.title">Yodo उपयोगकर्ता अनुबंध </string>
+    <string name="text.eula.accept">स्वीकार करें</string>
+    <string name="text.eula.refuse">मना करें </string>
+
+    <!-- Registration Messages -->
+    <string name="text.currency.title"> अपनी मुद्रा का चयन करें </string>
+    <string name="text.phone.hint">फोन नंबर </string>
+    <string name="text.phone.verify">फोन नंबर वेरि फाइ करें </string>
+    <string name="text.phone.terms">टैप करके, एक SMS भेजा जा सकता है । संदेश और डेटा दरें लागू हो सकती है</string>
+    <string name="text.phone.verifying">कोड भेज रहा है… </string>
+    <string name="text.phone.resending">फिर से भेज राहैं …</string>
+    <string name="text.phone.validated">लीदैट!</string>
+    <string name="text.phone.confirmation">दर्ज 6 अंक कोड हम को भेजा</string>
+    <string name="text.phone.confirmation.resend">कोड पुनः भेजें </string>
+    <string name="text.phone.confirmation.resend.time"> कोड फिर से भेजें 0:% 02d </string>
+    <string name="text.phone.confirmation.retrieving"> sms पुनर्प्राप्त कर रहा है …</string>
+    <string name="text.pip.register">अपना नया राज़ दर्ज करें  दोनों रिक्त स्थान (4 – 8 वर्ण)</string>
+    <string name="text.face.successful">सफल ऑपरेशन !</string>
+    <string name="text.register.pip">खाता खुलवा राहे हइ …</string>
+    <string name="text.register.bio">बायोमेट्रिक टोकन का अद्यतन करना …</string>
+    <string name="text.register.gcm">लगभग किया…</string>
+    <string name="text.pip.hint">व्यक्तिगत पहचान वाक्यांश (PIP)</string>
+    <string name="text.face.recognition">Face Recognition</string>
+    <string name="text.next">अगला </string>
+    <string name="text.face.hint">Yodo अपने चेहरे की एक छवि एकत्र नहीं करता है, केवल एक जैव टोकन आप भूल PIPs रीसेट करने के लिए अनुमति देते समय गुमनाम शेष । आरंभ करने के लिए ऊपर आइकन दबाएं .</string>
+
+    <!-- Camera Messages -->
+    <string name="text.train.face.recognition">तैयार होने पर स्क्रीन दबाएं </string>
+    <string name="text.locate.face.recognition">कैमरे पर अपने पूरे चेहरे का पता लगाएं </string>
+
+    <!-- header data -->
+    <string name="text.user.account">खाता:</string>
+    <string name="text.user.date">दिनांक:</string>
+    <string name="text.user.balance">बैलेंस :</string>
+
+    <!-- configurations -->
+    <string name="text.tools">उपकरण</string>
+    <string name="text.pip.reset">PIP रीसेट करें</string>
+    <string name="text.receipts">रसीद</string>
+    <string name="text.links"> लिंक</string>
+    <string name="text.balance">बैलेंस</string>
+    <string name="text.close.account">खाता बंद करें</string>
+
+    <!-- Payment messages -->
+    <string name="text.send.mail">ईमेल भेजें</string>
+    <string name="text.options.select">वविकल्प चुनें: </string>
+    <string name="text.promotion">कूपन बचाईए?</string>
+    <string name="text.accounts.select">खाता  चुनीईए: </string>
+
+    <string-array name="link_options">
+        <item>Generate a linking code</item>
+        <item>Insert a linking code</item>
+        <item>Linked accounts</item>
+    </string-array>
+
+    <!-- P2P messages -->
+    <string name="text.transfer.account">Destination Account</string>
+    <string name="text.transfer.amount">स्थानांतरण राशि</string>
+    <string name="text.transfer.successful">सफल लेनदेन!</string>
+
+    <!-- About messages -->
+    <string name="text.about">कृपया नीचे ईमेल का उपयोग करने के लिए हमसे संपर्क करें । हम जल्दी से जवाब देने के लिए सब कुछ कर सकते हैं । हम बेचते है या व्यक्तिगत जानकारी आप प्रदान वितरित कभी नहीं होगा ।.</string>
+
+    <!-- Reset pip Messages -->
+    <string name="text.forgot.pip">बूलगाय  PIP?</string>
+    <string name="text.update.successful">अद्यतन सफलतापूर्वक समाप्त</string>
+
+    <!-- Receipt Messages -->
+    <string name="text.receipt.total">कुल:</string>
+    <string name="text.receipt.auth">AU#</string>
+    <string name="text.receipt.recipient"> प्राप्तकर्ता:</string>
+    <string name="text.receipt.donor">दाता:</string>
+    <string name="text.receipt.cash.tender">नकद निविदा:</string>
+    <string name="text.receipt.cash.back">वापस नकद:</string>
+    <string name="text.receipt.deleted">रसीद हटाई गई</string>
+    <string name="text.receipt.saved">रसीद सहेजी गई</string>
+    <string name="text.receipt.notification.title">नई रसीद</string>
+    <string name="text.receipt.notification.text">कुल: %1$s</string>
+
+    <!-- Transfer Messages -->
+    <string name="text.transfer.notification.title">New P2P Transaction</string>
+    <string name="text.transfer.notification.from">से: %1$s</string>
+    <string name="text.transfer.notification.amount">राशि: %1$s</string>
+
+    <!-- Linking Messages -->
+    <string name="text.link.code">जोड़ने कोड: </string>
+    <string name="text.link.code.warning">आप केवल विश्वसनीय तृतीय पक्षों के लिए अपने लिंक कोड को वितरित करने के लिए जिंमेदार हैं । इस कोड के कब्जे में किसी को भी अपने धन का उपयोग होगा । Yodo अवांछित पार्टियों के लिए लिंक कोड के वितरण के कारण घाटे के लिए कोई दायित्व स्वीकार करता है । लिंक कोड एक बार उपयोग कोड और केवल अगले 24 घंटे के लिए मांय हैं । .</string>
+    <string name="text.link.code.clipboard"> लिंकिंग कोड को क्लिपबोर्ड पर प्रतिलिपि किया गया है</string>
+    <string name="text.linking.code.hint">इनपुट अपने कोड को जोड़ने </string>
+    <string name="text.link.account.successful">खाते सफलतापूर्वक लिंक किए गए </string>
+    <string name="text.link.account.copied">प्रतिलिपि</string>
+
+    <!-- Linked Accounts Messages -->
+    <string name="text.account.to">को दे</string>
+    <string name="text.account.from">से प्राप्त</string>
+    <string name="text.nickname">उपनाम इनपुट</string>
+
+    <!-- Settings Messages -->
+    <string-array name="languages_options">
+        <item>अंग्रेज़ी</item>
+        <item>स्पैनिश</item>
+        <item>हिन्दी</item>
+        <!--<item>Chinese</item>
+        <item>Japanese</item>
+        <item>French</item>
+        <item>Russian</item>-->
+    </string-array>
+
+    <string name="text.config.interface.category"> इंटरफ़ेस </string>
+    <string name="text.config.languages">भाषा </string>
+    <string name="text.config.tip"> टिप की दृश्यता </string>
+    <string name="text.config.tip.summary">भुगतान के लिए टिप चयन दिखाता है s</string>
+
+    <!-- Close Messages -->
+    <string name="text.account.close.warning"> चेतावनी: यदि आपके खाते में कोई धनात्मक शेष है, तो यदि आप अभी अपना खाता बंद करते हैं तो उसे जब्त कर लिया जाएगा. यदि आप इस धनराशि को अर्थदंड के लिए तैयार हैं, तो आगे बढ़ने के लिए केवल अपने रंज दर्ज करें</string>
+    <string name="text.account.closing"> खाता बंद करना …</string>
+    <string name="text.farewell.tittle"> आपका धंयवाद Yodo का उपयोग करने के लिए </string>
+    <string name="text.farewell.message">फोन सेटिंग्स के तहत एप्लिकेशन प्रबंधन उपकरणों का उपयोग कर Yodo एप्लिकेशन को पूरी तरह से हटा दें</string>
+
+    <!-- Activity titles -->
+    <string name="title.activity.registration"> Yodo पंजीकरण</string>
+    <string name="title.activity.main">Yodo पेमेंट</string>
+    <string name="title.activity.pip.reset">Yodo PIP रीसेट </string>
+    <string name="title.activity.settings">Yodo सेटिंग्स </string>
+    <string name="title.activity.coupons"> Yodo कूपन </string>
+    <string name="title.activity.receipts">Yodo Receipts</string>
+    <string name="title.activity.linked.accounts">Yodo लिंक्ड खाते </string>
+
+    <!-- Messages for the permissions -->
+    <string name="text.permission.read.phone.state"> Yodo\' s बादल सेवा का उपयोग करने के क्रम में डिवाइस की पहचान करने के लिए आवश्यक अनुमति </string>
+    <string name="text.permission.camera"> भुगतान क्रेडेंशियल कैप्चर करने के लिए कैमरे का उपयोग करने के लिए आवश्यक अनुमति </string> <!---->
+    <string name="text.permission.write.external.storage">कूपन स्टोर करने के लिए आवश्यक अनुमति </string>
+
+    <!-- ACRA -->
+    <string name="error.crash.toast"> सिस्टम त्रुटि । इस मुद्दे को ठीक करने के लिए डेवलपर को एक रिपोर्ट भेजी गई है! </string>
+
+    <!-- Error Messages -->
+    <string name="error.unknown"> यह शर्मनाक है! प्रक्रिया में कोई त्रुटि आई </string>
+    <string name="error.available"> यह सुविधा अभी उपलब्ध नहीं है </string>
+    <string name="error.play.services"> गूगल प्ले सेवाओं स्थापित किया जाना चाहिए </string>
+    <string name="error.wrong.field.format"> स्वरूप ग़लत है </string>
+    <string name="error.required.field"> आवश्यक फ़ील्ड </string>
+    <string name="error.required.field.face"> बायोमेट्रिक टोकन एक आवश्यक फ़ील्ड है </string>
+    <string name="error.balance"> क्षमा करें, लगता है कि आपके खाते में पैसा नहीं है  </string>
+    <string name="error.supported">यह डिवाइस समर्थित नहीं है </string>
+	<string name="error.pip.match"> PIPs मेल नहीं खाता </string>
+	
+	<string name="error.pip.length"> रंज में कम से 4 अंक होना चाहिए </string>
+	
+    <string name="error.pip"> ग़लत PIP । फिर कोशिश करो </string>
+    <string name="error.linking.code"> गलत लिंक कोड । फिर कोशिश करो </string>
+    <string name="error.already.linked">वहां खाते पहले से ही जुड़े हुए है </string>
+    <string name="error.biometric">क्षमा करें, लगता है कि आप एक बॉयोमीट्रिक टोकन नहीं है </string>
+    <string name="error.promotion.save">कूपन सहेजने में त्रुटि </string>
+    <string name="error.linked.accounts"> कोई लिंक किए गए खाते नहीं है </string>
+    <string name="error.insufficient.funds"> अपर्याप्त धन राशि </string>
+    <string name="error.exceeded.funds">गंतव्य खाते धन से अधिक हो गए </string>
+
+    <!-- Phone errors -->
+    <string name="error.phone">पहले अपना फ़ोन नंबर मांय करें </string>
+    <string name="error.phone.invalid">कोई मांय फ़ोन नंबर दर्ज करें</string>
+    <string name="error.phone.confirmation">गलत कोड । फिर कोशिश करो.</string>
+    <string name="error.phone.session.expired">यह कोड अब मांय नहीं है</string>
+    <string name="error.phone.attempts">इस फोन नंबर का इस्तेमाल भी कई बार हो चुका है</string>
+    <string name="error.phone.quota">आपका फ़ोन नंबर सत्यापित करने में कोई समस्या थी</string>
+
+    <!-- Registration errors -->
+    <string name="error.currency">आपको पहले किसी मुद्रा का चयन करना होगा</string>
+    <string name="error.gcm.registration"> क्षमा करें, हम आपके GCM टोकन को नहीं सहेज पाए, बाद में पुनः प्रयास करें या समर्थन से संपर्क करें </string>
+    <string name="error.user.registered">The client is already registered</string>
+
+    <!-- Network errors -->
+    <string name="error.network">लगता है कि आपके पास इंटरनेट कनेक्शन नहीं है</string>
+    <string name="error.server">क्षमा करें, सर्वर ने कोई त्रुटि के साथ प्रतिसाद दिया । बाद में पुन: प्रयास करें या समर्थन से संपर्क करें</string>
+
+    <!-- P2P errors -->
+    <string name="error.account.primary">वहां प्राथमिक खाते के साथ एक समस्या थी, शायद तुम पैसे खाते नही  है</string>
+    <string name="error.account.secondary">माध्यमिक खाते में एक समस्या थी, शायद संख्या गलत है</string> <!--  -->
+
+</resources>

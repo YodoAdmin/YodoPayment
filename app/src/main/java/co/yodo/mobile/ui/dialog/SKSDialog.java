@@ -88,7 +88,7 @@ public class SKSDialog extends IDialog {
         public Builder( Context context ) {
             super( context, R.layout.dialog_with_image );
             // Data
-            this.ivCode = (ImageView) dialog.findViewById( R.id.ivSks );
+            this.ivCode = dialog.findViewById( R.id.ivSks );
         }
 
         @Override

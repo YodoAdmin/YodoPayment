@@ -1,14 +1,9 @@
 package co.yodo.mobile;
 
-import android.content.Context;
 import android.util.Log;
 
 import com.evernote.android.job.JobManager;
 import com.orm.SugarApp;
-
-import org.acra.ACRA;
-import org.acra.ReportingInteractionMode;
-import org.acra.annotation.ReportsCrashes;
 
 import co.yodo.mobile.business.injection.component.ApplicationComponent;
 import co.yodo.mobile.business.injection.component.DaggerApplicationComponent;
@@ -21,23 +16,9 @@ import co.yodo.mobile.business.network.Config;
 import co.yodo.mobile.helper.PreferencesHelper;
 import timber.log.Timber;
 
-@ReportsCrashes(formUri = "http://198.101.209.120/MAB-LAB/report/report.php",
-                formUriBasicAuthLogin = "yodo",
-                formUriBasicAuthPassword = "letryodo",
-                httpMethod = org.acra.sender.HttpSender.Method.POST,
-                reportType = org.acra.sender.HttpSender.Type.JSON,
-                mode = ReportingInteractionMode.TOAST,
-                resToastText = R.string.error_crash_toast
-)
 public class YodoApplication extends SugarApp {
     /** Component that build the dependencies */
     private static GraphComponent component;
-
-    @Override
-    protected void attachBaseContext(Context base) {
-        super.attachBaseContext(base);
-        ACRA.init(this);
-    }
 
 	@Override
     public void onCreate() {

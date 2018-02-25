@@ -3,18 +3,13 @@ package co.yodo.mobile.business.service;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.FirebaseInstanceIdService;
 
-import org.acra.prefs.PrefUtils;
-import org.greenrobot.eventbus.EventBus;
-
 import javax.inject.Inject;
 
-import co.yodo.mobile.R;
 import co.yodo.mobile.YodoApplication;
 import co.yodo.mobile.business.network.ApiClient;
 import co.yodo.mobile.business.network.model.ServerResponse;
 import co.yodo.mobile.business.network.request.RegisterRequest;
 import co.yodo.mobile.helper.PreferencesHelper;
-import co.yodo.mobile.model.dtos.GCMResponse;
 import timber.log.Timber;
 
 /**

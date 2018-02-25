@@ -54,7 +54,7 @@
         <item name="android:maxLines">1</item>
         <item name="android:maxLength">20</item>
         <item name="android:inputType">numberSigned</item>
-        <item name="android:digits">0123456789</item>
+        <item name="android:digits">0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ</item>
     </style>
 
     <!-- Header Info -->

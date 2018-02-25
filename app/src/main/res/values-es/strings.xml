@@ -27,6 +27,10 @@
     <string name="text.slide4.title">Oculte su información con el icono de Yodo</string>
     <string name="text.slide4.description">EMPEZAR</string>
 
+    <!-- Links Menu -->
+    <string name="action.nickname">Nickname</string>
+    <string name="action.delink">De-Link</string>
+
     <!-- Eula Messages -->
     <string name="text.eula.title">Yodo Acuerdo de Usuario</string>
     <string name="text.eula.accept">Aceptar</string>
@@ -129,6 +133,7 @@
     <string-array name="languages_options">
         <item>Inglés</item>
         <item>Español</item>
+        <item>Hindi</item>
         <!--<item>Chino</item>
         <item>Japonés</item>
         <item>Francés</item>

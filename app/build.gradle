@@ -6,8 +6,8 @@ android {
         applicationId "co.yodo"
         minSdkVersion 16
         targetSdkVersion 26
-        versionCode 36
-        versionName "2.4.4"
+        versionCode 38
+        versionName "2.4.6"
         vectorDrawables.useSupportLibrary = true
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
@@ -18,7 +18,7 @@ android {
     //Signing configurations for build variants "release"
     signingConfigs {
         config {
-            storeFile file("/home/hei/AndroidStudioProjects/ProductionKeystore.renato")
+            storeFile file("/home/hei/AndroidProjects/Yodo/ProductionKeystore.renato")
             storePassword "renato"
             keyAlias "productionKey2"
             keyPassword "yodo2014"
@@ -115,10 +115,7 @@ dependencies {
     implementation 'com.orhanobut:hawk:2.0.1'
 
     // -- Schedule Jobs
-    implementation 'com.evernote:android-job:1.1.7'
-
-    // -- ACRA --
-    implementation 'ch.acra:acra:4.8.5'
+    implementation 'com.evernote:android-job:1.2.4'
 
     ////////////////////////////////////////////////////////////////////////////////////////////////////
     // -- JUnit 4 framework --

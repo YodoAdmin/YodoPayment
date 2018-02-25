@@ -15,22 +15,22 @@ public abstract class IRequest {
     private static final String TAG = IRequest.class.getSimpleName();
 
      /** Formatted data for the request */
-    protected String formattedUsrData;
+     String formattedUsrData;
 
     /** Encrypted data for the request */
     protected String encyptedData;
     protected String encyptedKey;
 
     /** Protocol version used in the requests */
-    protected static final String PROTOCOL_VERSION = "1.1.6";
+    static final String PROTOCOL_VERSION = "1.1.6";
 
     /** Two paths used for the requests */
-    protected static final String YODO_ADDRESS = "/yodo/yodoswitchrequest/getRequest/";
+    static final String YODO_ADDRESS = "/yodo/yodoswitchrequest/getRequest/";
 
     /** User's data separator */
-    protected static final String USR_SEP     = "**";
-    protected static final String REQ_SEP     = ",";
-    protected static final String PCLIENT_SEP = "/";
+    static final String USR_SEP     = "**";
+    static final String REQ_SEP     = ",";
+    static final String PCLIENT_SEP = "/";
 
     /**
      * Builds the request string
@@ -39,7 +39,7 @@ public abstract class IRequest {
      * @param pUserData Encrypted user's data
      * @return The request string that is send to the server
      */
-    protected static String buildRequest(String pRequestType, String pSubType, String pUserData) {
+    static String buildRequest(String pRequestType, String pSubType, String pUserData) {
         final String request = PROTOCOL_VERSION + REQ_SEP +
                                pRequestType     + REQ_SEP +
                                pSubType         + REQ_SEP +

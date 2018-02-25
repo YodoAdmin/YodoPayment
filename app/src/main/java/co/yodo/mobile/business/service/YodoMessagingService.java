@@ -1,11 +1,14 @@
 package co.yodo.mobile.business.service;
 
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.media.AudioAttributes;
 import android.media.RingtoneManager;
 import android.net.Uri;
+import android.os.Build;
 import android.support.v4.app.NotificationCompat;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
@@ -29,9 +32,12 @@ import timber.log.Timber;
  * Any message handling beyond receiving notifications on apps in the background.
  */
 public class YodoMessagingService extends FirebaseMessagingService {
-    /** Notification for arriving messages */
+    /** Notification generals */
+    private static final String CHANNEL_ID = "yodo_channel";
+    private static final int NOTIFICATION_ID = 1;
+
+    /** Notifications manager */
     private NotificationManager notificationManager;
-    private static final int RECEIPT_NOTIFICATION_ID = 0;
 
     @Override
     public void onCreate() {
@@ -81,10 +87,11 @@ public class YodoMessagingService extends FirebaseMessagingService {
 
         // Check if message contains a notification payload.
         if (remoteMessage.getNotification() != null) {
-            final String notification =  remoteMessage.getNotification().getBody();
-            Timber.d("Message Notification Body: " + notification);
-            NotificationCompat.Builder builder = getNotificationBuilder().setContentText(notification);
-            notificationManager.notify(RECEIPT_NOTIFICATION_ID, builder.build());
+            final String content =  remoteMessage.getNotification().getBody();
+            Timber.d("Message Notification Body: " + content);
+            NotificationCompat.Builder builder = getNotificationBuilder();
+            builder.setContentText(content);
+            getManager().notify(NOTIFICATION_ID, builder.build());
         }
     }
 
@@ -93,7 +100,9 @@ public class YodoMessagingService extends FirebaseMessagingService {
      */
     public static void cancelNotification( Context context ) {
         NotificationManager nManager = (NotificationManager) context.getSystemService( Context.NOTIFICATION_SERVICE );
-        nManager.cancelAll();
+        if (nManager != null) {
+            nManager.cancelAll();
+        }
     }
 
     /**
@@ -112,8 +121,7 @@ public class YodoMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder builder = getNotificationBuilder()
                 .setContentTitle( getString( R.string.text_receipt_notification_title ) )
                 .setContentText( getString( R.string.text_receipt_notification_text, text ) );
-
-        notificationManager.notify( RECEIPT_NOTIFICATION_ID, builder.build() );
+        getManager().notify(NOTIFICATION_ID, builder.build());
     }
 
     /**
@@ -134,8 +142,7 @@ public class YodoMessagingService extends FirebaseMessagingService {
                         .addLine(from)
                         .addLine(amount)
                 );
-
-        notificationManager.notify( RECEIPT_NOTIFICATION_ID, builder.build() );
+        getManager().notify(NOTIFICATION_ID, builder.build());
     }
 
     /**
@@ -143,7 +150,11 @@ public class YodoMessagingService extends FirebaseMessagingService {
      * @return The notification builder
      */
     private NotificationCompat.Builder getNotificationBuilder() {
-        Intent intent = new Intent( this, PaymentActivity.class );
+        // Creates the resources for the notification
+        final Uri sound = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
+
+        // Creates an explicit intent for an Activity in your app
+        Intent intent = new Intent(this, PaymentActivity.class);
         PendingIntent pendingIntent = PendingIntent.getActivity(
                 this,
                 0,
@@ -151,12 +162,44 @@ public class YodoMessagingService extends FirebaseMessagingService {
                 PendingIntent.FLAG_UPDATE_CURRENT
         );
 
-        final Uri defaultSoundUri = RingtoneManager.getDefaultUri( RingtoneManager.TYPE_NOTIFICATION );
-        return new NotificationCompat.Builder( this )
-                .setSmallIcon( getNotificationIcon() )
-                .setAutoCancel( true )
-                .setSound( defaultSoundUri )
-                .setContentIntent( pendingIntent );
+        // Builds the notification
+        NotificationCompat.Builder builder = new NotificationCompat.Builder(this, CHANNEL_ID)
+                .setSmallIcon(getNotificationIcon())
+                .setSound(sound)
+                .setAutoCancel(true)
+                .setContentIntent(pendingIntent);
+
+        // Channel for Android Oreo
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            // The user-visible name of the channel.
+            CharSequence name = getString(R.string.text_channel_name);
+            NotificationChannel channel = new NotificationChannel(CHANNEL_ID, name, NotificationManager.IMPORTANCE_HIGH);
+
+            // Audio settings
+            AudioAttributes att = new AudioAttributes.Builder()
+                    .setUsage(AudioAttributes.USAGE_NOTIFICATION)
+                    .setContentType(AudioAttributes.CONTENT_TYPE_SPEECH)
+                    .build();
+
+            // Configure the notification channel.
+            channel.enableLights(true);
+            channel.enableVibration(true);
+            channel.setSound(sound, att);
+            getManager().createNotificationChannel(channel);
+        }
+
+        return builder;
+    }
+
+    /**
+     * Gets the notification manager, or initialize it if not already initialized
+     * @return The notification manager object
+     */
+    private NotificationManager getManager() {
+        if (notificationManager == null) {
+            notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        }
+        return notificationManager;
     }
 
     /**

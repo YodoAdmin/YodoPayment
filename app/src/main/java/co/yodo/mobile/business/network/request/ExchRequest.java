@@ -6,6 +6,7 @@ import co.yodo.mobile.business.network.model.ServerResponse;
 import retrofit2.Call;
 import retrofit2.http.GET;
 import retrofit2.http.Path;
+import timber.log.Timber;
 
 /**
  * Created by yodop on 2017-07-22.
@@ -17,7 +18,8 @@ public final class ExchRequest extends IRequest {
 
     /** Exchange sub-types */
     private enum ExchST {
-        P2P ("7");
+        P2P  ("7"),
+        P2PS ("8"); // static
 
         private final String value;
 
@@ -46,8 +48,16 @@ public final class ExchRequest extends IRequest {
      * @param amount The amount of money to transfer
      */
     public ExchRequest(String hardwareFrom, String hardwareTo, String amount) {
-        this.formattedUsrData = hardwareFrom + REQ_SEP + hardwareTo + REQ_SEP + amount;
-        this.requestST = ExchST.P2P;
+        this.formattedUsrData = hardwareFrom + REQ_SEP + hardwareTo.substring(hardwareTo.startsWith("00S") ? 3 : 0) + REQ_SEP + amount;
+        this.requestST = hardwareTo.startsWith("00S") ? ExchST.P2PS : ExchST.P2P;
+        /*this.formattedUsrData = hardwareFrom + REQ_SEP;
+        if (hardwareTo.startsWith("00S")) {
+            this.requestST = ExchST.P2PS;
+            this.formattedUsrData += hardwareTo.substring(3);
+        } else {
+            this.requestST = ExchST.P2P;
+            this.formattedUsrData += hardwareTo.substring(3);
+        }*/
     }
 
     @Override

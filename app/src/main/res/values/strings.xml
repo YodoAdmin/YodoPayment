@@ -16,6 +16,7 @@
     <string name="text.search.hint">Search…</string>
     <string name="text.warning">Warning!</string>
     <string name="text.version">Version:</string>
+    <string name="text.channel.name" translatable="false">Yodo Notification Channel</string>
 
     <!-- Action Menu -->
     <string name="action.settings">Settings</string>
@@ -33,8 +34,8 @@
     <string name="text.slide4.description">GET STARTED</string>
 
     <!-- Links Menu -->
-    <string name="action.nickname" translatable="false">Nickname</string>
-    <string name="action.delink" translatable="false">De-Link</string>
+    <string name="action.nickname">Nickname</string>
+    <string name="action.delink">De-Link</string>
 
     <!-- Eula Messages -->
     <string name="text.eula.title">Yodo User Agreement</string>
@@ -141,6 +142,7 @@
     <string-array name="languages_options">
         <item>English</item>
         <item>Spanish</item>
+        <item>Hindi</item>
         <!--<item>Chinese</item>
         <item>Japanese</item>
         <item>French</item>
@@ -150,6 +152,7 @@
     <string-array name="languages_options_values" translatable="false">
         <item>en</item>
         <item>es</item>
+        <item>hi</item>
         <!--<item>zh</item>
         <item>ja</item>
         <item>fr</item>
